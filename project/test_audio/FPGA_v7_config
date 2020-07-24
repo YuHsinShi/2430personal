@@ -1,0 +1,153 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config PROJECT_MODULE_DEFINED
+    bool
+    default y
+    #select HAVE_LCD
+    #select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    #select HAVE_VIDEO
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+config RAM_INIT_SCRIPT
+    default "IT970A0_396Mhz_DDR2_396Mhz.scr"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config I2S_ENABLE
+    def_bool y
+
+config AUDIO_ENABLE
+    def_bool y
+
+config AUDIO_DAC_MODULE
+    default "itp_dac_wm8960.c"
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config SPI_ENABLE
+
+config UART_INTR
+    def_bool y
+
+config BUILD_AUDIO_MGR
+    def_bool y
+
+config AUDIO_CODEC_MP3DEC
+    def_bool y
+
+config AUDIO_CODEC_WMADEC
+    def_bool y
+
+config AUDIO_CODEC_WAV
+    def_bool y
+
+config DBG_INIT_SCRIPT
+    default "p960a0_MEM40M_0901TOP_v7.txt"
+
+config ITH_FPGA
+	def_bool y
+
+config I2S_INTERNAL_CODEC
+	def_bool n
+
+config I2C0_ENABLE
+	def_bool y
+
+config GPIO_IIC0_CLK
+	default 30
+
+config GPIO_IIC0_DATA
+	default 31
+
+config GPIO_I2S
+	default "22,23,24,25,26"
+
+menu "TEST IIS"
+
+    choice
+    prompt "IIS TEST"
+    default SIMPLE_IIS_TEST_play
+    help
+        Test IIS play wav sound.
+    help_cht
+        測試撥放聲音
+    help_chs
+        測試撥放聲音
+
+
+    config USB_WAV_FILE_TEST
+    bool "usb wav file play test"
+    help
+        usb wav file play test.
+    help_cht
+        usb wav檔測試撥放。
+    help_chs
+        usb wav檔測試撥放。
+
+    config AUDIOMGR_PLAY_TEST
+    bool "audiomgr test"
+    help
+        audiomgr test(audio codec:mp3 wma wav).
+    help_cht
+        audiomgr 測試(audio codec:mp3 wma wav)。
+    help_chs
+        audiomgr 測試(audio codec:mp3 wma wav)。
+
+    config SIMPLE_IIS_TEST_play
+    bool "simple iis play sound test"
+    help
+        simple iis test play sound.
+    help_cht
+        測試撥放聲音。
+    help_chs
+        測試撥放聲音。
+
+    config USB_WAV_RECORD_FILE_TEST
+    bool "usb wav record file test"
+    help
+        usb wav record file test.
+    help_cht
+        usb wav檔測試錄音。
+    help_chs
+        usb wav檔測試錄音。
+
+    config AD_REC_DA_PLAY_TEST
+    bool "AD record & DA play sound test"
+    help
+        TEST AD record & DA play sound.
+    help_cht
+        測試錄製並撥放聲音。
+    help_chs
+        測試錄製並撥放聲音。
+
+    config AD_DA_LOUDER_TEST
+    bool "louder test"
+    help
+        louder((AD & DA TEST)).
+    help_cht
+        擴音器(AD & DA 測試)。
+    help_chs
+        擴音器(AD & DA 測試)。
+
+    endchoice
+
+endmenu
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"

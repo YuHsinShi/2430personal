@@ -1,0 +1,12 @@
+add_executable(${CMAKE_PROJECT_NAME}
+    layer_main.c
+	layer_audioplayer.c
+	layer_scenes.c
+	layer_setting.c
+	layer_curtain.c
+	layer_screensaver.c
+	layer_light.c
+	layer_clock.c
+	layer_setting_wifi_others.c
+	layer_setting_wifi_password.c
+    )

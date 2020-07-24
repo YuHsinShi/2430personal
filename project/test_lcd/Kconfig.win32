@@ -1,0 +1,78 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config TEST_LCD
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config RAM_SIZE
+    default "0x4000000"
+
+config LCD_ENABLE
+    def_bool y
+
+config LCD_WIDTH
+    default "1024"
+
+config LCD_HEIGHT
+    default "600"
+
+config LCD_PITCH
+    default "2048"
+
+config LCD_INIT_SCRIPT
+    default "DEMOIT9860_MIPI_JY_1024x600_24bits.txt"
+
+config BACKLIGHT_ENABLE
+    def_bool y
+
+config BACKLIGHT_DUTY_CYCLES
+    default "95, 92, 88, 82, 75, 65, 55, 40, 25, 5"
+
+config BACKLIGHT_DEFAULT_DUTY_CYCLE
+    default "5"
+
+config GPIO_BACKLIGHT_PWM
+     default "64"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+menu "LCD Test"
+
+    choice
+        prompt "Test App"
+        default TEST_LCD_COLOR
+
+    config TEST_LCD_COLOR
+        bool "LCD_COLOR"
+
+    config TEST_LCD_INTR
+        bool "LCD_INTR"
+
+    config TEST_LCDCONSOLE
+        bool "LCDCONSOLE"
+
+    config TEST_OSDCONSOLE
+        bool "OSDCONSOLE"
+
+    config TEST_BACKLIGHT
+        bool "BACKLIGHT"
+
+    config TEST_STNLCD
+        bool "STNLCD"
+
+    endchoice
+
+endmenu

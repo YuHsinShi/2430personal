@@ -1,0 +1,94 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+config DEF_CHIP_PKG_IT9860
+	def_bool y
+	
+config ROM_COMPRESS
+	def_bool n
+	
+#==== for SD ====
+config SD0_ENABLE
+	def_bool y
+
+config SD0_STATIC
+	default n
+	
+config GPIO_SD0_CARD_DETECT
+    default "19"
+
+config GPIO_SD0_POWER_ENABLE
+    default "-1"
+
+config GPIO_SD0_WRITE_PROTECT
+    default "-1"
+	
+config GPIO_SD0_IO
+      default "14, 13, 15, 16, 17, 18, -1, -1, -1, -1"
+	
+config SD1_ENABLE
+	def_bool y
+
+config SD1_STATIC
+    default n
+
+config GPIO_SD1_CARD_DETECT
+    default "20"
+
+config GPIO_SD1_POWER_ENABLE
+    default "-1"
+
+config GPIO_SD1_WRITE_PROTECT
+    default "-1"
+
+config GPIO_SD1_IO
+      default "11, 13, 15, 16, 17, 18, -1, -1, -1, -1"
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+#==== for FAT ====
+config FS_FAT
+	def_bool y
+	
+#==== for Task ====
+config TASK_DRIVE_PROBE	
+	def_bool y
+		
+#==== for Script ====
+config DBG_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.txt"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+
+menu "Storage Test"
+
+choice
+	prompt "Test App"
+	default TEST_SD
+
+config TEST_SD
+	bool "SD Test"
+	depends on (SD0_ENABLE || SD1_ENABLE)
+	help
+	    This is general storage test with itp. It can test multi-storage at the same time.
+	    We can use this test project to run 2 SD.
+
+endchoice
+
+endmenu

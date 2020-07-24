@@ -1,0 +1,20 @@
+@echo off
+
+pushd ..\..\..
+call common.cmd
+popd
+
+glamomem -t glamomem.dat -i -q
+glamomem -t glamomem.dat -l ${CMAKE_PROJECT_NAME}.bin
+
+if "${CFG_CHIP_FAMILY}" == "970" (
+    glamomem -t glamomem.dat -q -e ${PROJECT_SOURCE_DIR}/sdk/target/debug/fa626/JTAG_Switch_32bits.txt
+) else (
+    if "${CFG_CHIP_FAMILY}" == "9860" (
+        glamomem -t glamomem.dat -q -e ${PROJECT_SOURCE_DIR}/sdk/target/debug/fa626/JTAG_Switch_32bits.txt
+    ) else (
+        glamomem -t glamomem.dat -q -e ${PROJECT_SOURCE_DIR}/sdk/target/debug/fa626/JTAG_Switch_16bits.txt
+    )
+)
+
+openocd -f ${PROJECT_SOURCE_DIR}/sdk/target/debug/fa626/fa626.cfg

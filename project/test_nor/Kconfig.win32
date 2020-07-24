@@ -1,0 +1,25 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+	
+config FS_FAT
+	def_bool n
+	
+config NOR_ENABLE
+	def_bool y
+	
+config UART1_ENABLE
+    def_bool y
+	
+config SPI_ENABLE
+	def_bool y	
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+

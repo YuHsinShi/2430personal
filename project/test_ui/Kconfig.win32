@@ -1,0 +1,409 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config TEST_ITU
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+config LCD_ENABLE
+    def_bool y
+
+config I2S_ENABLE
+    def_bool y
+
+config I2S_SPDIF_ENABLE
+    def_bool n
+
+config AUDIO_ENABLE
+    def_bool y
+
+config VIDEO_ENABLE
+    def_bool y
+
+config FFMPEG_H264_SW
+    def_bool y
+
+config ITU_UCL_ENABLE
+    def_bool y
+
+config WIN32_SIMULATOR
+    def_bool y
+
+config ITU_FT_CACHE_ENABLE
+    def_bool y
+
+config BUILD_AUDIO_MGR
+    def_bool y
+
+config BUILD_ITU
+    def_bool y
+
+config BUILD_SDL
+    def_bool y
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+menu "UI Test"
+
+choice
+	prompt "Test UI"
+	default UI_3D_Flip
+
+config UI_3D_Flip
+	bool "3D Hexahedron"
+	help
+		Description: 
+		
+		A Hexahedron which could be flipped by sliding up/down/left/right direction.
+		
+		Feature skills: 
+		
+		1. Icon TransformType
+		2. Linksurface with outside invisible Icon
+	help_cht
+        描述：
+		
+		一個可透過上下左右滑動來翻轉的六面體。
+		
+		特殊技巧：
+		
+		1. Icon TransformType
+		2. Linksurface with outside invisible Icon
+    help_chs
+        描述：
+
+		一个可透过上下左右滑动来翻转的六面体。
+
+		特殊技巧：
+		
+		1. Icon TransformType
+		2. Linksurface with outside invisible Icon
+config UI_MyFavorite
+	bool "My Favorite Album"
+	help
+		Description: 
+		
+		A hollow coverflow menu which dynamic link surface by the sequence of your favorite album.
+		Click on top-right side heart button could show the small my favorite list.
+		
+		Feature skills: 
+		
+		1. CoverFlow stop anywhere
+		2. Linksurface with outside invisible Icon
+	help_cht
+        描述：
+		
+		一個空的coverflow列表，透過動態連結的方式依照喜歡的專輯列表排序
+		並且點擊右上角的愛心按鈕可以跳出小型我的最愛列。
+		
+		特殊技巧：
+		
+		1. CoverFlow stop anywhere
+		2. Linksurface with outside invisible Icon
+    help_chs
+        描述：
+
+		一个空的coverflow列表，透过动态连结的方式依照喜欢的专辑列表排序
+		并且点击右上角的爱心按钮可以跳出小型我的最爱列。
+
+		特殊技巧：
+
+		1. CoverFlow stop anywhere
+		2. Linksurface with outside invisible Icon
+config UI_Water_level_Adjusting
+	bool "Water level up & down"
+	help
+		Description: 
+		
+		Two cups filled with popple cold/ice water which could be adjusted by dragging up & down.
+		
+		Feature skills: 
+		
+		1. Overlap icons to show cup with water
+		2. Sprite plays like an animation
+	help_cht
+        描述：
+		
+		個別裝著冷水和冰水並且有水波震盪的兩個杯子，可透過拖動改變水位。
+		
+		特殊技巧：
+		
+		1. Overlap icons to show cup with water
+		2. Sprite plays like an animation
+    help_chs
+        描述：
+
+		个别装着冷水和冰水并且有水波震荡的两个杯子，可透过拖动改变水位。
+
+		特殊技巧：
+		
+		1. Overlap icons to show cup with water
+		2. Sprite plays like an animationn
+config UI_Menu_LinkSurface
+	bool "Restaurant Menu"
+	help
+		Description: 
+		
+		A hollow coverflow menu which dynamic linking surface and forming size by the sequence and pages of your menu.
+		
+		Feature skills: 
+		
+		1. External all the icon images(shrinking itu size and also accelerating booting time)
+		2. Linksurface with outside invisible Icon
+	help_cht
+        描述：
+		
+		一個空的菜單，當coverflow過場動畫結束時會透過動態連結的方式，預先將下一個垂直列表內容填上。
+		
+		特殊技巧：
+		
+		1. External all the icon images(shrinking itu size and also accelerating booting time)
+		2. Linksurface with outside invisible Icon
+    help_chs
+        描述：
+
+		一个空的菜单，当coverflow过场动画结束时会透过动态连结的方式，预先将下一个垂直列表内容填上。
+
+		特殊技巧：
+		
+		1. External all the icon images(shrinking itu size and also accelerating booting time)
+		2. Linksurface with outside invisible Icon
+config UI_Laundry
+	bool "Do the laundry step by step"
+	help
+		Description: 
+		
+		Two laundry machine which could go through each washing function step by step by pressing the next button.
+		
+		Feature skills: 
+		
+		1. Overlap icons to show laundry machine with water inside
+		2. Sprite plays like an animation
+		3. Animation with alpha(Twinkling)
+	help_cht
+        描述：
+		
+		透過點擊箭頭可步進改變兩個洗衣機的狀態。
+		
+		特殊技巧：
+		
+		1. Overlap icons to show laundry machine with water inside
+		2. Sprite plays like an animation
+		3. Animation with alpha(Twinkling)
+    help_chs
+        描述：
+
+		透过点击箭头可步进改变两个洗衣机的状态。
+
+		特殊技巧：
+		
+		1. Overlap icons to show laundry machine with water inside
+		2. Sprite plays like an animation
+		3. Animation with alpha(Twinkling)
+config UI_Animation_Switching
+	bool "Switching animations and could be seleted"
+	help
+		Description: 
+		
+		Four overlap animations could be switched by sliding left/right, and seleted by click.
+		
+		Feature skills: 
+		
+		1. Using timer match up with function code to make animations play.
+		2. Linksurface with outside invisible Icon
+		3. Animation on stop function
+	help_cht
+        描述：
+		
+		四個部分重疊的動畫，透過左右滑動切換位置，並且在點擊後顯示選取資料。
+		
+		特殊技巧：
+		
+		1. Using timer match up with function code to make animations play.
+		2. Linksurface with outside invisible Icon
+		3. Animation on stop function
+    help_chs
+        描述：
+
+		四个部分重叠的动画，透过左右滑动切换位置，并且在点击后显示选取资料。
+
+		特殊技巧：
+		
+		1. Using timer match up with function code to make animations play.
+		2. Linksurface with outside invisible Icon
+		3. Animation on stop function
+config UI_Cartoon_ScaleCoverflow
+	bool "Switching cartoon characters with ScaleCoverFlow"
+	help
+		Description: 
+		
+		Switching cartoon characters with scale transition by clicking next and could be paused & resumed. 
+		
+		Feature skills: 
+		
+		1. Using scaleCoverFlow to display the transition effect
+		2. Linksurface with outside invisible Icon
+		3. Sprite plays like an animation
+	help_cht
+        描述：
+		
+		一個可透過點擊箭頭來改變卡通人物的狀態與動畫。
+		
+		特殊技巧：
+		
+		1. Using scaleCoverFlow to display the transition effect
+		2. Linksurface with outside invisible Icon
+		3. Sprite plays like an animation
+    help_chs
+        描述：
+
+		一个可透过点击箭头来改变卡通人物的状态与动画。
+
+		特殊技巧：
+		
+		1. Using scaleCoverFlow to display the transition effect
+		2. Linksurface with outside invisible Icon
+		3. Sprite plays like an animation
+config UI_CoverFlow_overlap_MyFavoriteBread
+	bool "A overlap Bread menu sort by favorite"
+	help
+		Description: 
+		
+		A hollow coverflow menu with overlap setting and join with animation to display expand effect.
+		
+		Feature skills: 
+		
+		1. CoverFlow overlap
+		2. Linksurface with outside invisible Icon
+		3. Animation playing depends on the clicking widget
+	help_cht
+        描述：
+		
+		一個空的coverflow列表，透過動態連結的方式依照喜歡列表排序，並且內圖以斜的方式顯示。
+		
+		特殊技巧：
+		
+		1. CoverFlow overlap
+		2. Linksurface with outside invisible Icon
+		3. Animation playing depends on the clicking widget
+    help_chs
+        描述：
+
+		一个空的coverflow列表，透过动态连结的方式依照喜欢列表排序，并且内图以斜的方式显示。
+
+		特殊技巧：
+		
+		1. CoverFlow overlap
+		2. Linksurface with outside invisible Icon
+		3. Animation playing depends on the clicking widget
+config UI_ARC
+	bool "Roulette base on widgets: CoverFlow Wheel StepWheel"
+	help
+		Description: 
+		
+		A simple coverflow wheel stepwheel combines with background to become roulette by arc table algorithm, and could be switched display items by setting macro LANG_DISPLAY_NUM.
+		
+		Feature skills: 
+		
+		1. Arc table algorithm
+		2. Background original size
+		3. Timer function
+	help_cht
+        描述：
+		
+		一個基於coverflow wheel stepwheel和background搭配，透過演算法計算弧度達到輪盤效果。
+		
+		特殊技巧：
+		
+		1. Arc table algorithm
+		2. Background original size
+		3. Timer function
+    help_chs
+        描述：
+
+		一个基于coverflow wheel stepwheel和background搭配，透过演算法计算弧度达到轮盘效果。
+
+		特殊技巧：
+		
+		1. Arc table algorithm
+		2. Background original size
+		3. Timer function
+config UI_COVERFLOW_PART_MYFAVORITE
+	bool "CoverFlow move with separating effect"
+	help
+		Description: 
+		
+		A coverflow with separating effect while dragging or sliding and the gap range could be set by changing macro PART_INTEVAL.
+		
+		Feature skills: 
+		
+		1. Timer function
+		2. ituWidgetGetX function
+		3. ituWidgetSetX function
+	help_cht
+        描述：
+		
+		一個可透過修改PART_INTEVAL值來改變拖拉或滑動事件發生時圖與圖之間的分開間隔的coverflow。
+		
+		特殊技巧：
+		
+		1. Timer function
+		2. ituWidgetGetX function
+		3. ituWidgetSetX function
+    help_chs
+        描述：
+
+		一个可透过修改PART_INTEVAL值来改变拖拉或滑动事件发生时图与图之间的分开间隔的coverflow。
+
+		特殊技巧：
+		
+		1. Timer function
+		2. ituWidgetGetX function
+		3. ituWidgetSetX function
+config UI_DYNAMIC_MENU
+	bool "Dynamic menu"
+		help
+		Description: 
+		
+		A menu example looks like ios menu which could switch app order by long pressing.
+		
+		Feature skills: 
+		
+		1. Timer function
+		2. ituWidgetGetX function
+		3. ituWidgetSetX function
+	help_cht
+        描述：
+		
+		一個可透過長按事件發生後拖拉排序物件。
+		
+		特殊技巧：
+		
+		1. Timer function
+		2. ituWidgetGetX function
+		3. ituWidgetSetX function
+    help_chs
+        描述：
+
+		一个可透过长按事件发生后拖拉排序物件。
+
+		特殊技巧：
+		
+		1. Timer function
+		2. ituWidgetGetX function
+		3. ituWidgetSetX function
+endchoice
+
+endmenu

@@ -1,0 +1,5 @@
+// Switch the SPI to JTAG Interface for SM32
+//if (read_mask(0xd8000004, 0xffff0000) == 0x99200000) {
+    write(0xd1000204, 0x60);
+    write(0xb0200078, 0x02);
+//}

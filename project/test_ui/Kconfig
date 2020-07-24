@@ -1,0 +1,885 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CTRLBOARD
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config RAM_SIZE
+    default "0x4000000"
+
+config TILING_WIDTH_128
+    int
+    default 0
+
+config WATCHDOG_ENABLE
+    def_bool y
+
+config DCPS_ENABLE
+    def_bool y
+
+config FONT_FILENAME
+    default "wqyMicroHei.ttf"
+
+config BACKLIGHT_ENABLE
+    def_bool y
+
+config BACKLIGHT_DUTY_CYCLES
+    default "95, 92, 88, 82, 75, 65, 55, 40, 25, 5"
+
+config BACKLIGHT_DEFAULT_DUTY_CYCLE
+    default "5"
+
+config LCD_ENABLE
+    def_bool y
+
+if !LCD_MULTIPLE
+
+config LCD_WIDTH
+    default "1024"
+
+config LCD_HEIGHT
+    default "600"
+
+config LCD_PITCH
+    default "2048"
+
+config LCD_INIT_SCRIPT
+    default "DEMOIT9860_MIPI_JY_1024x600_24bits.txt"
+
+endif
+
+config CMDQ_ENABLE
+    def_bool y
+
+config M2D_ENABLE
+    def_bool y
+
+config JPEG_HW_ENABLE
+    def_bool y
+
+config AUDIO_ENABLE
+    def_bool y
+
+config AUDIO_DAC_MODULE
+    default "itp_dac_ite970.c"
+
+config AUDIO_CODEC_MP3DEC
+    def_bool y
+
+config AUDIO_CODEC_WMADEC
+    def_bool y
+
+config AUDIO_CODEC_WAV
+    def_bool y
+
+config COMPRESS_AUDIO_PLUGIN
+    def_bool y
+
+config VIDEO_ENABLE
+    def_bool y
+
+#config KEYPAD_ENABLE
+#    def_bool n
+
+config NOR_ENABLE
+    def_bool y
+
+config NOR_USE_AXISPI
+    def_bool y
+
+config NOR_ENABLE_QUADMODE
+    def_bool y
+
+if NOR_ENABLE
+config NOR_CACHE_SIZE
+    default "0x200000"
+
+config NOR_RESERVED_SIZE
+    default "0x200000"
+
+config NOR_PARTITION0
+    def_bool y
+
+config NOR_PARTITION0_SIZE
+    default "0xB00000"
+
+config NOR_PARTITION1
+    def_bool y
+
+config NOR_PARTITION1_SIZE
+    default "0x280000"
+
+config NOR_PARTITION2
+    def_bool y
+
+config NOR_PARTITION2_SIZE
+    default "0x40000"
+
+config NOR_PARTITION3
+    def_bool y
+endif
+
+config TEMP_DRIVE
+    default "D"
+
+config SD0_ENABLE
+    def_bool n
+
+config GPIO_SD0_IO
+    default "16, 17, 18, 19, 20, 21, -1, -1, -1, -1"
+
+####SDIO WIFI CONFIG####
+if SD1_ENABLE && NET_WIFI_SDIO
+config GPIO_SD1_IO
+      default "16, 17, 7, 15, 9, 10, -1, -1, -1, -1"
+
+config SDIO_ENABLE
+      def_bool y
+
+config SDIO1_STATIC
+    def_bool y
+endif
+
+if NET_WIFI
+config NET_WIFI_REDEFINE
+    def_bool y
+endif
+########################
+
+config USB0_ENABLE
+    def_bool y
+
+config MSC_ENABLE
+    def_bool y
+
+config FS_FAT
+    def_bool y
+
+config RTC_ENABLE
+    def_bool y
+
+config SPI_ENABLE
+    def_bool n
+
+config I2C1_ENABLE
+    def_bool y
+
+config GPIO_IIC1_CLK
+    default "37"
+
+config GPIO_IIC1_DATA
+    default "36"
+
+config TOUCH_ENABLE
+    def_bool y
+
+config TOUCH_MODULE
+    default "gt911"
+
+config TOUCH_X_MAX_VALUE
+    default "0x3FF"
+
+config TOUCH_Y_MAX_VALUE
+    default "0x257"
+
+config GPIO_TOUCH_INT
+    default "38"
+
+config GPIO_TOUCH_RESET
+    default "39"
+
+config GPIO_TOUCH_WAKE
+    default "-1"
+
+config DEF_TOUCH_I2C1
+    def_bool y
+
+config TOUCH_INTR
+    def_bool y
+
+config I2S_ENABLE
+    def_bool y
+
+config I2S_SPDIF_ENABLE
+    def_bool n
+
+config POWER_SAVING_ENABLE
+    def_bool y
+
+config DEF_POWER_STANDBY
+    def_bool y
+
+config POWER_STANDBY_CPU_FREQ_RATIO
+    default "15"
+
+config POWER_STANDBY_BUS_FREQ_RATIO
+    default "30"
+
+config GPIO_UART0_TX
+    default "4"
+
+config GPIO_UART0_RX
+    default "-1"
+
+config AXISPI_ENABLE
+    def_bool y
+
+config AXISPI_MOSI_GPIO
+    default "7"
+
+config AXISPI_MISO_GPIO
+    default "8"
+
+config AXISPI_CLOCK_GPIO
+    default "5"
+
+config AXISPI_CHIP_SEL_GPIO
+    default "6"
+
+config AXISPI_WP_GPIO
+    default "9"
+
+config AXISPI_HOLD_GPIO
+    default "10"
+
+config GPIO_BACKLIGHT_PWM
+    default "95"
+
+config NET_ENABLE
+    def_bool n
+
+config TASK_DRIVE_PROBE
+    def_bool y
+
+config DBG_STATS
+    def_bool y
+
+config DBG_STATS_HEAP
+    def_bool y
+
+config DEF_BUILD_MINSIZEREL
+    def_bool y
+
+config SYSTEM_NAME
+    default "ITE Display Control Board"
+
+config ITU_FT_CACHE_ENABLE
+    def_bool y
+
+config ITU_FT_CACHE_SIZE
+    default "0xFA000"
+
+config GCC_LTO
+    def_bool y
+
+config BUILD_AUDIO_MGR
+    def_bool y
+
+config BUILD_INIPARSER
+    def_bool y
+
+config BUILD_ITU
+    def_bool y
+
+config BUILD_SDL
+    def_bool y
+
+config BUILD_UPGRADE
+    def_bool y
+
+config BUILD_PYINPUT
+    def_bool y
+
+if NET_ENABLE
+
+config NET_ETHERNET
+    def_bool n
+
+config NET_ETHERNET_LINK_INTR
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_RANDOM
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_STORAGE
+    def_bool y
+
+if NET_ETHERNET_MAC_ADDR_NOR
+
+config NET_ETHERNET_MAC_ADDR_POS
+    default "0x70000"
+
+endif
+
+config NET_ETHERNET_MAC_ADDR_UPGRADE
+    def_bool y
+
+config NET_DHCP_SERVER
+    def_bool y
+
+config DHCPS_ADDR_COUNT
+  default "254"
+
+config BUILD_MICROHTTPD
+    def_bool y
+
+config BUILD_XML2
+    def_bool y
+
+config NET_HTTP
+    def_bool y
+endif
+
+######################################################################
+# Start of bootloader setting
+######################################################################
+config BOOTLOADER_ENABLE
+    def_bool n
+
+if BOOTLOADER_ENABLE && LCD_ENABLE && !LCD_MULTIPLE
+
+config LCD_BOOT_BITMAP
+    default "logo.bmp"
+
+config BL_SHOW_LOGO
+    def_bool y
+
+endif
+
+if BOOTLOADER_ENABLE
+
+config UPGRADE_BOOTLOADER
+    def_bool y
+
+config UPGRADE_IMAGE
+    def_bool y
+
+config UPGRADE_DATA
+    def_bool y
+
+if UPGRADE_DATA
+config UPGRADE_PRIVATE
+    def_bool y
+
+config UPGRADE_PUBLIC
+    def_bool y
+
+config UPGRADE_TEMP
+    def_bool y
+endif
+
+config UPGRADE_OPEN_FILE
+    def_bool y
+
+config UPGRADE_PARTITION
+    def_bool y
+
+config UPGRADE_DELETE_PKGFILE_AFTER_FINISH
+    def_bool y
+
+if NOR_ENABLE
+config DEF_UPGRADE_BOOTLOADER_NOR
+    def_bool y
+
+config DEF_UPGRADE_IMAGE_NOR
+    def_bool y
+
+config UPGRADE_IMAGE_POS
+    default "0x80000"
+
+config DEF_UPGRADE_PRIVATE_NOR
+    def_bool y
+
+config DEF_UPGRADE_PUBLIC_NOR
+    def_bool y
+
+config DEF_UPGRADE_TEMP_NOR
+    def_bool y
+
+config UPGRADE_NOR_IMAGE
+    def_bool y
+
+config UPGRADE_NOR_IMAGE_SIZE
+    default "0x1000000"
+endif
+
+config BL_LCD_CONSOLE
+    def_bool y
+
+config BL_ERR
+    def_bool y
+
+config BL_WARN
+    def_bool y
+
+config BL_INFO
+    def_bool y
+
+config BL_DBG
+    def_bool y
+
+config CHECK_FILES_CRC_ON_BOOTING
+    def_bool y
+
+endif
+
+######################################################################
+# End of bootloader setting
+######################################################################
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+######################################################################
+# Project Menu
+######################################################################
+menu "Display Control Board"
+
+    config CHECK_FILES_CRC_ON_BOOTING
+        bool "Checking files' CRC on booting time"
+        default n
+        help
+            Checking files' CRC on booting time
+        help_cht
+            開啟開機時檢查檔案 CRC 值的功能。
+        help_chs
+            开启开机时检查档案 CRC 值的功能。
+
+    config HW_VERSION
+        string "Hardware version"
+        default "V01"
+        help
+            Hardware version
+        help_cht
+            硬體版號。
+        help_chs
+            硬件版号。
+
+    config SCREENSHOT_ENABLE
+        bool "Screenshot is enabled or not"
+        default n
+        help
+            Screenshot is enabled or not
+        help_cht
+            開啟螢幕擷取功能。
+        help_chs
+            开启屏幕撷取功能。
+
+    config WEBSERVER_PORT
+        string "Web server port"
+        default "80"
+        help
+            Web server port
+        help_cht
+            網頁伺服器埠號。
+        help_chs
+            网页服务器埠号。
+
+    config ITU_PATH
+        string "ITU files path"
+        depends on !LCD_MULTIPLE
+        default "itu/1024x600"
+        help
+            ITU files path
+        help_cht
+            ITU檔案路徑。
+        help_chs
+            ITU档案路径。
+
+    config UPGRADE_FTP_URL
+        string "Upgrade ftp URL"
+        default "ftp://192.168.1.1/ctrlboard/ITEPKG03.PKG"
+        help
+            Upgrade ftp URL
+        help_cht
+            網路更新F/W路徑。
+        help_chs
+            网络更新F/W路径。
+
+    config UPGRADE_GUI
+        bool "Upgrade by graphics display"
+        depends on !LCD_MULTIPLE
+        default n
+        help
+            Upgrade by graphics display
+        help_cht
+            圖形顯示更新。
+        help_chs
+            图形显示更新。
+
+config DYNAMIC_LOAD_TP_MODULE
+        bool "Dynamically Load the Touch Panel Module"
+        default n
+        help
+            One PKG can support multiple TP module by modifying the Peripheral->TOUCH_MODULE.
+        help_cht
+            一個PKG可同時支援多組觸控模組，須配合Peripheral->TOUCH_MODULE的設定。
+        help_chs
+            一个PKG可同时支持多组触控模块，须配合Peripheral->TOUCH_MODULE的设定。
+
+endmenu
+
+menu "UI Test"
+
+choice
+    prompt "Test UI"
+    default UI_3D_Flip
+
+config UI_3D_Flip
+    bool "3D Hexahedron"
+    help
+        Description:
+
+        A Hexahedron which could be flipped by sliding up/down/left/right direction.
+
+        Feature skills:
+
+        1. Icon TransformType
+        2. Linksurface with outside invisible Icon
+    help_cht
+        描述：
+
+        一個可透過上下左右滑動來翻轉的六面體。
+
+        特殊技巧：
+
+        1. Icon TransformType
+        2. Linksurface with outside invisible Icon
+    help_chs
+        描述：
+
+        一个可透过上下左右滑动来翻转的六面体。
+
+        特殊技巧：
+
+        1. Icon TransformType
+        2. Linksurface with outside invisible Icon
+config UI_MyFavorite
+    bool "My Favorite Album"
+    help
+        Description:
+
+        A hollow coverflow menu which dynamic link surface by the sequence of your favorite album.
+        Click on top-right side heart button could show the small my favorite list.
+
+        Feature skills:
+
+        1. CoverFlow stop anywhere
+        2. Linksurface with outside invisible Icon
+    help_cht
+        描述：
+
+        一個空的coverflow列表，透過動態連結的方式依照喜歡的專輯列表排序
+        並且點擊右上角的愛心按鈕可以跳出小型我的最愛列。
+
+        特殊技巧：
+
+        1. CoverFlow stop anywhere
+        2. Linksurface with outside invisible Icon
+    help_chs
+        描述：
+
+        一个空的coverflow列表，透过动态连结的方式依照喜欢的专辑列表排序
+        并且点击右上角的爱心按钮可以跳出小型我的最爱列。
+
+        特殊技巧：
+
+        1. CoverFlow stop anywhere
+        2. Linksurface with outside invisible Icon
+config UI_Water_level_Adjusting
+    bool "Water level up & down"
+    help
+        Description:
+
+        Two cups filled with popple cold/ice water which could be adjusted by dragging up & down.
+
+        Feature skills:
+
+        1. Overlap icons to show cup with water
+        2. Sprite plays like an animation
+    help_cht
+        描述：
+
+        個別裝著冷水和冰水並且有水波震盪的兩個杯子，可透過拖動改變水位。
+
+        特殊技巧：
+
+        1. Overlap icons to show cup with water
+        2. Sprite plays like an animation
+    help_chs
+        描述：
+
+        个别装着冷水和冰水并且有水波震荡的两个杯子，可透过拖动改变水位。
+
+        特殊技巧：
+
+        1. Overlap icons to show cup with water
+        2. Sprite plays like an animationn
+config UI_Menu_LinkSurface
+    bool "Restaurant Menu"
+    help
+        Description:
+
+        A hollow coverflow menu which dynamic linking surface and forming size by the sequence and pages of your menu.
+
+        Feature skills:
+
+        1. External all the icon images(shrinking itu size and also accelerating booting time)
+        2. Linksurface with outside invisible Icon
+    help_cht
+        描述：
+
+        一個空的菜單，當coverflow過場動畫結束時會透過動態連結的方式，預先將下一個垂直列表內容填上。
+
+        特殊技巧：
+
+        1. External all the icon images(shrinking itu size and also accelerating booting time)
+        2. Linksurface with outside invisible Icon
+    help_chs
+        描述：
+
+        一个空的菜单，当coverflow过场动画结束时会透过动态连结的方式，预先将下一个垂直列表内容填上。
+
+        特殊技巧：
+
+        1. External all the icon images(shrinking itu size and also accelerating booting time)
+        2. Linksurface with outside invisible Icon
+config UI_Laundry
+    bool "Do the laundry step by step"
+    help
+        Description:
+
+        Two laundry machine which could go through each washing function step by step by pressing the next button.
+
+        Feature skills:
+
+        1. Overlap icons to show laundry machine with water inside
+        2. Sprite plays like an animation
+        3. Animation with alpha(Twinkling)
+    help_cht
+        描述：
+
+        透過點擊箭頭可步進改變兩個洗衣機的狀態。
+
+        特殊技巧：
+
+        1. Overlap icons to show laundry machine with water inside
+        2. Sprite plays like an animation
+        3. Animation with alpha(Twinkling)
+    help_chs
+        描述：
+
+        透过点击箭头可步进改变两个洗衣机的状态。
+
+        特殊技巧：
+
+        1. Overlap icons to show laundry machine with water inside
+        2. Sprite plays like an animation
+        3. Animation with alpha(Twinkling)
+config UI_Animation_Switching
+    bool "Switching animations and could be seleted"
+    help
+        Description:
+
+        Four overlap animations could be switched by sliding left/right, and seleted by click.
+
+        Feature skills:
+
+        1. Using timer match up with function code to make animations play.
+        2. Linksurface with outside invisible Icon
+        3. Animation on stop function
+    help_cht
+        描述：
+
+        四個部分重疊的動畫，透過左右滑動切換位置，並且在點擊後顯示選取資料。
+
+        特殊技巧：
+
+        1. Using timer match up with function code to make animations play.
+        2. Linksurface with outside invisible Icon
+        3. Animation on stop function
+    help_chs
+        描述：
+
+        四个部分重叠的动画，透过左右滑动切换位置，并且在点击后显示选取资料。
+
+        特殊技巧：
+
+        1. Using timer match up with function code to make animations play.
+        2. Linksurface with outside invisible Icon
+        3. Animation on stop function
+config UI_Cartoon_ScaleCoverflow
+    bool "Switching cartoon characters with ScaleCoverFlow"
+    help
+        Description:
+
+        Switching cartoon characters with scale transition by clicking next and could be paused & resumed.
+
+        Feature skills:
+
+        1. Using scaleCoverFlow to display the transition effect
+        2. Linksurface with outside invisible Icon
+        3. Sprite plays like an animation
+    help_cht
+        描述：
+
+        一個可透過點擊箭頭來改變卡通人物的狀態與動畫。
+
+        特殊技巧：
+
+        1. Using scaleCoverFlow to display the transition effect
+        2. Linksurface with outside invisible Icon
+        3. Sprite plays like an animation
+    help_chs
+        描述：
+
+        一个可透过点击箭头来改变卡通人物的状态与动画。
+
+        特殊技巧：
+
+        1. Using scaleCoverFlow to display the transition effect
+        2. Linksurface with outside invisible Icon
+        3. Sprite plays like an animation
+config UI_CoverFlow_overlap_MyFavoriteBread
+    bool "A overlap Bread menu sort by favorite"
+    help
+        Description:
+
+        A hollow coverflow menu with overlap setting and join with animation to display expand effect.
+
+        Feature skills:
+
+        1. CoverFlow overlap
+        2. Linksurface with outside invisible Icon
+        3. Animation playing depends on the clicking widget
+    help_cht
+        描述：
+
+        一個空的coverflow列表，透過動態連結的方式依照喜歡列表排序，並且內圖以斜的方式顯示。
+
+        特殊技巧：
+
+        1. CoverFlow overlap
+        2. Linksurface with outside invisible Icon
+        3. Animation playing depends on the clicking widget
+    help_chs
+        描述：
+
+        一个空的coverflow列表，透过动态连结的方式依照喜欢列表排序，并且内图以斜的方式显示。
+
+        特殊技巧：
+
+        1. CoverFlow overlap
+        2. Linksurface with outside invisible Icon
+        3. Animation playing depends on the clicking widget
+config UI_ARC
+    bool "Roulette base on widgets: CoverFlow Wheel StepWheel"
+    help
+        Description:
+
+        A simple coverflow wheel stepwheel combines with background to become roulette by arc table algorithm, and could be switched display items by setting macro LANG_DISPLAY_NUM.
+
+        Feature skills:
+
+        1. Arc table algorithm
+        2. Background original size
+        3. Timer function
+    help_cht
+        描述：
+
+        一個基於coverflow wheel stepwheel和background搭配，透過演算法計算弧度達到輪盤效果。
+
+        特殊技巧：
+
+        1. Arc table algorithm
+        2. Background original size
+        3. Timer function
+    help_chs
+        描述：
+
+        一个基于coverflow wheel stepwheel和background搭配，透过演算法计算弧度达到轮盘效果。
+
+        特殊技巧：
+
+        1. Arc table algorithm
+        2. Background original size
+        3. Timer function
+config UI_COVERFLOW_PART_MYFAVORITE
+    bool "CoverFlow move with separating effect"
+    help
+        Description:
+
+        A coverflow with separating effect while dragging or sliding and the gap range could be set by changing macro PART_INTEVAL.
+
+        Feature skills:
+
+        1. Timer function
+        2. ituWidgetGetX function
+        3. ituWidgetSetX function
+    help_cht
+        描述：
+
+        一個可透過修改PART_INTEVAL值來改變拖拉或滑動事件發生時圖與圖之間的分開間隔的coverflow。
+
+        特殊技巧：
+
+        1. Timer function
+        2. ituWidgetGetX function
+        3. ituWidgetSetX function
+    help_chs
+        描述：
+
+        一个可透过修改PART_INTEVAL值来改变拖拉或滑动事件发生时图与图之间的分开间隔的coverflow。
+
+        特殊技巧：
+
+        1. Timer function
+        2. ituWidgetGetX function
+        3. ituWidgetSetX function
+config UI_DYNAMIC_MENU
+    bool "Dynamic menu"
+        help
+        Description:
+
+        A menu example looks like ios menu which could switch app order by long pressing.
+
+        Feature skills:
+
+        1. Timer function
+        2. ituWidgetGetX function
+        3. ituWidgetSetX function
+    help_cht
+        描述：
+
+        一個可透過長按事件發生後拖拉排序物件。
+
+        特殊技巧：
+
+        1. Timer function
+        2. ituWidgetGetX function
+        3. ituWidgetSetX function
+    help_chs
+        描述：
+
+        一个可透过长按事件发生后拖拉排序物件。
+
+        特殊技巧：
+
+        1. Timer function
+        2. ituWidgetGetX function
+        3. ituWidgetSetX function
+endchoice
+
+endmenu

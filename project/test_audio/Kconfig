@@ -1,0 +1,234 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config PROJECT_MODULE_DEFINED
+    bool
+    default y
+    #select HAVE_LCD
+    #select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    #select HAVE_VIDEO
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+config RAM_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.scr"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config I2S_ENABLE
+    def_bool y
+
+config AUDIO_ENABLE
+    def_bool y
+
+config AUDIO_DAC_MODULE
+    default "itp_dac_ite970.c"
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config FS_FAT
+	def_bool y
+config USB0_ENABLE
+    def_bool y
+
+config MSC_ENABLE
+    def_bool y
+
+config TASK_DRIVE_PROBE
+    def_bool y
+
+config SPI_ENABLE
+    def_bool y
+    
+config DEF_DBG_UART1
+    def_bool y
+
+config UART_INTR
+    def_bool y
+    
+config BUILD_AUDIO_MGR
+    def_bool y
+    
+config AUDIO_CODEC_MP3DEC
+    def_bool y
+
+config AUDIO_CODEC_WMADEC
+    def_bool y
+
+config AUDIO_CODEC_WAV
+    def_bool y
+    
+config	AMPLIFIER_ENABLE
+    def_bool y
+
+config AMPLIFIER_MODULE
+    default "itp_amp_gpio.c"
+
+config GPIO_AMPLIFIER_ENABLE
+    default "25"
+
+config GPIO_AMPLIFIER_MUTE
+    default "25"
+
+config DBG_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.txt"
+
+menu "TEST AUDIO"
+
+    choice
+    prompt "Select Test Item"
+    default TEST_AUDIO_HW_CTRL
+    help
+        select test item.
+    help_cht
+        選擇測試項目
+    help_chs
+        選擇測試項目
+
+    config TEST_AUDIO_HW_CTRL
+    bool "test audio HW control"
+    help
+        test audio HW control (IIS DAC layout...)
+    help_cht
+        測試audio硬體 (IIS DAC 線路...)
+    help_chs
+        測試audio硬體 (IIS DAC 線路...)
+
+    config TEST_AUDIO_MGR
+    bool "test audio MGR "
+    help
+        test audio MGR API
+    help_cht
+        測試audio MGR API
+    help_chs
+        測試audio MGR API
+        
+    endchoice
+
+    choice
+    depends on TEST_AUDIO_HW_CTRL
+    prompt "test audio HW ctrl"
+    default SIMPLE_IIS_TEST_play
+    help
+        test audio HW ctrl.
+    help_cht
+        測試聲音硬體控制
+    help_chs
+        測試聲音硬體控制
+    
+
+    config USB_WAV_FILE_TEST
+    bool "usb disk wav file play test"
+    help
+        usb disk wav file play test.
+    help_cht
+        usb disk wav檔測試撥放。
+    help_chs
+        usb disk wav檔測試撥放。
+
+    config SIMPLE_IIS_TEST_play
+    bool "simple iis play sound test"
+    help
+        simple iis test play sound.
+    help_cht
+        測試撥放聲音。
+    help_chs
+        測試撥放聲音。
+
+    config USB_WAV_RECORD_FILE_TEST
+    bool "usb disk wav record file test"
+    help
+        usb disk wav record file test.
+    help_cht
+        usb disk wav檔測試錄音。
+    help_chs
+        usb disk wav檔測試錄音。
+
+    config AD_REC_DA_PLAY_TEST
+    bool "AD record & DA play sound test"
+    help
+        TEST AD record & DA play sound.
+    help_cht
+        測試錄製並撥放聲音。
+    help_chs
+        測試錄製並撥放聲音。
+
+    config AD_DA_LOUDER_TEST
+    bool "louder test"
+    help
+        louder((AD & DA TEST)).
+    help_cht
+        擴音器(AD & DA 測試)。
+    help_chs
+        擴音器(AD & DA 測試)。
+        
+#    config FFT_SNR_TEST
+#    bool "ffr snr record test"
+#    help
+#        1K tone out record test(output feedback to input) FFT meansure SNR.
+#    help_cht
+#        1K 頻率錄音(輸出回灌到輸入) FFT 測量 SNR。
+#    help_chs
+#        1K 頻率錄音(輸出回灌到輸入) FFT 測量 SNR。
+        
+#    config BIST_OUT_RECORD_TEST
+#    bool "bist out record test"
+#    help
+#        1K tone out record test(output feedback to input).
+#    help_cht
+#        1K 頻率錄音(輸出回灌到輸入)。
+#    help_chs
+#        1K 頻率錄音(輸出回灌到輸入)。
+
+    endchoice
+    
+    choice
+    depends on TEST_AUDIO_MGR
+    prompt "test audio MGR API"
+    default AUDIOMGR_PLAY_TEST
+    help
+        test audio MGR API.
+    help_cht
+        測試audio mgr API
+    help_chs
+        測試audio mgr API
+        
+    config AUDIOMGR_PLAY_TEST
+    bool "usb disk audiomgr test"
+    help
+        usb disk audiomgr test(audio codec:mp3 wma wav).
+    help_cht
+        usb disk audiomgr 測試(audio codec:mp3 wma wav)。
+    help_chs
+        usb disk audiomgr 測試(audio codec:mp3 wma wav)。
+        
+    config MP3_CODEC_TEST
+    bool "mp3 codec decoder test"
+    help
+        mp3 codec decoder test.
+    help_cht
+        測試 mp3 codec 解碼。
+    help_chs
+        測試 mp3 codec 解碼。
+        
+        
+    endchoice
+
+endmenu
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"

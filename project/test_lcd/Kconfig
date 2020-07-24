@@ -1,0 +1,88 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config TEST_LCD
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config RAM_SIZE
+    default "0x4000000"
+
+config LCD_ENABLE
+    def_bool y
+
+config ENABLE_ROTATE
+	def_bool y
+config LCD_WIDTH
+    default "1280"
+
+config LCD_HEIGHT
+    default "480"
+
+config LCD_PITCH
+    default "2560"
+
+config LCD_INIT_SCRIPT
+    default "IT9860_MIPI_TL068HWXH08_EK79030_480x1280_4LANE_byteclk53.txt"
+
+config BACKLIGHT_ENABLE
+    def_bool y
+
+config BACKLIGHT_DUTY_CYCLES
+    default "95, 92, 88, 82, 75, 65, 55, 40, 25, 5"
+
+config BACKLIGHT_DEFAULT_DUTY_CYCLE
+    default "5"
+
+config GPIO_BACKLIGHT_PWM
+     default "49"
+
+config GPIO_UART0_TX
+    default "4"
+
+config GPIO_UART0_RX
+    default "-1"
+
+config DBG_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.txt"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+menu "LCD Test"
+
+    choice
+        prompt "Test App"
+        default TEST_LCD_COLOR
+
+    config TEST_LCD_COLOR
+        bool "LCD_COLOR"
+
+    config TEST_LCD_INTR
+        bool "LCD_INTR"
+
+    config TEST_LCDCONSOLE
+        bool "LCDCONSOLE"
+
+    config TEST_OSDCONSOLE
+        bool "OSDCONSOLE"
+
+    config TEST_BACKLIGHT
+        bool "BACKLIGHT"
+
+    config TEST_STNLCD
+        bool "STNLCD"
+
+    endchoice
+
+endmenu

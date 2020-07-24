@@ -1,0 +1,7 @@
+// Switch the SPI to JTAG Interface for FA626
+//if (read_mask(0xd8000004, 0xffff0000) == 0x99200000) {
+    write(0xd8300004, 0x00000100);
+    write(0xd8300000, 0x00010000);
+    write(0xd8300004, 0x00000000);
+    write(0xd1000204, 0x50);
+//}

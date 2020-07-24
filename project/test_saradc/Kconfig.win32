@@ -1,0 +1,40 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config DEF_CHIP_PKG_IT976
+    def_bool y
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config SARADC_ENABLE
+    def_bool y
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+menu "Test SARADC"
+
+choice
+    prompt "SARADC TEST"
+    default TEST_ALL_XAIN
+    help
+        Test SARADC module.
+
+config TEST_ALL_XAIN
+    bool "Test all XAIN"
+    help
+        Test all XAIN GPIO.
+
+config TEST_KEYPAD_16KEY
+    bool "Test 16Key keypad"
+    help
+        Test 16Key keypad through one XAIN only.
+
+endchoice
+
+endmenu

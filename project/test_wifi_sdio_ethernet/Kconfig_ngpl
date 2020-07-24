@@ -1,0 +1,225 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+config ROM_COMPRESS
+    def_bool n
+
+#==== for SD ====
+config SD0_ENABLE
+    def_bool n
+
+config SD0_STATIC
+    default n
+
+config AXISPI_ENABLE
+    default n
+
+config UART1_ENABLE
+    def_bool y
+	
+config DEF_UART1_FIFO
+	def_bool y
+	
+if DEF_UART1_FIFO
+config UART_FORCE_FLUSH
+	def_bool y
+endif
+
+#config GPIO_SD0_CARD_DETECT
+#   default "98"
+
+#config GPIO_SD0_POWER_ENABLE
+#   default "99"
+
+#config GPIO_SD0_WRITE_PROTECT
+#   default "100"
+
+#config  GPIO_SD1_POWER_ENABLE
+#	default "21"
+
+config SPI0_MISO_GPIO
+	default "-1"
+	
+config SPI0_MOSI_GPIO
+	default "-1"
+	
+config SPI0_CLOCK_GPIO
+	default "-1"
+	
+config SPI0_CHIP_SEL_GPIO
+	default "-1"
+
+#HMI: 11, 20, 15, 19, 17, 18, -1, -1, -1, -1
+#Indoor: 11, 20, 6, 19, 8, 9, -1, -1, -1, -1
+config GPIO_SD0_IO
+    default "11, 20, 15, 19, 17, 18, -1, -1, -1, -1"
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+#==== for Storage ====	
+config NOR_USE_AXISPI
+	def_bool y
+	
+config NOR_ENABLE_QUADMODE
+	def_bool y
+
+#==== for Peripheral ====
+config USB0_ENABLE
+	def_bool y
+
+config NOR_ENABLE
+    def_bool y
+
+config SD1_ENABLE
+    def_bool y
+
+config MMC_ENABLE
+      def_bool y
+
+config SD1_STATIC
+    def_bool n
+
+config SDIO_ENABLE
+      def_bool y
+
+config SDIO1_STATIC
+    def_bool y
+
+config GPIO_SD1_WIFI_POWER_ENABLE
+	def_bool y
+
+#HMI: 11, 20, 15, 19, 17, 18, -1, -1, -1, -1
+#Indoor: 11, 20, 6, 19, 8, 9, -1, -1, -1, -1
+config GPIO_SD1_IO
+      default "11, 20, 15, 19, 17, 18, -1, -1, -1, -1"
+
+#==== for WIFI NGPL ====
+config NET_ENABLE
+    def_bool y
+
+config NET_WIFI
+    def_bool y
+
+config DEF_NET_WIFI_SDIO_NGPL
+    def_bool y
+	
+if (NET_WIFI_SDIO_NGPL && GPIO_SD1_WIFI_POWER_ENABLE)
+#HMI: 21,  Indoor: 16
+config GPIO_SD1_WIFI_POWER_PIN
+    default "21"
+
+config SD1_WIFI_DETECT_ACTIVE_HIGH
+    def_bool y
+endif
+
+config NET_WIFI_WPA
+	def_bool n
+	
+config NET_WIFI_MGR
+	def_bool y
+    
+config NET_WIFI_REDEFINE
+	def_bool n
+	
+config DHCPS_ADDR_COUNT
+    default "254"
+
+#==== for ETHERNET ====
+config NET_ETHERNET
+    def_bool y
+
+config DEF_NET_IP101GR
+    def_bool y
+
+if DEF_NET_RTL8201FL
+config NET_ETHERNET_PHY_ADDR
+    default "0"
+
+config GPIO_ETHERNET_LINK
+    default "39"
+endif
+
+if DEF_NET_IP101GR
+config NET_ETHERNET_PHY_ADDR
+    default "1"
+
+config GPIO_ETHERNET_LINK
+    default "39"
+endif
+
+config GPIO_ETHERNET
+    default "25, 26, 27, 28, 29, 30, 31, 36, 37, 38"
+
+config NET_ETHERNET_LINK_INTR
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_RANDOM
+    def_bool y
+
+if NET_ETHERNET
+config NET_ETHERNET_MAC_ADDR_STORAGE
+    def_bool y
+endif
+	
+if NET_ETHERNET_MAC_ADDR_STORAGE
+
+config NET_ETHERNET_MAC_ADDR_POS
+    default "0x70000"
+
+config NET_ETHERNET_MAC_ADDR_UPGRADE
+    def_bool y
+
+endif
+	
+config NET_HTTP
+	def_bool y
+
+config PING
+	def_bool y
+#==== END ====
+
+config DEF_BUILD_DEBUGREL
+	def_bool y
+
+config RAM_INIT_SCRIPT
+	default "IT9860_264Mhz_DDR2_264Mhz.scr"
+	
+config DBG_INIT_SCRIPT
+	default "IT9860_264Mhz_DDR2_264Mhz.txt"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+
+menu "WIFI SDIO and Ethernet Test"
+
+choice
+    prompt "Test App"
+    default TEST_SDIO_WIFI_LWIP
+
+
+config TEST_SDIO_WIFI_LWIP
+    bool "Test by TCP socket"
+    help
+        Connect to AP and test TCP
+
+endchoice
+
+endmenu
+
+
+

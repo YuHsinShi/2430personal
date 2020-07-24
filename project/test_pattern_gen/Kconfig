@@ -1,0 +1,44 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config TEST_PTHREAD
+    bool
+    default y
+    #select HAVE_LCD
+    #select HAVE_GRAPHICS
+    #select HAVE_AUDIO
+    #select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config RAM_SIZE
+    default "0x4000000"
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config DEF_DBG_UART1
+    def_bool y
+
+config ALT_CPU_ENABLE
+    def_bool y
+
+config PATTERN_GEN
+    def_bool y
+
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+

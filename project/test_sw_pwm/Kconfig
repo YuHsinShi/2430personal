@@ -1,0 +1,91 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config TEST_PTHREAD
+    bool
+    default y
+    #select HAVE_LCD
+    #select HAVE_GRAPHICS
+    #select HAVE_AUDIO
+    #select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config RAM_SIZE
+    default "0x4000000"
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config DEF_DBG_UART1
+    def_bool y
+
+config ALT_CPU_ENABLE
+    def_bool y
+
+config SW_PWM
+    def_bool y
+
+config SW_PWM0_ENABLE
+    def_bool y
+
+config SW_PWM0_CLOCK
+    default "1000"
+
+config SW_PWM0_DUTY_CYCLE
+    default "50"
+
+config GPIO_SW_PWM0
+    default "86"
+
+config SW_PWM1_ENABLE
+    def_bool y
+
+config SW_PWM1_CLOCK
+    default "2000"
+
+config SW_PWM1_DUTY_CYCLE
+    default "20"
+
+config GPIO_SW_PWM1
+    default "87"
+
+config SW_PWM2_ENABLE
+    def_bool y
+
+config SW_PWM2_CLOCK
+    default "3000"
+
+config SW_PWM2_DUTY_CYCLE
+    default "70"
+
+config GPIO_SW_PWM2
+    default "88"
+
+config SW_PWM3_ENABLE
+    def_bool y
+
+config SW_PWM3_CLOCK
+    default "500"
+
+config SW_PWM3_DUTY_CYCLE
+    default "55"
+
+config GPIO_SW_PWM3
+    default "89"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+

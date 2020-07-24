@@ -1,0 +1,126 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+config ROM_COMPRESS
+    def_bool n
+
+
+#===== enable SD card ======
+config SD0_ENABLE
+    def_bool y
+
+config SD0_STATIC
+    default n
+
+config GPIO_SD0_CARD_DETECT
+    default "19"
+
+config GPIO_SD0_POWER_ENABLE
+    default "-1"
+
+config GPIO_SD0_WRITE_PROTECT
+    default "-1"
+
+config GPIO_SD0_IO
+      default "14, 13, 15, 16, 17, 18, -1, -1, -1, -1"
+
+config SD1_ENABLE
+    def_bool y
+
+config SD1_STATIC
+    default n
+
+config GPIO_SD1_CARD_DETECT
+    default "20"
+
+config GPIO_SD1_POWER_ENABLE
+    default "-1"
+
+config GPIO_SD1_WRITE_PROTECT
+    default "-1"
+
+config GPIO_SD1_IO
+      default "11, 13, 15, 16, 17, 18, -1, -1, -1, -1"
+
+#==== for FAT ====
+config FS_FAT
+    def_bool y
+
+#==== for Task ====
+config TASK_DRIVE_PROBE
+    def_bool y
+
+#===== enable USB ======
+config USB0_ENABLE
+    def_bool y
+
+config USB_DEVICE
+    def_bool y
+
+config DEF_USB_DEVICE_USB0
+    def_bool y
+
+config GPIO_USB_ID_PIN
+    default "26"
+
+config USB_DEVICE_DISKS
+    default "23"
+    
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+
+menu "USB Gadget Test"
+
+config TEST_MASS_STORAGE
+    bool "As Mass Storage"
+    depends on USBD_MASS_STORAGE
+    default y
+
+config TEST_HID
+    bool "Simulate a usb mouse device"
+    depends on USBD_HID_MOUSE || USBD_HID_KBD
+    default y
+    help
+        Simulate a usb mouse device.
+
+choice
+    prompt "As RS232 over USB"
+    depends on USBD_ACM
+    default TEST_ACM_LOOPBACK
+
+config TEST_ACM_LOOPBACK
+    bool "Test by loopback"
+
+config TEST_ACM_SEND_FILE
+    bool "Transfer file"
+    help
+        Receive file from PC and save to our internal SD card.
+        cmd: send filename filesize
+
+config TEST_ACM_DBG
+    bool "Test debug message"
+
+endchoice
+
+endmenu
+

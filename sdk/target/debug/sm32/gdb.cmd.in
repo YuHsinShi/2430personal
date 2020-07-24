@@ -1,0 +1,17 @@
+@echo off
+
+pushd ..\..\..
+call common.cmd
+popd
+
+if "${CFG_CHIP_FAMILY}" == "970" (
+    ${GDB} -x ${PROJECT_SOURCE_DIR}/sdk/target/debug/sm32/init-gdb_w32 ${CMAKE_PROJECT_NAME}
+) else (
+    if "${CFG_CHIP_FAMILY}" == "9860" (
+        ${GDB} -x ${PROJECT_SOURCE_DIR}/sdk/target/debug/sm32/init-gdb_w32 ${CMAKE_PROJECT_NAME}
+    ) else (
+        ${GDB} -x ${PROJECT_SOURCE_DIR}/sdk/target/debug/sm32/init-gdb ${CMAKE_PROJECT_NAME}
+    )
+)
+
+if errorlevel 1 pause

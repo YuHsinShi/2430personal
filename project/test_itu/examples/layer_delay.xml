@@ -1,0 +1,243 @@
+﻿<ITU>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Layer1" children="Controls">
+    <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Background2" children="Controls">
+      <Property name="PixelFormat">RGB565</Property>
+      <Property name="Compress">True</Property>
+      <Property name="External">False</Property>
+      <Property name="ExternalImage">False</Property>
+      <Property name="EffectSteps">10</Property>
+      <Property name="ShowDelay">0</Property>
+      <Property name="HideDelay">-1</Property>
+      <Property name="AlwaysVisible">False</Property>
+      <Property name="TransferAlpha">False</Property>
+      <Property name="ShowingEffect">None</Property>
+      <Property name="HidingEffect">None</Property>
+      <Property name="GradientColor">
+      </Property>
+      <Property name="GradientMode">None</Property>
+      <Property name="Alpha">255</Property>
+      <Property name="Stretch">False</Property>
+      <Property name="Angle">0</Property>
+      <Property name="TransformType">None</Property>
+      <Property name="TransformX">100</Property>
+      <Property name="TransformY">100</Property>
+      <Property name="OriginalSize">0, 0</Property>
+      <Property name="Hided">False</Property>
+      <Property name="BackColor">White</Property>
+      <Property name="Location">0, 0</Property>
+      <Property name="Name">Background2</Property>
+      <Property name="Size">800, 480</Property>
+    </Object>
+    <Property name="AlwaysVisible">True</Property>
+    <Property name="ClientSize">800, 600</Property>
+    <Property name="Name">Layer1</Property>
+  </Object>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Layer3" children="Controls">
+    <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Background4" children="Controls">
+      <Object type="GUIDesigner.ButtonWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Button5" children="Controls">
+        <Property name="Alpha">255</Property>
+        <Property name="PixelFormat">RGB565</Property>
+        <Property name="Compress">True</Property>
+        <Property name="External">False</Property>
+        <Property name="Stretch">False</Property>
+        <Property name="Text1" />
+        <Property name="Text2" />
+        <Property name="Text3" />
+        <Property name="Text4" />
+        <Property name="Text5" />
+        <Property name="Text6" />
+        <Property name="Text7" />
+        <Property name="Text8" />
+        <Property name="Text9" />
+        <Property name="Text10" />
+        <Property name="Text11" />
+        <Property name="Text12" />
+        <Property name="Text13" />
+        <Property name="Text14" />
+        <Property name="Text15" />
+        <Property name="Text16" />
+        <Property name="Text17" />
+        <Property name="Text18" />
+        <Property name="Text19" />
+        <Property name="Text20" />
+        <Property name="Text21" />
+        <Property name="Text22" />
+        <Property name="Text23" />
+        <Property name="Text24" />
+        <Property name="Text25" />
+        <Property name="Text26" />
+        <Property name="Text27" />
+        <Property name="Text28" />
+        <Property name="Text29" />
+        <Property name="Text30" />
+        <Property name="Text31" />
+        <Property name="FontIndex">0</Property>
+        <Property name="BoldSize">1</Property>
+        <Property name="Action01">Goto,Press,Layer7,</Property>
+        <Property name="Action02">None,Press,,</Property>
+        <Property name="Action03">None,Press,,</Property>
+        <Property name="Action04">None,Press,,</Property>
+        <Property name="Action05">None,Press,,</Property>
+        <Property name="Action06">None,Press,,</Property>
+        <Property name="Action07">None,Press,,</Property>
+        <Property name="Action08">None,Press,,</Property>
+        <Property name="Action09">None,Press,,</Property>
+        <Property name="Action10">None,Press,,</Property>
+        <Property name="Action11">None,Press,,</Property>
+        <Property name="Action12">None,Press,,</Property>
+        <Property name="Action13">None,Press,,</Property>
+        <Property name="Action14">None,Press,,</Property>
+        <Property name="Action15">None,Press,,</Property>
+        <Property name="Angle">0</Property>
+        <Property name="TransformType">None</Property>
+        <Property name="TransformX">100</Property>
+        <Property name="TransformY">100</Property>
+        <Property name="Hided">False</Property>
+        <Property name="BackColor">ButtonFace</Property>
+        <Property name="FlatAppearance">
+          <Property name="BorderColor">WindowFrame</Property>
+          <Property name="MouseDownBackColor">Transparent</Property>
+          <Property name="MouseOverBackColor">Transparent</Property>
+        </Property>
+        <Property name="Text">Goto</Property>
+        <Property name="Location">151, 91</Property>
+        <Property name="Name">Button5</Property>
+        <Property name="Size">85, 40</Property>
+        <Property name="TabIndex">1</Property>
+      </Object>
+      <Property name="PixelFormat">RGB565</Property>
+      <Property name="Compress">True</Property>
+      <Property name="External">False</Property>
+      <Property name="ExternalImage">False</Property>
+      <Property name="EffectSteps">10</Property>
+      <Property name="ShowDelay">0</Property>
+      <Property name="HideDelay">-1</Property>
+      <Property name="AlwaysVisible">False</Property>
+      <Property name="TransferAlpha">False</Property>
+      <Property name="ShowingEffect">None</Property>
+      <Property name="HidingEffect">None</Property>
+      <Property name="GradientColor">
+      </Property>
+      <Property name="GradientMode">None</Property>
+      <Property name="Alpha">255</Property>
+      <Property name="Stretch">False</Property>
+      <Property name="Angle">0</Property>
+      <Property name="TransformType">None</Property>
+      <Property name="TransformX">100</Property>
+      <Property name="TransformY">100</Property>
+      <Property name="OriginalSize">0, 0</Property>
+      <Property name="Hided">False</Property>
+      <Property name="BackColor">Khaki</Property>
+      <Property name="Location">54, 48</Property>
+      <Property name="Name">Background4</Property>
+      <Property name="Size">387, 223</Property>
+    </Object>
+    <Property name="Visibility">True</Property>
+    <Property name="HideDelay">50</Property>
+    <Property name="ClientSize">800, 600</Property>
+    <Property name="Name">Layer3</Property>
+  </Object>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Layer7" children="Controls">
+    <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Background4" children="Controls">
+      <Object type="GUIDesigner.ButtonWidget, GUIDesigner, Version=1.0.6551.17723, Culture=neutral, PublicKeyToken=null" name="Button6" children="Controls">
+        <Property name="Alpha">255</Property>
+        <Property name="PixelFormat">RGB565</Property>
+        <Property name="Compress">True</Property>
+        <Property name="External">False</Property>
+        <Property name="Stretch">False</Property>
+        <Property name="Text1" />
+        <Property name="Text2" />
+        <Property name="Text3" />
+        <Property name="Text4" />
+        <Property name="Text5" />
+        <Property name="Text6" />
+        <Property name="Text7" />
+        <Property name="Text8" />
+        <Property name="Text9" />
+        <Property name="Text10" />
+        <Property name="Text11" />
+        <Property name="Text12" />
+        <Property name="Text13" />
+        <Property name="Text14" />
+        <Property name="Text15" />
+        <Property name="Text16" />
+        <Property name="Text17" />
+        <Property name="Text18" />
+        <Property name="Text19" />
+        <Property name="Text20" />
+        <Property name="Text21" />
+        <Property name="Text22" />
+        <Property name="Text23" />
+        <Property name="Text24" />
+        <Property name="Text25" />
+        <Property name="Text26" />
+        <Property name="Text27" />
+        <Property name="Text28" />
+        <Property name="Text29" />
+        <Property name="Text30" />
+        <Property name="Text31" />
+        <Property name="FontIndex">0</Property>
+        <Property name="BoldSize">1</Property>
+        <Property name="Action01">Goto,Press,Layer3,</Property>
+        <Property name="Action02">None,Press,,</Property>
+        <Property name="Action03">None,Press,,</Property>
+        <Property name="Action04">None,Press,,</Property>
+        <Property name="Action05">None,Press,,</Property>
+        <Property name="Action06">None,Press,,</Property>
+        <Property name="Action07">None,Press,,</Property>
+        <Property name="Action08">None,Press,,</Property>
+        <Property name="Action09">None,Press,,</Property>
+        <Property name="Action10">None,Press,,</Property>
+        <Property name="Action11">None,Press,,</Property>
+        <Property name="Action12">None,Press,,</Property>
+        <Property name="Action13">None,Press,,</Property>
+        <Property name="Action14">None,Press,,</Property>
+        <Property name="Action15">None,Press,,</Property>
+        <Property name="Angle">0</Property>
+        <Property name="TransformType">None</Property>
+        <Property name="TransformX">100</Property>
+        <Property name="TransformY">100</Property>
+        <Property name="Hided">False</Property>
+        <Property name="BackColor">ButtonFace</Property>
+        <Property name="FlatAppearance">
+          <Property name="BorderColor">WindowFrame</Property>
+          <Property name="MouseDownBackColor">Transparent</Property>
+          <Property name="MouseOverBackColor">Transparent</Property>
+        </Property>
+        <Property name="Text">Back</Property>
+        <Property name="Location">94, 72</Property>
+        <Property name="Name">Button6</Property>
+        <Property name="Size">75, 44</Property>
+        <Property name="TabIndex">0</Property>
+      </Object>
+      <Property name="PixelFormat">RGB565</Property>
+      <Property name="Compress">True</Property>
+      <Property name="External">False</Property>
+      <Property name="ExternalImage">False</Property>
+      <Property name="EffectSteps">10</Property>
+      <Property name="ShowDelay">0</Property>
+      <Property name="HideDelay">-1</Property>
+      <Property name="AlwaysVisible">False</Property>
+      <Property name="TransferAlpha">False</Property>
+      <Property name="ShowingEffect">None</Property>
+      <Property name="HidingEffect">None</Property>
+      <Property name="GradientColor">
+      </Property>
+      <Property name="GradientMode">None</Property>
+      <Property name="Alpha">255</Property>
+      <Property name="Stretch">False</Property>
+      <Property name="Angle">0</Property>
+      <Property name="TransformType">None</Property>
+      <Property name="TransformX">100</Property>
+      <Property name="TransformY">100</Property>
+      <Property name="OriginalSize">0, 0</Property>
+      <Property name="Hided">False</Property>
+      <Property name="BackColor">OrangeRed</Property>
+      <Property name="Location">132, 67</Property>
+      <Property name="Name">Background4</Property>
+      <Property name="Size">387, 223</Property>
+    </Object>
+    <Property name="ClientSize">800, 600</Property>
+    <Property name="Name">Layer7</Property>
+  </Object>
+</ITU>

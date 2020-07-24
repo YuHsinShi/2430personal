@@ -1,0 +1,470 @@
+﻿<ITU>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="Layer1" children="Controls">
+    <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="Background3" children="Controls">
+      <Object type="GUIDesigner.TableListBoxWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="TableListBox1" children="Controls">
+        <Property name="ItemHeight">49</Property>
+        <Property name="TextAlign">TopLeft</Property>
+        <Property name="FocusColor">ActiveCaption</Property>
+        <Property name="FocusFontColor">WindowText</Property>
+        <Property name="ReadFontColor">GrayText</Property>
+        <Property name="BackAlpha">0</Property>
+        <Property name="ScrollDelay">3</Property>
+        <Property name="StopDelay">30</Property>
+        <Property name="TotalFrame">100</Property>
+        <Property name="Draggable">True</Property>
+        <Property name="HasLongPress">True</Property>
+        <Property name="ItemCount">100</Property>
+        <Property name="SlidePage">3</Property>
+        <Property name="FontIndex">0</Property>
+        <Property name="BoldSize">1</Property>
+        <Property name="IsArabic">False</Property>
+        <Property name="IsArabic1">False</Property>
+        <Property name="IsArabic2">False</Property>
+        <Property name="IsArabic3">False</Property>
+        <Property name="IsArabic4">False</Property>
+        <Property name="IsArabic5">False</Property>
+        <Property name="IsArabic6">False</Property>
+        <Property name="IsArabic7">False</Property>
+        <Property name="IsArabic8">False</Property>
+        <Property name="IsArabic9">False</Property>
+        <Property name="IsArabic10">False</Property>
+        <Property name="IsArabic11">False</Property>
+        <Property name="IsArabic12">False</Property>
+        <Property name="IsArabic13">False</Property>
+        <Property name="IsArabic14">False</Property>
+        <Property name="IsArabic15">False</Property>
+        <Property name="IsArabic16">False</Property>
+        <Property name="IsArabic17">False</Property>
+        <Property name="IsArabic18">False</Property>
+        <Property name="IsArabic19">False</Property>
+        <Property name="IsArabic20">False</Property>
+        <Property name="IsArabic21">False</Property>
+        <Property name="IsArabic22">False</Property>
+        <Property name="IsArabic23">False</Property>
+        <Property name="IsArabic24">False</Property>
+        <Property name="IsArabic25">False</Property>
+        <Property name="IsArabic26">False</Property>
+        <Property name="IsArabic27">False</Property>
+        <Property name="IsArabic28">False</Property>
+        <Property name="IsArabic29">False</Property>
+        <Property name="IsArabic30">False</Property>
+        <Property name="IsArabic31">False</Property>
+        <Property name="IsHebrew">False</Property>
+        <Property name="IsHebrew1">False</Property>
+        <Property name="IsHebrew2">False</Property>
+        <Property name="IsHebrew3">False</Property>
+        <Property name="IsHebrew4">False</Property>
+        <Property name="IsHebrew5">False</Property>
+        <Property name="IsHebrew6">False</Property>
+        <Property name="IsHebrew7">False</Property>
+        <Property name="IsHebrew8">False</Property>
+        <Property name="IsHebrew9">False</Property>
+        <Property name="IsHebrew10">False</Property>
+        <Property name="IsHebrew11">False</Property>
+        <Property name="IsHebrew12">False</Property>
+        <Property name="IsHebrew13">False</Property>
+        <Property name="IsHebrew14">False</Property>
+        <Property name="IsHebrew15">False</Property>
+        <Property name="IsHebrew16">False</Property>
+        <Property name="IsHebrew17">False</Property>
+        <Property name="IsHebrew18">False</Property>
+        <Property name="IsHebrew19">False</Property>
+        <Property name="IsHebrew20">False</Property>
+        <Property name="IsHebrew21">False</Property>
+        <Property name="IsHebrew22">False</Property>
+        <Property name="IsHebrew23">False</Property>
+        <Property name="IsHebrew24">False</Property>
+        <Property name="IsHebrew25">False</Property>
+        <Property name="IsHebrew26">False</Property>
+        <Property name="IsHebrew27">False</Property>
+        <Property name="IsHebrew28">False</Property>
+        <Property name="IsHebrew29">False</Property>
+        <Property name="IsHebrew30">False</Property>
+        <Property name="IsHebrew31">False</Property>
+        <Property name="Action01">Function,Load,OnLoad,</Property>
+        <Property name="Action02">None,Load,,</Property>
+        <Property name="Action03">None,Load,,</Property>
+        <Property name="Action04">None,Load,,</Property>
+        <Property name="Action05">None,Load,,</Property>
+        <Property name="Action06">None,Load,,</Property>
+        <Property name="Action07">None,Load,,</Property>
+        <Property name="Action08">None,Load,,</Property>
+        <Property name="Action09">None,Load,,</Property>
+        <Property name="Action10">None,Load,,</Property>
+        <Property name="Action11">None,Load,,</Property>
+        <Property name="Action12">None,Load,,</Property>
+        <Property name="Action13">None,Load,,</Property>
+        <Property name="Action14">None,Load,,</Property>
+        <Property name="Action15">None,Load,,</Property>
+        <Property name="Hided">False</Property>
+        <Property name="Font">Calibri, 30pt</Property>
+        <Property name="Items">
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">1</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">3</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">5</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">6</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">7</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
+        </Property>
+        <Property name="Location">9, 29</Property>
+        <Property name="Name">TableListBox1</Property>
+        <Property name="Size">359, 343</Property>
+        <Property name="TabIndex">0</Property>
+      </Object>
+      <Object type="GUIDesigner.TableListBoxWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="TableListBox2" children="Controls">
+        <Property name="ItemHeight">49</Property>
+        <Property name="TextAlign">BottomLeft</Property>
+        <Property name="FocusColor">Transparent</Property>
+        <Property name="FocusFontColor">WindowText</Property>
+        <Property name="ReadFontColor">GrayText</Property>
+        <Property name="BackAlpha">0</Property>
+        <Property name="ScrollDelay">3</Property>
+        <Property name="StopDelay">30</Property>
+        <Property name="TotalFrame">100</Property>
+        <Property name="Draggable">True</Property>
+        <Property name="HasLongPress">True</Property>
+        <Property name="ItemCount">100</Property>
+        <Property name="SlidePage">3</Property>
+        <Property name="FontIndex">0</Property>
+        <Property name="BoldSize">1</Property>
+        <Property name="IsArabic">False</Property>
+        <Property name="IsArabic1">False</Property>
+        <Property name="IsArabic2">False</Property>
+        <Property name="IsArabic3">False</Property>
+        <Property name="IsArabic4">False</Property>
+        <Property name="IsArabic5">False</Property>
+        <Property name="IsArabic6">False</Property>
+        <Property name="IsArabic7">False</Property>
+        <Property name="IsArabic8">False</Property>
+        <Property name="IsArabic9">False</Property>
+        <Property name="IsArabic10">False</Property>
+        <Property name="IsArabic11">False</Property>
+        <Property name="IsArabic12">False</Property>
+        <Property name="IsArabic13">False</Property>
+        <Property name="IsArabic14">False</Property>
+        <Property name="IsArabic15">False</Property>
+        <Property name="IsArabic16">False</Property>
+        <Property name="IsArabic17">False</Property>
+        <Property name="IsArabic18">False</Property>
+        <Property name="IsArabic19">False</Property>
+        <Property name="IsArabic20">False</Property>
+        <Property name="IsArabic21">False</Property>
+        <Property name="IsArabic22">False</Property>
+        <Property name="IsArabic23">False</Property>
+        <Property name="IsArabic24">False</Property>
+        <Property name="IsArabic25">False</Property>
+        <Property name="IsArabic26">False</Property>
+        <Property name="IsArabic27">False</Property>
+        <Property name="IsArabic28">False</Property>
+        <Property name="IsArabic29">False</Property>
+        <Property name="IsArabic30">False</Property>
+        <Property name="IsArabic31">False</Property>
+        <Property name="IsHebrew">False</Property>
+        <Property name="IsHebrew1">False</Property>
+        <Property name="IsHebrew2">False</Property>
+        <Property name="IsHebrew3">False</Property>
+        <Property name="IsHebrew4">False</Property>
+        <Property name="IsHebrew5">False</Property>
+        <Property name="IsHebrew6">False</Property>
+        <Property name="IsHebrew7">False</Property>
+        <Property name="IsHebrew8">False</Property>
+        <Property name="IsHebrew9">False</Property>
+        <Property name="IsHebrew10">False</Property>
+        <Property name="IsHebrew11">False</Property>
+        <Property name="IsHebrew12">False</Property>
+        <Property name="IsHebrew13">False</Property>
+        <Property name="IsHebrew14">False</Property>
+        <Property name="IsHebrew15">False</Property>
+        <Property name="IsHebrew16">False</Property>
+        <Property name="IsHebrew17">False</Property>
+        <Property name="IsHebrew18">False</Property>
+        <Property name="IsHebrew19">False</Property>
+        <Property name="IsHebrew20">False</Property>
+        <Property name="IsHebrew21">False</Property>
+        <Property name="IsHebrew22">False</Property>
+        <Property name="IsHebrew23">False</Property>
+        <Property name="IsHebrew24">False</Property>
+        <Property name="IsHebrew25">False</Property>
+        <Property name="IsHebrew26">False</Property>
+        <Property name="IsHebrew27">False</Property>
+        <Property name="IsHebrew28">False</Property>
+        <Property name="IsHebrew29">False</Property>
+        <Property name="IsHebrew30">False</Property>
+        <Property name="IsHebrew31">False</Property>
+        <Property name="Action01">Function,Load,OnLoad,</Property>
+        <Property name="Action02">Function,Select,OnSelect,</Property>
+        <Property name="Action03">Function,MouseUp,OnMouseUp,</Property>
+        <Property name="Action04">Function,MouseLongPress,OnMouseLongPress,</Property>
+        <Property name="Action05">None,Load,,</Property>
+        <Property name="Action06">None,Load,,</Property>
+        <Property name="Action07">None,Load,,</Property>
+        <Property name="Action08">None,Load,,</Property>
+        <Property name="Action09">None,Load,,</Property>
+        <Property name="Action10">None,Load,,</Property>
+        <Property name="Action11">None,Load,,</Property>
+        <Property name="Action12">None,Load,,</Property>
+        <Property name="Action13">None,Load,,</Property>
+        <Property name="Action14">None,Load,,</Property>
+        <Property name="Action15">None,Load,,</Property>
+        <Property name="Hided">False</Property>
+        <Property name="Font">Calibri, 14.25pt</Property>
+        <Property name="Items">
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">1</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">3</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">5</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">6</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">7</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
+        </Property>
+        <Property name="Location">9, 29</Property>
+        <Property name="Name">TableListBox2</Property>
+        <Property name="Size">359, 368</Property>
+        <Property name="TabIndex">1</Property>
+      </Object>
+      <Object type="GUIDesigner.TableListBoxWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="TableListBox3" children="Controls">
+        <Property name="ItemHeight">49</Property>
+        <Property name="TextAlign">BottomLeft</Property>
+        <Property name="FocusColor">ActiveCaption</Property>
+        <Property name="FocusFontColor">WindowText</Property>
+        <Property name="ReadFontColor">GrayText</Property>
+        <Property name="BackAlpha">0</Property>
+        <Property name="ScrollDelay">3</Property>
+        <Property name="StopDelay">30</Property>
+        <Property name="TotalFrame">100</Property>
+        <Property name="Draggable">True</Property>
+        <Property name="HasLongPress">True</Property>
+        <Property name="ItemCount">100</Property>
+        <Property name="SlidePage">3</Property>
+        <Property name="FontIndex">0</Property>
+        <Property name="BoldSize">1</Property>
+        <Property name="IsArabic">False</Property>
+        <Property name="IsArabic1">False</Property>
+        <Property name="IsArabic2">False</Property>
+        <Property name="IsArabic3">False</Property>
+        <Property name="IsArabic4">False</Property>
+        <Property name="IsArabic5">False</Property>
+        <Property name="IsArabic6">False</Property>
+        <Property name="IsArabic7">False</Property>
+        <Property name="IsArabic8">False</Property>
+        <Property name="IsArabic9">False</Property>
+        <Property name="IsArabic10">False</Property>
+        <Property name="IsArabic11">False</Property>
+        <Property name="IsArabic12">False</Property>
+        <Property name="IsArabic13">False</Property>
+        <Property name="IsArabic14">False</Property>
+        <Property name="IsArabic15">False</Property>
+        <Property name="IsArabic16">False</Property>
+        <Property name="IsArabic17">False</Property>
+        <Property name="IsArabic18">False</Property>
+        <Property name="IsArabic19">False</Property>
+        <Property name="IsArabic20">False</Property>
+        <Property name="IsArabic21">False</Property>
+        <Property name="IsArabic22">False</Property>
+        <Property name="IsArabic23">False</Property>
+        <Property name="IsArabic24">False</Property>
+        <Property name="IsArabic25">False</Property>
+        <Property name="IsArabic26">False</Property>
+        <Property name="IsArabic27">False</Property>
+        <Property name="IsArabic28">False</Property>
+        <Property name="IsArabic29">False</Property>
+        <Property name="IsArabic30">False</Property>
+        <Property name="IsArabic31">False</Property>
+        <Property name="IsHebrew">False</Property>
+        <Property name="IsHebrew1">False</Property>
+        <Property name="IsHebrew2">False</Property>
+        <Property name="IsHebrew3">False</Property>
+        <Property name="IsHebrew4">False</Property>
+        <Property name="IsHebrew5">False</Property>
+        <Property name="IsHebrew6">False</Property>
+        <Property name="IsHebrew7">False</Property>
+        <Property name="IsHebrew8">False</Property>
+        <Property name="IsHebrew9">False</Property>
+        <Property name="IsHebrew10">False</Property>
+        <Property name="IsHebrew11">False</Property>
+        <Property name="IsHebrew12">False</Property>
+        <Property name="IsHebrew13">False</Property>
+        <Property name="IsHebrew14">False</Property>
+        <Property name="IsHebrew15">False</Property>
+        <Property name="IsHebrew16">False</Property>
+        <Property name="IsHebrew17">False</Property>
+        <Property name="IsHebrew18">False</Property>
+        <Property name="IsHebrew19">False</Property>
+        <Property name="IsHebrew20">False</Property>
+        <Property name="IsHebrew21">False</Property>
+        <Property name="IsHebrew22">False</Property>
+        <Property name="IsHebrew23">False</Property>
+        <Property name="IsHebrew24">False</Property>
+        <Property name="IsHebrew25">False</Property>
+        <Property name="IsHebrew26">False</Property>
+        <Property name="IsHebrew27">False</Property>
+        <Property name="IsHebrew28">False</Property>
+        <Property name="IsHebrew29">False</Property>
+        <Property name="IsHebrew30">False</Property>
+        <Property name="IsHebrew31">False</Property>
+        <Property name="Action01">Function,Load,OnLoad,</Property>
+        <Property name="Action02">Function,Select,OnSelect,</Property>
+        <Property name="Action03">Function,MouseUp,OnMouseUp,</Property>
+        <Property name="Action04">Function,MouseLongPress,OnMouseLongPress,</Property>
+        <Property name="Action05">None,Load,,</Property>
+        <Property name="Action06">None,Load,,</Property>
+        <Property name="Action07">None,Load,,</Property>
+        <Property name="Action08">None,Load,,</Property>
+        <Property name="Action09">None,Load,,</Property>
+        <Property name="Action10">None,Load,,</Property>
+        <Property name="Action11">None,Load,,</Property>
+        <Property name="Action12">None,Load,,</Property>
+        <Property name="Action13">None,Load,,</Property>
+        <Property name="Action14">None,Load,,</Property>
+        <Property name="Action15">None,Load,,</Property>
+        <Property name="Hided">False</Property>
+        <Property name="Font">Calibri, 30pt</Property>
+        <Property name="Items">
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">1</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">3</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">5</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">6</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">7</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
+        </Property>
+        <Property name="Location">368, 29</Property>
+        <Property name="Name">TableListBox3</Property>
+        <Property name="Size">142, 343</Property>
+        <Property name="TabIndex">3</Property>
+      </Object>
+      <Object type="GUIDesigner.TableIconListBoxWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="TableIconListBox1" children="Controls">
+        <Property name="ItemHeight">49</Property>
+        <Property name="PageIndexTarget" />
+        <Property name="PageCountTarget" />
+        <Property name="FocusColor">ActiveCaption</Property>
+        <Property name="BackAlpha">0</Property>
+        <Property name="ScrollDelay">3</Property>
+        <Property name="StopDelay">30</Property>
+        <Property name="TotalFrame">100</Property>
+        <Property name="Draggable">True</Property>
+        <Property name="HasLongPress">True</Property>
+        <Property name="ItemCount">100</Property>
+        <Property name="SlidePage">3</Property>
+        <Property name="FontIndex">0</Property>
+        <Property name="Action01">Function,Load,OnLoadIcon,</Property>
+        <Property name="Action02">Function,Select,OnSelect,</Property>
+        <Property name="Action03">Function,MouseUp,OnMouseUp,</Property>
+        <Property name="Action04">Function,MouseLongPress,OnMouseLongPress,</Property>
+        <Property name="Action05">None,Load,,</Property>
+        <Property name="Action06">None,Load,,</Property>
+        <Property name="Action07">None,Load,,</Property>
+        <Property name="Action08">None,Load,,</Property>
+        <Property name="Action09">None,Load,,</Property>
+        <Property name="Action10">None,Load,,</Property>
+        <Property name="Action11">None,Load,,</Property>
+        <Property name="Action12">None,Load,,</Property>
+        <Property name="Action13">None,Load,,</Property>
+        <Property name="Action14">None,Load,,</Property>
+        <Property name="Action15">None,Load,,</Property>
+        <Property name="PixelFormat">RGB565</Property>
+        <Property name="Compress">True</Property>
+        <Property name="External">False</Property>
+        <Property name="Dither">True</Property>
+        <Property name="Image0">
+          <Binary>iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDAAACwwBP0AiyAAAAeJJREFUWEe9Vl1LAkEUPYofRCqWChG5GehqUNhvECKo1yAIfK2H6t/0UD0U9VI/IyLCICGNoB8R9QOyj7M0kN3VXV1nPJyH5c7ce9k7M/ceDIKFGHYzuLDQtPG6hE7VIT8ebJxb2MmgEFM7gyMawlYaN0V0VvDtyY8qrovYTCMSUr7DYTWJp4oM6stWBbWkijAQJsM4yuPTFWhA0vFwDhNhFc0LMxE0StI/AG9LyEVUzN5gpufhS9eP7XL/fKzevS0dRiT/r3c9T/Jyqxby/CTWkvhy7dNC3pdaQmVxEAvpPCo3W+Wu97c9JZe1k+9d4U7HXfcm+4uDUjz4+x2c7GdO/9zLygVDZL/G5by0GiLng/POhdUQH8vA27K0GiITOWNQWA2RifwHoy4yEd7HVUYmQttko+ommxauCtJqiNRLOMhJqyFSn8EeS7viVaQeBHt/Q/eAdpN6UKFufsRQfypweL4symWNpP6k3v3DesqgLKDelTiz5D4tPM6r+P+QCKOpewLw6lEh9sZsVOfhUURR9XqB+bT8H/WuT6ZfsJ6nVvD7Qkfq3b7V64mNVJCSsnTUu0HA91efdg7Zt59xVlEPUn/SZSTQnf2T/Zrzgc+T052hSX5wPFEv7WdRjKvNXgB+ADwns7g/xpxpAAAAAElFTkSuQmCC</Binary>
+        </Property>
+        <Property name="Image1">
+          <Binary>iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDAAACwwBP0AiyAAAAjhJREFUWEe9V89LVGEUvedqOSNYagj9UmhTLcKNYeFOkHAhmKDLIBBa1qIfBqFQ/4NoJQkzik6LXEpr30QRyYgtGiv8K6pVvs7oV8ltek/ffG8OZzHz/biH93333neexAIiF3H6Dq4XMPUR8991NUQQYu2brm7ixTImb2P4Ak5xWU1oksabOvBeZ3YkCOVNBH/K2ludvqH9R6XBbT4UhrX3MxZM0FiWNTekPS7EQXAMmbxO7EjRBDogeQzzercFTS5cBDrRXsJzsz8BP+jsGbS5oFXRhRNfddFsS8wtzf9Xj6e3oXNmQ43k81U/zwV9aJZ6Ie/PCfzBiF4Nk2ZENJkvQ3rZyRAZNH6Bt6v6l6yHv/U3rtfMtHey3itKbDPr+tTMeec7na70s0s4G9uNaif72XmclHsYNRMpkf1aXuGxGU2JBUxKGXkzmhI/aU5+6GszmhIpJGH62fGbQX3F6nqMW/VKkDJysoInZjQlvsSU3MeYGU2J9GfSjc66tKuAfrDSiEvqwXREk37QGctbOmjmvJP+c09LsjiyjSUz7ZH0n/S7TowY1b7UbEGRftfJ7IEHWtBHZp0X5vWBu639aEWW3w1maY0s6RwdohMwOIeObV02GxKTfpf+2oWuCup5eT76XfprFzQCrWjevb/E+VJc1InjyLpwseCVMj8T1AOPbkSvuCiHAuuP9c7+EtvPuGBdn9F/ZvbXUwLwKbvRxX7N9wMNy+77j9oBf/Av/RL9Gf1glfw2EPkFgGIL5S/PVt8AAAAASUVORK5CYII=</Binary>
+        </Property>
+        <Property name="Image2">
+          <Binary>iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDAAACwwBP0AiyAAAAhFJREFUWEe9l8suQ1EUhv81oG4RcRuQisRIDKpiQEgID2AgEomoNmkiMSAtqZrTFzEQoYN6DhGiQUIIb8Hg8DfdcVmn5Tjdp3++gax9Wc7aZ6/zF39KIP0YmUU6Jqc7uM3hdR/vJCev27hZlZMZpPowzGlmgT81omlSklu42IdTTlAdZxPnE5JoQMgs9i7+m1FZ3MWja9M/yOA+IgtmFy9qRceqHHl4mmo4K3LYgnaz3S/qxmAaRdf6f5PCZRfCZtOK6pHBrDypZb7JyEPVfKyelWf6TkouK9ZTYnKsplqB52cyfGpMltQkezg/3s8QmrOwdlRuMnj4un9TWFfD1plAopSJ9zeFKzVmHfaXUj8LS6SG++sdp0+GMYdd10AgsF8jjoKKBkQMp2DrVNGAYCIc4E1FA4KJoEKBUt9kdS0je4mKBgQTsY2cqWhArCGPeWRVNCDozzAg0fq0q34ZKTVi6x9oN/SDxlhOY0ONWWcSyVImKoSWPTyrYYvQf9LvmmTUuCyrGfZwRmXRpCmLBV2TvGueBeh3zWl9Vxs6d3CnptZIWop0iCaBUq8M7eFFLfANTRT9tdm6onoxxN9FapkPeJ16fs9UFusZr+386HerVs8tHinfTx8lZenod80u/xLv37RspHHtoZ859INTsk6/axb7E59yAFH264Sc8TPx+f3jH7QVcSnQn4URqfB+KwEfJg4LH4Rxv/sAAAAASUVORK5CYII=</Binary>
+        </Property>
+        <Property name="Hided">False</Property>
+        <Property name="Font">Calibri, 30pt</Property>
+        <Property name="Items">
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">1</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">3</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">5</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">6</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">7</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
+        </Property>
+        <Property name="Location">510, 29</Property>
+        <Property name="Name">TableIconListBox1</Property>
+        <Property name="Size">79, 343</Property>
+        <Property name="TabIndex">2</Property>
+      </Object>
+      <Object type="GUIDesigner.TableBarWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="TableBar1" children="Controls">
+        <Property name="HideDelay">50</Property>
+        <Property name="FadeOutDelay">10</Property>
+        <Property name="Hided">False</Property>
+        <Property name="TableListBoxTarget">TableListBox1</Property>
+        <Property name="BackColor">Window</Property>
+        <Property name="ForeColor">Highlight</Property>
+        <Property name="Location">686, 29</Property>
+        <Property name="Name">TableBar1</Property>
+        <Property name="Size">38, 343</Property>
+      </Object>
+      <Object type="GUIDesigner.IconWidget, GUIDesigner, Version=1.1.7276.30288, Culture=neutral, PublicKeyToken=null" name="Icon4" children="Controls">
+        <Property name="PixelFormat">RGB565</Property>
+        <Property name="Compress">True</Property>
+        <Property name="External">False</Property>
+        <Property name="Dither">True</Property>
+        <Property name="ExternalImage">False</Property>
+        <Property name="Stretch">False</Property>
+        <Property name="FitToRectange">True</Property>
+        <Property name="CutByRectange">False</Property>
+        <Property name="Angle">0</Property>
+        <Property name="Alpha">255</Property>
+        <Property name="FilePath">
+        </Property>
+        <Property name="RotateMask">False</Property>
+        <Property name="RotateMaskAngleStart">0</Property>
+        <Property name="RotateMaskAngleEnd">90</Property>
+        <Property name="TransformType">None</Property>
+        <Property name="TransformX">100</Property>
+        <Property name="TransformY">100</Property>
+        <Property name="Hided">False</Property>
+        <Property name="TabStop">False</Property>
+        <Property name="TabIndex">4</Property>
+        <Property name="Location">119, 417</Property>
+        <Property name="Name">Icon4</Property>
+        <Property name="Size">142, 49</Property>
+      </Object>
+      <Property name="PixelFormat">ARGB8888</Property>
+      <Property name="Compress">True</Property>
+      <Property name="External">False</Property>
+      <Property name="ExternalImage">False</Property>
+      <Property name="Dither">True</Property>
+      <Property name="EffectSteps">10</Property>
+      <Property name="ShowDelay">0</Property>
+      <Property name="HideDelay">-1</Property>
+      <Property name="AlwaysVisible">False</Property>
+      <Property name="TransferAlpha">False</Property>
+      <Property name="ShowingEffect">None</Property>
+      <Property name="HidingEffect">None</Property>
+      <Property name="GradientColor">
+      </Property>
+      <Property name="GradientMode">None</Property>
+      <Property name="Alpha">255</Property>
+      <Property name="Stretch">False</Property>
+      <Property name="Angle">0</Property>
+      <Property name="TransformType">None</Property>
+      <Property name="TransformX">100</Property>
+      <Property name="TransformY">100</Property>
+      <Property name="OriginalSize">0, 0</Property>
+      <Property name="Hided">False</Property>
+      <Property name="Location">0, 0</Property>
+      <Property name="Name">Background3</Property>
+      <Property name="Size">800, 480</Property>
+    </Object>
+    <Property name="Action01">Reload,Enter,TableListBox1,</Property>
+    <Property name="Action02">Reload,Enter,TableListBox2,</Property>
+    <Property name="Action03">Reload,Enter,TableIconListBox1,</Property>
+    <Property name="Action04">Reload,Enter,TableListBox3,</Property>
+    <Property name="ClientSize">800, 480</Property>
+    <Property name="Name">Layer1</Property>
+  </Object>
+</ITU>

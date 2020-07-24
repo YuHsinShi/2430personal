@@ -1,0 +1,70 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config DYNAMIC_UI
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_AUDIO
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+config RAM_SIZE
+    default "0x800000"
+
+config WATCHDOG_ENABLE
+    def_bool y
+
+config FONT_FILENAME
+    default "DroidSansMono.ttf"
+
+config LCD_ENABLE
+    def_bool y
+
+config LCD_WIDTH
+    default "1024"
+
+config LCD_HEIGHT
+    default "600"
+
+config LCD_PITCH
+    default "2048"
+
+config LCD_INIT_SCRIPT
+    default "DEMOIT9860_MIPI_JY_1024x600_24bits.txt"
+
+config AUDIO_ENABLE
+    def_bool y
+
+config I2S_ENABLE
+    def_bool y
+
+config DEF_BUILD_DEBUG
+    def_bool y
+
+config WIN32_SIMULATOR
+    def_bool y
+
+config ITU_UCL_ENABLE
+    def_bool y
+
+config BUILD_AUDIO_MGR
+    def_bool y
+
+config BUILD_INIPARSER
+    def_bool y
+
+config BUILD_ITU
+    def_bool y
+
+config BUILD_SDL
+    def_bool y
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"

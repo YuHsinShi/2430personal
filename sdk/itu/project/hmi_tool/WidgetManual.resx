@@ -1,0 +1,612 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Action01to15" xml:space="preserve">
+    <value>被呼叫時所下達的命令</value>
+  </data>
+  <data name="AlwaysVisible" xml:space="preserve">
+    <value>一直顯示直到結束</value>
+  </data>
+  <data name="Angle" xml:space="preserve">
+    <value>物件旋轉角度,若有Children,會連Children一起轉</value>
+  </data>
+  <data name="ColorAnimation" xml:space="preserve">
+    <value>支援顏色變換的動態過場效果</value>
+  </data>
+  <data name="Compress" xml:space="preserve">
+    <value>Image的資料要用壓縮格式儲存或原始資料儲存. 當選擇True時, 資料檔較小, 記憶空間也比較節省, 一般都是設定為True, 當選擇False時, 資料檔較大, 但須解壓縮才顯示, 會有一些時間延遲, 對於畫面顯示及時要求時, 再使用此方式.</value>
+  </data>
+  <data name="Cycling" xml:space="preserve">
+    <value>製做最後一個物件到第一個物件的動畫，以達到一個循環</value>
+  </data>
+  <data name="Delay" xml:space="preserve">
+    <value>每一個frame顯示延遲時間</value>
+  </data>
+  <data name="EffectSteps" xml:space="preserve">
+    <value>Show/Hide的effect要花幾個frames播完</value>
+  </data>
+  <data name="External" xml:space="preserve">
+    <value>產生額外的itu儲存物件資料, 當要顯示時才從額外的itu中讀出, 以減小主要的itu大小, 使開機速度變快,External的widget帶有圖片時, 會將圖片資料存在同一layer的額外檔案裡</value>
+  </data>
+  <data name="ExternalImage" xml:space="preserve">
+    <value>Name指定圖片(.PNG or .JPG)相關路徑, 由程式發出ITU_EVENT_LOAD_IMAGE event時統一讀入圖片檔案</value>
+  </data>
+  <data name="GradientColor" xml:space="preserve">
+    <value>漸層顏色</value>
+  </data>
+  <data name="GradientMode" xml:space="preserve">
+    <value>漸層模式</value>
+  </data>
+  <data name="Hided" xml:space="preserve">
+    <value>命令物件隱藏</value>
+  </data>
+  <data name="HideDelay" xml:space="preserve">
+    <value>widget隔多久自動消失, -1不開啟. 單位是frame</value>
+  </data>
+  <data name="HidingEffect" xml:space="preserve">
+    <value>隱藏時得過場效果</value>
+  </data>
+  <data name="HourTarget" xml:space="preserve">
+    <value>顯示時針的Icon物件</value>
+  </data>
+  <data name="HourX" xml:space="preserve">
+    <value>時針Icon物件的圓心座標X</value>
+  </data>
+  <data name="HourY" xml:space="preserve">
+    <value>時針Icon物件的圓心座標Y</value>
+  </data>
+  <data name="MinuteTarget" xml:space="preserve">
+    <value>顯示分針的Icon物件</value>
+  </data>
+  <data name="MinuteX" xml:space="preserve">
+    <value>分針Icon物件的圓心座標X</value>
+  </data>
+  <data name="MinuteY" xml:space="preserve">
+    <value>分針Icon物件的圓心座標Y</value>
+  </data>
+  <data name="MoveAnimation" xml:space="preserve">
+    <value>支援移動的動態過場效果</value>
+  </data>
+  <data name="MoveType" xml:space="preserve">
+    <value>移動方式. 可以是線性速度移動或是加減速效果的移動</value>
+  </data>
+  <data name="PixelFormat" xml:space="preserve">
+    <value>當物件帶有Image資料時需在此指定image的資料格式.</value>
+  </data>
+  <data name="Playing" xml:space="preserve">
+    <value>物件初始在Play狀態</value>
+  </data>
+  <data name="Repeat" xml:space="preserve">
+    <value>重複播放</value>
+  </data>
+  <data name="RotateAnimation" xml:space="preserve">
+    <value>支援旋轉的動態過場效果</value>
+  </data>
+  <data name="ScaleAnimation" xml:space="preserve">
+    <value>支援縮放的動態過場效果</value>
+  </data>
+  <data name="ScaleOnCenter" xml:space="preserve">
+    <value>縮放時是否是對著中心點縮放</value>
+  </data>
+  <data name="SecondTarget" xml:space="preserve">
+    <value>顯示秒針的Icon物件</value>
+  </data>
+  <data name="SecondX" xml:space="preserve">
+    <value>秒針Icon物件的圓心座標X</value>
+  </data>
+  <data name="SecondY" xml:space="preserve">
+    <value>秒針Icon物件的圓心座標Y</value>
+  </data>
+  <data name="ShowDelay" xml:space="preserve">
+    <value>widget隔多久自動出現, -1不開啟. 單位是frame</value>
+  </data>
+  <data name="ShowingEffect" xml:space="preserve">
+    <value>顯示時的過場效果</value>
+  </data>
+  <data name="Stretch" xml:space="preserve">
+    <value>圖片延展至物件大小</value>
+  </data>
+  <data name="TotalFrame" xml:space="preserve">
+    <value>動態過場效果的frame數</value>
+  </data>
+  <data name="TransferAlpha" xml:space="preserve">
+    <value>父物件的alpha值是否要傳遞給子物件</value>
+  </data>
+  <data name="TransformAnimation" xml:space="preserve">
+    <value>指定是否是翻頁效果. 範例請參考project\test_itu\examples\transform_animation.xml</value>
+  </data>
+  <data name="TransformType" xml:space="preserve">
+    <value>翻轉效果. 需要與Animation widget配合,有turnTop, turnBottom, turnRight, turnLeft 四种形变，再依据TransformX和TransformY来设定型变程度</value>
+  </data>
+  <data name="TransformX" xml:space="preserve">
+    <value>翻轉的X軸是原來widget寬度的多少, 單位是百分比值, 100維持不變, 50縮小一半</value>
+  </data>
+  <data name="TransformY" xml:space="preserve">
+    <value>翻轉的Y軸是原來widget寬度的多少, 單位是百分比值, 100維持不變, 50縮小一半</value>
+  </data>
+  <data name="ActiveAniFrame" xml:space="preserve">
+    <value>物件啟動時的開場特效Frame數</value>
+  </data>
+  <data name="Alpha" xml:space="preserve">
+    <value>物件透明度, 255表示不透明, 0表示全透明</value>
+  </data>
+  <data name="AlphaPercent" xml:space="preserve">
+    <value>Button動態變化效果與最初Alpha差異</value>
+  </data>
+  <data name="AMPM" xml:space="preserve">
+    <value>是否是上下午模式</value>
+  </data>
+  <data name="AudioFilePath" xml:space="preserve">
+    <value>所要播放的audio檔案名稱與路徑, 支援檔案格式為mp3、wma、wav</value>
+  </data>
+  <data name="AutoSize" xml:space="preserve">
+    <value>目前沒作用</value>
+  </data>
+  <data name="AutoSizeMode" xml:space="preserve">
+    <value>目前沒作用</value>
+  </data>
+  <data name="AxisShift" xml:space="preserve">
+    <value>翻頁軸心的偏移量. 單位是pixel.</value>
+  </data>
+  <data name="BackAlpha" xml:space="preserve">
+    <value>與背景Alpha值</value>
+  </data>
+  <data name="BackImagePixelFormat" xml:space="preserve">
+    <value>當物件帶有BackImage資料時需在此指定BackImage的資料格式.</value>
+  </data>
+  <data name="BarImage" xml:space="preserve">
+    <value>進度條的圖案</value>
+  </data>
+  <data name="BoldSize" xml:space="preserve">
+    <value>粗字體寬度</value>
+  </data>
+  <data name="BounceRatio" xml:space="preserve">
+    <value>反彈力道的百分比, 0: 不反彈, 50: 反彈半個item的寬或高度, 100: 反彈一個item的寬或高度</value>
+  </data>
+  <data name="BoundaryAlign" xml:space="preserve">
+    <value>控制 Non-Cycle的mode時，是否要靠側邊對齊，如果設false，則Non-Cycle mode預設以置中對齊(focus item)</value>
+  </data>
+  <data name="CalendarType" xml:space="preserve">
+    <value>選擇西元日曆(AD)或中國日曆(ChineseLunar)</value>
+  </data>
+  <data name="CheckedFontColor" xml:space="preserve">
+    <value>Checked起來時, 字型的顏色</value>
+  </data>
+  <data name="CheckedImage" xml:space="preserve">
+    <value>當ChcekBox處於選擇狀態時的Image資料</value>
+  </data>
+  <data name="ColonTarget" xml:space="preserve">
+    <value>製作閃爍的冒號用. 指向冒號文字, 可讓冒號閃爍</value>
+  </data>
+  <data name="CutByRectange" xml:space="preserve">
+    <value>在show JPEG圖片時, 若JPEG在同比例時長或寬超出Widget的大小, 超出的部分會被截掉. 此功能尚未實作.</value>
+  </data>
+  <data name="Cycle" xml:space="preserve">
+    <value>是否要循環操作</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>系統初始顯示的日期, 0代表今日</value>
+  </data>
+  <data name="DayTarget" xml:space="preserve">
+    <value>顯示日期的Text物件</value>
+  </data>
+  <data name="DigitalClockDayTarget" xml:space="preserve">
+    <value>顯示日期的Text物件</value>
+  </data>
+  <data name="DigitalClockHourTarget" xml:space="preserve">
+    <value>顯示小時的Text物件</value>
+  </data>
+  <data name="DigitalClockMinuteTarget" xml:space="preserve">
+    <value>顯示分鐘的Text物件</value>
+  </data>
+  <data name="DigitalClockSecondTarget" xml:space="preserve">
+    <value>顯示秒的Text物件</value>
+  </data>
+  <data name="Draggable" xml:space="preserve">
+    <value>拖拉物件的功能</value>
+  </data>
+  <data name="EffectRatio" xml:space="preserve">
+    <value>翻頁立體的效果. 值在1-4之間. 越低立體效果越高.</value>
+  </data>
+  <data name="EnableAllItems" xml:space="preserve">
+    <value>全部的items是否都可以對touch作反應. False時只有中間的item才能對touch作反應</value>
+  </data>
+  <data name="EndAngle" xml:space="preserve">
+    <value>物件結束的角度</value>
+  </data>
+  <data name="Extensions" xml:space="preserve">
+    <value>過濾file副檔名</value>
+  </data>
+  <data name="Factor" xml:space="preserve">
+    <value>縮放百分比</value>
+  </data>
+  <data name="FilePath" xml:space="preserve">
+    <value>同Name, 用於ExternalImage開啟時指定相關路徑用. 但因為Name會檢查是否有其它Widget有相同的Name, 若有需要不同的Icon需要Load同一張檔案時, 可在這裡指定.</value>
+  </data>
+  <data name="FitToRectange" xml:space="preserve">
+    <value>在show JPEG圖片時, 若JPEG在同比例時長或寬小於Widget的大小, 小於的部分會被填黑.</value>
+  </data>
+  <data name="FocusCheckedImage" xml:space="preserve">
+    <value>當ChcekBox處於Focus而且是選擇狀態時的Image資料</value>
+  </data>
+  <data name="FocusColor" xml:space="preserve">
+    <value>當物件處於Focus狀態時的顏色</value>
+  </data>
+  <data name="FocusFontColor" xml:space="preserve">
+    <value>當物件處於Focus狀態時的文字顏色</value>
+  </data>
+  <data name="FocusImage" xml:space="preserve">
+    <value>處於Focus時的Image資料</value>
+  </data>
+  <data name="FocusImage0to15" xml:space="preserve">
+    <value>當Item被選中時, 該Item的內容會被解譯成數字, 決定show第幾個FocusImage</value>
+  </data>
+  <data name="FocusIndex" xml:space="preserve">
+    <value>初始顯示時中央位置的物件編號</value>
+  </data>
+  <data name="FontIndex" xml:space="preserve">
+    <value>多字型時, 指定要使用哪個字型</value>
+  </data>
+  <data name="FridayTarget" xml:space="preserve">
+    <value>顯示星期五欄位的ListBox物件</value>
+  </data>
+  <data name="Gap" xml:space="preserve">
+    <value>在製作動態排列icon的功能時, 每個icon之間的間隔. Layout需設成Grid. 請參考project\dynamic_ui</value>
+  </data>
+  <data name="HasLongPress" xml:space="preserve">
+    <value>可接收長按</value>
+  </data>
+  <data name="Image0to15" xml:space="preserve">
+    <value>當Item未被選中時, 該Item的內容會被解譯成數字, 決定show第幾個FocusImage</value>
+  </data>
+  <data name="ImagePixelFormat" xml:space="preserve">
+    <value>當物件帶有Image資料時需在此指定Image的資料格式.</value>
+  </data>
+  <data name="IncreasePercent" xml:space="preserve">
+    <value>Button動態變化效果與最初大小差異</value>
+  </data>
+  <data name="ItemCount" xml:space="preserve">
+    <value>有幾個Item要show出來</value>
+  </data>
+  <data name="Iterator" xml:space="preserve">
+    <value>縮放幾次</value>
+  </data>
+  <data name="LanguageIndex" xml:space="preserve">
+    <value>在程式未下ITU_EVENT_LANGUAGE event之前, default show哪個frame</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>若為Grid則會自動隊齊</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>最大值</value>
+  </data>
+  <data name="MaximumYear" xml:space="preserve">
+    <value>顯示年的最大值</value>
+  </data>
+  <data name="MaxValue" xml:space="preserve">
+    <value>最大值</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>最小值</value>
+  </data>
+  <data name="MinimumYear" xml:space="preserve">
+    <value>顯示年的最小值</value>
+  </data>
+  <data name="MinRadius" xml:space="preserve">
+    <value>當手指在MinRadius內作動作時, 不會影響Meter的動作</value>
+  </data>
+  <data name="MondayTarget" xml:space="preserve">
+    <value>顯示星期一欄位的ListBox物件</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>系統初始顯示的月份, 0代表今日月份</value>
+  </data>
+  <data name="MonthTarget" xml:space="preserve">
+    <value>顯示月份的Text物件</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>物件名稱</value>
+  </data>
+  <data name="Orientation" xml:space="preserve">
+    <value>移動方向</value>
+  </data>
+  <data name="Overlapsize" xml:space="preserve">
+    <value>物件之間可重疊的pixel數</value>
+  </data>
+  <data name="PageCountTarget" xml:space="preserve">
+    <value>PageCount代表總共有幾頁的資料, 系統會將此數字轉成字串, 使用者可在此欄位選擇一Text物件, 即可將其顯示出來.</value>
+  </data>
+  <data name="PageIndexTarget" xml:space="preserve">
+    <value>PageIndex代表目前顯示的是第幾頁的資料, 系統會將此數字轉成字串, 使用者可在此欄位選擇一Text物件, 即可將其顯示出來.</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>所要列出的檔案的目錄名稱</value>
+  </data>
+  <data name="PenColor" xml:space="preserve">
+    <value>畫筆顏色</value>
+  </data>
+  <data name="PercentTarget" xml:space="preserve">
+    <value>顯示數值的Text物件</value>
+  </data>
+  <data name="Point00to31" xml:space="preserve">
+    <value>各點的位置</value>
+  </data>
+  <data name="PointCount" xml:space="preserve">
+    <value>點的總數量</value>
+  </data>
+  <data name="PointerTarget" xml:space="preserve">
+    <value>顯示Meter指針的Icon物件</value>
+  </data>
+  <data name="PointerX" xml:space="preserve">
+    <value>Meter指針Icon物件的圓心座標X</value>
+  </data>
+  <data name="PointerY" xml:space="preserve">
+    <value>Meter指針Icon物件的圓心座標Y</value>
+  </data>
+  <data name="PressImage" xml:space="preserve">
+    <value>當按下物件時的背景Image資料</value>
+  </data>
+  <data name="Pressure" xml:space="preserve">
+    <value>繪圖筆的初始預設筆寬</value>
+  </data>
+  <data name="ProgressTarget" xml:space="preserve">
+    <value>一個長條的Icon物件, 長度是所要畫圓的半徑, 寬度介於1~10之間, 取決於累進一單位的數值時是否會將一單位的弧形填滿.</value>
+  </data>
+  <data name="Radius" xml:space="preserve">
+    <value>製作RippleMap時取樣的半徑</value>
+  </data>
+  <data name="Range" xml:space="preserve">
+    <value>Ripple擴散時影響的範圍</value>
+  </data>
+  <data name="RatioFlip2" xml:space="preserve">
+    <value>Flip2效果中, 指定不同分頁Y軸的中間值百分比. 越低越靠近上面.</value>
+  </data>
+  <data name="ReadFontColor" xml:space="preserve">
+    <value>表示此項目已讀過的文字顏色. 需用ituScrollTextSetAsRead()來指示已讀</value>
+  </data>
+  <data name="ResponseToUpKey" xml:space="preserve">
+    <value>設定是否在MouseUp時才動作, 主要避免有滑動手勢時的誤動作</value>
+  </data>
+  <data name="SaturdayTarget" xml:space="preserve">
+    <value>顯示星期六欄位的ListBox物件</value>
+  </data>
+  <data name="ScrollDelay" xml:space="preserve">
+    <value>當字串長度超過物件寬度時, 字串顯示會自動向左捲動, 以顯示接下來的字串, 此參數的目的是控制捲動的速度, 移動速度為33ms乘上參數值</value>
+  </data>
+  <data name="SlideMaxCount" xml:space="preserve">
+    <value>一次slide可移動的最大item數</value>
+  </data>
+  <data name="StartAngle" xml:space="preserve">
+    <value>物件開始的角度</value>
+  </data>
+  <data name="Static" xml:space="preserve">
+    <value>背景是否是靜態物件</value>
+  </data>
+  <data name="StopAnywhere" xml:space="preserve">
+    <value>是否可在任意位置停止</value>
+  </data>
+  <data name="StopDelay" xml:space="preserve">
+    <value>當字串長度超過物件寬度時, 字串顯示會自動向左捲動, 以顯示接下來的字串, 當左捲到最後時會停頓此參數值乘上33ms時間在右捲回去</value>
+  </data>
+  <data name="SundayTarget" xml:space="preserve">
+    <value>顯示星期日欄位的ListBox物件</value>
+  </data>
+  <data name="SupportTouch" xml:space="preserve">
+    <value>是否開啟由Touch輸入</value>
+  </data>
+  <data name="Text1to7" xml:space="preserve">
+    <value>功能保留</value>
+  </data>
+  <data name="TextAlign" xml:space="preserve">
+    <value>文字對齊位置</value>
+  </data>
+  <data name="ThursdayTarget" xml:space="preserve">
+    <value>顯示星期四欄位的ListBox物件</value>
+  </data>
+  <data name="Touchable" xml:space="preserve">
+    <value>是否可接收touch event</value>
+  </data>
+  <data name="TuesdayTarget" xml:space="preserve">
+    <value>顯示星期二欄位的ListBox物件</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>翻頁的效果. 可參考ctrlboard</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>物件初始值</value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>音量. 單位是百份比</value>
+  </data>
+  <data name="VolumeEnable" xml:space="preserve">
+    <value>是否開啟調整音量功能</value>
+  </data>
+  <data name="WednesdayTarget" xml:space="preserve">
+    <value>顯示星期三欄位的ListBox物件</value>
+  </data>
+  <data name="WeekTarget" xml:space="preserve">
+    <value>顯示週的Text物件</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>系統初始顯示的年份, 0代表今日年份</value>
+  </data>
+  <data name="YearTarget" xml:space="preserve">
+    <value>顯示西元年的Text物件</value>
+  </data>
+  <data name="Effect" xml:space="preserve">
+    <value>播放投影片效果</value>
+  </data>
+  <data name="FocusFontHeight" xml:space="preserve">
+    <value>當前Focus項目的字體高度</value>
+  </data>
+  <data name="FontSquare" xml:space="preserve">
+    <value>是否將Focus項目字體等寬高放大 (預設否，表示只拉長高度至FocusFontHeight)</value>
+  </data>
+  <data name="Items1to7" xml:space="preserve">
+    <value>每一列的初始值, 我們可利用初始值設定, 來確認圖面設計是否正確.</value>
+  </data>
+  <data name="Jumpable" xml:space="preserve">
+    <value>是否可以透過手指按下指定的位置, 直接跳到指定的進度</value>
+  </data>
+  <data name="Length" xml:space="preserve">
+    <value>ScrollBar指定的page數量初始值, 這部份給default值即可</value>
+  </data>
+  <data name="LineHeight" xml:space="preserve">
+    <value>字框高度</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>ScrollBar指定的項目位置初始page</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>開啟後, 當show某個指定的frame時, 前面全部的frame也會show出來. 主要用來實作格狀的進度條用</value>
+  </data>
+  <data name="ShowCursor" xml:space="preserve">
+    <value>在文字輸入點是否顯示輸入提示符號</value>
+  </data>
+  <data name="SlidePage" xml:space="preserve">
+    <value>滑動頁數</value>
+  </data>
+  <data name="Step" xml:space="preserve">
+    <value>功能保留</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>指向要做倒影的對象</value>
+  </data>
+  <data name="TextColor" xml:space="preserve">
+    <value>字串顏色</value>
+  </data>
+  <data name="TextScaleFactor" xml:space="preserve">
+    <value>按鈕文字放大比率，若小於等於0，不使用此功能，即行為效果跟原本一樣；若介於1至50之間，按下按鈕時，文字跟著放大的增加比例；舉例: 30，即按下時，按鈕文字會放大增至130%</value>
+  </data>
+  <data name="TipTarget" xml:space="preserve">
+    <value>TrackBar顯示註解的物件</value>
+  </data>
+  <data name="TrackBarGap" xml:space="preserve">
+    <value>微調左右2邊開始拖動的部分. 主要是配合TrackBar圖資邊界不能拖動的部分</value>
+  </data>
+  <data name="TrackBarStep" xml:space="preserve">
+    <value>拖動時一次要移動幾個單位</value>
+  </data>
+  <data name="TrackerTarget" xml:space="preserve">
+    <value>TrackBar按鈕的 Button物件</value>
+  </data>
+  <data name="ValueTarget" xml:space="preserve">
+    <value>顯示widget數值的Text物件</value>
+  </data>
+</root>

@@ -1,0 +1,61 @@
+<ITU>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.0.6.31005, Culture=neutral, PublicKeyToken=null" name="Layer1" children="Controls">
+    <Object type="GUIDesigner.CircleProgressBarWidget, GUIDesigner, Version=1.0.6.31005, Culture=neutral, PublicKeyToken=null" name="CircleProgressBar1" children="Controls">
+      <Object type="GUIDesigner.TextWidget, GUIDesigner, Version=1.0.6.31005, Culture=neutral, PublicKeyToken=null" name="Text4" children="Controls">
+        <Property name="Text1" />
+        <Property name="Text2" />
+        <Property name="Text3" />
+        <Property name="Text4" />
+        <Property name="Text5" />
+        <Property name="Text6" />
+        <Property name="Text7" />
+        <Property name="TextAlign">MiddleCenter</Property>
+        <Property name="Text">Text4</Property>
+        <Property name="Location">107, 141</Property>
+        <Property name="Name">Text4</Property>
+        <Property name="Size">100, 23</Property>
+      </Object>
+      <Object type="GUIDesigner.IconWidget, GUIDesigner, Version=1.0.6.31005, Culture=neutral, PublicKeyToken=null" name="Icon3" children="Controls">
+        <Property name="Image">
+          <Binary>iVBORw0KGgoAAAANSUhEUgAAAAoAAAB0CAYAAAC8GqMMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDAAACwwBP0AiyAAAAPNJREFUWEeVzbEJw0AURMHfk/tQpBoMilSPi1GkVE24DEXnNVxw4MFIwSSPha1W1bozjsEer1hjGod/3Ro+BnM8uyW+11u8M8/4AkZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFEZhFMZfrT6BzVs1mVr33wAAAABJRU5ErkJggg==</Binary>
+        </Property>
+        <Property name="PixelFormat">ARGB8888</Property>
+        <Property name="Compress">True</Property>
+        <Property name="Stretch">False</Property>
+        <Property name="TabStop">False</Property>
+        <Property name="TabIndex">1</Property>
+        <Property name="Location">153, 16</Property>
+        <Property name="Name">Icon3</Property>
+        <Property name="Size">10, 116</Property>
+      </Object>
+      <Property name="PixelFormat">ARGB8888</Property>
+      <Property name="Compress">True</Property>
+      <Property name="Value">0</Property>
+      <Property name="ProgressTarget">Icon3</Property>
+      <Property name="PercentTarget">Text4</Property>
+      <Property name="StartAngle">180</Property>
+      <Property name="EndAngle">360</Property>
+      <Property name="SupportTouch">True</Property>
+      <Property name="Action01">Function,Changed,OnChanged,</Property>
+      <Property name="Action02">None,Press,,</Property>
+      <Property name="Action03">None,Press,,</Property>
+      <Property name="Action04">None,Press,,</Property>
+      <Property name="Action05">None,Press,,</Property>
+      <Property name="Action06">None,Press,,</Property>
+      <Property name="Action07">None,Press,,</Property>
+      <Property name="Action08">None,Press,,</Property>
+      <Property name="Action09">None,Press,,</Property>
+      <Property name="Action10">None,Press,,</Property>
+      <Property name="Action11">None,Press,,</Property>
+      <Property name="Action12">None,Press,,</Property>
+      <Property name="Action13">None,Press,,</Property>
+      <Property name="Action14">None,Press,,</Property>
+      <Property name="Action15">None,Press,,</Property>
+      <Property name="Location">40, 71</Property>
+      <Property name="Name">CircleProgressBar1</Property>
+      <Property name="Size">306, 287</Property>
+    </Object>
+    <Property name="ClientSize">800, 480</Property>
+    <Property name="Name">Layer1</Property>
+  </Object>
+</ITU>

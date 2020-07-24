@@ -1,0 +1,50 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+menu "GPIO Test"
+
+choice
+	prompt "Test GPIO"
+	default TEST_GPIO_INPUT
+
+config TEST_GPIO_INPUT
+	bool "TEST_GPIO_INPUT"
+	config GPIO_TEST_INPUT_PIN
+        string "INPUT_PIN"
+        depends on TEST_GPIO_INPUT
+        default 5
+	
+config TEST_GPIO_OUTPUT_TO_INPUT
+	bool "TEST_GPIO_OUTPUT_TO_INPUT"
+	config GPIO_TEST_INPUT_PIN
+        string "INPUT_PIN"
+        depends on TEST_GPIO_OUTPUT_TO_INPUT
+        default 5
+	config GPIO_TEST_OUTPUT_PIN
+        string "OUTPUT_PIN"
+        depends on TEST_GPIO_OUTPUT_TO_INPUT
+        default 6
+
+config TEST_GPIO_INTERRUPT
+	bool "TEST_GPIO_INTERRUPT"
+	config GPIO_TEST_INTR_PIN
+        string "INTR_PIN"
+        depends on TEST_GPIO_INTERRUPT
+        default 5
+		
+#config TEST_GPIO_EX_4
+#	bool "TEST_GPIO_EX_4"
+		
+endchoice
+
+endmenu

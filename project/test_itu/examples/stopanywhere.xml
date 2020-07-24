@@ -1,0 +1,392 @@
+﻿<ITU>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Layer1" children="Controls">
+    <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background2" children="Controls">
+      <Object type="GUIDesigner.StopAnywhereWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="StopAnywhere1" children="Controls">
+        <Object type="GUIDesigner.ContainerWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Container44" children="Controls">
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background34" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">White</Property>
+            <Property name="Location">0, 0</Property>
+            <Property name="Name">Background34</Property>
+            <Property name="Size">200, 95</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background33" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">BlueViolet</Property>
+            <Property name="Location">200, 0</Property>
+            <Property name="Name">Background33</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background32" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">BurlyWood</Property>
+            <Property name="Location">400, 0</Property>
+            <Property name="Name">Background32</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background31" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">Brown</Property>
+            <Property name="Location">600, 0</Property>
+            <Property name="Name">Background31</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background30" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">Crimson</Property>
+            <Property name="Location">800, 0</Property>
+            <Property name="Name">Background30</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background29" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">DodgerBlue</Property>
+            <Property name="Location">1000, 0</Property>
+            <Property name="Name">Background29</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background28" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">DarkCyan</Property>
+            <Property name="Location">1200, 0</Property>
+            <Property name="Name">Background28</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background27" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">DarkOliveGreen</Property>
+            <Property name="Location">1400, 0</Property>
+            <Property name="Name">Background27</Property>
+            <Property name="Size">200, 400</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background3" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">BurlyWood</Property>
+            <Property name="Location">0, 93</Property>
+            <Property name="Name">Background3</Property>
+            <Property name="Size">200, 108</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background4" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">Brown</Property>
+            <Property name="Location">0, 196</Property>
+            <Property name="Name">Background4</Property>
+            <Property name="Size">200, 118</Property>
+          </Object>
+          <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.0.6655.17016, Culture=neutral, PublicKeyToken=null" name="Background5" children="Controls">
+            <Property name="PixelFormat">RGB565</Property>
+            <Property name="Compress">True</Property>
+            <Property name="External">False</Property>
+            <Property name="ExternalImage">False</Property>
+            <Property name="EffectSteps">10</Property>
+            <Property name="ShowDelay">0</Property>
+            <Property name="HideDelay">-1</Property>
+            <Property name="AlwaysVisible">False</Property>
+            <Property name="TransferAlpha">False</Property>
+            <Property name="ShowingEffect">None</Property>
+            <Property name="HidingEffect">None</Property>
+            <Property name="GradientColor">
+            </Property>
+            <Property name="GradientMode">None</Property>
+            <Property name="Alpha">255</Property>
+            <Property name="Stretch">False</Property>
+            <Property name="Angle">0</Property>
+            <Property name="TransformType">None</Property>
+            <Property name="TransformX">100</Property>
+            <Property name="TransformY">100</Property>
+            <Property name="OriginalSize">0, 0</Property>
+            <Property name="Hided">False</Property>
+            <Property name="BackColor">Navy</Property>
+            <Property name="Location">0, 303</Property>
+            <Property name="Name">Background5</Property>
+            <Property name="Size">200, 95</Property>
+          </Object>
+          <Property name="ShowingEffect">None</Property>
+          <Property name="HidingEffect">None</Property>
+          <Property name="EffectSteps">10</Property>
+          <Property name="ShowDelay">0</Property>
+          <Property name="HideDelay">-1</Property>
+          <Property name="AlwaysVisible">False</Property>
+          <Property name="Angle">0</Property>
+          <Property name="Layout">None</Property>
+          <Property name="Hided">False</Property>
+          <Property name="Gap">0</Property>
+          <Property name="Draggable">False</Property>
+          <Property name="HasLongPress">False</Property>
+          <Property name="Location">0, 0</Property>
+          <Property name="Name">Container44</Property>
+          <Property name="Size">1600, 400</Property>
+        </Object>
+        <Property name="ShowingEffect">None</Property>
+        <Property name="HidingEffect">None</Property>
+        <Property name="EffectSteps">10</Property>
+        <Property name="ShowDelay">0</Property>
+        <Property name="HideDelay">-1</Property>
+        <Property name="AlwaysVisible">False</Property>
+        <Property name="Angle">0</Property>
+        <Property name="TotalFrame">30</Property>
+        <Property name="Layout">None</Property>
+        <Property name="Action01">None,Stopped,,</Property>
+        <Property name="Action02">None,Stopped,,</Property>
+        <Property name="Action03">None,Stopped,,</Property>
+        <Property name="Action04">None,Stopped,,</Property>
+        <Property name="Action05">None,Stopped,,</Property>
+        <Property name="Action06">None,Stopped,,</Property>
+        <Property name="Action07">None,Stopped,,</Property>
+        <Property name="Action08">None,Stopped,,</Property>
+        <Property name="Action09">None,Stopped,,</Property>
+        <Property name="Action10">None,Stopped,,</Property>
+        <Property name="Action11">None,Stopped,,</Property>
+        <Property name="Action12">None,Stopped,,</Property>
+        <Property name="Action13">None,Stopped,,</Property>
+        <Property name="Action14">None,Stopped,,</Property>
+        <Property name="Action15">None,Stopped,,</Property>
+        <Property name="Hided">False</Property>
+        <Property name="Gap">0</Property>
+        <Property name="Draggable">True</Property>
+        <Property name="HasLongPress">False</Property>
+        <Property name="Location">64, 98</Property>
+        <Property name="Name">StopAnywhere1</Property>
+        <Property name="Size">673, 284</Property>
+      </Object>
+      <Property name="PixelFormat">ARGB8888</Property>
+      <Property name="Compress">True</Property>
+      <Property name="External">False</Property>
+      <Property name="ExternalImage">False</Property>
+      <Property name="EffectSteps">10</Property>
+      <Property name="ShowDelay">0</Property>
+      <Property name="HideDelay">-1</Property>
+      <Property name="AlwaysVisible">False</Property>
+      <Property name="TransferAlpha">False</Property>
+      <Property name="ShowingEffect">None</Property>
+      <Property name="HidingEffect">None</Property>
+      <Property name="GradientColor">
+      </Property>
+      <Property name="GradientMode">None</Property>
+      <Property name="Alpha">255</Property>
+      <Property name="Stretch">False</Property>
+      <Property name="Angle">0</Property>
+      <Property name="TransformType">None</Property>
+      <Property name="TransformX">100</Property>
+      <Property name="TransformY">100</Property>
+      <Property name="OriginalSize">0, 0</Property>
+      <Property name="Hided">False</Property>
+      <Property name="BackColor">Black</Property>
+      <Property name="Location">0, 0</Property>
+      <Property name="Name">Background2</Property>
+      <Property name="Size">800, 480</Property>
+    </Object>
+    <Property name="ClientSize">800, 480</Property>
+    <Property name="Name">Layer1</Property>
+  </Object>
+</ITU>

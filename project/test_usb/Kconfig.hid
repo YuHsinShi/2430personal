@@ -1,0 +1,56 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+config ROM_COMPRESS
+	def_bool n
+
+config USB0_ENABLE
+	def_bool y
+	
+config USB_HID_ENABLE
+	def_bool y
+	
+config USB_MOUSE
+	def_bool y
+	
+config USB_KBD
+	def_bool y
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+	
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+
+menu "USB HID Test"
+
+choice
+	prompt "Test App"
+	default TEST_MOUSE
+
+config TEST_MOUSE
+	bool "USB Mouse"
+	depends on USB_MOUSE
+
+config TEST_KBD
+	bool "USB Keyboard"
+	depends on USB_KBD
+
+endchoice
+
+endmenu

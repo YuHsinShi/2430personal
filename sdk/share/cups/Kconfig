@@ -1,0 +1,12 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+if BUILD_CUPS
+
+config BUILD_OPENSSL
+    def_bool y
+
+
+endif # BUILD_QTBASE

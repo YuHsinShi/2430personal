@@ -1,0 +1,46 @@
+﻿<ITU>
+  <Object type="GUIDesigner.LayerWidget, GUIDesigner, Version=1.1.6828.17280, Culture=neutral, PublicKeyToken=null" name="Layer1" children="Controls">
+    <Object type="GUIDesigner.BackgroundWidget, GUIDesigner, Version=1.1.6828.17280, Culture=neutral, PublicKeyToken=null" name="Background1" children="Controls">
+      <Object type="GUIDesigner.CustomTextWidget, GUIDesigner, Version=1.1.6828.17280, Culture=neutral, PublicKeyToken=null" name="CustomText2" children="Controls">
+        <Property name="Hided">False</Property>
+        <Property name="Prefix">abc</Property>
+        <Property name="Suffix">def</Property>
+        <Property name="Text">CustomText2</Property>
+        <Property name="BackColor">White</Property>
+        <Property name="Font">新細明體, 9px</Property>
+        <Property name="Location">104, 67</Property>
+        <Property name="Name">CustomText2</Property>
+        <Property name="Size">100, 23</Property>
+      </Object>
+      <Property name="PixelFormat">RGB565</Property>
+      <Property name="Compress">True</Property>
+      <Property name="External">False</Property>
+      <Property name="ExternalImage">False</Property>
+      <Property name="Dither">True</Property>
+      <Property name="EffectSteps">10</Property>
+      <Property name="ShowDelay">0</Property>
+      <Property name="HideDelay">-1</Property>
+      <Property name="AlwaysVisible">False</Property>
+      <Property name="TransferAlpha">False</Property>
+      <Property name="ShowingEffect">None</Property>
+      <Property name="HidingEffect">None</Property>
+      <Property name="GradientColor">
+      </Property>
+      <Property name="GradientMode">None</Property>
+      <Property name="Alpha">255</Property>
+      <Property name="Stretch">False</Property>
+      <Property name="Angle">0</Property>
+      <Property name="TransformType">None</Property>
+      <Property name="TransformX">100</Property>
+      <Property name="TransformY">100</Property>
+      <Property name="OriginalSize">0, 0</Property>
+      <Property name="Hided">False</Property>
+      <Property name="BackColor">Black</Property>
+      <Property name="Location">0, 0</Property>
+      <Property name="Name">Background1</Property>
+      <Property name="Size">1024, 600</Property>
+    </Object>
+    <Property name="ClientSize">1024, 600</Property>
+    <Property name="Name">Layer1</Property>
+  </Object>
+</ITU>

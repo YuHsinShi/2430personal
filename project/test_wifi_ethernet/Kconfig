@@ -1,0 +1,210 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+config ROM_COMPRESS
+    def_bool n
+
+#==== for SD ====
+config SD0_ENABLE
+    def_bool n
+
+config SD0_STATIC
+    default n
+config GPIO_SD1_IO
+    default "11, 20, 6, 19, 8, 9, -1, -1, -1, -1"
+
+config SDIO_ENABLE
+   def_bool y
+
+config  SDIO1_STATIC
+   def_bool y
+
+config AXISPI_ENABLE
+    default n
+
+config UART1_ENABLE
+    def_bool y
+	
+config DEF_UART1_FIFO
+	def_bool y
+	
+if DEF_UART1_FIFO
+config UART_FORCE_FLUSH
+	def_bool y
+endif
+
+
+config SPI0_MISO_GPIO
+	default "-1"
+	
+config SPI0_MOSI_GPIO
+	default "-1"
+	
+config SPI0_CLOCK_GPIO
+	default "-1"
+	
+config SPI0_CHIP_SEL_GPIO
+	default "-1"
+
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config SD1_ENABLE
+    def_bool y
+
+config MMC_ENABLE
+      def_bool y
+
+config SD1_STATIC
+    def_bool n
+
+config SDIO_ENABLE
+      def_bool y
+
+config SDIO1_STATIC
+    def_bool y
+
+config GPIO_SD1_WIFI_POWER_ENABLE
+	def_bool y
+
+#HMI: 11, 20, 15, 19, 17, 18, -1, -1, -1, -1
+#Indoor: 11, 20, 6, 19, 8, 9, -1, -1, -1, -1
+config GPIO_SD1_IO
+      default "11, 20, 15, 19, 17, 18, -1, -1, -1, -1"
+
+#======= for NET ========
+config GPIO_ETHERNET_LINK
+    default "37"
+
+config GPIO_ETHERNET
+    default "27, 28, 29, 30, 31, 32, 33, 34, 35, 36"
+
+
+config NET_ENABLE
+    def_bool y
+
+config NET_ETHERNET
+    def_bool y
+
+config DEF_NET_IP101GR
+    def_bool y
+
+if NET_ENABLE
+config NET_ETHERNET_LINK_INTR
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_RANDOM
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_UPGRADE
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_STORAGE
+    def_bool N
+
+if NET_ETHERNET_MAC_ADDR_NOR
+config NET_ETHERNET_MAC_ADDR_POS
+    default "0x70000"
+endif
+endif
+#========================
+
+#======= for WIFI =======
+config NET_WIFI
+    def_bool y
+
+config DEF_NET_WIFI_SDIO_NGPL
+    def_bool y
+	
+if (NET_WIFI_SDIO_NGPL && GPIO_SD1_WIFI_POWER_ENABLE)
+#HMI: 21,  Indoor: 16
+config GPIO_SD1_WIFI_POWER_PIN
+    default "21"
+
+config SD1_WIFI_DETECT_ACTIVE_HIGH
+    def_bool y
+
+
+config NET_WIFI_SSID
+    default "CtrlBoard"
+
+config NET_WIFI_FIND_BEST_CHANNEL
+    default n
+	
+config NET_WIFI_REDEFINE
+	def_bool n
+
+config NET_WIFI_MGR
+	def_bool y
+
+
+config NET_DHCP_SERVER
+    def_bool y
+
+config DHCPS_ADDR_COUNT
+    default "254"
+endif
+#========================
+
+
+config TASK_DRIVE_PROBE
+    def_bool y
+
+config DEF_DBG_UART1
+    def_bool y
+
+config DBG_STATS
+    def_bool y
+
+config DBG_STATS_HEAP
+    def_bool y
+
+config DEF_BUILD_MINSIZEREL
+    def_bool y
+
+config SYSTEM_NAME
+    default "ITE Control Board ftp client download test"
+
+config GCC_LTO
+    def_bool y
+
+config BUILD_INIPARSER
+    def_bool y
+
+config BUILD_PYINPUT
+    def_bool y
+
+config BUILD_MICROHTTPD
+    def_bool y
+
+config BUILD_XML2
+    def_bool y
+
+config PING
+	def_bool y
+	
+config NET_HTTP
+    def_bool y
+
+config NET_FTP
+    def_bool y
+
+
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+

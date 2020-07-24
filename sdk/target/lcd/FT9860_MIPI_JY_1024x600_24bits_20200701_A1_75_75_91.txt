@@ -1,0 +1,155 @@
+/*
+ * MIPI LCD Initialization Script
+ *
+ * Date          : 7/1/2020
+ * Chip Type     : IT9860
+ * Resolution    : 1024x600
+ * Color format  : RGB565
+ * LCD interface : 24-bits
+ * Build version : LCD initial script editor Ver. 0.0.0.325
+ * SHA1 hash     : 89bb772e49a6e8ec1d4afc3c4b5c032b5a81815e
+ * 
+ */
+
+/* ************************************************* */
+/*               Please don't remove!                */
+/* ************************************************* */
+/*@UEsDBBQAAAAIAGVw4VBlpju0igcAAPsYAAALAAAAc2V0dGluZy5pbmm9WMuS20QU3acq/6BlUulJ+qWHqdLCetieise4LMcBEsqleDSJCj8GWUMyexYsWLBjwZodC5aw5VeoovIZdPeVrSvLhkAgnpG7++j2fXT37T7tZ5N+8PndO8N4nK6zZbjcLL7wXfmQ23fvhP1+ts6KdDnJXgrq0wOEtRDeQoRGhvEgyrfXy/S2W2Spz7hnwBkGXa6wST/cLDfF9PY685luRtuyRrhGplkFXWwuMzAXZS9uXlZ2ppsyXfqsAxYGmyK5XS+m+SrzJSBBuvhivCkWr3zOAekVm3UJkAShGWhxbWhltRLbAEgHSCAVSiKJh2E0SF7lV6X2yjRn+2b4Kr824ZxPO66JWU3ARBksVTi//dwAesv82h9t1plGx8pq+jIzfZ9ss+LsMrvK19mlsqB7jPP1xc0bNTRb6hP9CSgJGAk4CQQJJAlsEjgkcEmfkj4jfU76gvQl6duk75C+SyaUTBiZcDIRZCLJxCYTh0zclnrmk2EUDh+T4Sz5dBSS4QCKKB6pL6oeph6uHqEeqR5bPY56XPV46uloGSOoJZkWZVqWaWGmpZkWZ1qe6Q5M9+C6Bze6dQ8uWp5xn/TH5x87LhQeFB1TuBQKBgWHQkAhobChcKAALS5ocUGLB1o80OKBFg+0eKDFU/7PomRETTGGYsSgBcWIQwuKkYAWFCPZCkv4hP27P7XaAj1VUabSLMnKMl+/hJxRBsLVJcUNBotVmzY7werSr9o6LJNu1eJMsiJPl8HN1vfOXuTlttKRhMPxZpkWeYlt3b3zLBw/+dwk9/jJee9w/Q9jA6PdR4iHohbfp79x1WDna7X8S52UUVqmfq2ksc0IXr9obDXSq1XB3sGQudUqXV8GucnVyU5oWyabm2KR7RypXhintQ96LGpre894qEcQFKvhfPRofNZPlYHnxfP1YnVp0TeMWdajR1Z4Ec11j48Ym1P10QKXy1uLcd0yIq/TvNTt1Va/rDWIblOD6M4dh1jc4Y+tzZWl5sUoS0sl6zion2P6CWdemTMSUK+lAm6kAj6nIdH/lAih/lGP8EQdacXyUEcWXLDgzoWNpGwkEYBEMOduLQF1kAhhiEI658gDqFcSEEeo4mDIR4YkBEiIOUeeQ72SkCAhT0vAmIZqTHvISq+WiMDTiM67sos86UpUR15F4HfE5xJFBvVaKgatMZ33KKMsoD2L9qgnYiktGdOAuaxrccaRkR4KgeF6cOj4kbqHJipGbiH9EuEU6WRoClkXDSMaDPAThQdJErNdeJFFY+qIyH6/8CJUx+46KDwkY/9P4XFY3zwwqU9p3LOsbVZa13p3sV7cXF1lhXVr+RaX9J469NObZfmR2t3uH0+2U/W4d2C209w4eKfeek4owp11XW2jem9rshcEIf4CaJu+7XfSmtzog8HRpyC8wbwGiMfTyb1Zcp9MknsDXUT3ovj+31KP/eeIZgbEQcIJLoEHSOABEniABB4ggQfYwANs4AE28AAbeIANWmz7L03y04c66mZOKXNQs+okQWexOlk1YzDk3TCI+gi12UOue2u4ZuNGyyHIjoEcTjMNNqk75XL3onGmOtTMpcYbJzZAbRqv0SNU3gjvjuTKfkXphdxbxrSe147WtJzJGkXcnDl7uKL4jrD3CKL5Yg8eUn0DYpXcEHxtCBN+LbVvV8PS4v0abaZOjeDMMfB4lLxOr80ygLZZSdP0xTLb5YZGZUUiG5RSNOgmb1BR1qCp9IR6lSCTT85H9AyKB6Zg0GLQ4tDiuqWS9AwKeCfgnXiwi6Ze0mbdNdb0xfn43NBFXcGj5jl0DzfXmIbaa0yjR/YbI6w2vKFKF19ayxSuVxpuzkaNoNkYxhrGd2Vz49Pgwa2vgup1AF2P5pN+0c6nqkMzAYxoY/UaoVZKGLnDNW1EW3li0HaeGA2HCWDAVgLUY6JobsWF0MnZ7dYnh4NYHhCJHY9FJ6dEOMenEDDB82SKiSwS4MgQOoo9jHeOkzcH0wFEwRzv8BgE3EakliGdDQqAgmX8HeriRF9cx8cyJtzdE3UsE5zAkf8U+U/RhQHTn0a8aPwZlmHvUP+n8QYnfO6ckHmPeHnn0IcKb41ttU6Qfg+tHxsveBxL77/EK1vOh7D1gWJxT8j8Zb3aE07heE7RHDUutHhTQnPHbbP5mMrbn75/+90vf/z469sfvv396x/0bdR6++s3ANTdJQoTbhIVjm4P+KYrGcaNua8Wm5VlCbSBuvgyjWJzce5hHK0JifHW+FbrG9/u0Bi5eH1jeXwVgivy+OkFCqrRz7yfhclTpFniHROu0LP+wLLwMSCRV063khlaliPQikGzHuJIcd8YeR4dj9TBqwH7EB0fMVhJ5t3+Nxvd2p2MiN+EQX1UXkTw+1sDqn5UNyRlR4Sh2eLxTZAdAzkyAARy395RoB2aVDa3i4rwRWI+1l8jEnFd46qmGJ2q6m+FMo0yXaO6Ruejne7kOlvk6TJMt4hzDRJDmPTPgtsyLUrrdV6+sgbJ2Z5XTIfjT4D4m9YgmY+L7Dotsib4WVZsmsi0SPNlE4rf5KUZEXAo+/ImWy+y8GZbblaztDA/1/0JUEsBAhQAFAAAAAgAZXDhUGWmO7SKBwAA+xgAAAsAAAAAAAAAAAAgAAAAAAAAAHNldHRpbmcuaW5pUEsFBgAAAAABAAEAOQAAALMHAAAAAA==@*/
+
+/* ************************************************* */
+/*    IT9860, MIPI Interface mode, Clock Setting     */
+/* ************************************************* */
+// LP
+WRITE(0xD8000048, 0x0002C804);    // KESCCLK
+// HS
+WRITE(0xD8000028, 0x002AC801);    // DCLK
+WRITE(0xD800004C, 0xC002C801);    // KDSICLK
+WRITE(0xD8000044, 0x00280801);    // En_W20CLK(mipi ctrl),En_W21CLK(mipi phy)
+
+/* ************************************************* */
+/*              PLL3 ck3_n1, 0xD8000000              */
+/* ************************************************* */
+WRITE(0xD8000120, 0x204B0C01);
+WRITE(0xD8000124, 0x80000000);
+WRITE(0xD8000124, 0xF3000000);
+wait(220);                        // IDLE 220
+WRITE(0xD8000124, 0x80000000);
+
+// IO output mode
+WRITE(0xD0000110, 0x0000000F);    // (0x0000000F DEFAULT VALUE)
+
+/* ************************************************* */
+/*          MIPI DPHY reg base: 0xD0D00000           */
+/* ************************************************* */
+// DataRateCLK=BYTECLK*8=KESCCLK*PLLNS/PLLF
+// DataRateCLK=18.75*32/1=600
+WRITE(0xD0D00000, 0x400080E4);    // PLLNS=32, Pad Type=MIPI, [21:17]P/N SWAP
+WRITE(0xD0D00004, 0x05008001);    // PLLMS=1, PLLF=1/8 (First, datarateclk change to slow)
+WRITE(0xD0D0001C, 0x06300000);    // ESCCLK = BYTECLK/4
+WRITE(0xD0D00000, 0x410080E4);    // PLL ENABLE
+WAIT(200);
+
+WRITE(0xD0D00008, 0x50142803);
+WRITE(0xD0D0000C, 0x07040A0A);
+WRITE(0xD0D00010, 0x010A0F15);
+WRITE(0xD0D00014, 0x05030A04);
+WRITE(0xD0D00018, 0x000053E8);
+
+WRITE(0xD0D00004, 0x055E8001);    // CLKEN,DATAEN
+WRITE(0xD0D00004, 0x055F8001);    // RESET
+WAIT(1);
+WRITE(0xD0D00004, 0x055E8001);    // normal
+WAIT(200);
+WRITE(0xD0D00004, 0x055E8061);    // normal,PLLF=1/1
+
+/* ************************************************* */
+/*                       MIPI                        */
+/* ************************************************* */
+WRITE(0xD800004C, 0x0002C001);    // MIPI controller normal
+wait(200);
+
+/* ************************************************* */
+/*         LCD Register Setting, 0xd000_0000         */
+/* ************************************************* */
+WRITE(0xD0000000, 0x00000070);    // DRAM mode, dclk, Falling latch
+WRITE(0xD0000004, 0x0F7F0A60);    // SRC:RGB565, dst 24-bits
+WRITE(0xD0000008, 0x02580400);    // Layer1:W1024xH600
+WRITE(0xD000000C, 0x00000800);    // pitch=1024 X 2=2048
+WRITE(0xD0000010, 0x00000000);    // baseA addr
+WRITE(0xD0000014, 0x00000000);    // baseB addr
+WRITE(0xD0000018, 0x00000000);    // baseC addr
+
+/* ************************************************* */
+/*                  Test Color Mode                  */
+/* ************************************************* */
+WRITE(0xD0000020, 0x000000FF);    // test color mode=0, None
+
+/* ************************************************* */
+/*                    CTG Setting                    */
+/*   HS:20, HBP:140, HFP:160, VS:3, VBP:20, VFP:12   */
+/* ************************************************* */
+WRITE(0xD0000070, 0x00010300);    // ctg_reset_on
+wait(1);                          // 1 μs
+WRITE(0xD0000070, 0x00000300);    // ctg_reset_off
+
+WRITE(0xD0000070, 0x00000307);    // enable ctg 0 1 2
+WRITE(0xD0000074, 0x027B0540);    // htotal=0x0540, vtotal=0x027B
+
+//CTG0 (Hsync)
+WRITE(0xD0000078, 0x20010540);    // set0,p1, line x=htotal,        y=1
+WRITE(0xD000007C, 0x10010014);    // set1,p2       x=HOR.SYNC TIME, y=1
+WRITE(0xD0000080, 0x00000000);    // set1,p3(0x0,0)
+WRITE(0xD0000084, 0x00000000);    // set0,p4(0x0,0)
+
+//CTG1 (Vsync)
+WRITE(0xD0000088, 0x60010540);    // set0,p1 ,frame  x=htotal, y=1
+WRITE(0xD000008C, 0x10040540);    // set1,p2         x=htotal, y=VER.SYNC TIME+1
+WRITE(0xD0000090, 0x00000000);    // set1,p3(0x0,0)
+WRITE(0xD0000094, 0x00000000);    // set0,p4(0x0,0)
+
+//CTG2 (DE)
+WRITE(0xD0000098, 0x101900A0);    // set1,p1, line
+WRITE(0xD000009C, 0x227104A0);    // set0,p2 x=HOR.SYNC TIME+HBP+Hor. display area y=(VER.SYNC TIME+1)+VBP+1+Ver. display area
+WRITE(0xD00000A0, 0x101900A0);    // set1,p3
+WRITE(0xD00000A4, 0x227104A0);    // set0,p4
+
+/* ************************************************* */
+/*         MIPI reg base: 0xd0c00000   (HS)          */
+/* ************************************************* */
+//----------HS-----------//
+WRITE(0xD0C00004, 0x004F028E);    // 0x6[7]=BLLP, +0x04[0]=EOTPGE
+WRITE(0xD0C00008, 0x00640064);
+WRITE(0xD0C00010, 0x000F0000);
+WRITE(0xD0C00014, 0x0000003E);    // RGB666(0x1E),RGB888(0x3E)
+WRITE(0xD0C00018, 0x00241019);    // +0x18[5:0]=CLWR
+WRITE(0xD0C0001C, 0x00000000);    // 24-bits pixel
+WRITE(0xD0C00020, 0x00000400);    // HACT=1024(0x0400)
+WRITE(0xD0C00028, 0x00000C00);    // 1024*3(0x0C00)
+// Write d0c0003c 000000ff f
+WRITE(0xD0C00048, 0x00000005);    // +0x48[6]=HSE Pkt
+// Write d0c00050 000006a0 f
+WRITE(0xD0C00054, 0x00000000);    // HSS(4)+HSA*3+HSE(4)+HBP*3+4+HACT*3+2+HFP*3
+WRITE(0xD0C00058, 0x00000010);
+WRITE(0xD0C00080, 0x00140003);    // VBP=20(0x14), VSA=3(0x03)
+WRITE(0xD0C00084, 0x0258000C);    // VACT=600(0x258), VFP=12(0x0C)
+WRITE(0xD0C00088, 0x06B00000);    // HBP=140*3(0x01A4), HSA=20*3(0x3C)
+WRITE(0xD0C0008C, 0x00000000);    // HFP=160*3(0x01E0)
+
+WRITE(0xD0C00050, 0x00000000);    // pixel fifo threshold
+
+wait(150);
+
+// -------MIPI End-------- //
+
+// MIPI enable
+WRITE(0xD0000230, 0x00000016);    // [0]:MIPI enable,[1]:HsyncValue,[2]:VsyncValue,[3]:DEValue
+wait(10);                         // 10 μs
+WRITE(0xD0000230, 0x00000017);    // [0]:MIPI enable
+wait(5);                          // 5 μs
+
+/* ************************************************* */
+/*                    Enable LCD                     */
+/* ************************************************* */
+WRITE(0xD000001C, 0x00000001);    // SyncEn
+wait(1);                          // 1 μs
+WRITE(0xD000001C, 0x00000003);    // SyncEn DisplayEn

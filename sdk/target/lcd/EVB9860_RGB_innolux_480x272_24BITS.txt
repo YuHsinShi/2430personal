@@ -1,0 +1,112 @@
+/*
+ * RGB LCD Initialization Script
+ *
+ * Date          : 2020/1/20
+ * Chip Type     : IT970
+ * Resolution    : 480x272
+ * Color format  : RGB565
+ * LCD interface : 24-bits
+ * Build version : LCD initial script editor Ver. 0.0.0.305
+ * SHA1 hash     : 09f7527f6277b20a6dce383ba63d2b3185dc51ab
+ * 
+ */
+
+/* ************************************************* */
+/*               Please don't remove!                */
+/* ************************************************* */
+/*@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@*/
+
+/* ************************************************* */
+/*     IT970, RGB Interface mode, Clock Setting      */
+/* ************************************************* */
+WRITE(0xD8000028, 0x002AC801);    // DCLK PLL3_OUT1
+WRITE(0xD0000114, 0x00000000);    // DCLK output  Delay setting
+
+/* ************************************************* */
+/*              PLL3 ck3_n1, 0xD8000000              */
+/* ************************************************* */
+WRITE(0xD8000120, 0x20516C01);
+WRITE(0xD8000124, 0x80000000);
+WRITE(0xD8000124, 0xF3000000);
+wait(220);                        // IDLE 220
+WRITE(0xD8000124, 0x80000000);
+
+/* ************************************************* */
+/*            General Setting 0xd000_0000            */
+/* ************************************************* */
+WRITE(0xD0000000, 0x00000071);    // DRAM mode, dclk, Falling latch
+WRITE(0xD0000004, 0x0F7F0A60);    // SRC:RGB565, dst 24-bits
+WRITE(0xD0000008, 0x011001E0);    // Layer1:W480xH272
+WRITE(0xD000000C, 0x000003C0);    // pitch=480 X 2=960
+WRITE(0xD0000010, 0x00000000);    // baseA addr
+WRITE(0xD0000014, 0x00000000);    // baseB addr
+WRITE(0xD0000018, 0x00000000);    // baseC addr
+
+/* ************************************************* */
+/*                  Test Color Mode                  */
+/* ************************************************* */
+WRITE(0xD0000020, 0x800000FF);    // test color mode=0, None
+
+/* ************************************************* */
+/*             Port Setting 0xD000_0000              */
+/*     HS:5, HBP:20, HFP:20, VS:5, VBP:6, VFP:5      */
+/* ************************************************* */
+WRITE(0xD0000070, 0x00010300);    // ctg_reset_on
+wait(1);                          // 1 μs
+WRITE(0xD0000070, 0x00000300);    // ctg_reset_off
+
+WRITE(0xD0000070, 0x00000307);    // enable ctg 0 1 2
+WRITE(0xD0000074, 0x0120020D);    // htotal=0x020D, vtotal=0x0120
+//CTG0(Hsync)
+WRITE(0xD0000078, 0x2001020D);    // set0,p1, line x=htotal,        y=1
+WRITE(0xD000007C, 0x10010005);    // set1,p2       x=HOR.SYNC TIME, y=1
+WRITE(0xD0000080, 0x00000000);    // set1,p3(0x0,0)
+WRITE(0xD0000084, 0x00000000);    // set0,p4(0x0,0)
+//CTG1(Vsync)
+WRITE(0xD0000088, 0x6001020D);    // set0,p1 ,frame  x=htotal, y=1
+WRITE(0xD000008C, 0x1006020D);    // set1,p2         x=htotal, y=VER.SYNC TIME+1
+WRITE(0xD0000090, 0x00000000);    // set1,p3(0x0,0)
+WRITE(0xD0000094, 0x00000000);    // set0,p4(0x0,0)
+//CTG2(DE)
+WRITE(0xD0000098, 0x100D0019);    // set1,p1, line
+WRITE(0xD000009C, 0x211D01F9);    // set0,p2 x=HOR.SYNC TIME+HBP+Hor. display area y=(VER.SYNC TIME+1)+VBP+1+Ver. display area
+WRITE(0xD00000A0, 0x100D0019);    // set1,p3
+WRITE(0xD00000A4, 0x211D01F9);    // set0,p4
+
+/* ************************************************* */
+/*           Pin Share Setting 0xD100_0000           */
+/* ************************************************* */
+WRITE(0xD10000E4, 0x00000000);    // GPIO[47:40]
+WRITE(0xD10000E8, 0x11111400);    // GPIO[55:48]
+WRITE(0xD10000EC, 0x11111111);    // GPIO[63:56]
+WRITE(0xD1000160, 0x11111111);    // GPIO[71:64]
+WRITE(0xD1000164, 0x00111111);    // GPIO[79:72]
+
+/* ************************************************* */
+/*                 Pin Mux(120~138)                  */
+/* ************************************************* */
+WRITE(0xD0000120, 0x00000000);    // LD10_LD9_LD8_LD23
+WRITE(0xD0000124, 0x00000000);    // LD14_LD13_LD12_LD11
+WRITE(0xD0000128, 0x00000000);    // LD2_LD1_LD0_LD15
+WRITE(0xD000012C, 0x071A1819);    // LD15_LD14_LD13_LD12
+WRITE(0xD0000130, 0x03040506);    // LD19_LD18_LD17_LD16
+WRITE(0xD0000134, 0x0F000102);    // LD23_LD22_LD21_LD20
+WRITE(0xD0000138, 0x0B0C0D0E);    // LD27_LD26_LD25_LD24
+WRITE(0xD000013C, 0x1708090A);    // LD31_LD30_LD29_LD28
+WRITE(0xD0000140, 0x13141516);    // LD35_LD34_LD33_LD32
+WRITE(0xD0000144, 0x00101112);    // LD39_LD38_LD37_LD36
+
+/* ************************************************* */
+/*                 LVDS                              */
+/* ************************************************* */
+//LVDS
+WRITE (0xD0D00000,0x468084e4); //Pad Type=TTL,
+// LCD IO output mode
+WRITE(0xD0000110, 0x00000000);    // LCD IO output mode
+
+/* ************************************************* */
+/*                    Enable LCD                     */
+/* ************************************************* */
+WRITE(0xD000001C, 0x00000001);    // SyncEn
+wait(1); // IDLE 1                // 1 μs
+WRITE(0xD000001C, 0x00000003);    // SyncEn DisplayEn

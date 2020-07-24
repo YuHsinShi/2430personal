@@ -1,0 +1,133 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CTRLBOARD
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    select HAVE_VIDEO
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+config USB0_ENABLE
+    def_bool y
+
+config MSC_ENABLE
+    def_bool y
+
+config FS_FAT
+    def_bool y
+
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config NOR_ENABLE
+    def_bool y
+
+config NOR_USE_AXISPI
+    def_bool y
+
+config NOR_ENABLE_QUADMODE
+    def_bool y
+
+config NET_ENABLE
+    def_bool y
+
+config BUILD_INIPARSER
+    def_bool y
+    
+config TASK_DRIVE_PROBE
+    def_bool y
+
+config DEF_DBG_UART1
+    def_bool y
+
+config SYSTEM_NAME
+    default "ITE ftp client download test"
+
+if NET_ENABLE
+config NET_ETHERNET
+    def_bool y
+
+config GPIO_ETHERNET_LINK
+    default "39"
+
+config GPIO_ETHERNET
+    default "25, 26, 27, 28, 29, 30, 31, 36, 37, 38"
+    
+config DEF_NET_RTL8201FL
+    def_bool y
+
+config NET_ETHERNET_PHY_ADDR
+    default "0"
+    
+config NET_ETHERNET_LINK_INTR
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_RANDOM
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_STORAGE
+    def_bool y
+
+config NET_ETHERNET_MAC_ADDR_POS
+    default "0x70000"
+
+config NET_ETHERNET_MAC_ADDR_UPGRADE
+    def_bool y
+
+config NET_MAC_CLOCK_INVERSE
+    default "1"
+	
+config NET_MAC_CLOCK_DELAY
+    default "0x0F"
+
+endif
+
+config NET_WIFI
+    def_bool n
+    
+if NET_WIFI
+config NET_WIFI_WPA
+    def_bool y
+
+config NET_WIFI_SSID
+    default "CtrlBoard"
+
+config NET_WIFI_FIND_BEST_CHANNEL
+    default n
+	
+config NET_WIFI_REDEFINE
+	def_bool y
+
+config NET_DHCP_SERVER
+    def_bool y
+
+config DHCPS_ADDR_COUNT
+    default "254"
+
+endif
+
+config NET_HTTP
+    def_bool y
+
+config NET_FTP
+    def_bool y
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+

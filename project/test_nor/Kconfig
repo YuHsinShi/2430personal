@@ -1,0 +1,44 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+#config DEF_CHIP_PKG_IT9852
+#    def_bool y
+
+config RAM_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.scr"
+
+config CMAKE_SOURCE_DIR
+	string
+	option env="CMAKE_SOURCE_DIR"
+
+config FS_FAT
+	def_bool n
+
+config NOR_ENABLE
+	def_bool y
+
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config SPI_ENABLE
+
+config DEF_DBG_UART1
+    def_bool y
+
+config DBG_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.txt"
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"

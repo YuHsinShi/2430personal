@@ -1,0 +1,5 @@
+if (DEFINED CFG_ARMLITE_ENABLE)
+    if (DEFINED CFG_ARMLITE_OPUS_CODEC)
+        add_subdirectory(opuscodec)
+    endif()
+endif()

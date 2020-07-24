@@ -1,0 +1,125 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config OPENRTOS_USE_TRACE_FACILITY
+    def_bool y
+
+config OPENRTOS_GENERATE_RUN_TIME_STATS
+    def_bool y
+
+config OPENRTOS_CLI
+    def_bool y
+
+config NOR_ENABLE
+    def_bool y
+
+config NOR_CACHE_SIZE
+    default "0x200000"
+
+config NOR_RESERVED_SIZE
+    default "0x2D0000"
+
+config NOR_PARTITION0
+    def_bool y
+
+config NOR_PARTITION0_SIZE
+    default "0xDC0000"
+
+config NOR_PARTITION1
+    def_bool y
+
+config NOR_PARTITION1_SIZE
+    default "0x40000"
+
+config NOR_PARTITION2
+    def_bool y
+
+config NOR_PARTITION2_SIZE
+    default "0xF0000"
+
+config NOR_PARTITION3
+    def_bool y
+
+config NOR_USE_AXISPI
+    def_bool y
+    
+config NOR_ENABLE_QUADMODE
+    def_bool y
+        
+config FS_FAT
+    def_bool y
+
+config AXISPI_ENABLE
+    def_bool y
+
+config UART1_ENABLE
+    def_bool y
+
+config USB0_ENABLE
+    def_bool y
+
+config USB_DEVICE
+    def_bool y
+
+config DEF_USB_DEVICE_USB0
+    def_bool y
+
+config USBD_ACM
+    def_bool y
+
+config USB_VENDOR_ID
+    default "0x1D6B"
+
+config USB_PRODUCT_ID
+    default "0x0106"
+
+config GPIO_USB_ID_PIN
+    default "17"
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "14"
+
+config AXISPI_MOSI_GPIO
+    default "7"
+
+config AXISPI_MISO_GPIO
+    default "8"
+
+config AXISPI_CLOCK_GPIO
+    default "5"
+
+config AXISPI_CHIP_SEL_GPIO
+    default "6"
+
+config AXISPI_WP_GPIO
+    default "9"
+
+config AXISPI_HOLD_GPIO
+    default "10"
+
+config TASK_DRIVE_PROBE
+    def_bool y
+
+config UPGRADE_IMAGE
+	def_bool y
+
+config BUILD_CLI
+	def_bool y
+
+config BUILD_UPGRADE
+	def_bool y
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+

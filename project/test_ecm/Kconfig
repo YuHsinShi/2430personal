@@ -1,0 +1,95 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config DEF_CHIP_PKG_IT9860
+    def_bool y
+
+config ROM_COMPRESS
+    def_bool n
+    
+config UART1_ENABLE
+    def_bool y
+
+config GPIO_UART1_TX
+    default "4"
+
+config GPIO_UART1_RX
+    default "-1"
+
+config USB0_ENABLE
+    def_bool y
+
+#==== for NET ====
+config NET_ENABLE
+    def_bool y
+
+config NET_ETHERNET
+    def_bool n
+
+config NET_ETHERNET_4G
+    def_bool y
+
+config DEF_NET_AIR720SL_4G
+    def_bool y
+
+config USB_ECM
+    def_bool y
+
+config NET_HTTP
+    def_bool y
+    
+config PING
+	def_bool y
+
+config DBG_INIT_SCRIPT
+    default "IT9860_360Mhz_DDR2_360Mhz.txt"
+
+
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
+
+
+menu "ECM Network Test"
+
+choice
+    prompt "Test App"
+    default TEST_PING
+
+config TEST_PING
+    bool "Ping Test"
+    help
+        Test with Ping.
+
+config PING_IP
+    string "IP"
+    depends on TEST_PING
+    default "172.217.160.78"
+    help
+        google: 172.217.160.78
+
+config TEST_HTTP
+    bool "Http Download Test"
+    help
+        Test with http download.
+
+config HTTP_URL
+    string "URL"
+    depends on TEST_HTTP
+    default "http://soc.ite.com.tw/index.php/applications/appliance/file/General%20Hardware%20Platform%20Introduction%252EMOV"
+    help
+        Set URL for http downlad.
+
+endchoice
+
+endmenu
+
+
+

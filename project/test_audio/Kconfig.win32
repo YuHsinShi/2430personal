@@ -1,0 +1,138 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "Project Configuration"
+
+config PROJECT_MODULE_DEFINED
+    bool
+    default y
+    select HAVE_LCD
+    select HAVE_GRAPHICS
+    select HAVE_AUDIO
+    select HAVE_VIDEO
+
+config DEF_CHIP_PKG_IT9856
+    def_bool y
+
+config RAM_INIT_SCRIPT
+    default "IT9850A0_400MHz.scr"
+
+config DBG_INIT_SCRIPT
+    default "IT9850A0_400MHz.txt"
+
+config CMAKE_SOURCE_DIR
+    string
+    option env="CMAKE_SOURCE_DIR"
+
+config I2S_ENABLE
+    def_bool y
+
+config AUDIO_ENABLE
+    def_bool y
+
+config AUDIO_DAC_MODULE
+    default "itp_dac_alc5616.c"
+
+config I2C0_ENABLE
+    def_bool y
+
+config DEF_I2S_USE_GPIO_MODE_2
+    def_bool y
+
+config BUILD_LINPHONE
+    def_bool y
+
+menu "TEST IIS"
+
+    choice
+    prompt "IIS TEST"
+    default USB_WAV_FILE_TEST
+    help
+        Test IIS play wav sound.
+    help_cht
+        測試 I2s 並撥放聲音
+    help_chs
+        測試 I2s 並撥放聲音
+
+
+    config USB_WAV_FILE_TEST
+    bool "usb wav file play test"
+    help
+        usb wav file play test.
+    help_cht
+        usb wav檔測試撥放。
+    help_chs
+        usb wav檔測試撥放。
+
+    config SIMPLE_IIS_TEST_play
+    bool "simple iis play sound test"
+    help
+        simple iis test play sound.
+    help_cht
+        測試iis並撥放聲音。
+    help_chs
+        測試iis並撥放聲音。
+
+    config USB_WAV_RECORD_FILE_TEST
+    bool "usb wav record file test"
+    help
+        usb wav record file test.
+    help_cht
+        usb wav檔測試錄音。
+    help_chs
+        usb wav檔測試錄音。
+
+    config AD_REC_DA_PLAY_TEST
+    bool "AD record & DA play sound test"
+    help
+        TEST AD record & DA play sound.
+    help_cht
+        測試錄製並撥放聲音。
+    help_chs
+        測試錄製並撥放聲音。
+
+    config DUAL_WAV_PLAY_TEST
+    bool "dual wav mix test"
+    help
+        TEST dual wav mix.
+    help_cht
+        測試雙wav音檔混音。
+    help_chs
+        測試雙wav音檔混音。
+
+    config AD_DA_LOUDER_TEST
+    bool "louder test"
+    help
+        louder((AD & DA TEST)).
+    help_cht
+        擴音器(AD & DA 測試)。
+    help_chs
+        擴音器(AD & DA 測試)。
+
+    config 970_SIMPLE_IIS_TEST_play
+    bool "simple iis play sound test for 970"
+    depends on CHIP_PKG_IT970
+    help
+        simple iis test play sound for 970.
+    help_cht
+        測試iis並撥放聲音。(970 use)
+    help_chs
+        測試iis並撥放聲音。(970 use)
+
+    config 9920_LOOPBACK_TEST
+    bool "iis loopback test for 970"
+    depends on CHIP_PKG_IT970
+    help
+        iis loopback test for 970.
+    help_cht
+        測試iis loopback並撥放聲音。(970 use)
+    help_chs
+        測試iis loopback並撥放聲音。(970 use)
+
+    endchoice
+
+endmenu
+
+source "$CMAKE_SOURCE_DIR/sdk/Kconfig"

@@ -1,0 +1,23 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+if BUILD_SDL
+
+menu "sdl"
+
+config SDL_M2D_ENABLE
+    bool "Use M2D renderer"
+    depends on M2D_ENABLE
+    default n
+    help
+        Use M2D renderer or not.
+    help_cht
+        使用 M2D Renderer。
+    help_chs
+        使用 M2D Renderer。
+
+endmenu
+
+endif # BUILD_SDL

@@ -1,0 +1,22 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+if TOUCH_ENABLE
+
+menu "tslib"
+
+config TSLIB_STATIC_CONF
+    bool "Static configuration"
+    default n
+    help
+        Loading configuration from memory instead of from file.
+    help_cht
+        從記憶體而不是從檔案讀取設定。
+    help_chs
+        从内存而不是从文件加载配置。
+
+endmenu
+
+endif # TOUCH_ENABLE

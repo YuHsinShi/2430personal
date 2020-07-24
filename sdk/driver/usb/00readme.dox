@@ -1,0 +1,42 @@
+/**
+  @internal
+  @addtogroup ith_usb USB
+  if **CFG_USB_DEVICE_NEW** is defined,
+  the register map definitions are in the @link /sdk/driver/usb/gadget/udc/fotg210.h @endlink file.
+  Otherwise, they are in the @link /sdk/driver/usb/gadget_leagcy/udc_reg.h @endlink file.
+
+  if **CFG_USB_DEVICE_NEW** is defined, @link /sdk/driver/usb/gadget/udc/fotg210-udc.c @endlink contains
+  the lowest level of usb device driver.
+
+  The lowest level of usb host driver is at @link /sdk/driver/usb/usb/hcd/ehci_hcd.c @endlink.
+
+  Most of the source code is from linux kernel version 4.13.
+
+  linux-4.13/drivers/usb/core/   <-> ite_sdk/sdk/driver/usb/usb/
+  linux-4.13/drivers/usb/host/   <-> ite_sdk/sdk/driver/usb/usb/hcd/
+  linux-4.13/drivers/hid/usbhid/ <-> ite_sdk_970/sdk/driver/hid/
+
+  @~chinese
+	# Host
+	
+	UsbHostDetectHandler()
+	
+	http://pollos-blog.blogspot.com/2015/08/usb-host.html
+	
+	裝置enumeration的流程請見`ehci_start()`函式。
+  
+	# Device
+  
+  	struct fotg210_udc 是用來描述最底層 h/w usb controller。該struct定義在
+  	@link /sdk/driver/usb/gadget/udc/fotg210.h @endlink。可看出該struct繼承自
+  	usb_gadget。該stuct在 iteUdcInitialize() 內被配置並初始化。
+	
+	usb_gadget driver是在/sdk/driver/itp/itp_usb_device.c呼叫`iteUsbRegisterGadget();`所註冊的。
+	
+	function driver 得透過 usb_function_register() 來註冊。
+
+	# 工具網站
+	- https://eleccelerator.com/usbdescreqparser/
+
+
+ */
