@@ -1,0 +1,11 @@
+arm_lite_codec
+alt_cpu
+_presettings
+auo_demo
+auo_demo_480x480
+
+!/build/*/*/.config
+!/build/*/*/*.cmake
+/doc
+win32
+tool
