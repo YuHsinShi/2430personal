@@ -147,21 +147,17 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		}
 		
 		mainTypeATachoMeter = ituSceneFindWidget(&theScene, "mainTypeAMeter");
-		mainTypeATachoMeter->anifitcount = 0;
 		assert(mainTypeATachoMeter);
 
 		mainTypeDTachoMeter = ituSceneFindWidget(&theScene, "mainTypeDMeter0");
-		mainTypeDTachoMeter->anifitcount = 0; 
 		assert(mainTypeDTachoMeter);
 
 		mainTypeDSpeedMeter = ituSceneFindWidget(&theScene, "mainTypeDMeter1");
-		mainTypeDSpeedMeter->anifitcount = 0;
 		assert(mainTypeDSpeedMeter);
 
 		for (i = 0; i < 3; i++){
 			snprintf(widgetName, sizeof(widgetName), "mainTypeCMeter%d", i);
 			mainTypeCMeter[i] = ituSceneFindWidget(&theScene, widgetName);
-			mainTypeCMeter[i]->anifitcount = 0;
 			assert(mainTypeCMeter[i]);
 		}
 

@@ -163,8 +163,23 @@ include(layer.cmake)
 
 if (DEFINED CFG_NET_ENABLE)
     add_executable(${CMAKE_PROJECT_NAME}
-        network.c    
+        #network.c
+		network_func.c
+		network_main.c
+		network_config.h
         webserver.c
+        )
+endif()
+
+if (DEFINED CFG_NET_ETHERNET)
+    add_executable(${CMAKE_PROJECT_NAME}
+        network_ethernet.c
+        )
+endif()
+
+if (DEFINED CFG_NET_WIFI)
+    add_executable(${CMAKE_PROJECT_NAME}
+        network_wifi.c
         )
 endif()
 

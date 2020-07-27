@@ -385,7 +385,6 @@ static int UpgradePackage(void)
 {
     int ret = 0;
     ITCStream* fwStream = NULL;
-	ithPrintf("UpgradePackage %s \n",upgradeUrl);
 
     if (upgradeUrl[0] == '\0')
     {
@@ -854,7 +853,7 @@ void UpgradeSetStream(void* stream)
 int UpgradeProcess(int code)
 {
     int ret = 0;
-ithPrintf("UpgradeProcess %d \n",code);
+ithPrintf("UpgradeProcess %d= %d\n",code,QUIT_UPGRADE_FIRMWARE);
     if (code == QUIT_RESET_FACTORY)
     {
         UpgradeLcdConsoleEnable();
@@ -862,13 +861,16 @@ ithPrintf("UpgradeProcess %d \n",code);
     }
     else if (code == QUIT_UPGRADE_FIRMWARE)
     {
-        UpgradeLcdConsoleEnable();
+       // UpgradeLcdConsoleEnable();
 		
 		ithPrintf("QUIT_UPGRADE_FIRMWARE \n");
         ret = UpgradePackage();
     }
     else if (code == QUIT_UPGRADE_WEB)
     {
+
+	
+	ithPrintf("QUIT_UPGRADE_WEB \n");
         upgradeStream = NULL;
         upgradeIsReady = true;
 

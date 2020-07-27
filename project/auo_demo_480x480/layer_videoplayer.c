@@ -1,4 +1,4 @@
-﻿#include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -348,7 +348,7 @@ bool VideoPlayerLastButtonOnPress(ITUWidget* widget, char* param)
 
     if (item && videoPlayerIsPlaying)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         //AudioPauseKeySound();
 
@@ -380,7 +380,7 @@ bool VideoPlayerPlayCheckBoxOnPress(ITUWidget* widget, char* param)
         ITUScrollText* item = ituMediaFileListPlay((ITUMediaFileListBox*)videoPlayerScrollMediaFileListBox);
         if (item)
         {
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
 
             //AudioPauseKeySound();
 
@@ -446,7 +446,7 @@ bool VideoPlayerNextButtonOnPress(ITUWidget* widget, char* param)
 
     if (item && videoPlayerIsPlaying)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         //AudioPauseKeySound();
 
@@ -517,7 +517,7 @@ bool VideoPlayerOnTimer(ITUWidget* widget, char* param)
 #endif
         if(item)
         {
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
             strcpy(mtal_spec.srcname, filepath);
             mtal_spec.vol_level = LastMediaPlayerVoice;
 #ifdef CFG_VIDEO_ENABLE

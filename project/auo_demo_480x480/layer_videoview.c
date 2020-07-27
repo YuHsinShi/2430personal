@@ -1,4 +1,4 @@
-﻿#include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +22,7 @@ static ITUTrackBar* videoViewVolTrackBar;
 static ITUProgressBar* videoViewVolProgressBar;
 static ITUBackground* videoViewBackground;
 static ITULayer* videoPlayerLayer;
+static ITULayer* screensaverLayer;
 static ITUScrollMediaFileListBox* videoPlayerScrollMediaFileListBox;
 static ITUCheckBox* videoPlayerPlayCheckBox;
 static ITUAnimation* videoViewPlayAnimation;
@@ -122,7 +123,7 @@ bool VideoViewLastButtonOnPress(ITUWidget* widget, char* param)
 
     if (item)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         //AudioPauseKeySound();
 
@@ -150,7 +151,7 @@ bool VideoViewPlayCheckBoxOnPress(ITUWidget* widget, char* param)
         ITUScrollText* item = ituMediaFileListPlay((ITUMediaFileListBox*)videoPlayerScrollMediaFileListBox);
         if (item)
         {
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
             strcpy(mtal_spec.srcname, filepath);
             mtal_spec.vol_level = LastMediaPlayerVoice;
 #ifdef CFG_VIDEO_ENABLE
@@ -194,7 +195,7 @@ bool VideoViewNextButtonOnPress(ITUWidget* widget, char* param)
 
     if (item)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         //AudioPauseKeySound();
 
@@ -257,7 +258,7 @@ bool VideoViewOnTimer(ITUWidget* widget, char* param)
 #endif
         if(item)
         {
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
             strcpy(mtal_spec.srcname, filepath);
             mtal_spec.vol_level = LastMediaPlayerVoice;
 #ifdef CFG_VIDEO_ENABLE
@@ -405,6 +406,9 @@ bool VideoViewOnEnter(ITUWidget* widget, char* param)
 
         videoPlayerLayer = ituSceneFindWidget(&theScene, "videoPlayerLayer");
         assert(videoPlayerLayer);
+		
+		screensaverLayer = ituSceneFindWidget(&theScene, "screensaverLayer");
+        assert(screensaverLayer);
 
         videoPlayerScrollMediaFileListBox = ituSceneFindWidget(&theScene, "videoPlayerScrollMediaFileListBox");
         assert(videoPlayerScrollMediaFileListBox);
@@ -452,4 +456,16 @@ bool VideoViewOnLeave(ITUWidget* widget, char* param)
 void VideoViewReset(void)
 {
     videoPlayerStorageSprite = NULL;
+}
+
+bool VideoViewScreenSaverOnCustom(ITUWidget* widget, char* param)
+{
+#ifdef CFG_VIDEO_ENABLE    
+    mtal_pb_stop();
+    mtal_pb_exit();
+#endif
+
+    SceneLeaveVideoState();
+	ituLayerGoto(screensaverLayer);
+	return true;
 }

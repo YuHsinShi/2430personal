@@ -278,7 +278,7 @@ bool AudioPlayerLastButtonOnPress(ITUWidget* widget, char* param)
 	audioPlayerFocusIndex = listbox->focusIndex;
     if (item && audioPlayerPlaying)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         AudioPauseKeySound();
         AudioPlayMusic(filepath, AudioPlayerPlayCallback);
@@ -296,7 +296,7 @@ bool AudioPlayerPlayCheckBoxOnPress(ITUWidget* widget, char* param)
         ITUScrollText* item = ituMediaFileListPlay((ITUMediaFileListBox*)audioPlayerScrollMediaFileListBox);
         if (item)
         {
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
             ITUListBox* listbox = (ITUListBox*)audioPlayerScrollMediaFileListBox;
 
             AudioPauseKeySound();
@@ -339,7 +339,7 @@ bool AudioPlayerNextButtonOnPress(ITUWidget* widget, char* param)
 	audioPlayerFocusIndex = listbox->focusIndex;
     if (item && audioPlayerPlaying)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         AudioPauseKeySound();
         AudioPlayMusic(filepath, AudioPlayerPlayCallback);
@@ -421,7 +421,7 @@ bool AudioPlayerOnTimer(ITUWidget* widget, char* param)
         if (item)
         {
             ITUListBox* listbox = (ITUListBox*)audioPlayerScrollMediaFileListBox;
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
 
             AudioPauseKeySound();
             AudioPlayMusic(filepath, AudioPlayerPlayCallback);

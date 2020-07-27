@@ -1,4 +1,4 @@
-﻿#include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -215,7 +215,7 @@ bool ImagePlayerScrollMediaFileListBoxOnSelection(ITUWidget* widget, char* param
         ITUScrollText* item = ituMediaFileListPlay((ITUMediaFileListBox*)imagePlayerScrollMediaFileListBox);
         if (item)
         {
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
 			ITUListBox *listbox = (ITUListBox*)imagePlayerScrollMediaFileListBox;
 
             printf("Try to load %s\n", filepath);
@@ -248,7 +248,7 @@ bool ImagePlayerLastButtonOnPress(ITUWidget* widget, char* param)
 
     if (item)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
         
         printf("Try to load %s\n", filepath);
 
@@ -276,7 +276,7 @@ bool ImagePlayerNextButtonOnPress(ITUWidget* widget, char* param)
 
     if (item)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         printf("Try to load %s\n", filepath);
 
@@ -350,7 +350,7 @@ bool ImagePlayerOnEnter(ITUWidget* widget, char* param)
         if (((ITUListBox*)imagePlayerScrollMediaFileListBox)->focusIndex >= 0 && !imagePlayerLoading)
         {
             ITUScrollText* item = (ITUScrollText*) ituListBoxGetFocusItem((ITUListBox*)imagePlayerScrollMediaFileListBox);
-            char* filepath = (char*)ituWidgetGetCustomData(item);
+            char* filepath = item->tmpStr;
 
             strncpy(imagePlayerPath, filepath, PATH_MAX);
 

@@ -96,17 +96,10 @@ bool SettingWiFiSsidNameScrollListBoxOnLoad(ITUWidget *widget, char *param)
         {
             /*CANCEL PANEL DISPALY*/
             memset(pList[j].ssidName, 0, 32);
-#ifdef CFG_NET_WIFI_SDIO_NGPL
             pList[j].rfQualityQuant = 0;
 
             sprintf(buf,    "%s",   pList[j].ssidName);
             sprintf(buf,    "%s",   pList[j].rfQualityQuant);
-#else
-            pList[j].rfQualityRSSI = 0;
-
-            sprintf(buf,    "%s",   pList[j].ssidName);
-            sprintf(buf,    "%s",   pList[j].rfQualityRSSI);
-#endif
         }
 
         //printf("ssid %s \n",buf);
@@ -282,11 +275,8 @@ bool SettingWiFiSsidSignalScrollListBoxOnLoad(ITUWidget *widget, char *param)
         ITUScrollText   *scrolltext = (ITUScrollText *) node;
         char            buf[8];
 
-#ifdef CFG_NET_WIFI_SDIO_NGPL
         sprintf(buf, "%d%%", pList[j].rfQualityQuant);
-#else
-        sprintf(buf, "%d%%", pList[j].rfQualityRSSI);
-#endif
+
         ituScrollTextSetString(scrolltext, buf);
 
         ituWidgetSetCustomData(scrolltext, j);

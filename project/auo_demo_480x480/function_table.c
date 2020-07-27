@@ -69,6 +69,7 @@ extern bool VideoViewNextButtonOnPress(ITUWidget* widget, char* param);
 extern bool VideoViewLastButtonOnPress(ITUWidget* widget, char* param);
 extern bool VideoViewRandomButtonOnPress(ITUWidget* widget, char* param);
 extern bool VideoViewViewButtonOnPress(ITUWidget* widget, char* param);
+extern bool VideoViewScreenSaverOnCustom(ITUWidget* widget, char* param);
 extern bool ImagePlayerOnEnter(ITUWidget* widget, char* param);
 extern bool ImagePlayerOnLeave(ITUWidget* widget, char* param);
 extern bool ImagePlayerSDInsertedOnCustom(ITUWidget* widget, char* param);
@@ -89,6 +90,7 @@ extern bool ImageViewUsbRemovedOnCustom(ITUWidget* widget, char* param);
 extern bool ImageViewViewButtonOnPress(ITUWidget* widget, char* param);
 extern bool ImageViewNextButtonOnPress(ITUWidget* widget, char* param);
 extern bool ImageViewLastButtonOnPress(ITUWidget* widget, char* param);
+extern bool ImageViewScreenSaverOnCustom(ITUWidget* widget, char* param);
 extern bool CalendarOnEnter(ITUWidget* widget, char* param);
 extern bool CalendarWheelOnChanged(ITUWidget* widget, char* param);
 extern bool CalendarConfirmButtonOnPress(ITUWidget* widget, char* param);
@@ -268,6 +270,7 @@ ITUActionFunction actionFunctions[] =
     "VideoViewLastButtonOnPress", VideoViewLastButtonOnPress,
 	"VideoViewRandomButtonOnPress", VideoViewRandomButtonOnPress,
     "VideoViewViewButtonOnPress", VideoViewViewButtonOnPress,
+	"VideoViewScreenSaverOnCustom", VideoViewScreenSaverOnCustom,
     "ImagePlayerOnEnter", ImagePlayerOnEnter,
     "ImagePlayerOnLeave", ImagePlayerOnLeave,
     "ImagePlayerSDInsertedOnCustom", ImagePlayerSDInsertedOnCustom,
@@ -288,6 +291,7 @@ ITUActionFunction actionFunctions[] =
     "ImageViewViewButtonOnPress", ImageViewViewButtonOnPress,
     "ImageViewNextButtonOnPress", ImageViewNextButtonOnPress,
     "ImageViewLastButtonOnPress", ImageViewLastButtonOnPress,
+	"ImageViewScreenSaverOnCustom", ImageViewScreenSaverOnCustom,
     "CalendarOnEnter", CalendarOnEnter,
     "CalendarWheelOnChanged", CalendarWheelOnChanged,
     "CalendarConfirmButtonOnPress", CalendarConfirmButtonOnPress,

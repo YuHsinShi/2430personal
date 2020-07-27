@@ -5,6 +5,7 @@
 #include "ite/itp.h"
 #include "ctrlboard.h"
 #include "scene.h"
+#include "network_config.h"
 
 #ifdef _WIN32
     #include <crtdbg.h>
@@ -71,7 +72,8 @@ retry_backup:
 #ifdef CFG_NET_ENABLE
     NetworkInit();
     #ifdef CFG_NET_WIFI
-
+    if (Ethernet_Wifi_DualMAC == 1)
+        WebServerInit();
     #else 
         WebServerInit();
     #endif
@@ -85,7 +87,9 @@ retry_backup:
     StorageInit();
     AudioInit();
     PhotoInit();
+#ifndef WIN32
 	Can_init();
+#endif
     SceneInit();
     SceneLoad();
     ret = SceneRun();
@@ -134,6 +138,8 @@ retry_backup:
 #endif // _WIN32
 
 end:
+	printf("DBG: %d\n", __LINE__);
+
     ret = UpgradeProcess(ret);
     itp_codec_standby();
     exit(ret);

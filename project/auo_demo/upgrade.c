@@ -381,27 +381,11 @@ static ITCStream* OpenFtpPackage(char* path)
 }
 #endif // CFG_NET_ENABLE
 
-static char* tmp_ftppath = "ftp://auo:ite@192.168.190.203/ITEPKG03.PKG";
-int UpgradePackage(void)
+static int UpgradePackage(void)
 {
     int ret = 0;
     ITCStream* fwStream = NULL;
 
-	printf("UpgradePackage FORCE PATH\n");
-	//strcpy(	upgradeUrl,tmp_ftppath);
-
-	//printf("UpgradePackage %s \n",upgradeUrl);
-    if (upgradeUrl[0] == '\0')
-    {
-		printf("NULL PATH");
-
-    }
-	else
-	{
-		printf("UpgradePackage %s \n",upgradeUrl);
-
-	}
-return 0;
     if (upgradeUrl[0] == '\0')
     {
        // open from USB drive

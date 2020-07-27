@@ -26,9 +26,6 @@ config RAM_SIZE
 config RAM_INIT_SCRIPT
     default "IT9860_360Mhz_DDR2_360Mhz.scr"
 
-config CPU_WB
-    def_bool n
-
 config TILING_WIDTH_128
     int
     default 0
@@ -238,9 +235,6 @@ config POWER_STANDBY_CPU_FREQ_RATIO
 config POWER_STANDBY_BUS_FREQ_RATIO
     default "30"
 
-config UART0_ENABLE
-    def_bool y
-
 config GPIO_UART0_TX
     default "4"
 
@@ -271,16 +265,10 @@ config AXISPI_HOLD_GPIO
 config GPIO_BACKLIGHT_PWM
     default "95"
 
-config GPIO_EXPANDER_ENABLE
-    default n
-
 config NET_ENABLE
     def_bool n
 
 config TASK_DRIVE_PROBE
-    def_bool y
-
-config DEF_DBG_UART0
     def_bool y
 
 config DBG_INIT_SCRIPT

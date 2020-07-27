@@ -315,8 +315,24 @@ void UpgradeUartExit(void);
  */
 void NetworkInit(void);
 void NetworkWifiModeSwitch(void);
-void NetworkSupriseRemove(void);
-void NetworkSupriseInsert(void);
+
+/**
+ * Network pre-setting.
+ */
+void NetworkPreSetting(void);
+void NetworkWifiPreSetting(void);
+
+/**
+ * Network function process.
+ */
+void NetworkEthernetProcess(void);
+void NetworkWifiProcess(void);
+
+/**
+ * Exits network module.
+ */
+void NetworkExit(void);
+bool NetworkIsExit(void);
 
 /**
  * Resets network module.
@@ -324,11 +340,25 @@ void NetworkSupriseInsert(void);
 void NetworkReset(void);
 
 /**
- * Determines whether the network is ready or not.
+ * Determines whether the network(Ethernet) is ready or not.
  *
  * @return true for ready; false for net ready yet.
  */
 bool NetworkIsReady(void);
+
+/**
+ * Determines whether the network(Ethernet) and Center Server are both ready or not.
+ *
+ * @return true for ready; false for net ready yet.
+ */
+bool NetworkServerIsReady(void);
+
+/**
+ * Determines whether the network(WIFI) is ready or not.
+ *
+ * @return true for ready; false for net ready yet.
+ */
+bool NetworkWifiIsReady(void);
 
 /** @} */ // end of ctrlboard_network
 

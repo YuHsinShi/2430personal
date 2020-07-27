@@ -58,7 +58,9 @@ void ScreenOff(void)
 #ifdef CFG_POWER_STANDBY
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_STANDBY, NULL);
 #elif defined(CFG_POWER_SLEEP)
-
+#ifdef CFG_VIDEO_ENABLE
+    ituFrameFuncExit();
+#endif
 #if defined(CFG_NET_WIFI) && !defined(CFG_NET_WIFI_SDIO_NGPL)
     //while (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) != default_no_sleep_or_wakeup){
     while (WifiMgr_Is_Wpa_Wifi_Terminating()){        
@@ -105,6 +107,9 @@ void ScreenOn(void)
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_RESUME, NULL);
 #elif defined(CFG_POWER_SLEEP)
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_RESUME, NULL);
+#ifdef CFG_VIDEO_ENABLE
+    ituFrameFuncInit();
+#endif
 #ifdef CFG_NET_WIFI 
 	usleep(100*1000);
 	ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_SLEEP, (void *)sleep_to_wakeup);

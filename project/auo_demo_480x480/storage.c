@@ -63,14 +63,14 @@ StorageAction StorageCheck(void)
         ITPDriveStatus* driveStatus = NULL;
         int i;
 
-    #ifdef CFG_USB_DEVICE
+    #if defined(CFG_USB_DEVICE) && defined(CFG_USBD_MASS_STORAGE)
         if (ioctl(ITP_DEVICE_USBDFSG, ITP_IOCTL_IS_CONNECTED, NULL))
         {
             printf("usb fsg enter....\n");
             storageInUsbDeviceMode = true;
             return STORAGE_USB_DEVICE_INSERTED;
         }
-    #endif // CFG_USB_DEVICE
+    #endif // defined(CFG_USB_DEVICE) && defined(CFG_USBD_MASS_STORAGE)
 
         ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
 

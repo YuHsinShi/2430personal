@@ -1,4 +1,4 @@
-﻿#include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +14,7 @@ static ITUBackground* imageViewCtrlBackground;
 static ITUIcon* imageViewIcon;
 static ITUScrollMediaFileListBox* imagePlayerScrollMediaFileListBox;
 static ITULayer* imagePlayerLayer;
+static ITULayer* screensaverLayer;
 
 static uint32_t imageViewLastTick;
 extern char imagePlayerPath[PATH_MAX];
@@ -61,7 +62,7 @@ bool ImageViewLastButtonOnPress(ITUWidget* widget, char* param)
     ITUScrollText* item = ituMediaFileListPrev((ITUMediaFileListBox*)imagePlayerScrollMediaFileListBox);
     if (item)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
         
         printf("Try to load %s\n", filepath);
 
@@ -78,7 +79,7 @@ bool ImageViewNextButtonOnPress(ITUWidget* widget, char* param)
     ITUScrollText* item = ituMediaFileListNext((ITUMediaFileListBox*)imagePlayerScrollMediaFileListBox);
     if (item)
     {
-        char* filepath = (char*)ituWidgetGetCustomData(item);
+        char* filepath = item->tmpStr;
 
         printf("Try to load %s\n", filepath);
 
@@ -157,6 +158,9 @@ bool ImageViewOnEnter(ITUWidget* widget, char* param)
 
         imagePlayerLayer = ituSceneFindWidget(&theScene, "imagePlayerLayer");
         assert(imagePlayerLayer);
+		
+		screensaverLayer = ituSceneFindWidget(&theScene, "screensaverLayer");
+        assert(screensaverLayer);
     }
 
     ituWidgetSetVisible(imageViewCtrlBackground, true);
@@ -174,7 +178,7 @@ bool ImageViewOnEnter(ITUWidget* widget, char* param)
 			ituListBoxSelect(listbox, imagePlayerFocusIndex);
 		}
 		ITUScrollText *item = (ITUScrollText*)ituListBoxGetFocusItem((ITUListBox*)imagePlayerScrollMediaFileListBox);
-		char* filepath = (char*)ituWidgetGetCustomData(item);
+		char* filepath = item->tmpStr;
 
 		printf("Try to load %s\n", filepath);
 
@@ -193,4 +197,10 @@ bool ImageViewOnLeave(ITUWidget* widget, char* param)
 void ImageViewReset(void)
 {
     imagePlayerStorageSprite = NULL;
+}
+
+bool ImageViewScreenSaverOnCustom(ITUWidget* widget, char* param)
+{
+	ituLayerGoto(screensaverLayer);
+	return true;
 }

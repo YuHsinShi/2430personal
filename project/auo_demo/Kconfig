@@ -256,9 +256,6 @@ config POWER_STANDBY_CPU_FREQ_RATIO
 config POWER_STANDBY_BUS_FREQ_RATIO
     default "30"
 
-config UART0_ENABLE
-    def_bool y
-
 config GPIO_UART0_TX
     default "4"
 
@@ -295,8 +292,6 @@ config NET_ENABLE
 config TASK_DRIVE_PROBE
     def_bool y
 
-config DEF_DBG_UART0
-    def_bool y
 
 config CANBUS_ENABLE
     def_bool y

@@ -33,7 +33,7 @@ void ping_main(void)
 #ifdef TEST_WIFI_DOWNLOAD
     #include "curl/curl.h"
 //    #define HTTP_DOWNLOAD_ADDRESS "http://192.168.191.100:23455/WAV/002-96000-24.wav"
-    #define HTTP_DOWNLOAD_ADDRESS 	"http://192.168.190.203/IT9852MINI.zip"
+    #define HTTP_DOWNLOAD_ADDRESS 	"http://192.168.190.203:7000/ITEPKG03.PKG"
 
 #endif
 
