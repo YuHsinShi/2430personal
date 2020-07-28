@@ -286,7 +286,7 @@ static void LoadScene(void)
     tick2 = SDL_GetTicks();
     printf("itu init time: %dms\n", tick2 - tick1);
 
-    ExternalProcessInit();
+ //   ExternalProcessInit();
 #endif
 }
 

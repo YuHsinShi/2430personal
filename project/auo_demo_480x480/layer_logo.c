@@ -6,7 +6,9 @@
 #include "scene.h"
 #include "ctrlboard.h"
 
-//#define ITU_PLAY_VIDEO_ON_BOOTING
+#if 1// ndef WIN32
+#define ITU_PLAY_VIDEO_ON_BOOTING
+#endif
 
 static ITULayer* touchCalibrationLayer;
 static ITUVideo *logoVideo = 0;
@@ -14,31 +16,25 @@ static ITULayer *mainMenuLayer = 0;
 
 static void LogoVideoOnStop(ITUVideo* video)
 {
+	printf("LogoVideoOnStop LogoVideoOnStop LogoVideoOnStop\n");
 	ituLayerGoto(mainMenuLayer);
 }
 
 bool LogoOnEnter(ITUWidget* widget, char* param)
 {
-    if (!touchCalibrationLayer)
-    {
-        touchCalibrationLayer = ituSceneFindWidget(&theScene, "touchCalibrationLayer");
-        assert(touchCalibrationLayer);
-    }
-    if(theConfig.touch_calibration)
-    {
-		ituLayerGoto(touchCalibrationLayer);
-        return false;
-    }
+
 	if (!logoVideo)
 	{
 		logoVideo = ituSceneFindWidget(&theScene, "logoVideo");
 		assert(logoVideo);
 
-		mainMenuLayer = ituSceneFindWidget(&theScene, "mainMenuLayer");
+		mainMenuLayer = ituSceneFindWidget(&theScene, "LayerMain");
 		assert(mainMenuLayer);
 	}
 
 #ifdef ITU_PLAY_VIDEO_ON_BOOTING
+	printf("ITU_PLAY_VIDEO_ON_BOOTING\n");
+
 	ituVideoPlay(logoVideo, 0);
 	ituVideoSetOnStop(logoVideo, LogoVideoOnStop);
 #else
