@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include "scene.h"
 #include "ctrlboard.h"
+#include "ite/itp.h"
+#include "sys/ioctl.h"
 
 static ITUPopupButton* buttonTVPopupButton;
 static ITUPopupButton* buttonAirConditionerPopupButton;
@@ -102,8 +104,17 @@ bool ButtonRemoteButtonOnPress(ITUWidget* widget, char* param)
 
 bool ButtonUpgradeButtonOnPress(ITUWidget* widget, char* param)
 {
+    bool network_is_ready = false;
+
 #ifdef CFG_NET_ENABLE
-    if (NetworkIsReady())
+
+#ifdef CFG_NET_ETHERNET
+    network_is_ready = NetworkIsReady();
+#elif CFG_NET_WIFI
+    network_is_ready = (bool)ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL);
+#endif
+
+    if (network_is_ready)
         UpgradeSetUrl(CFG_UPGRADE_FTP_URL);
     else
         UpgradeSetUrl(NULL);
