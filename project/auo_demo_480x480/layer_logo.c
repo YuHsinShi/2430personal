@@ -6,7 +6,7 @@
 #include "scene.h"
 #include "ctrlboard.h"
 
-#if 1// ndef WIN32
+#ifndef WIN32
 #define ITU_PLAY_VIDEO_ON_BOOTING
 #endif
 
