@@ -42,6 +42,9 @@ static ITUSprite* mainSpriteSportMode;
 static ITUIcon* mainIconLeft;
 static ITUIcon* mainIconRight;
 
+//leo
+static ITUSprite* mainSpriteSpeedBar;
+static ITUIcon* mainSemicolon;
 
 static int speed;
 static int flush_counter = 0;
@@ -59,7 +62,36 @@ void SpeedMeterUpdate()
 
 	ituSpriteGoto(mainSprite_TenDigit, ten); // show ten number 
 	ituSpriteGoto(mainSprite_Digit, digit); // show digit number 
+	
+	
+	//leo
+	if(speed < 71)
+	{
+		ituSpriteGoto(mainSpriteSpeedBar, speed); // show speed bar
+	}
 
+}
+
+
+//leo
+void SemicolonFlash()
+{
+	static int counter = 0;
+	static bool isflash = 0;
+	
+	if(counter > 3)
+	{
+		counter = 0;
+	}
+	else
+	{
+		counter++;
+		return ;
+	}
+	
+	ituWidgetSetVisible(mainSemicolon,isflash);
+	isflash = !isflash;
+	
 }
 
 
@@ -120,6 +152,8 @@ bool MainLayerOnTimer(ITUWidget* widget, char* param)
 
 	TurnLeftRightFlash();
 	
+	//leo
+	SemicolonFlash();
 
 	return true;
 }
@@ -141,6 +175,13 @@ bool MainLayerOnEnter(ITUWidget* widget, char* param)
 
 	mainIconRight = ituSceneFindWidget(&theScene, "IconTurnRight");
 	assert(mainIconRight);
+	
+	//leo
+	mainSpriteSpeedBar = ituSceneFindWidget(&theScene, "SpriteSpeedBar");
+	assert(mainSpriteSpeedBar);
+	
+	mainSemicolon = ituSceneFindWidget(&theScene, "Semicolon");
+	assert(mainSemicolon);
 	
 	return true;
 }
