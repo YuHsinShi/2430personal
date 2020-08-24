@@ -41,6 +41,14 @@ static int LogDiskWrite(int file, char *ptr, int len, void* info)
     return EOF;
 }
 
+void LogDiskClose()
+{
+    if (itpLogDiskFile)
+    {
+        fclose(itpLogDiskFile);
+    }
+}
+
 static int LogDiskIoctl(int file, unsigned long request, void* ptr, void* info)
 {
     switch (request)
@@ -48,7 +56,11 @@ static int LogDiskIoctl(int file, unsigned long request, void* ptr, void* info)
 	case ITP_IOCTL_INIT:
         LogDiskInit((const char*)ptr);
         break;
-        
+
+ 	case ITP_IOCTL_OFF:
+        LogDiskClose();
+        break;       
+
     default:
         errno = (ITP_DEVICE_LOGDISK << ITP_DEVICE_ERRNO_BIT) | 1;
         return -1;
