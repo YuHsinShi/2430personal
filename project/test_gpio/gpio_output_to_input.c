@@ -17,7 +17,7 @@ void* TestFunc(void* arg)
 
 	int i = 0;
 
-	printf("GPIO test start~~~\n");
+	printf("GPIO test start %d~~~\n",gpioPinOut);
 
 	//initial GPIO
 	ithGpioSetOut(gpioPinOut);
@@ -25,7 +25,10 @@ void* TestFunc(void* arg)
 
 	ithGpioSetIn(gpioPinIn);
 	ithGpioSetMode(gpioPinIn, ITH_GPIO_MODE0);
-
+	
+	ithGpioSetOut(59);
+	ithGpioSetMode(59, ITH_GPIO_MODE0);
+	ithGpioSet(59);
 	//
 	while (1)
 	{
