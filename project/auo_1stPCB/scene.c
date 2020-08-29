@@ -258,11 +258,11 @@ static void LoadScene(void)
     {
         char filepath[PATH_MAX];
 
-        sprintf(filepath, CFG_PRIVATE_DRIVE ":/itu/%ux%u/ctrlboard.itu", ithLcdGetWidth(), ithLcdGetHeight());
+        sprintf(filepath, CFG_PRIVATE_DRIVE ":/itu/%ux%u/480x480.itu", ithLcdGetWidth(), ithLcdGetHeight());
         ituSceneLoadFileCore(&theScene, filepath);
     }
     #else
-    ituSceneLoadFileCore(&theScene, CFG_PRIVATE_DRIVE ":/ctrlboard.itu");
+    ituSceneLoadFileCore(&theScene, CFG_PRIVATE_DRIVE ":/480x480.itu");
     #endif // CFG_LCD_MULTIPLE
 
     tick2 = SDL_GetTicks();

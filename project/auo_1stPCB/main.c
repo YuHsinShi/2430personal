@@ -23,6 +23,11 @@ int SDL_main(int argc, char *argv[])
 {
     int ret = 0;
     int restryCount = 0;
+
+	ithGpioSetOut(60);
+	ithGpioSetMode(60, ITH_GPIO_MODE0);
+	ithGpioSet(60);
+
     
 #ifdef CFG_LCD_MULTIPLE
     ioctl(ITP_DEVICE_SCREEN, ITP_IOCTL_RESET, (void*)0);
@@ -88,7 +93,7 @@ retry_backup:
     AudioInit();
     PhotoInit();
 #ifndef WIN32
-	Can_init();
+	//Can_init();
 #endif
     SceneInit();
     SceneLoad();
