@@ -52,196 +52,179 @@ static unsigned int cmdPos = 0;
 static GET_UART_COMMAND_STATE gState = GET_HEADER;
 static unsigned int payloadCount = 0;
 static unsigned int checkSum = 0;
-		
+
+
+
+
+
+
+
+#if 1 //defined(TEST_INTR_MODE)
+#include "uart/interface/rs485.h"
+
+#define TEST_PORT       ITP_DEVICE_RS485_1
+#define TEST_ITH_PORT	ITH_UART1
+#define TEST_DEVICE     itpDeviceRS485_1
+#define TEST_BAUDRATE   CFG_UART1_BAUDRATE
+#define TEST_GPIO_RX    CFG_GPIO_UART1_RX
+#define TEST_GPIO_TX    CFG_GPIO_UART1_TX
+#define TEST_GPIO_EN    CFG_GPIO_RS485_1_TX_ENABLE 
+
+
+static sem_t RS485SemIntr;
+
+static void RS485Callback(void* arg1, uint32_t arg2)
+{
+	uint8_t getstr[256];
+
+	sem_post(&RS485SemIntr);
+
+}
+
+#endif
+
+int gen_ap_mode_set_ok_cmd(char* buf)
+{
+	//HEADER:  TAG:( 4 BYTES)
+	*buf=0x2f;
+	*(buf+1)=0xb4;
+	*(buf+2)=0x9D;
+	*(buf+3)=0xAC;
+
+	//HEADER:  LEN:( 2 BYTES)
+	*(buf+4)=0x0;
+	*(buf+5)=8;
+
+	//HEADER:  SRC:( 1 BYTE)
+	*(buf+6)=3;
+
+	//DATA: TAG (1 BYTE)
+	*(buf+7)=0x93;
+
+	//DATA: CMD (1 BYTE)
+	*(buf+8)=0x01;
+
+	//DATA: DATA LENGTH (4 BYTE)
+	*(buf+9)=0;
+	*(buf+10)=0;
+	*(buf+11)=0;
+	*(buf+12)=8;
+
+
+if(1) // ap mode is on
+	*(buf+13)=0x01;
+else // ap mode is off
+	*(buf+13)=0x00;
+
+	//DATA CRC
+	*(buf+14)=0x00;
+
+return 15;
+
+}
+
+
+int gen_mac_cmd(char* buf)
+{
+	//HEADER:  TAG:( 4 BYTES)
+	*buf=0x2f;
+	*(buf+1)=0xb4;
+	*(buf+2)=0x9D;
+	*(buf+3)=0xAC;
+
+	//HEADER:  LEN:( 2 BYTES)
+	*(buf+4)=0x0;
+	*(buf+5)=13;
+
+	//HEADER:  SRC:( 1 BYTE)
+	*(buf+6)=3;
+
+	//DATA: TAG (1 BYTE)
+	*(buf+7)=0x93;
+
+	//DATA: CMD (1 BYTE)
+	*(buf+8)=0x0;
+
+	//DATA: DATA LENGTH (4 BYTE)
+	*(buf+9)=0;
+	*(buf+10)=0;
+	*(buf+11)=0;
+	*(buf+12)=13;
+
+	//DATA: 6 BYTE , set local MAC
+	*(buf+13)=0x00;
+	*(buf+14)=0x00;
+	*(buf+15)=0x00;
+	*(buf+16)=0x00;
+	*(buf+17)=0x00;
+	*(buf+18)=0x00;
+
+	//DATA CRC
+	*(buf+19)=0x00;
+
+return 20;
+}
+
 static void* ExternalTask(void* arg)
 {
-    while (!extQuit)
-    {
-       	ExternalEvent evOut;
-		ExternalEvent evIn;		
-		unsigned char readLen = 0;
-		unsigned char paramBuf[EXTERNAL_BUFFER_SIZE];
-		unsigned char outDataBuf[MAX_OUTDATA_SIZE];
-		unsigned int  i = 0, count = 0;
-		bool isToMc = false;
-		bool isCmdCompleted = false;
 
-#if defined(CFG_UART0_ENABLE) && !defined(CFG_DBG_UART0)
-		// Receive UI command
-		if (mq_receive(extOutQueue, (char*)&evIn, sizeof(ExternalEvent), 0) > 0)
+	char recvbuf[256];
+	
+	char reply_buf[256];
+	int len = 0;
+	int replylen;
+
+   	printf("Start RS485 Interrupt mode test !\n");
+
+	RS485_OBJ *pRs485Info = (RS485_OBJ*)malloc(sizeof(RS485_OBJ));
+	pRs485Info->port = TEST_ITH_PORT;
+	pRs485Info->parity = 0;
+	pRs485Info->txPin = TEST_GPIO_TX;
+	pRs485Info->rxPin = TEST_GPIO_RX;
+	pRs485Info->enPin = TEST_GPIO_EN;
+	pRs485Info->baud = TEST_BAUDRATE;
+	pRs485Info->timeout = 0;
+	pRs485Info->mode = UART_INTR_MODE;
+	pRs485Info->forDbg = false;
+
+	itpRegisterDevice(TEST_PORT, &TEST_DEVICE);
+
+	ioctl(TEST_PORT, ITP_IOCTL_INIT, (void*)pRs485Info);
+	ioctl(TEST_PORT, ITP_IOCTL_REG_RS485_CB, (void*)RS485Callback);
+	//ioctl(TEST_PORT, ITP_IOCTL_REG_RS485_DEFER_CB , (void*)RS485Callback);
+
+	sem_init(&RS485SemIntr, 0, 0);
+
+
+	while (!extQuit)
+	{	
+		sem_wait(&RS485SemIntr);
+
 		{
-			isToMc = true;
-			memset(outDataBuf, 0, MAX_OUTDATA_SIZE);
-
-			outDataBuf[0] = 0x00;
-			outDataBuf[1] = 0x01;
-		}
-
-		// Check if need to send data to main controller
-		if (isToMc)
-		{
-#ifdef _WIN32
-            UartSend(WIN32_COM, outDataBuf, MAX_OUTDATA_SIZE);
-#else
-			write(ITP_DEVICE_UART0, outDataBuf, MAX_OUTDATA_SIZE);
-#endif
-		}
-
-		memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE);
-		// Read data from UART port
-#ifdef _WIN32
-        readLen = UartReceive(WIN32_COM, inDataBuf, EXTERNAL_BUFFER_SIZE);
-#else
-		readLen = read(ITP_DEVICE_UART0, inDataBuf, EXTERNAL_BUFFER_SIZE);
-#endif
-
-		// Example for UART error correction to avoid data shift
-		if (readLen)
-		{
-			while (readLen--)
+			len = read(TEST_PORT, recvbuf , 256);
+			printf("(RS485) len = %d,\n", len,recvbuf[0],recvbuf[1],recvbuf[2],recvbuf[3]);
+			// HEADER 	TAG  LEN  DAT
+			//	4 2 1    1    4    n
+			if(recvbuf[7]==0x93 &&recvbuf[8]==0x00)
 			{
-				switch (gState)
-				{
-					case GET_HEADER:
-						if (UartHeader == inDataBuf[count])
-						{
-							cmdBuf[cmdPos++] = inDataBuf[count];
-							gState = GET_LENGTH;
-						}
-						else
-						{
-							// printf("[GET_HEADER] Wrong, getstr=0x%x, len=%d\n", getstr[count], len);
-							cmdPos = 0;
-							memset(cmdBuf, 0, EXTERNAL_BUFFER_SIZE);
-							gState = GET_HEADER;
-						}
-						break;
-
-					case GET_LENGTH:
-						if (UartTotalLength == inDataBuf[count])
-						{
-							cmdBuf[cmdPos++] = inDataBuf[count];
-							gState = GET_PAYLOAD;
-						}
-						else
-						{
-							// printf("[GET_LENGTH] Wrong, getstr=0x%x\n", getstr[count]);
-							cmdPos = 0;
-							memset(cmdBuf, 0, EXTERNAL_BUFFER_SIZE);
-							gState = GET_HEADER;
-						}
-						break;
-
-					case GET_PAYLOAD:
-						if (payloadCount != (UartPayloadLength - 1))
-						{
-							gState = GET_PAYLOAD;
-							payloadCount++;
-						}
-						else
-						{
-							gState = GET_CHECKSUM;
-							payloadCount = 0;
-						}
-						cmdBuf[cmdPos++] = inDataBuf[count];
-						break;
-
-					case GET_CHECKSUM:
-					    // checkSum is sum of all payloads
-						for (i=0; i<UartPayloadLength; i++)
-							checkSum += cmdBuf[2+i];
-
-						if (checkSum == inDataBuf[count])
-						{
-							// Get one command
-							cmdBuf[cmdPos++] = inDataBuf[count];
-							isCmdCompleted = true;
-						}
-						else
-						{
-							printf("[GET_CHECKSUM] Wrong, checkSum=0x%x\n", checkSum);
-						}
-						checkSum = 0;
-						cmdPos = 0;
-						gState = GET_HEADER;
-						break;
-				}
-				count++;
+					printf("(RS485)GET MAC CMD\n");
+				//get mac cmd
+				replylen= gen_mac_cmd(reply_buf);
+				write(TEST_PORT, reply_buf , replylen);
 			}
+			
+			if(recvbuf[7]==0x93 &&recvbuf[8]==0x01)
+			{
+					printf("(RS485)SET AP MODE ON\n");
+				//get mac cmd
+				replylen= gen_mac_cmd(reply_buf);
+				write(TEST_PORT, reply_buf , replylen);
+			}
+
 		}
 
-		// If read data is completed, start to parse data
-		if (isCmdCompleted)
-		{
-			// Parse data and check if need to send data to UI or main controller
-			// case 0x00~0x04 and default send data to UI
-			// case 0x05 send data to main controller
-			switch(cmdBuf[3])
-			{
-			case 0x00:
-				evIn.type = EXTERNAL_TEST0;
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x01:
-				evIn.type = EXTERNAL_TEST1;
-				evIn.arg1 = cmdBuf[4];
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x02:
-				evIn.type = EXTERNAL_TEST2;
-				evIn.arg1 = cmdBuf[4];
-				evIn.arg2 = cmdBuf[5];
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x03:
-				evIn.type = EXTERNAL_TEST3;
-				evIn.arg1 = cmdBuf[4];
-				evIn.arg2 = cmdBuf[5];
-				evIn.arg3 = cmdBuf[6];
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x04:
-				evIn.type = EXTERNAL_TEST4;
-				evIn.arg1 = cmdBuf[4];
-				evIn.arg2 = cmdBuf[5];
-				evIn.arg3 = cmdBuf[6];
-				paramBuf[0] = 0x0;
-				paramBuf[1] = 0x1;
-				paramBuf[2] = 0x2;
-				memcpy(evIn.buf1, paramBuf, EXTERNAL_BUFFER_SIZE); 
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x05:
-				memset(outDataBuf, 0 , MAX_OUTDATA_SIZE);
-				outDataBuf[0] = 0xFF;
-				outDataBuf[1] = 0xEE;
-				outDataBuf[2] = 0xCC;
-#ifdef _WIN32
-                UartSend(WIN32_COM, outDataBuf, MAX_OUTDATA_SIZE);
-#else
-				write(ITP_DEVICE_UART0, outDataBuf, MAX_OUTDATA_SIZE);
-#endif
-				break;
 				
-			default:
-				evIn.type = EXTERNAL_SHOW_MSG;
-			    memset(evIn.buf1, 0 , EXTERNAL_BUFFER_SIZE);
-                memcpy(evIn.buf1, cmdBuf, EXTERNAL_BUFFER_SIZE);
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-                break;
-			}
-			memset(cmdBuf, 0, EXTERNAL_BUFFER_SIZE);
-			isCmdCompleted = false;
-		}
-
-#endif
-        usleep(10000);
-    }
+	}
     mq_close(extInQueue);
 	mq_close(extOutQueue);
     extInQueue = -1;

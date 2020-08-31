@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Sat Aug 29 23:00:02 2020
+# Mon Aug 31 18:53:26 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -152,7 +152,7 @@ set(CFG_BOOTLOADER_ENABLE y)
 # (unvisible)
 #
 set(CFG_LCD_BOOT_BITMAP "logo.bmp")
-set(CFG_BL_SHOW_LOGO y)
+# CFG_BL_SHOW_LOGO is not set
 
 #
 # (unvisible)
@@ -252,8 +252,6 @@ set(CFG_LCD_BPP "2")
 # CFG_LCD_MULTIPLE is not set
 set(CFG_LCD_TRIPLE_BUFFER y)
 # CFG_LCD_PQ_TUNING is not set
-set(CFG_LCD_BOOT_BGCOLOR "0x000000")
-# CFG_LCD_BOOT_BITMAP_DITHER is not set
 set(CFG_BACKLIGHT_FREQ "1000")
 set(CFG_BACKLIGHT_BOOTLODER_DELAY "200")
 

@@ -48,15 +48,53 @@ static ITUIcon* mainSemicolon;
 
 static int speed;
 static int flush_counter = 0;
+
+
+
+void ui_set_meter_speed_value(int value)
+{	
+if( (speed < 99) && (speed > 0) )
+		speed = value;
+
+}
+
+void ui_set_winker_left()
+{	
+
+}
+void ui_set_winker_right()
+{	
+
+}
+
+void ui_set_sport_mode_on()
+{	
+
+}
+
+
+void ui_engine_start()
+{	
+
+}
+void ui_set_unlock_mode()
+{	
+
+}
+
+
+
+
 void SpeedMeterUpdate()
 {
 	int ten;
 	int digit;
-
+/*
 	if (speed > 99)
 		speed = 0;
 	else
 		speed++;
+*/
 	ten = speed / 10;
 	digit = speed % 10;
 

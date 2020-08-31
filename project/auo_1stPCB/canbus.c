@@ -113,7 +113,7 @@ static void *_CAN2Thread()
     }
 }
 
-static void *_CAN1Thread()
+static void *_CAN1RECVThread()
 {
 	CAN_RXOBJ _rxObj;
     uint8_t  txbuffer[8] = {0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7};
@@ -152,8 +152,47 @@ static void *_CAN1Thread()
 					   */
 				//printf("can0 error count = %d\n", ithCANGetReceiveErrorCouNT(can0));
 				//printf("kind of error = %x\n", ithCANGetKindOfError(can0));
-				//set_meter_value_for_canbus(_rxObj.RXData[3]);
+
+//				
+			//UNLOCK				{0xFE,0x05,0x39,0x00,0xC4},
+			//ENGINE START			{0xFE,0x05,0x39,0x02,0xC2},
+			//WINKER LEFT			{0xFE,0x05,0x39,0x49,0x7B},
+			//WINKER RIGHT			{0xFE,0x05,0x39,0x49,0x7A},
+			//SPORT  MODE			{0xFE,0x05,0x39,0x09,0xBB},
+			//SPEED VALUE			{0XFE,0X05,0X34,0X00,0X00};
+
+						if(0x39 ==_rxObj.RXData[2])  )
+						{
+							if(0x00 ==_rxObj.RXData[3]) {								
+									ui_set_unlock_mode();
+							}
+							else if (0x02 ==_rxObj.RXData[2]) { 
+								
+									ui_engine_start();
+							}
+							else if (0x49 ==_rxObj.RXData[2]) {
+									if(0x7B ==_rxObj.RXData[3])
+										ui_set_winker_left();						
+									else
+										ui_set_winker_right();
+							}						
+							else if (0x09 ==_rxObj.RXData[2]) { 
+									ui_set_sport_mode_on();	
+							}
+							else{
+								
+							}
+						}
+						else if(0x34 ==_rxObj.RXData[2])  ){
+							ui_set_meter_speed_value(_rxObj.RXData[3]);
+
+						}
+						else{
+
+						}
+
 			}
+			
         #endif
 		}
 
@@ -180,7 +219,7 @@ void Can_init(void *arg)
     
 
 
-    pthread_create(&can2_task, NULL, _CAN1Thread, NULL);
+    pthread_create(&can2_task, NULL, _CAN1RECVThread, NULL);
    // pthread_create(&can2_task, NULL, _CAN2Thread, NULL);
 
 
