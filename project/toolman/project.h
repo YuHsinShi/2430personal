@@ -88,6 +88,14 @@ int AudioGetVolume(void);
 
 /** @} */ // end of template_audio
 
+typedef struct
+{
+	int enable;
+	int baud_rate;
+	int fileMaxsize;
+	int fileInterval;
+}UART_SET;
+
 /** @defgroup template_config Configuration
  *  @{
  */
@@ -106,6 +114,7 @@ typedef struct
     int       keylevel;                                                 // /< Key volume percentage, range is 0~100
     int       audiolevel;                                               // /< Audio volume percentage, range is 0~100
 
+	UART_SET uart[5];
 } Config;
 
 /**

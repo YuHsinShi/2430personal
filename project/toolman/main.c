@@ -24,7 +24,7 @@ extern void BackupDestroy(void);
 
 
 
-
+#ifndef WIN32
 void test_spi_master_write()
 {
 	int fd = 0;
@@ -96,7 +96,7 @@ void test_spi_master_read()
 	
 	close(fd);
 }
-
+#endif
 int SDL_main(int argc, char *argv[])
 {
     int ret = 0;

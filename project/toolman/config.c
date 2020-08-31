@@ -27,7 +27,7 @@ void ConfigInit(void)
         dictionary_set(cfgIni, "tcpip", NULL);
         dictionary_set(cfgIni, "sound", NULL);
     }
-
+	/*
     // network
     theConfig.dhcp = iniparser_getboolean(cfgIni, "tcpip:dhcp", 1);
     strncpy(theConfig.ipaddr, iniparser_getstring(cfgIni, "tcpip:ipaddr", "192.168.1.1"), sizeof (theConfig.ipaddr) - 1);
@@ -39,6 +39,24 @@ void ConfigInit(void)
     strcpy(theConfig.keysound, iniparser_getstring(cfgIni, "sound:keysound", "key1.wav"));
     theConfig.keylevel = iniparser_getint(cfgIni, "sound:keylevel", 80);
     theConfig.audiolevel = iniparser_getint(cfgIni, "sound:audiolevel", 80);
+	*/
+	char tmp[64] = { 0};
+	int i;
+	for (i = 1; i <= 5; i++)
+	{
+		snprintf(tmp, 64, "uart%d:on_off", i);
+		theConfig.uart[i - 1].enable = iniparser_getint(cfgIni, tmp, 1);
+
+		snprintf(tmp, 64,"uart%d:baud_rate", i);
+		theConfig.uart[i-1].baud_rate = iniparser_getint(cfgIni, tmp, 115200);
+
+		snprintf(tmp, 64, "uart%d:log_size", i);
+		theConfig.uart[i - 1].fileMaxsize = iniparser_getint(cfgIni, tmp, 16);
+
+		snprintf(tmp, 64, "uart%d:log_time", i);
+		theConfig.uart[i - 1].fileInterval = iniparser_getint(cfgIni, tmp, 60);
+
+	}
 
     cfgSavingCount = 0;
 }

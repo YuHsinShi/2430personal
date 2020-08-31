@@ -77,9 +77,17 @@ static unsigned int checkSum = 0;
 static FILE* wrhandle;
 
 
+#define LOG_WRITER_STATUS_IDLE 		0
+#define LOG_WRITER_STATUS_RUNNIG 	1
+
+
+#define LOG_WRITER_STATUS_ERROR 	-1
+#define LOG_WRITER_STATUS_STOP	 	-2
+#define LOG_WRITER_STATUS_FULL	 	-3
 
 struct logwrite_t {
     ITPDeviceType itp_uart_index;
+	int status;
 	char folder_path[64];
 	char file_name;
 	int num; //num of the log 
@@ -143,6 +151,12 @@ while(1)
 	int wrlen;
 	int i;
 	char index;
+
+
+
+// 
+
+	//[1234]
 	while(!WritingQuit)
 	{
 		if ( (mq_receive(extOutQueue, wbf,0, 0) )> 0)
@@ -167,7 +181,7 @@ while(1)
 		        fwrite(&wbf[5], 1, wrlen, 	log_writer[index].handle);
 				log_writer[index].byte_counter+=wrlen;
 		        fflush(log_writer[index].handle);
-				if(log_writer[index].byte_counter > 200*1024)
+				if(log_writer[index].byte_counter > theConfig.uart[index].fileMaxsize *1024)
 				{
 					DBG("ch %d write finished. \r\n",index);
 					log_writer[index].byte_counter=0;
@@ -179,11 +193,77 @@ while(1)
 				log_writer_get_current_file_handle(index);  //handle is not opened when initail , do reopen
 			}
 		}
+		else
+		{
+
+
+		}
+
+		
 		usleep(10000);
 	}
 
 	
 //	DBG("wri: %d byte finished\r\n", counter);
+}
+
+
+static void* ExternalTask(void* arg)
+{
+int i;
+int readLen;
+char index;
+
+	while(1)
+	{
+		if(access("E:/", F_OK))
+			break ;
+		else
+			usleep(1000);
+	
+	}
+	
+	printf("ExternalTask start\n");
+
+
+    while (!extQuit)
+    {
+		for(index=0;index<5;index++)
+		{
+				memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE); //four byte is header
+				// Read data from UART port
+
+				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_SHIFT], EXTERNAL_BUFFER_SIZE);
+				if(readLen > 0)
+				{
+				
+					memcpy(inDataBuf,&readLen,4);
+					inDataBuf[4]= index;
+					DBG("read ch %d: %d byte..\r\n",index, readLen);
+					
+					/*
+					for(i=0;i<readLen;i++){
+					printf("0x%x ", inDataBuf[i+HEADER_SHIFT]);
+					}
+					printf("\n");
+					*/
+
+					//log_writer[index].status=LOG_WRITER_STATUS_RUNNIG;
+
+
+					//update last tick and status
+					
+					mq_send(extOutQueue,inDataBuf,readLen+HEADER_SHIFT, 0);
+				}
+		}
+        usleep(5000);
+    }
+    mq_close(extInQueue);
+	mq_close(extOutQueue);
+    extInQueue = -1;
+	extOutQueue = -1;
+
+    return NULL;
 }
 
 
@@ -228,59 +308,6 @@ void init_log_writer()
 
 }
 
-
-static void* ExternalTask(void* arg)
-{
-int i;
-int readLen;
-char index;
-
-	while(1)
-	{
-		if(access("E:/", F_OK))
-			break ;
-		else
-			usleep(1000);
-	
-	}
-	
-	printf("ExternalTask start\n");
-
-
-    while (!extQuit)
-    {
-		for(index=0;index<5;index++)
-		{
-				memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE); //four byte is header
-				// Read data from UART port
-
-				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_SHIFT], EXTERNAL_BUFFER_SIZE);
-				if(readLen > 0)
-				{
-				
-					memcpy(inDataBuf,&readLen,4);
-					inDataBuf[4]= index;
-					DBG("read ch %d: %d byte..\r\n",index, readLen);
-					
-					/*
-					for(i=0;i<readLen;i++){
-					printf("0x%x ", inDataBuf[i+HEADER_SHIFT]);
-					}
-					printf("\n");
-					*/
-					mq_send(extOutQueue,inDataBuf,readLen+HEADER_SHIFT, 0);
-				}
-		}
-        usleep(10000);
-    }
-    mq_close(extInQueue);
-	mq_close(extOutQueue);
-    extInQueue = -1;
-	extOutQueue = -1;
-
-    return NULL;
-}
-
 void ExternalInit(void)
 {
     struct mq_attr qattr;
@@ -320,6 +347,19 @@ void ExternalInit(void)
 
     pthread_create(&WrTask, NULL, WritingTask, NULL);
 
+
+/*	struct	timeval    tv;
+	struct	timezone   tz;
+	gettimeofday(&tv,&tz);
+	
+	printf("tv_sec:%d\n",tv.tv_sec);
+	printf("tv_usec:%d\n",tv.tv_usec);
+	printf("tv_sec:%.4d\n",tv.tv_sec);
+	printf("tv_usec:%.4d\n",tv.tv_usec);
+
+	printf("tz_minuteswest:%d\n",tz.tz_minuteswest);
+	printf("tz_dsttime:%d\n",tz.tz_dsttime);
+*/
 
 }
 
