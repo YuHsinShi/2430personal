@@ -151,12 +151,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     string.c
     upgrade.c
     backup.c
+    canbus.c
     )
 
-add_executable(${CMAKE_PROJECT_NAME}
-	dashboard/layer_main_dash.c
-	dashboard/test_canbus_9860.c
-    )
+
 
 # layers
 include(layer.cmake)

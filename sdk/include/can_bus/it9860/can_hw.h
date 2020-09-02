@@ -91,6 +91,8 @@ typedef enum{
 
 typedef enum {
     CAN_SRCCLK_160M,
+    CAN_SRCCLK_80M,
+    CAN_SRCCLK_60M,
     CAN_SRCCLK_40M,
     CAN_SRCCLK_20M,
 } CAN_SOURCECLK;

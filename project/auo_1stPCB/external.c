@@ -82,9 +82,32 @@ static void RS485Callback(void* arg1, uint32_t arg2)
 }
 
 #endif
+unsigned char get_data_crc(char* data_buf,int data_len)
+{
+
+	int i;
+	unsigned char crc=0;
+	int sum=0;
+	int tmp;
+	for (i=0;i<data_len;i++)
+	{
+		sum+=data_buf[i];
+	}
+
+		tmp = 0 - sum;
+		crc =(unsigned char)(tmp);
+
+	//printf("tmp=0x%x\n",tmp);
+	//printf("crc=0x%x\n",crc);
+
+	return crc;
+
+}
 
 int gen_ap_mode_set_ok_cmd(char* buf)
 {
+	unsigned char crc;
+
 	//HEADER:  TAG:( 4 BYTES)
 	*buf=0x2f;
 	*(buf+1)=0xb4;
@@ -116,8 +139,11 @@ if(1) // ap mode is on
 else // ap mode is off
 	*(buf+13)=0x00;
 
+
+	crc=get_data_crc(buf+13,1); //data byte crc 
+
 	//DATA CRC
-	*(buf+14)=0x00;
+	*(buf+14)=crc;
 
 return 15;
 
@@ -126,6 +152,13 @@ return 15;
 
 int gen_mac_cmd(char* buf)
 {
+
+	char mac_array[6];
+	unsigned char crc;
+
+	WifiMgr_Get_MAC_Address(mac_array);
+	printf("MAC is %s",mac_array);//this is string not hex
+
 	//HEADER:  TAG:( 4 BYTES)
 	*buf=0x2f;
 	*(buf+1)=0xb4;
@@ -152,15 +185,20 @@ int gen_mac_cmd(char* buf)
 	*(buf+12)=13;
 
 	//DATA: 6 BYTE , set local MAC
-	*(buf+13)=0x00;
-	*(buf+14)=0x00;
-	*(buf+15)=0x00;
-	*(buf+16)=0x00;
-	*(buf+17)=0x00;
-	*(buf+18)=0x00;
+	//value was stored in string type
+	*(buf+13)=mac_array[0]; 
+	*(buf+14)=mac_array[1];
+	*(buf+15)=mac_array[2];
+	*(buf+16)=mac_array[3];
+	*(buf+17)=mac_array[4];
+	*(buf+18)=mac_array[5];
+
+
+	crc=get_data_crc(buf+13,6); //data byte crc 
+
 
 	//DATA CRC
-	*(buf+19)=0x00;
+	*(buf+19)=crc;
 
 return 20;
 }

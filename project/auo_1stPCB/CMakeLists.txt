@@ -151,7 +151,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     string.c
     upgrade.c
     backup.c
-	#canbus.c
+    canbus.c
     )
 
 

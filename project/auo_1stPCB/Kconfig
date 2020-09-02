@@ -140,14 +140,8 @@ config NOR_PARTITION3
 
 endif
 
-config SD0_ENABLE
-    def_bool n
 
-config GPIO_SD0_CARD_DETECT
-    default "22"
 
-config GPIO_SD0_IO
-    default "14, 13, 15, 16, 17, 18, -1, -1, -1, -1"
 
 ####SDIO WIFI CONFIG####
 if SD1_ENABLE && NET_WIFI_SDIO

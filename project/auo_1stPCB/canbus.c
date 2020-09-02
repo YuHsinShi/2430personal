@@ -116,9 +116,12 @@ static void *_CAN2Thread()
 static void *_CAN1RECVThread()
 {
 	CAN_RXOBJ _rxObj;
-    uint8_t  txbuffer[8] = {0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7};
     //define can0
     can0                         = (CAN_HANDLE *)malloc(sizeof(CAN_HANDLE));
+
+	printf("_CAN1RECVThread \d");
+
+	
     can0->Instance               = 0;
     can0->ADDR                   = CAN0_BASE_ADDRESS;
     can0->BaudRate               = CAN_1000K_4M;//CAN_500K_1M;
@@ -128,8 +131,16 @@ static void *_CAN1RECVThread()
     can0->InternalLoopBackMode   = false;
     can0->ListenOnlyMode         = false;
     can0->TPtr                   = FilterTable;
+
+	
     //try open & init can ctrl
     ithCANOpen(can0, (void *)CANRXCallback, (void *)NULL);
+
+
+//	while(1);
+
+
+
 		//main loop
 		while (1)
 		{
@@ -144,12 +155,12 @@ static void *_CAN1RECVThread()
 			
 			if (ithCANRead(can0, &_rxObj) == 0)
 			{
-			/*
+/*			
 				printf("ID[%x]: IDE = %x,DLC = %x\n"
 					   , _rxObj.Identifier, _rxObj.Control.IDE, _rxObj.Control.DLC);
 				printf("data[0-5]=%x %x %x %x %x \n", _rxObj.RXData[0], _rxObj.RXData[1], _rxObj.RXData[2], _rxObj.RXData[3]
 					   , _rxObj.RXData[4]);
-					   */
+*/			
 				//printf("can0 error count = %d\n", ithCANGetReceiveErrorCouNT(can0));
 				//printf("kind of error = %x\n", ithCANGetKindOfError(can0));
 
@@ -161,35 +172,41 @@ static void *_CAN1RECVThread()
 			//SPORT  MODE			{0xFE,0x05,0x39,0x09,0xBB},
 			//SPEED VALUE			{0XFE,0X05,0X34,0X00,0X00};
 
-						if(0x39 ==_rxObj.RXData[2])  )
+						if(0x39 ==_rxObj.RXData[2]  )	
 						{
-							if(0x00 ==_rxObj.RXData[3]) {								
+							if(0x00 ==_rxObj.RXData[3]) 
+							{
 									ui_set_unlock_mode();
 							}
-							else if (0x02 ==_rxObj.RXData[2]) { 
-								
+							else if(0x02 ==_rxObj.RXData[2]) 
+							{ 
 									ui_engine_start();
 							}
-							else if (0x49 ==_rxObj.RXData[2]) {
+							else if(0x49 ==_rxObj.RXData[2]) 
+							{
 									if(0x7B ==_rxObj.RXData[3])
 										ui_set_winker_left();						
 									else
 										ui_set_winker_right();
 							}						
-							else if (0x09 ==_rxObj.RXData[2]) { 
+							else if(0x09 ==_rxObj.RXData[2]) 
+							{ 
 									ui_set_sport_mode_on();	
 							}
 							else{
 								
 							}
 						}
-						else if(0x34 ==_rxObj.RXData[2])  ){
+						else if(0x34 ==_rxObj.RXData[2])
+						{
 							ui_set_meter_speed_value(_rxObj.RXData[3]);
 
 						}
-						else{
+						else
+						{
 
 						}
+						
 
 			}
 			

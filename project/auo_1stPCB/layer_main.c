@@ -49,37 +49,48 @@ static ITUIcon* mainSemicolon;
 static int speed;
 static int flush_counter = 0;
 
+static ITUContainer* ContainerMainMeter;
 
-
+static int winker_status;
+	
 void ui_set_meter_speed_value(int value)
 {	
-if( (speed < 99) && (speed > 0) )
+if( (value < 99) && (value > 0) )
 		speed = value;
 
+//ithPrintf(" speed =%d \n",speed);
 }
 
 void ui_set_winker_left()
 {	
+	winker_status=0x01;
 
 }
 void ui_set_winker_right()
 {	
+	winker_status=0x02; 
 
 }
 
 void ui_set_sport_mode_on()
 {	
+	
+	ituWidgetSetVisible(mainSpriteSportMode,1);
+
 
 }
 
 
 void ui_engine_start()
 {	
+	ituWidgetSetVisible(ContainerMainMeter,1);
+
 
 }
 void ui_set_unlock_mode()
 {	
 
+	ituWidgetSetVisible(ContainerMainMeter,0);
 }
 
 
@@ -133,38 +144,55 @@ void SemicolonFlash()
 }
 
 
-void TurnLeftRightFlash()
+int TurnLeftRightWinker(ITUIcon* flash_icon)
 {
 	static int flush_interal = 3;
 	static int flash_counter = 10;
-	static bool Leftflag = 0;
-	ITUIcon* turning;
 
 	if (flush_interal > 2)
 		flush_interal = 0;
 	else{ //to reduce the update rate to 1/3
 		flush_interal++;
-		return ;
+		return 1;
 	}
 
-	//for Left Right switching
-	if (1== Leftflag)
-		turning = mainIconLeft;
-	else 
-		turning = mainIconRight;
-
 	if (flash_counter % 2)
-		ituWidgetSetVisible(turning, 1);
+		ituWidgetSetVisible(flash_icon, 1);
 	else
-		ituWidgetSetVisible(turning, 0);
+		ituWidgetSetVisible(flash_icon, 0);
 
 	flash_counter--;
 	if (0 == flash_counter)
 	{
 		flash_counter = 10;
-		Leftflag = !Leftflag;
-		ituWidgetSetVisible(mainIconLeft, 0);
+		ituWidgetSetVisible(flash_icon, 0);
+		return 0;
+	}
+return 1;
+}
+
+
+void WinkerLRStatusUpdate()
+{
+	if(0==winker_status){	
+		ituWidgetSetVisible(mainIconLeft, 0);	
 		ituWidgetSetVisible(mainIconRight, 0);
+	}
+	else if (0x01==winker_status){
+		if(0 == TurnLeftRightWinker(mainIconLeft) )
+		{
+			winker_status&=~0x01;
+		}
+	}
+	else if (0x02==winker_status){
+		if(0 == TurnLeftRightWinker(mainIconRight) ){
+				winker_status&=~0x02;
+		
+		}
+	}
+	else
+	{
+
 	}
 
 }
@@ -188,8 +216,7 @@ bool MainLayerOnTimer(ITUWidget* widget, char* param)
 
 	SpeedMeterUpdate();
 
-	TurnLeftRightFlash();
-	
+	WinkerLRStatusUpdate();
 	//leo
 	SemicolonFlash();
 
@@ -199,6 +226,10 @@ bool MainLayerOnTimer(ITUWidget* widget, char* param)
 
 bool MainLayerOnEnter(ITUWidget* widget, char* param)
 {
+
+	ContainerMainMeter = ituSceneFindWidget(&theScene, "ContainerMainMeter");
+	assert(ContainerMainMeter);
+
 	mainSprite_TenDigit = ituSceneFindWidget(&theScene, "Sprite_TenDigit");
 	assert(mainSprite_TenDigit);
 

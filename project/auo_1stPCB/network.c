@@ -413,6 +413,9 @@ static void* NetworkTask(void* arg)
     ftpd_init();
 #endif
 
+
+
+
     for (;;)
     {
 #ifdef CFG_NET_WIFI

@@ -108,20 +108,25 @@ void *TestFunc1(void *arg)
     uint8_t  txbuffer[8] = {0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7};
     
     itpInit();
-    printf("test 9860 canbus!\n");
+    printf("TestFunc1 test 9860 canbus!\n");
 
     //set GPIO by target board. 
     //<can0 rx pin 44 tx pin 43>
-    ithCANSetGPIO(0, 44, 43);
+//    ithCANSetGPIO(0, 44, 43);
+    ithCANSetGPIO(0, 17, 18);
     //<can1 rx pin 46 tx pin 45>
-    ithCANSetGPIO(1, 46, 45);
+    //ithCANSetGPIO(1, 46, 45);
 
     //define can0
     can0                         = (CAN_HANDLE *)malloc(sizeof(CAN_HANDLE));
+
+	printf("TestFunc1 \d");
+
+	
     can0->Instance               = 0;
     can0->ADDR                   = CAN0_BASE_ADDRESS;
-    can0->BaudRate               = CAN_500K_1M;
-    can0->SourceClock            = CAN_SRCCLK_40M;
+    can0->BaudRate               = CAN_1000K_4M;//CAN_500K_1M;
+    can0->SourceClock            = CAN_SRCCLK_40M;//CAN_SRCCLK_160M;
     can0->ProtocolType           = protocol_CAN_2_0B;
     can0->ExternalLoopBackMode   = false;
     can0->InternalLoopBackMode   = false;

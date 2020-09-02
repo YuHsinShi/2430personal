@@ -476,6 +476,11 @@ int SceneRun(void)
     /* Watch keystrokes */
     dblclk = frames = lasttick = lastx = lasty = mouseDownTick = 0;
 
+
+	printf("##SceneRun###\n");
+
+
+
     for (;;)
     {
         bool result = false;
@@ -500,6 +505,7 @@ int SceneRun(void)
         frames++;
         if (tick - lasttick >= 1000)
         {
+
             printf("fps: %d\n", frames);
             frames      = 0;
             lasttick    = tick;

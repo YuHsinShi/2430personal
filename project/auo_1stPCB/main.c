@@ -93,7 +93,7 @@ retry_backup:
     AudioInit();
     PhotoInit();
 #ifndef WIN32
-	//Can_init();
+	Can_init();
 #endif
     SceneInit();
     SceneLoad();
