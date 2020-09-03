@@ -117,6 +117,63 @@ void SceneLoad(void)
     ituSceneLoadFile(&theScene, CFG_PRIVATE_DRIVE ":/template.itu");
 }
 
+//=================
+static unsigned int start_tick;
+
+void Test_timeformat_out()
+{
+#define LOG_TIMESTAMP_LEN		11 //10//[12:34:56] //10 content with /0
+	char tmp[64] = {0};
+	int min, hour, sec;
+
+	min = get_min_passed();
+	hour = get_hour_passed();
+	sec = get_sec_passed();
+
+	snprintf(tmp, LOG_TIMESTAMP_LEN, "[%0.2d:%0.2d:%0.2d]", hour, min, sec);
+	printf("%s\n", tmp);
+
+}
+int get_hour_passed()
+{
+	unsigned int tmp;
+	tmp = get_elapsed_total_seconds()/3660;
+	return tmp;
+
+}
+
+int get_min_passed()
+{
+	unsigned int tmp;
+	tmp = get_elapsed_total_seconds()%3600;//erased hour
+	tmp=tmp/60; //get minutes 
+	return tmp;
+
+}
+int get_sec_passed()
+{
+	unsigned int tmp;
+	tmp	= get_elapsed_total_seconds()%60;
+	return tmp;
+}
+//elapsed_ticker
+
+int get_elapsed_total_seconds()
+{
+	return 	(SDL_GetTicks()-start_tick)/1000;		
+
+}
+
+void set_timecounter_start()
+{
+	start_tick=SDL_GetTicks();
+	return;
+}
+//=================
+
+
+
+
 int SceneRun(void)
 {
     SDL_Event ev, lastev;
@@ -139,9 +196,10 @@ int SceneRun(void)
 #ifdef FPS_ENABLE
         if (tick - lasttick >= 1000)
         {
-            printf("fps: %d\n", frames);
+           // printf("fps: %d\n", frames);
             frames = 0;
             lasttick = tick;
+			//Test_timeformat_out();
         }
 #endif
 

@@ -90,10 +90,12 @@ int AudioGetVolume(void);
 
 typedef struct
 {
-	int enable;
-	int baud_rate;
-	int fileMaxsize;
-	int fileInterval;
+	int enable;			//settings
+	int baud_rate;		//settings
+	int fileMaxsize;	//settings
+	int fileInterval;	//settings
+	int timestamp;		//settings
+	int alive_flag;
 }UART_SET;
 
 /** @defgroup template_config Configuration

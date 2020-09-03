@@ -184,6 +184,8 @@ endif()
 
 # files
 configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/config.ini ${CMAKE_BINARY_DIR}/data/public/config.ini COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/setting.ini ${CMAKE_BINARY_DIR}/data/public/setting.ini COPYONLY)
+
 file(COPY
     ${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/sounds
     DESTINATION ${CMAKE_BINARY_DIR}/data/private
@@ -225,6 +227,7 @@ endif()
 
 # backups
 configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/config.ini ${CMAKE_BINARY_DIR}/data/private/backup/${CFG_PUBLIC_DRIVE}/config.ini COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/setting.ini ${CMAKE_BINARY_DIR}/data/private/backup/${CFG_PUBLIC_DRIVE}/setting.ini COPYONLY)
 # crc
 if (DEFINED CFG_CHECK_FILES_CRC_ON_BOOTING)
     file(REMOVE ${CMAKE_BINARY_DIR}/data/private/backup/${CFG_PUBLIC_DRIVE}/ite_crc.dat)

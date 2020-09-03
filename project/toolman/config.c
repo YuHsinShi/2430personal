@@ -16,6 +16,67 @@ static bool cfgIsSaving;
 static int cfgSavingCount;
 static pthread_mutex_t cfgMutex  = PTHREAD_MUTEX_INITIALIZER;
 
+
+void Setting_PrintAll()
+{
+int i;
+	for (i = 1; i <= 5; i++)
+	{
+		printf("CH %d \n",i);
+		printf("enable =%d\n",theConfig.uart[i - 1].enable );
+		printf("baud_rate =%d\n",theConfig.uart[i - 1].baud_rate );
+		printf("fileMaxsize =%d\n",theConfig.uart[i - 1].fileMaxsize );
+		printf("fileInterval =%d\n",theConfig.uart[i - 1].fileInterval );
+		printf("timestamp =%d\n",theConfig.uart[i - 1].timestamp );
+
+	}
+
+}
+
+
+
+
+void SettingInit()
+{
+	static dictionary* setting_ini;
+	char tmp[64] = { 0 };
+	int i;
+
+	setting_ini = iniparser_load("B:/setting.ini");
+	if (!setting_ini)
+	{
+		setting_ini = dictionary_new(0);
+		assert(setting_ini);
+		for (i = 1; i <= 5; i++)
+		{
+			snprintf(tmp, 64, "uart%d", i);
+			dictionary_set(setting_ini, tmp, NULL);
+
+		}
+	}
+	for (i = 1; i <= 5; i++)
+	{
+		snprintf(tmp, 64, "uart%d:on_off", i);
+		theConfig.uart[i - 1].enable = iniparser_getint(setting_ini, tmp, 1);
+
+		snprintf(tmp, 64, "uart%d:baud_rate", i);
+		theConfig.uart[i - 1].baud_rate = iniparser_getint(setting_ini, tmp, 115200);
+
+		snprintf(tmp, 64, "uart%d:log_size", i);
+		theConfig.uart[i - 1].fileMaxsize = iniparser_getint(setting_ini, tmp, 16);
+
+		snprintf(tmp, 64, "uart%d:log_time", i);
+		theConfig.uart[i - 1].fileInterval = iniparser_getint(setting_ini, tmp, 60);
+
+		snprintf(tmp, 64, "uart%d:timestamp", i);
+		theConfig.uart[i - 1].timestamp = iniparser_getint(setting_ini, tmp, 1);
+
+	}
+	Setting_PrintAll();
+
+}
+
+
 void ConfigInit(void)
 {
     cfgIni = iniparser_load(CFG_PUBLIC_DRIVE ":/" INI_FILENAME);
@@ -40,23 +101,7 @@ void ConfigInit(void)
     theConfig.keylevel = iniparser_getint(cfgIni, "sound:keylevel", 80);
     theConfig.audiolevel = iniparser_getint(cfgIni, "sound:audiolevel", 80);
 	*/
-	char tmp[64] = { 0};
-	int i;
-	for (i = 1; i <= 5; i++)
-	{
-		snprintf(tmp, 64, "uart%d:on_off", i);
-		theConfig.uart[i - 1].enable = iniparser_getint(cfgIni, tmp, 1);
 
-		snprintf(tmp, 64,"uart%d:baud_rate", i);
-		theConfig.uart[i-1].baud_rate = iniparser_getint(cfgIni, tmp, 115200);
-
-		snprintf(tmp, 64, "uart%d:log_size", i);
-		theConfig.uart[i - 1].fileMaxsize = iniparser_getint(cfgIni, tmp, 16);
-
-		snprintf(tmp, 64, "uart%d:log_time", i);
-		theConfig.uart[i - 1].fileInterval = iniparser_getint(cfgIni, tmp, 60);
-
-	}
 
     cfgSavingCount = 0;
 }

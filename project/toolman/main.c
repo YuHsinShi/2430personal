@@ -151,6 +151,7 @@ retry_backup:
         printf("Couldn't initialize SDL: %s\n", SDL_GetError());
 
     ConfigInit();
+	SettingInit();
 
 #ifdef CFG_NET_ENABLE
     NetworkInit();
