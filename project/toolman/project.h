@@ -90,13 +90,22 @@ int AudioGetVolume(void);
 
 typedef struct
 {
-	int enable;			//settings
+	//int enable;			//settings
 	int baud_rate;		//settings
+	char parity[8];			//settings
+	int databit;		//settings
+	int stopbit;		//settings
+
+	int fileNum;		//settings
 	int fileMaxsize;	//settings
 	int fileInterval;	//settings
 	int timestamp;		//settings
+
 	int alive_flag;
 }UART_SET;
+
+
+
 
 /** @defgroup template_config Configuration
  *  @{
@@ -116,14 +125,13 @@ typedef struct
     int       keylevel;                                                 // /< Key volume percentage, range is 0~100
     int       audiolevel;                                               // /< Audio volume percentage, range is 0~100
 
-	UART_SET uart[5];
 } Config;
 
 /**
  * Global instance variable of configuration.
  */
 extern Config theConfig;
-
+extern UART_SET uart[5];
 /**
  * Loads configuration file.
  */

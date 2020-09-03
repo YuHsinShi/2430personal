@@ -6337,7 +6337,7 @@
         <Property name="IsHebrew31">False</Property>
         <Property name="MouseLongPressDelay">0</Property>
         <Property name="MouseUpDelay">0</Property>
-        <Property name="Action01">Goto,Press,Layer_main,</Property>
+        <Property name="Action01">Function,Press,Setting_next,</Property>
         <Property name="Action02">None,Press,,</Property>
         <Property name="Action03">None,Press,,</Property>
         <Property name="Action04">None,Press,,</Property>
@@ -6477,7 +6477,7 @@
         <Property name="IsHebrew31">False</Property>
         <Property name="MouseLongPressDelay">0</Property>
         <Property name="MouseUpDelay">0</Property>
-        <Property name="Action01">None,Press,,</Property>
+        <Property name="Action01">Function,Press,Setting_prev,</Property>
         <Property name="Action02">None,Press,,</Property>
         <Property name="Action03">None,Press,,</Property>
         <Property name="Action04">None,Press,,</Property>
@@ -7503,7 +7503,7 @@
           <Property name="Text">500KB</Property>
           <Property name="BackColor">White</Property>
           <Property name="Font">新細明體, 15.75pt</Property>
-          <Property name="Location">126, 10</Property>
+          <Property name="Location">127, 10</Property>
           <Property name="Name">Text_settingFilesize</Property>
           <Property name="Size">114, 23</Property>
         </Object>
@@ -7612,7 +7612,7 @@
           <Property name="Font">新細明體, 15.75pt</Property>
           <Property name="Location">8, 83</Property>
           <Property name="Name">Text39</Property>
-          <Property name="Size">114, 23</Property>
+          <Property name="Size">126, 23</Property>
         </Object>
         <Object type="GUIDesigner.TextWidget, GUIDesigner, Version=1.1.7495.28202, Culture=neutral, PublicKeyToken=null" name="Text_settingFileNum" children="Controls">
           <Property name="Text1" />
@@ -7827,7 +7827,7 @@
           <Property name="Font">新細明體, 15.75pt</Property>
           <Property name="Location">8, 120</Property>
           <Property name="Name">Text36</Property>
-          <Property name="Size">114, 23</Property>
+          <Property name="Size">130, 23</Property>
         </Object>
         <Object type="GUIDesigner.TextWidget, GUIDesigner, Version=1.1.7495.28202, Culture=neutral, PublicKeyToken=null" name="Text_settingTimeStamp" children="Controls">
           <Property name="Text1" />
@@ -8042,7 +8042,7 @@
           <Property name="Font">新細明體, 15.75pt</Property>
           <Property name="Location">8, 46</Property>
           <Property name="Name">Text30</Property>
-          <Property name="Size">114, 23</Property>
+          <Property name="Size">130, 23</Property>
         </Object>
         <Object type="GUIDesigner.TextWidget, GUIDesigner, Version=1.1.7495.28202, Culture=neutral, PublicKeyToken=null" name="Text_settingTimeInterval" children="Controls">
           <Property name="Text1" />
@@ -8252,12 +8252,12 @@
           <Property name="IsHebrew31">False</Property>
           <Property name="LetterSpacing">0</Property>
           <Property name="Hided">False</Property>
-          <Property name="Text">log size max</Property>
+          <Property name="Text">FILE SIZE(KB)</Property>
           <Property name="BackColor">White</Property>
           <Property name="Font">新細明體, 15.75pt</Property>
           <Property name="Location">8, 9</Property>
           <Property name="Name">Text28</Property>
-          <Property name="Size">114, 23</Property>
+          <Property name="Size">130, 23</Property>
         </Object>
         <Property name="PixelFormat">RGB565</Property>
         <Property name="Compress">True</Property>
@@ -8283,9 +8283,9 @@
         <Property name="OriginalSize">0, 0</Property>
         <Property name="Hided">False</Property>
         <Property name="BackColor">MistyRose</Property>
-        <Property name="Location">232, 49</Property>
+        <Property name="Location">227, 49</Property>
         <Property name="Name">Background27</Property>
-        <Property name="Size">255, 153</Property>
+        <Property name="Size">260, 153</Property>
       </Object>
       <Object type="GUIDesigner.ButtonWidget, GUIDesigner, Version=1.1.7495.28202, Culture=neutral, PublicKeyToken=null" name="Button41" children="Controls">
         <Property name="ImageAlignPos">TopLeft</Property>
@@ -8562,6 +8562,7 @@
       <Property name="Name">Background5</Property>
       <Property name="Size">480, 272</Property>
     </Object>
+    <Property name="Action01">Function,Enter,SettingOnEnter,</Property>
     <Property name="ClientSize">480, 272</Property>
     <Property name="Name">Layer_Settings</Property>
   </Object>

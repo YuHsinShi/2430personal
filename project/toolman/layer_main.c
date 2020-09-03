@@ -48,10 +48,10 @@ bool UartCaptureOnTimer(ITUWidget* widget, char* param)
 	int i;
 	for (i = 1; i <= 5; i++)
 	{
-		if (theConfig.uart[i - 1].alive_flag > 0)
+		if (uart[i - 1].alive_flag > 0)
 		{
 		
-			theConfig.uart[i - 1].alive_flag = 0;
+			uart[i - 1].alive_flag = 0;
 			ituSpriteGoto(uart_light, 1);
 		}
 		else
@@ -82,7 +82,7 @@ bool UartCaptureOnEnter(ITUWidget* widget, char* param)
 		if (NULL == uart_baud[i-1])
 			assert(uart_baud[i-1]);
 
-		snprintf(tmp, 64, "%d", theConfig.uart[i-1].baud_rate);
+		snprintf(tmp, 64, "%d",uart[i-1].baud_rate);
 		ituTextSetString(uart_baud[i-1], tmp);		
 		//=========================================
 
@@ -118,4 +118,6 @@ bool UartCaptureOnEnter(ITUWidget* widget, char* param)
 
 	return true;
 }
+
+
 #endif

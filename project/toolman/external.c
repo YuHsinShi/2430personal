@@ -256,13 +256,13 @@ int total_shift=0;
 				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_RESERVED], EXTERNAL_BUFFER_SIZE);
 				if(readLen > 0)
 				{
-					theConfig.uart[index].alive_flag++; // uart aive
+					uart[index].alive_flag++; // uart aive
 					
 						//check if one second is passsed->record the log
 						if (SDL_GetTicks() - log_writer[index].last_time >= 1000)
 						{
 
-							if(theConfig.uart[index].timestamp)
+							if(uart[index].timestamp)
 							{					
 								int min,hour,sec;
 								

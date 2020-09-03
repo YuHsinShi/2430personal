@@ -11,10 +11,14 @@
 #define INI_FILENAME "config.ini"
 
 Config theConfig;
+UART_SET uart[5];
+
 static dictionary* cfgIni;
 static bool cfgIsSaving;
 static int cfgSavingCount;
 static pthread_mutex_t cfgMutex  = PTHREAD_MUTEX_INITIALIZER;
+
+
 
 
 void Setting_PrintAll()
@@ -23,17 +27,15 @@ int i;
 	for (i = 1; i <= 5; i++)
 	{
 		printf("CH %d \n",i);
-		printf("enable =%d\n",theConfig.uart[i - 1].enable );
-		printf("baud_rate =%d\n",theConfig.uart[i - 1].baud_rate );
-		printf("fileMaxsize =%d\n",theConfig.uart[i - 1].fileMaxsize );
-		printf("fileInterval =%d\n",theConfig.uart[i - 1].fileInterval );
-		printf("timestamp =%d\n",theConfig.uart[i - 1].timestamp );
+		//printf("enable =%d\n",uart[i - 1].enable );
+		printf("baud_rate =%d\n",uart[i - 1].baud_rate );
+		printf("fileMaxsize =%d\n",uart[i - 1].fileMaxsize );
+		printf("fileInterval =%d\n",uart[i - 1].fileInterval );
+		printf("timestamp =%d\n",uart[i - 1].timestamp );
 
 	}
 
 }
-
-
 
 
 void SettingInit()
@@ -54,22 +56,39 @@ void SettingInit()
 
 		}
 	}
+	char* str;
 	for (i = 1; i <= 5; i++)
 	{
-		snprintf(tmp, 64, "uart%d:on_off", i);
-		theConfig.uart[i - 1].enable = iniparser_getint(setting_ini, tmp, 1);
+		//snprintf(tmp, 64, "uart%d:on_off", i);
+		//uart[i - 1].enable = iniparser_getint(setting_ini, tmp, 1);
 
 		snprintf(tmp, 64, "uart%d:baud_rate", i);
-		theConfig.uart[i - 1].baud_rate = iniparser_getint(setting_ini, tmp, 115200);
+		uart[i - 1].baud_rate = iniparser_getint(setting_ini, tmp, 115200);
+
+		snprintf(tmp, 64, "uart%d:parity", i);
+		str = iniparser_getstring(setting_ini, tmp, "NONE");
+		strcpy(uart[i - 1].parity, str);
+
+		snprintf(tmp, 64, "uart%d:databit", i);
+		uart[i - 1].databit = iniparser_getint(setting_ini, tmp, 8);
+
+		snprintf(tmp, 64, "uart%d:stopbit", i);
+		uart[i - 1].stopbit = iniparser_getint(setting_ini, tmp, 1);
+
+
+
+
+
+
 
 		snprintf(tmp, 64, "uart%d:log_size", i);
-		theConfig.uart[i - 1].fileMaxsize = iniparser_getint(setting_ini, tmp, 16);
+		uart[i - 1].fileMaxsize = iniparser_getint(setting_ini, tmp, 16);
 
 		snprintf(tmp, 64, "uart%d:log_time", i);
-		theConfig.uart[i - 1].fileInterval = iniparser_getint(setting_ini, tmp, 60);
+		uart[i - 1].fileInterval = iniparser_getint(setting_ini, tmp, 60);
 
 		snprintf(tmp, 64, "uart%d:timestamp", i);
-		theConfig.uart[i - 1].timestamp = iniparser_getint(setting_ini, tmp, 1);
+		uart[i - 1].timestamp = iniparser_getint(setting_ini, tmp, 1);
 
 	}
 	Setting_PrintAll();
