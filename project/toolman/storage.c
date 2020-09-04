@@ -187,3 +187,38 @@ bool StorageCheckSpace(char *DrivePath, uint64_t checkSize)
 	}
     return result;
 }
+
+
+
+
+
+
+
+
+int StorageCheckUSBAvailabe(void)
+{
+
+    {
+        ITPDriveStatus* driveStatusTable;
+        ITPDriveStatus* driveStatus = NULL;
+        int i;
+
+
+        ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
+
+        for (i = 0; i < ITP_MAX_DRIVE; i++)
+        {
+            driveStatus = &driveStatusTable[i];
+			 if (driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17)
+            {
+                if (driveStatus->avail)
+                {
+					return 1;
+                }
+            }
+        }
+    }
+
+	return 0;
+}
+

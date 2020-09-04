@@ -1564,7 +1564,7 @@
         <Property name="IsHebrew31">False</Property>
         <Property name="LetterSpacing">0</Property>
         <Property name="Hided">False</Property>
-        <Property name="Text">STATUS</Property>
+        <Property name="Text">IDLE</Property>
         <Property name="BackColor">White</Property>
         <Property name="Font">新細明體, 15.75pt</Property>
         <Property name="Location">263, 5</Property>
@@ -4377,7 +4377,7 @@
       <Property name="TransformX">100</Property>
       <Property name="TransformY">100</Property>
       <Property name="OriginalSize">0, 0</Property>
-      <Property name="Hided">True</Property>
+      <Property name="Hided">False</Property>
       <Property name="BackColor">MistyRose</Property>
       <Property name="Location">0, 0</Property>
       <Property name="Name">Background5</Property>

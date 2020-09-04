@@ -109,6 +109,11 @@ struct logwrite_t {
 
 struct logwrite_t log_writer[6]={0};
 
+int log_writer_get_number_index(char index)
+{
+	return log_writer[index].num;
+}
+
 void log_writer_get_current_file_handle(char index)
 {
 	char filepath_tmp[64];
@@ -143,6 +148,19 @@ void log_writer_get_next_file_handle(char index)
 
 }
 
+void creat_writer_folder()
+{
+	int i;
+
+	int ret;
+	char tmp[8] = { 0 };
+	for (i = 0; i<5; i++)
+	{
+		snprintf(tmp, 8, "E:/ch%1.d", i + 1);
+		ret = mkdir(tmp, 0700);
+	}
+	return;
+}
 static void* WritingTask(void* arg)
 {
 	//LogFileInit("E:/log.txt")
@@ -157,6 +175,7 @@ static void* WritingTask(void* arg)
 
 
 // 
+	creat_writer_folder();
 
 	//[1234]
 	while(!WritingQuit)
@@ -185,8 +204,7 @@ static void* WritingTask(void* arg)
 				
 				log_writer[index].byte_counter+=wrlen;
 		        fflush(log_writer[index].handle);
-//				if(log_writer[index].byte_counter > theConfig.uart[index].fileMaxsize *1024)
-				if(log_writer[index].byte_counter > 100*1024)
+				if(log_writer[index].byte_counter > uart[index].fileMaxsize *1024)
 				{
 					DBG("ch %d write finished. \r\n",index);
 					log_writer[index].byte_counter=0;
@@ -232,14 +250,7 @@ int total_shift=0;
 	
 	printf("ExternalTask start\n");
 
-	int ret;
-	ret=mkdir("E:/ch1",0700);
-		printf("E:/ch1 fail %d\n",ret);
-	ret=mkdir("E:/ch2",0700);
-		printf("E:/ch2 fail %d\n",ret);
 
-	ret=mkdir("E:/ch3",0700);
-		printf("E:/ch3 fail %d\n",ret);	
 
 
     while (!extQuit)
@@ -270,10 +281,11 @@ int total_shift=0;
 								hour =get_hour_passed();
 								sec =get_sec_passed();
 							
-								snprintf(&inDataBuf[HEADER_RESERVED-LOG_TIMESTAMP_LEN],LOG_TIMESTAMP_LEN,"\n[%.2d:%.2d:%.2d]",hour,min,sec);
+								snprintf(&inDataBuf[HEADER_RESERVED-LOG_TIMESTAMP_LEN],LOG_TIMESTAMP_LEN,"\n[%.2d:%.2d:%.2d]\n",hour,min,sec);
+								inDataBuf[HEADER_RESERVED-1]=0xa;//force to change line
 
 
-								printf("TIME= %s",&inDataBuf[HEADER_SHIFT]);
+//								printf("TIME= %s",&inDataBuf[HEADER_SHIFT];
 								pos=&inDataBuf[HEADER_RESERVED-HEADER_SHIFT-LOG_TIMESTAMP_LEN];
 
 								readLen+=LOG_TIMESTAMP_LEN;
@@ -351,14 +363,15 @@ void init_log_writer()
 	
 		log_writer[index].num=1;
 
-
 		log_writer[index].last_time=SDL_GetTicks();
+		if(NULL != log_writer[index].handle)
+		{
+			fclose(log_writer[index].handle);
+		}
 
 		
 /*
-		snprintf(log_writer[index].folder_path,64,"E:/ch%d/",index);
-		
-		
+		snprintf(log_writer[index].folder_path,64,"E:/ch%d/",index);	
 
 		log_writer[index].handle =NULL;
 		
@@ -378,6 +391,38 @@ void init_log_writer()
 
 }
 
+void log_writer_stop()
+{
+
+   extQuit = true;
+   WritingQuit=true;
+   pthread_join(extTask, NULL);
+   pthread_join(WrTask, NULL);
+
+
+   // pthread_create(&extTask, NULL, ExternalTask, NULL);
+   // pthread_create(&WrTask, NULL, WritingTask, NULL);
+
+}
+
+
+
+void log_writer_start()
+{
+	static int tmp_flag=0;
+	if(0 == tmp_flag)
+	{
+		init_log_writer();
+
+		set_timecounter_start();//start to cout the elapsed time
+
+
+	    pthread_create(&extTask, NULL, ExternalTask, NULL);
+
+	    pthread_create(&WrTask, NULL, WritingTask, NULL);
+		tmp_flag=1;
+	}
+}
 void ExternalInit(void)
 {
     struct mq_attr qattr;
@@ -410,27 +455,10 @@ void ExternalInit(void)
     ioctl(ITP_DEVICE_UART0, ITP_IOCTL_INIT, NULL);
 #endif
 #endif
-	init_log_writer();
-
-	set_timecounter_start();//start to cout the elapsed time
-
-    pthread_create(&extTask, NULL, ExternalTask, NULL);
-
-    pthread_create(&WrTask, NULL, WritingTask, NULL);
 
 
-/*	struct	timeval    tv;
-	struct	timezone   tz;
-	gettimeofday(&tv,&tz);
-	
-	printf("tv_sec:%d\n",tv.tv_sec);
-	printf("tv_usec:%d\n",tv.tv_usec);
-	printf("tv_sec:%.4d\n",tv.tv_sec);
-	printf("tv_usec:%.4d\n",tv.tv_usec);
 
-	printf("tz_minuteswest:%d\n",tz.tz_minuteswest);
-	printf("tz_dsttime:%d\n",tz.tz_dsttime);
-*/
+
 
 }
 
