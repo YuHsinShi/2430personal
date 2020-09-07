@@ -90,6 +90,12 @@ void SettingInit()
 		snprintf(tmp, 64, "uart%d:timestamp", i);
 		uart[i - 1].timestamp = iniparser_getint(setting_ini, tmp, 1);
 
+
+		snprintf(tmp, 64, "uart%d:keyword", i);
+		str = iniparser_getstring(setting_ini, tmp, "NONE");
+		strcpy(uart[i - 1].keyword, str);
+
+
 	}
 	Setting_PrintAll();
 

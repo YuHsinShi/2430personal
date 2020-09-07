@@ -500,8 +500,8 @@ void* TestFunc(void* arg)
 {
     //itpInit();
 
-    //spi_test_master();
-
+    spi_test_master();
+while(1);
     //mmpSpiInitialize(SPI_SEL, SPI_OP_MASTR);
     NorInitial(SPI_SEL, SPI_CSN_0);
 

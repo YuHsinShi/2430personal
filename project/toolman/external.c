@@ -61,10 +61,13 @@ static unsigned int checkSum = 0;
 
 #define WRITING_DEBUG 	1
 
-
-#define HEADER_UART_NUMBER		1  //1 BYTE
 #define HEADER_PACKET_SIZE		4  //4 BYTE
-#define HEADER_SHIFT 		(HEADER_UART_NUMBER+HEADER_PACKET_SIZE)
+#define HEADER_UART_NUMBER		1  //1 BYTE
+#define HEADER_CMD		1  //4 BYTE
+
+
+
+#define HEADER_SHIFT 		(HEADER_UART_NUMBER+HEADER_PACKET_SIZE+HEADER_CMD)
 
 #define LOG_TIMESTAMP_LEN		12 //10//[12:34:56] //10 content with /0
 #define HEADER_RESERVED 		LOG_TIMESTAMP_LEN+HEADER_SHIFT
@@ -171,13 +174,13 @@ static void* WritingTask(void* arg)
 	int wrlen;
 	int i;
 	char index;
+	char cmd;
 
 
 
 // 
 	creat_writer_folder();
 
-	//[1234]
 	while(!WritingQuit)
 	{
 		if ( (mq_receive(extOutQueue, wbf,0, 0) )> 0)
@@ -194,6 +197,7 @@ static void* WritingTask(void* arg)
 */
 
 			index= wbf[4];
+			cmd= wbf[5];
 
 			DBG("WR %d , %d/%d byte..\r\n",index, wrlen,log_writer[index].byte_counter );
 
@@ -210,6 +214,11 @@ static void* WritingTask(void* arg)
 					log_writer[index].byte_counter=0;
 					log_writer_get_next_file_handle(index);
 				}
+
+
+
+
+				
 			}
 			else
 			{				//ERR("file handle not found(ch%d) \n",index);
@@ -231,27 +240,15 @@ static void* WritingTask(void* arg)
 }
 
 
-static void* ExternalTask(void* arg)
+static void* ReadUartToLogTask(void* arg)
 {
 int i;
 int readLen;
 char index;
 char* pos;
-int total_shift=0;
-
-	while(1)
-	{
-		if(STORAGE_USB_INSERTED ==StorageCheck())
-			break ;
-		else
-			usleep(1000);
-	
-	}
+char cmd=0;
 	
 	printf("ExternalTask start\n");
-
-
-
 
     while (!extQuit)
     {
@@ -259,12 +256,12 @@ int total_shift=0;
 		{
 				memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE); 
 				// Read data from UART port
-
-
-
-
 				
 				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_RESERVED], EXTERNAL_BUFFER_SIZE);
+
+				
+
+				
 				if(readLen > 0)
 				{
 					uart[index].alive_flag++; // uart aive
@@ -308,9 +305,10 @@ int total_shift=0;
 
 
 
-					memcpy(pos,&readLen,4);
-					*(pos+4)= index;
-					DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen+total_shift);
+					memcpy(pos,&readLen,4); //BYTE 0-3
+					*(pos+4)= index;		//BYTE 4
+					*(pos+5)= cmd;		//BYTE 5
+					DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
 					
 
 						
@@ -333,11 +331,13 @@ int total_shift=0;
 		}
         usleep(5000);
     }
+
+/*
     mq_close(extInQueue);
 	mq_close(extOutQueue);
     extInQueue = -1;
 	extOutQueue = -1;
-
+*/
     return NULL;
 }
 
@@ -391,6 +391,9 @@ void init_log_writer()
 
 }
 
+
+static int tmp_flag=0;
+
 void log_writer_stop()
 {
 
@@ -409,7 +412,6 @@ void log_writer_stop()
 
 void log_writer_start()
 {
-	static int tmp_flag=0;
 	if(0 == tmp_flag)
 	{
 		init_log_writer();
@@ -417,7 +419,7 @@ void log_writer_start()
 		set_timecounter_start();//start to cout the elapsed time
 
 
-	    pthread_create(&extTask, NULL, ExternalTask, NULL);
+	    pthread_create(&extTask, NULL, ReadUartToLogTask, NULL);
 
 	    pthread_create(&WrTask, NULL, WritingTask, NULL);
 		tmp_flag=1;

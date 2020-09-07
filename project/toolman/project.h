@@ -101,6 +101,9 @@ typedef struct
 	int fileInterval;	//settings
 	int timestamp;		//settings
 
+
+	char keyword[16];			//settings
+
 	int alive_flag;
 }UART_SET;
 
