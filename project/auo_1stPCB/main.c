@@ -98,16 +98,22 @@ retry_backup:
     SceneInit();
     SceneLoad();
     ret = SceneRun();
+	ithPrintf("(DBG OTA): %d\n", __LINE__);
 
     SceneExit();
+	ithPrintf("(DBG OTA): %d\n", __LINE__);
 
     ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_EXIT, NULL);
+	ithPrintf("(DBG OTA): %d\n", __LINE__);
 
     PhotoExit();
     AudioExit();
+	
 #if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 	UpgradeUartExit();
 #endif
+	ithPrintf("(DBG OTA): %d\n", __LINE__);
+
     ExternalExit();
 
 #ifdef CFG_NET_ENABLE

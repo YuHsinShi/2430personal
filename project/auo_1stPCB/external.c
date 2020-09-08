@@ -59,7 +59,7 @@ static unsigned int checkSum = 0;
 
 
 
-#if 1 //defined(TEST_INTR_MODE)
+#ifndef WIN32 //defined(TEST_INTR_MODE)
 #include "uart/interface/rs485.h"
 
 #define TEST_PORT       ITP_DEVICE_RS485_1
@@ -77,11 +77,10 @@ static void RS485Callback(void* arg1, uint32_t arg2)
 {
 	uint8_t getstr[256];
 
-	sem_post(&RS485SemIntr);
+	itpSemPostFromISR(&RS485SemIntr);
 
 }
 
-#endif
 unsigned char get_data_crc(char* data_buf,int data_len)
 {
 
@@ -206,9 +205,9 @@ return 20;
 static void* ExternalTask(void* arg)
 {
 
-	char recvbuf[256];
+	unsigned char recvbuf[256];
 	
-	char reply_buf[256];
+	unsigned char reply_buf[256];
 	int len = 0;
 	int replylen;
 
@@ -233,30 +232,69 @@ static void* ExternalTask(void* arg)
 
 	sem_init(&RS485SemIntr, 0, 0);
 
+int pos=0;
+unsigned char buf[32]={0};
+int count_down=10;
 
 	while (!extQuit)
 	{	
 		sem_wait(&RS485SemIntr);
-
 		{
+			memset(recvbuf,0,256);
 			len = read(TEST_PORT, recvbuf , 256);
-			printf("(RS485) len = %d,\n", len,recvbuf[0],recvbuf[1],recvbuf[2],recvbuf[3]);
-			// HEADER 	TAG  LEN  DAT
-			//	4 2 1    1    4    n
-			if(recvbuf[7]==0x93 &&recvbuf[8]==0x00)
-			{
-					printf("(RS485)GET MAC CMD\n");
-				//get mac cmd
-				replylen= gen_mac_cmd(reply_buf);
-				write(TEST_PORT, reply_buf , replylen);
-			}
+			//printf("(RS485) len = %d,pos=%x ,0x%x\n", len,pos,recvbuf[0]);
+			if(1==len)
+				buf[pos]=recvbuf[0];
+			else
+				memcpy(&buf[pos],recvbuf,len);
 			
-			if(recvbuf[7]==0x93 &&recvbuf[8]==0x01)
+			pos+=len;
+
+
+			if(pos>=11)
 			{
-					printf("(RS485)SET AP MODE ON\n");
-				//get mac cmd
-				replylen= gen_mac_cmd(reply_buf);
-				write(TEST_PORT, reply_buf , replylen);
+				printf("(RS485)PARSING BYTE 6=0x%.2x,BYTE 7=0x%.2x\n",buf[6],buf[7]);
+
+				// HEADER 	TAG  LEN  DAT
+				//	4 2 1    1    4    n
+				if((buf[6]==0x93) )
+				{
+					if(buf[7]==0x00 )
+					{
+						printf("(RS485)GET MAC CMD\n");
+					//get mac cmd
+					replylen= gen_mac_cmd(reply_buf);
+					write(TEST_PORT, reply_buf , replylen);
+					}
+					else if (buf[7]==0x01)
+					{
+							printf("(RS485)SET AP MODE ON\n");
+						//get mac cmd
+							NetworkInit_wifi_on();
+
+						replylen= gen_ap_mode_set_ok_cmd(reply_buf);
+						write(TEST_PORT, reply_buf , replylen);
+
+					}
+					else
+					{
+						printf("(RS485)?? buf[7]=%x \n",buf[7]);
+
+					}
+
+				}
+				else
+				{
+					printf("(RS485)?? buf[6]=%x \n",buf[6]);
+
+				}
+				
+
+				pos=0;
+			}
+			else
+			{
+
 			}
 
 		}
@@ -270,6 +308,7 @@ static void* ExternalTask(void* arg)
 
     return NULL;
 }
+#endif
 
 void ExternalInit(void)
 {
@@ -302,14 +341,16 @@ void ExternalInit(void)
     ioctl(ITP_DEVICE_UART0, ITP_IOCTL_INIT, NULL);
 #endif
 #endif
-
+#ifndef _WIN32
     pthread_create(&extTask, NULL, ExternalTask, NULL);
+#endif
+
 }
 
 void ExternalExit(void)
 {
     extQuit = true;
-    pthread_join(extTask, NULL);
+   // pthread_join(extTask, NULL);
 }
 
 int ExternalReceive(ExternalEvent* ev)

@@ -11,9 +11,10 @@
 /* WIFI Static Varibles */
 static struct timeval       tvStart     = {0, 0}, tvEnd     = {0, 0},
                             tvStartWifi = {0, 0}, tvEndWifi = {0, 0};
-static WIFI_MGR_SETTING     gWifiSetting;
 static bool                 networkWifiIsReady, process_set  = false;
 static int                  wifimgr_init = WIFIMGR_ECODE_NOT_INIT;
+
+WIFI_MGR_SETTING            gWifiSetting;
 
 
 
@@ -110,7 +111,7 @@ static int wifiCallbackFucntion(int nState)
 
         case WIFIMGR_STATE_CALLBACK_CLIENT_MODE_CONNECTING_FAIL:
             printf("[Ctrlboard] WifiCallback connecting fail, please check ssid,password,secmode \n");
-			wifiMgr_clientMode_disconnect();
+			WifiMgr_Sta_Disconnect();
         break;
 
         case WIFIMGR_STATE_CALLBACK_CLIENT_MODE_CONNECTING_CANCEL:
@@ -148,6 +149,8 @@ static int wifiCallbackFucntion(int nState)
 static int NetworkWifiPowerSleep(void)
 {
     int  ret = WIFIMGR_ECODE_NOT_INIT;
+    int  process_tv; //msec
+    bool WifiNotReady = false;
 
 #if defined(CFG_NET_WIFI_SDIO_NGPL)
 
@@ -158,10 +161,63 @@ static int NetworkWifiPowerSleep(void)
 
         if (theConfig.wifi_mode == WIFIMGR_MODE_SOFTAP) {
             ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFIAP_ENABLE, NULL); //determine wifi softAP mode
-            ret = wifiMgr_init(WIFIMGR_MODE_SOFTAP, 0, gWifiSetting);
+            ret = WifiMgr_Init(WIFIMGR_MODE_SOFTAP, 0, gWifiSetting);
         } else {
             ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_ENABLE, NULL); //determine wifi client mode
-            ret = wifiMgr_init(WIFIMGR_MODE_CLIENT, 0, gWifiSetting);
+            ret = WifiMgr_Init(WIFIMGR_MODE_CLIENT, 0, gWifiSetting);
+        }
+    }
+    /* ====================================================== */
+
+#elif defined(CFG_NET_WIFI_8188EUS) || defined(CFG_NET_WIFI_8188FTV)
+
+    /* ======================  For 8188EUS  ====================== */
+    /* Confirm current status of sleep mode */
+    if (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) == sleep_to_wakeup) {
+        while(!ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_IS_DEVICE_READY, NULL)) {
+            printf("[%s] Wait wifi dongle plugin... \n", __FUNCTION__);
+            usleep(200*1000);
+            WifiNotReady = true;
+        }
+
+        // sleep to wakeup , wait for 5s to initialize
+        gettimeofday(&tvStartWifi, NULL);
+        process_tv = 0;
+
+        do {
+            usleep(1000*1000);
+            gettimeofday(&tvEndWifi, NULL);
+            process_tv = (int)itpTimevalDiff(&tvStartWifi, &tvEndWifi);
+
+            if (process_tv > Network_Time_Delay) {
+                printf("[%s] ready to init wifi \n", __FUNCTION__);
+                break;
+            }
+
+            if (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) == wakeup_to_sleep) {
+                printf("[%s] fast to sleep \n", __FUNCTION__);
+                break;
+            }
+        } while (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) == sleep_to_wakeup);
+
+        if (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) == wakeup_to_sleep) {
+            // fast sleep , do not init wifi mgr
+        } else {
+            ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_ADD_NETIF, NULL);
+            ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_ENABLE, NULL);
+
+            snprintf(gWifiSetting.ssid,     WIFI_SSID_MAXLEN,       theConfig.ssid);
+            snprintf(gWifiSetting.password, WIFI_PASSWORD_MAXLEN,   theConfig.password);
+            snprintf(gWifiSetting.secumode, WIFI_SECUMODE_MAXLEN,   theConfig.secumode);
+
+            if (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) == wakeup_to_sleep) {
+                // fast sleep , do not init wifi mgr
+            } else {
+                ret = WifiMgr_Init(WIFIMGR_MODE_CLIENT, 0, gWifiSetting);
+                usleep(200*1000);
+                //Delay a while to ensure wifi mgr is inited and task is ready.
+                ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_SLEEP, (void *)default_no_sleep_or_wakeup);
+            }
         }
     }
     /* ====================================================== */
@@ -226,20 +282,20 @@ void NetworkWifiProcess(void)
         }
 #endif
 
-        WifiMgr_clientMode_switch(theConfig.wifi_on_off);
+        WifiMgr_Sta_Switch(theConfig.wifi_on_off);
         printf("[%s] WIFI mode: %s mode, WIFI(%s) \n", __FUNCTION__,
             theConfig.wifi_mode ? "Soft AP":"Station", theConfig.wifi_on_off ? "ON":"OFF");
 
         if (theConfig.wifi_mode == WIFIMGR_MODE_SOFTAP){
 #if defined(CFG_NET_WIFI_SDIO_NGPL)
-            WifiMgr_firstStartSoftAP_Mode();
+            WifiMgr_HostAP_First_Start();
 #endif
-            wifimgr_init = wifiMgr_init(WIFIMGR_MODE_SOFTAP, 0, gWifiSetting);
+            wifimgr_init = WifiMgr_Init(WIFIMGR_MODE_SOFTAP, 0, gWifiSetting);
         } else {
             ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_ENABLE, NULL); //determine wifi client mode
 
-            WifiMgr_clientMode_switch(theConfig.wifi_on_off);
-            wifimgr_init = wifiMgr_init(WIFIMGR_MODE_CLIENT, 0, gWifiSetting);
+            WifiMgr_Sta_Switch(theConfig.wifi_on_off);
+            wifimgr_init = WifiMgr_Init(WIFIMGR_MODE_CLIENT, 0, gWifiSetting);
         }
 
 #if TEST_PING_WIFI
@@ -251,7 +307,7 @@ void NetworkWifiProcess(void)
 
         process_set = true;
     } else if (process_set == true) {
-        networkWifiIsReady = (bool)wifiMgr_is_wifi_available(&process_tv); //Return: NGPL(SSID Len)
+        networkWifiIsReady = (bool)WifiMgr_Sta_Is_Available(&process_tv); //Return: NGPL(SSID Len)
 
 #if defined(CFG_POWER_SLEEP)
         wifimgr_init = NetworkWifiPowerSleep();
@@ -275,7 +331,7 @@ void NetworkWifiModeSwitch(void)
 {
 	int ret;
 
-	ret = WifiMgr_Switch_ClientSoftAP_Mode(gWifiSetting);
+	ret = WifiMgr_Sta_HostAP_Switch(gWifiSetting);
 }
 
 /* ======================================================================================= */

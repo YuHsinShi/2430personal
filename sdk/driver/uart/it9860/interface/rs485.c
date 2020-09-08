@@ -115,7 +115,7 @@ int iteRs485Read(ITHUartPort port, char *ptr, int len)
 		ithGpioSetMode(en_pin, ITH_GPIO_MODE0);
 		ithGpioSetIn(en_pin);
 	}
-	ithPrintf("RS485 read!\n");
+	//ithPrintf("RS485 read!\n");
 	return iteUartRead(port, (char*)ptr, len);
 }
 

@@ -213,21 +213,21 @@ config CHIP_FAMILY_IT9860
 
 choice
     prompt "Chip Package"
-#    default CHIP_PKG_IT9860    if DEF_CHIP_PKG_IT9860
-#    default CHIP_PKG_HJ_2019_1 if DEF_CHIP_PKG_HJ_2019_1
-    default CHIP_PKG_IT9866    if DEF_CHIP_PKG_IT9866
-    default CHIP_PKG_IT9862    if DEF_CHIP_PKG_IT9862
-#    default CHIP_PKG_IT9864    if DEF_CHIP_PKG_IT9864
-#    default CHIP_PKG_IT9866_AT if DEF_CHIP_PKG_IT9866_AT
-    default CHIP_PKG_IT9868    if DEF_CHIP_PKG_IT9868
+    default CHIP_PKG_IT9860    if DEF_CHIP_PKG_IT9860
     default CHIP_PKG_888_66    if DEF_CHIP_PKG_888_66
-#    default CHIP_PKG_IT9868_AT if DEF_CHIP_PKG_IT9868_AT
-#    default CHIP_PKG_IT9863    if DEF_CHIP_PKG_IT9863
-#    default CHIP_PKG_IT9865    if DEF_CHIP_PKG_IT9865
-#    default CHIP_PKG_IT9867    if DEF_CHIP_PKG_IT9867
-#    default CHIP_PKG_IT9867_AT if DEF_CHIP_PKG_IT9867_AT
-#    default CHIP_PKG_IT9869    if DEF_CHIP_PKG_IT9869
-#    default CHIP_PKG_IT9869_AT if DEF_CHIP_PKG_IT9869_AT
+    default CHIP_PKG_HJ_2019_1 if DEF_CHIP_PKG_HJ_2019_1
+    default CHIP_PKG_IT9862    if DEF_CHIP_PKG_IT9862
+    default CHIP_PKG_IT9864    if DEF_CHIP_PKG_IT9864
+    default CHIP_PKG_IT9866    if DEF_CHIP_PKG_IT9866
+    default CHIP_PKG_IT9866_AT if DEF_CHIP_PKG_IT9866_AT
+    default CHIP_PKG_IT9868    if DEF_CHIP_PKG_IT9868
+    default CHIP_PKG_IT9868_AT if DEF_CHIP_PKG_IT9868_AT
+    default CHIP_PKG_IT9863    if DEF_CHIP_PKG_IT9863
+    default CHIP_PKG_IT9865    if DEF_CHIP_PKG_IT9865
+    default CHIP_PKG_IT9867    if DEF_CHIP_PKG_IT9867
+    default CHIP_PKG_IT9867_AT if DEF_CHIP_PKG_IT9867_AT
+    default CHIP_PKG_IT9869    if DEF_CHIP_PKG_IT9869
+    default CHIP_PKG_IT9869_AT if DEF_CHIP_PKG_IT9869_AT
 
     default CHIP_PKG_IT9860
     help
@@ -237,47 +237,11 @@ choice
     help_chs
         芯片包装
 
-#config CHIP_PKG_IT9860
-#    bool "IT9860"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9860.
-
-config CHIP_PKG_IT9866
-    bool "IT9866"
+config CHIP_PKG_IT9860
+    bool "IT9860"
     select CHIP_FAMILY_IT9860
     help
-        IT9866.
-
-#config CHIP_PKG_HJ_2019_1
-#    bool "HJ-2019-1"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        HJ-2019-1.
-
-config CHIP_PKG_IT9862
-    bool "IT9862"
-    select CHIP_FAMILY_IT9860
-    help
-        IT9862.
-
-#config CHIP_PKG_IT9864
-#    bool "IT9864"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9864.
-
-#config CHIP_PKG_IT9866_AT
-#    bool "IT9866-AT"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9866-AT.
-
-config CHIP_PKG_IT9868
-    bool "IT9868"
-    select CHIP_FAMILY_IT9860
-    help
-        IT9868.
+        IT9860.
 
 config CHIP_PKG_888_66
     bool "888-66"
@@ -285,47 +249,83 @@ config CHIP_PKG_888_66
     help
         888-66.
 
-#config CHIP_PKG_IT9868_AT
-#    bool "IT9868-AT"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9868-AT.
+config CHIP_PKG_HJ_2019_1
+    bool "HJ-2019-1"
+    select CHIP_FAMILY_IT9860
+    help
+        HJ-2019-1.
 
-#config CHIP_PKG_IT9863
-#    bool "IT9863"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9863.
+config CHIP_PKG_IT9862
+    bool "IT9862"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9862.
 
-#config CHIP_PKG_IT9865
-#    bool "IT9865"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9865.
+config CHIP_PKG_IT9864
+    bool "IT9864"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9864.
 
-#config CHIP_PKG_IT9867
-#    bool "IT9867"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9867.
+config CHIP_PKG_IT9866
+    bool "IT9866"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9866.
 
-#config CHIP_PKG_IT9867_AT
-#    bool "IT9867-AT"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9867-AT.
+config CHIP_PKG_IT9866_AT
+    bool "IT9866-AT"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9866-AT.
 
-#config CHIP_PKG_IT9869
-#    bool "IT9869"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9869.
+config CHIP_PKG_IT9868
+    bool "IT9868"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9868.
 
-#config CHIP_PKG_IT9869_AT
-#    bool "IT9869-AT"
-#    select CHIP_FAMILY_IT9860
-#    help
-#        IT9869-AT.
+config CHIP_PKG_IT9868_AT
+    bool "IT9868-AT"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9868-AT.
+
+config CHIP_PKG_IT9863
+    bool "IT9863"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9863.
+
+config CHIP_PKG_IT9865
+    bool "IT9865"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9865.
+
+config CHIP_PKG_IT9867
+    bool "IT9867"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9867.
+
+config CHIP_PKG_IT9867_AT
+    bool "IT9867-AT"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9867-AT.
+
+config CHIP_PKG_IT9869
+    bool "IT9869"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9869.
+
+config CHIP_PKG_IT9869_AT
+    bool "IT9869-AT"
+    select CHIP_FAMILY_IT9860
+    help
+        IT9869-AT.
 
 endchoice
 
@@ -3946,15 +3946,15 @@ config USB0_ENABLE
     help_chs
         启用 USB0 功能。需要禁用 USBHCC。
 
-config USB1_ENABLE
-    bool "USB1 Enable"
-    default n
-    help
-        Enable USB1 or not. Need disable USBHCC.
-    help_cht
-        啟用 USB1 功能。需要禁用 USBHCC。
-    help_chs
-        启用 USB1 功能。需要禁用 USBHCC。
+#config USB1_ENABLE
+#    bool "USB1 Enable"
+#    default n
+#    help
+#        Enable USB1 or not. Need disable USBHCC.
+#    help_cht
+#        啟用 USB1 功能。需要禁用 USBHCC。
+#    help_chs
+#        启用 USB1 功能。需要禁用 USBHCC。
 
 config USB_DEVICE
     bool "USB Device Mode"
@@ -8655,6 +8655,18 @@ config NET_WIFI_MP_SECURITY
     help_chs
         WiFi 安全模式
 
+config NET_WIFI_SDIO_POWER_ON_OFF_USER_DEFINED
+    bool "Enable WiFi SDIO POWER ON OFF USER DEFINED"
+    depends on NET_WIFI
+    default n
+    help
+        Enable WiFi SDIO POWER ON OFF USER DEFINED
+    help_cht
+        啟用 WiFi SDIO POWER ON OFF USER DEFINED 功能。
+    help_chs
+        启用 WiFi SDIO POWER ON OFF USER DEFINED 功能。
+	
+		
 #config CTRLBOARD_REDUCE_PBUFSIZE
 #	bool "Enable Reduce pbuf"
 #	depends on NET_WIFI

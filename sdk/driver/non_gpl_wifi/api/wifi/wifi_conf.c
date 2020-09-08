@@ -891,6 +891,7 @@ int wifi_get_mac_address(char * mac)
 	rtw_memcpy(buf, "read_mac", 8);
 	ret = wext_private_command_with_retval(WLAN0_NAME, buf, buf, 32);
 	strcpy(mac, buf);
+	printf("wifi_get_mac_address %s",mac);
 	return ret;
 }
 

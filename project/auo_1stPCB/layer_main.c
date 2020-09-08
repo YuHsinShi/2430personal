@@ -47,12 +47,13 @@ static ITUSprite* mainSpriteSpeedBar;
 static ITUIcon* mainSemicolon;
 
 static int speed;
-static int flush_counter = 0;
+static unsigned int flush_counter = 0;
 
 static ITUContainer* ContainerMainMeter;
 
 static int winker_status;
-	
+
+int auto_run=1;	
 void ui_set_meter_speed_value(int value)
 {	
 if( (value < 99) && (value > 0) )
@@ -76,7 +77,7 @@ void ui_set_sport_mode_on()
 {	
 	
 	ituWidgetSetVisible(mainSpriteSportMode,1);
-
+	ituSpritePlay(mainSpriteSportMode, 0);
 
 }
 
@@ -98,6 +99,8 @@ void ui_set_unlock_mode()
 
 void SpeedMeterUpdate()
 {
+	int show_speed;
+
 	int ten;
 	int digit;
 /*
@@ -106,8 +109,10 @@ void SpeedMeterUpdate()
 	else
 		speed++;
 */
-	ten = speed / 10;
-	digit = speed % 10;
+
+	show_speed=speed; //to avoid context switch when showing
+	ten = show_speed / 10;
+	digit = show_speed % 10;
 
 	ituSpriteGoto(mainSprite_TenDigit, ten); // show ten number 
 	ituSpriteGoto(mainSprite_Digit, digit); // show digit number 
@@ -196,6 +201,10 @@ void WinkerLRStatusUpdate()
 	}
 
 }
+void ui_set_sport_mode_auto_run()
+{
+
+}
 
 bool MainLayerOnSimulateControl(ITUWidget* widget, char* param)
 {
@@ -215,8 +224,31 @@ bool MainLayerOnTimer(ITUWidget* widget, char* param)
 
 
 	SpeedMeterUpdate();
+if(auto_run)
+{
+
+	if (295 == flush_counter % 300)
+	{
+		static bool tmp_LR=true;
+		if (tmp_LR)
+			ui_set_winker_left();
+		else 	
+			ui_set_winker_right();
+
+		tmp_LR = !tmp_LR;
+	}
+
+
+	if (995 == flush_counter % 1000)
+	{
+		ui_set_sport_mode_on();
+	}
+
+
+}
 
 	WinkerLRStatusUpdate();
+
 	//leo
 	SemicolonFlash();
 

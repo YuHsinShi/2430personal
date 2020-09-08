@@ -498,8 +498,13 @@ void itpInit(void)
 
     // init sdio device
 #ifdef CFG_SDIO_ENABLE
+    #ifdef CFG_NET_WIFI_SDIO_POWER_ON_OFF_USER_DEFINED
+         // not init wifi here,by user
+         
+    #else
     itpRegisterDevice(ITP_DEVICE_SDIO, &itpDeviceSdio);
     ioctl(ITP_DEVICE_SDIO, ITP_IOCTL_INIT, NULL);
+    #endif
 #endif
 
     // init sd0 device
@@ -577,9 +582,14 @@ void itpInit(void)
 
     #if defined(CFG_NET_WIFI_SDIO_NGPL)
     {
+        #if defined (CFG_NET_WIFI_SDIO_POWER_ON_OFF_USER_DEFINED)
+            // not init wifi here, by user
+            
+        #else
         itpRegisterDevice(ITP_DEVICE_WIFI_NGPL, &itpDeviceWifiNgpl);
         printf("====>itpInit itpRegisterDevice(ITP_DEVICE_WIFI_NGPL)\n");
         ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_INIT, NULL);
+        #endif
     }
     #elif defined(CFG_NET_WIFI_SDIO_SSV)
     {
