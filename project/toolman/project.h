@@ -104,7 +104,6 @@ typedef struct
 
 	char keyword[16];			//settings
 
-	int alive_flag;
 }UART_SET;
 
 

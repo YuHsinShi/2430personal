@@ -26,7 +26,12 @@ int itpKeypadProbe(void)
             pin -= 32;
 		
         if ( (value & (0x1 << pin)) == 0 )
+
+        {
+		//printf("key %d pressed \n",	kpGpioTable[i]);
+
             return i;
+        }
     }
     return -1;
 }

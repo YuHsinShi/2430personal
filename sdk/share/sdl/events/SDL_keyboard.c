@@ -648,7 +648,7 @@ SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode)
     if (!scancode) {
         return 0;
     }
-#if 0
+#if 1
     printf("The '%s' key has been %s\n", SDL_GetScancodeName(scancode),
            state == SDL_PRESSED ? "pressed" : "released");
 #endif

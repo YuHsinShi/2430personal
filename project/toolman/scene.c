@@ -207,17 +207,54 @@ int SceneRun(void)
         {
             switch (ev.type)
             {
-            case SDL_KEYDOWN:
-                result = ituSceneUpdate(&theScene, ITU_EVENT_KEYDOWN, ev.key.keysym.sym, 0, 0);
-#ifndef _WIN32
-                if (result)
-                    AudioPlayKeySound();
-#endif
-                break;
-
+            case SDL_KEYDOWN:		
+				
+				printf("SDL_KEYDOWN: down  0%x \n",ev.key.keysym.scancode);
+				break;
             case SDL_KEYUP:
-                result = ituSceneUpdate(&theScene, ITU_EVENT_KEYUP, ev.key.keysym.sym, 0, 0);
-                break;
+				printf("SDL_KEYUP: UP 0x%x \n",ev.key.keysym.scancode);
+
+
+					 switch (ev.key.keysym.sym)
+	                {
+
+
+						case SDLK_LEFT:
+							printf("SDLK_LEFT \n");
+							ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY5, NULL);
+
+							break;
+						case SDLK_DOWN:
+							printf("SDLK_DOWN \n");
+							ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY6, NULL);
+						
+							break;
+
+						case SDLK_RIGHT:
+							printf("SDLK_RIGHT \n");
+							ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY7, NULL);
+
+						    break;
+
+
+						case SDLK_UP:
+							printf("SDLK_UP \n");
+							ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY8, NULL);
+							break;
+							
+						case SDLK_INSERT:
+							printf("SDLK_INSERT \n");
+							ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY9, NULL);
+
+							break;
+						
+						default:
+							break;
+					 }
+				break;
+
+
+
 
             case SDL_MOUSEMOTION:
                 result = ituSceneUpdate(&theScene, ITU_EVENT_MOUSEMOVE, ev.button.button, ev.button.x, ev.button.y);

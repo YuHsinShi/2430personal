@@ -28,11 +28,12 @@ typedef enum
 	EVENT_CUSTOM_SD_REMOVED,                        ///< #2: SD card removed.
 	EVENT_CUSTOM_USB_INSERTED,                      ///< #3: USB drive inserted.
 	EVENT_CUSTOM_USB_REMOVED,                       ///< #4: USB drive removed.
-	EVENT_CUSTOM_KEY0,                              ///< #5: Key #0 pressed.
-	EVENT_CUSTOM_KEY1,                              ///< #6: Key #1 pressed.
-	EVENT_CUSTOM_KEY2,                              ///< #7: Key #2 pressed.
-	EVENT_CUSTOM_KEY3,                              ///< #8: Key #3 pressed.
-	EVENT_CUSTOM_UART                               ///< #9: UART message.
+	EVENT_CUSTOM_KEY5,                              ///< #5: Key #0 pressed.
+	EVENT_CUSTOM_KEY6,                              ///< #6: Key #1 pressed.
+	EVENT_CUSTOM_KEY7,                              ///< #7: Key #2 pressed.
+	EVENT_CUSTOM_KEY8,                              ///< #8: Key #3 pressed.
+	EVENT_CUSTOM_KEY9,                              ///< #9: Key #4 pressed.
+	EVENT_CUSTOM_UART                               ///< #10: UART message.
 
 } CustomEvent;
 

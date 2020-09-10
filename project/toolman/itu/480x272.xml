@@ -1138,6 +1138,8 @@
       <Property name="Name">Background5</Property>
       <Property name="Size">480, 272</Property>
     </Object>
+    <Property name="Action01">Goto,Custom6,Layer_uartcapture,</Property>
+    <Property name="Action02">Goto,Custom7,Layer_Power,</Property>
     <Property name="ClientSize">480, 272</Property>
     <Property name="Name">Layer_main</Property>
   </Object>
@@ -4656,6 +4658,8 @@
     </Object>
     <Property name="Action01">Function,Enter,UartCaptureOnEnter,</Property>
     <Property name="Action02">Function,Timer,UartCaptureOnTimer,</Property>
+    <Property name="Action03">Function,Leave,UartCaptureOnLeave,</Property>
+    <Property name="Action04">Goto,Custom5,Layer_main,</Property>
     <Property name="ClientSize">480, 272</Property>
     <Property name="Name">Layer_uartcapture</Property>
   </Object>
@@ -6116,6 +6120,10 @@
       <Property name="Name">Background5</Property>
       <Property name="Size">480, 272</Property>
     </Object>
+    <Property name="Action01">Function,Enter,Layer_PowerOnEnter,</Property>
+    <Property name="Action02">Function,Leave,Layer_PowerOnLeave,</Property>
+    <Property name="Action03">Function,Timer,Layer_PowerOnTimer,</Property>
+    <Property name="Action04">Goto,Custom5,Layer_main,</Property>
     <Property name="ClientSize">480, 272</Property>
     <Property name="Name">Layer_Power</Property>
   </Object>
@@ -8563,6 +8571,7 @@
       <Property name="Size">480, 272</Property>
     </Object>
     <Property name="Action01">Function,Enter,SettingOnEnter,</Property>
+    <Property name="Action02">Goto,Custom0,Layer_main,</Property>
     <Property name="ClientSize">480, 272</Property>
     <Property name="Name">Layer_Settings</Property>
   </Object>

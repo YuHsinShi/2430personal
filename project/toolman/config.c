@@ -77,10 +77,6 @@ void SettingInit()
 
 
 
-
-
-
-
 		snprintf(tmp, 64, "uart%d:log_size", i);
 		uart[i - 1].fileMaxsize = iniparser_getint(setting_ini, tmp, 16);
 

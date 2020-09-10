@@ -24,24 +24,24 @@ void ExternalProcessEvent(ExternalEvent* ev)
 
     case EXTERNAL_TEST0:
         printf("EXTERNAL_TEST0\n");
-        ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY0, NULL);
+//        ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY0, NULL);
         break;
 
     case EXTERNAL_TEST1:
         printf("EXTERNAL_TEST1: %d\n", ev->arg1);
-        ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY1, NULL);
+      //  ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY1, NULL);
         break;
 
     case EXTERNAL_TEST2:
         printf("EXTERNAL_TEST2: %d %d\n", ev->arg1, ev->arg2);
         sprintf(buf, "%d %d", ev->arg1, ev->arg2);
-        ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY2, buf);
+       // ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY2, buf);
         break;
 
     case EXTERNAL_TEST3:
         printf("EXTERNAL_TEST3: %d %d %d\n", ev->arg1, ev->arg2, ev->arg3);
         sprintf(buf, "%d %d %d", ev->arg1, ev->arg2, ev->arg3);
-        ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY1, buf);
+       // ituSceneSendEvent(&theScene, EVENT_CUSTOM_KEY1, buf);
         break;
 
     case EXTERNAL_TEST4:

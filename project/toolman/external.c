@@ -89,28 +89,51 @@ static FILE* wrhandle;
 
 
 #define LOG_WRITER_STATUS_IDLE 		0
-#define LOG_WRITER_STATUS_RUNNIG 	1
+#define LOG_WRITER_STATUS_BOOTING 	1
+#define LOG_WRITER_STATUS_POWER_OFF 	2
 
 
-#define LOG_WRITER_STATUS_ERROR 	-1
-#define LOG_WRITER_STATUS_STOP	 	-2
-#define LOG_WRITER_STATUS_FULL	 	-3
+#define LOG_WRITER_CMD_NORMAL 		0
+#define LOG_WRITER_CMD_FAIL_BOOT 		1
+
+
+#define LOG_WRITER_MODE_NORMAL		0
+#define LOG_WRITER_MODE_POWER_ONOFF		1
+
 
 struct logwrite_t {
     ITPDeviceType itp_uart_index;
-	int status;
-	char folder_path[64];
-	char file_name;//the name of latest log
-	int num; //num of the log 
-	int handle; //handle NULL not open or closed
-	int byte_counter; //counting byte to END the opened file
-	int last_time; //last time to generate system time string
+	int mode;				//if 0: capture mode, 1; booting mode
+	char folder_path[64];	//path for writing 
+	char file_name;			//the name of latest log
+	unsigned int num; 				//num of the log 
+	unsigned int handle; 			//handle NULL not open or closed
+	unsigned int byte_counter; 		//counting byte to END the opened file
+	unsigned int last_time; 			//last time to generate system time string
+
 	
-	int file_start_time; 
+	unsigned int alive_flag; // alive flag will increase 
+	
+	// for PowerOnOff mode
+	unsigned int power_gpio;
+	unsigned int action_time; 
+	unsigned int status;
+	unsigned int booting_count; 
 //time
 };
 
 struct logwrite_t log_writer[6]={0};
+
+unsigned int log_writer_get_alive_count(int i)
+{
+	return log_writer[i].alive_flag;
+}
+
+
+void log_writer_alive_reset(int i)
+{
+ 	log_writer[i].alive_flag=0;
+}
 
 int log_writer_get_number_index(char index)
 {
@@ -151,6 +174,10 @@ void log_writer_get_next_file_handle(char index)
 
 }
 
+
+
+
+
 void creat_writer_folder()
 {
 	int i;
@@ -186,44 +213,52 @@ static void* WritingTask(void* arg)
 		if ( (mq_receive(extOutQueue, wbf,0, 0) )> 0)
 		{
 			memcpy(&wrlen,wbf,4);
-/*
-
-			DBG("wri: %d byte..\r\n", wrlen,wbf[HEADER_SHIFT]);
-			for(i=0;i<wrlen;i++){
-				DBG("0x%x ", wbf[i+HEADER_SHIFT]);
-			}
-				DBG("\n");
-
-*/
-
 			index= wbf[4];
 			cmd= wbf[5];
 
 			DBG("WR %d , %d/%d byte..\r\n",index, wrlen,log_writer[index].byte_counter );
-
-			if(NULL !=	log_writer[index].handle)
-			{
-		        fwrite(&wbf[5], 1, wrlen, 	log_writer[index].handle);
-				//TODO: error handle if writing is failed
-				
-				log_writer[index].byte_counter+=wrlen;
-		        fflush(log_writer[index].handle);
-				if(log_writer[index].byte_counter > uart[index].fileMaxsize *1024)
+			
+			/*
+			
+						DBG("wri: %d byte..\r\n", wrlen,wbf[HEADER_SHIFT]);
+						for(i=0;i<wrlen;i++){
+							DBG("0x%x ", wbf[i+HEADER_SHIFT]);
+						}
+							DBG("\n");
+			
+			*/
+				if(LOG_WRITER_CMD_FAIL_BOOT==cmd) //jump to next 
 				{
-					DBG("ch %d write finished. \r\n",index);
-					log_writer[index].byte_counter=0;
+				
 					log_writer_get_next_file_handle(index);
+
+				}
+				else
+				{
+					if(NULL ==	log_writer[index].handle)
+					{
+						//ERR("file handle not found(ch%d) \n",index);
+						log_writer_get_current_file_handle(index);  //handle is not opened when initail , do reopen				
+					}
+					else
+					{
+				        fwrite(&wbf[HEADER_SHIFT], 1, wrlen, 	log_writer[index].handle);
+						//TODO: error handle if writing is failed
+						
+						log_writer[index].byte_counter+=wrlen;
+				        fflush(log_writer[index].handle);
+						if(log_writer[index].byte_counter > uart[index].fileMaxsize *1024)
+						{
+							DBG("ch %d write finished. \r\n",index);
+							log_writer[index].byte_counter=0;
+							log_writer_get_next_file_handle(index);
+						}
+
+
+					}
+
 				}
 
-
-
-
-				
-			}
-			else
-			{				//ERR("file handle not found(ch%d) \n",index);
-				log_writer_get_current_file_handle(index);  //handle is not opened when initail , do reopen
-			}
 		}
 		else
 		{
@@ -235,10 +270,27 @@ static void* WritingTask(void* arg)
 		usleep(10000);
 	}
 
-	
+	for(index=0;index<5;index++)
+	{
+		if(NULL == log_writer[index].handle)
+			printf("non exist handle\n");
+		else
+			fclose(log_writer[index].handle);
+
+
+		log_writer[index].handle =NULL;
+
+	}	
 //	DBG("wri: %d byte finished\r\n", counter);
 }
 
+void header_set(char* buf,int readLen,int channel,int cmd)
+{
+	memcpy(buf,&readLen,4); //BYTE 0-3
+	*(buf+4)= channel;		//BYTE 4					
+	*(buf+5)= cmd;		//BYTE 5
+
+}
 
 static void* ReadUartToLogTask(void* arg)
 {
@@ -252,19 +304,90 @@ char cmd=0;
 
     while (!extQuit)
     {
+		//power control if this is in booting mode
+
+
+		
+		for(index=0;index<5;index++)
+		{
+			if(LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
+			{
+				if(LOG_WRITER_STATUS_IDLE == log_writer[index].status) //do booting
+				{
+					//power on 			
+					ithGpioSetOut(log_writer[index].power_gpio);
+					ithGpioSet(log_writer[index].power_gpio);
+					
+					log_writer[index].status=LOG_WRITER_STATUS_BOOTING; //booting
+					log_writer[index].action_time = SDL_GetTicks();
+					log_writer[index].alive_flag=0;
+					
+				}
+				else if(LOG_WRITER_STATUS_BOOTING == log_writer[index].status)	
+				{
+				
+				
+					if (SDL_GetTicks() - log_writer[index].action_time >= 30*1000)
+					{
+
+
+						ithGpioSetOut(log_writer[index].power_gpio);
+						ithGpioClear(log_writer[index].power_gpio); //power off 
+
+						//clear rest unread buffer 
+						read(log_writer[index].itp_uart_index , &inDataBuf[HEADER_RESERVED], EXTERNAL_BUFFER_SIZE);
+
+						header_set(inDataBuf,0,index,LOG_WRITER_CMD_FAIL_BOOT);//force to end this file handle
+						mq_send(extOutQueue, inDataBuf,HEADER_SHIFT, 0);
+						
+						log_writer[index].status=LOG_WRITER_STATUS_POWER_OFF; //booting
+						log_writer[index].action_time = SDL_GetTicks();
+
+
+					}
+				}
+				else  if(LOG_WRITER_STATUS_POWER_OFF == log_writer[index].status)
+				{
+					//power off time 
+					if (SDL_GetTicks() - log_writer[index].action_time >= 2*1000)
+					{
+						log_writer[index].status=LOG_WRITER_STATUS_IDLE; //exceed the resting time do booting
+
+					}
+
+				}
+				else
+				{
+
+					ithPrintf("Unknow log wiriter state [0x%x]",log_writer[index].status);
+				}
+
+			}
+
+		}
+
+
+			//for log caputure.
 		for(index=0;index<5;index++)
 		{
 				memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE); 
 				// Read data from UART port
 				
 				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_RESERVED], EXTERNAL_BUFFER_SIZE);
+				if(readLen > 0)
+				{
+					DBG("UART RD: ch %d: %d byte(%d)..(%x,%x)\r\n",index, readLen,readLen,log_writer[index].itp_uart_index,ITP_DEVICE_UART1);
+					for(i=0;i<readLen;i++){
+					printf("0x%x ", inDataBuf[i+HEADER_RESERVED]);
+					}
+					printf("\n");
 
-				
-
+					continue;
+				}
 				
 				if(readLen > 0)
 				{
-					uart[index].alive_flag++; // uart aive
+					log_writer[index].alive_flag++; // uart aive
 					
 						//check if one second is passsed->record the log
 						if (SDL_GetTicks() - log_writer[index].last_time >= 1000)
@@ -302,12 +425,21 @@ char cmd=0;
 						}
 
 				
+					if(LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
+					{
+						//searching
+					//	if*()
+					}
 
 
-
+					/*
 					memcpy(pos,&readLen,4); //BYTE 0-3
-					*(pos+4)= index;		//BYTE 4
+					*(pos+4)= index;		//BYTE 4					
 					*(pos+5)= cmd;		//BYTE 5
+					*/
+
+					header_set(pos,readLen,index,cmd);
+
 					DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
 					
 
@@ -348,14 +480,19 @@ void init_log_writer()
 {
 	int index;
 	
-	char filepath_tmp[64];
-	
 	log_writer[0].itp_uart_index=ITP_DEVICE_UART1;
 	log_writer[1].itp_uart_index=ITP_DEVICE_UART2;
 	log_writer[2].itp_uart_index=ITP_DEVICE_UART3;
 	log_writer[3].itp_uart_index=ITP_DEVICE_UART4;
 	log_writer[4].itp_uart_index=ITP_DEVICE_UART5;
 
+
+
+	log_writer[0].power_gpio=27;
+	log_writer[1].power_gpio=28;
+	log_writer[2].power_gpio=29;
+	log_writer[3].power_gpio=30;
+	log_writer[4].power_gpio=31;
 
 
 	for(index=0;index<5;index++)
@@ -369,21 +506,11 @@ void init_log_writer()
 			fclose(log_writer[index].handle);
 		}
 
-		
-/*
-		snprintf(log_writer[index].folder_path,64,"E:/ch%d/",index);	
 
-		log_writer[index].handle =NULL;
-		
-		snprintf(filepath_tmp,64,"%s%d.log",log_writer[index].folder_path,log_writer[index].num);
-		
-		printf("log_writer_get_next_file_handle %s\n",filepath_tmp);
-		
-		log_writer[index].handle = fopen(filepath_tmp, "w");
+		log_writer[index].alive_flag=0;
+		log_writer[index].byte_counter=0;		
+		log_writer[index].num=0;	
 
-		if(NULL == log_writer[index].handle)
-			printf("ERROR CH%d not opend\n");
-*/
 	}
 	
 
@@ -392,28 +519,43 @@ void init_log_writer()
 }
 
 
-static int tmp_flag=0;
+
+
+
+void log_writer_normal_mode()
+{
+int index;
+	for(index=0;index<5;index++)
+	{
+		 log_writer[index].mode = LOG_WRITER_MODE_NORMAL;
+	}
+
+}
+void log_writer_poweron_mode()
+{
+int index;
+	for(index=0;index<5;index++)
+	{
+		 log_writer[index].mode = LOG_WRITER_MODE_POWER_ONOFF;
+	}
+
+}
+
 
 void log_writer_stop()
 {
-
+printf("log_writer_stop \n");
    extQuit = true;
    WritingQuit=true;
    pthread_join(extTask, NULL);
    pthread_join(WrTask, NULL);
 
 
-   // pthread_create(&extTask, NULL, ExternalTask, NULL);
-   // pthread_create(&WrTask, NULL, WritingTask, NULL);
-
 }
-
-
 
 void log_writer_start()
 {
-	if(0 == tmp_flag)
-	{
+
 		init_log_writer();
 
 		set_timecounter_start();//start to cout the elapsed time
@@ -422,8 +564,7 @@ void log_writer_start()
 	    pthread_create(&extTask, NULL, ReadUartToLogTask, NULL);
 
 	    pthread_create(&WrTask, NULL, WritingTask, NULL);
-		tmp_flag=1;
-	}
+
 }
 void ExternalInit(void)
 {
@@ -460,6 +601,8 @@ void ExternalInit(void)
 
 
 
+log_writer_normal_mode();
+log_writer_start();
 
 
 }

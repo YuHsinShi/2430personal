@@ -40,6 +40,13 @@ static ITUSprite* uart_light[6];
 
 static int iuart_counter[6];
 
+bool UartCaptureOnLeave(ITUWidget* widget, char* param)
+{
+	log_writer_stop();
+
+	return false;
+}
+
 bool UartCaptureOnTimer(ITUWidget* widget, char* param)
 {
 
@@ -51,10 +58,10 @@ bool UartCaptureOnTimer(ITUWidget* widget, char* param)
 	int i;
 	for (i = 1; i <= 5; i++)
 	{
-		if (uart[i - 1].alive_flag > 0)
+		if (log_writer_get_alive_count(i-1) > 0)
 		{
 		
-			uart[i - 1].alive_flag = 0;
+			log_writer_alive_reset(i-1);
 			iuart_counter[i-1]=0; //idle counter
 			ituSpriteGoto(uart_light[i - 1], 1);
 		}
@@ -132,12 +139,36 @@ bool UartCaptureOnEnter(ITUWidget* widget, char* param)
 
 		}
 
-
+	log_writer_normal_mode();
 	log_writer_start();
 
 
 	return true;
 }
 
+
+#endif
+#if 1
+
+
+bool PowerOnEnter(ITUWidget* widget, char* param)
+{
+
+
+	log_writer_poweron_mode();
+
+	log_writer_start();
+	return false;
+}
+bool PowerOnTimer(ITUWidget* widget, char* param)
+{
+	return false;
+}
+
+bool PowerOnLeave(ITUWidget* widget, char* param)
+{
+	log_writer_stop();
+	return false;
+}
 
 #endif
