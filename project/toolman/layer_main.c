@@ -139,6 +139,10 @@ bool UartCaptureOnEnter(ITUWidget* widget, char* param)
 
 		}
 
+		
+		for (i = 1; i <= 5; i++){
+		iuart_counter[i-1]=0; //idle counter
+			}
 	log_writer_normal_mode();
 	log_writer_start();
 
@@ -150,18 +154,74 @@ bool UartCaptureOnEnter(ITUWidget* widget, char* param)
 #endif
 #if 1
 
+static ITUText* power_fail[6];
+static ITUText* power_count[6];
+static ITUText* power_elapsed_time[6];
+
+static ITUBackground* BackgroundPower;
+
+
 
 bool PowerOnEnter(ITUWidget* widget, char* param)
 {
+	int i;
+	char tmp[64] = { 0 };
+	if(NULL == BackgroundPower)
+	{
+		BackgroundPower = ituSceneFindWidget(&theScene, "BackgroundPower");
+		if (NULL == BackgroundPower)
+			assert(BackgroundPower);
+		for (i = 1; i <= 5; i++)
+		{
+			//=========================================
+			snprintf(tmp, 64, "Text_PowerFail%d", i);
+			power_fail[i - 1] = ituSceneFindWidget(&theScene, tmp);
+			if (NULL == power_fail[i - 1])
+				assert(power_fail[i - 1]);
+			
+			snprintf(tmp, 64, "Tex_PowerCount%d", i);
+			power_count[i - 1] = ituSceneFindWidget(&theScene, tmp);
+			if (NULL == power_count[i - 1])
+				assert(power_count[i - 1]);
+			
+			snprintf(tmp, 64, "Text_ElasedTime%d", i);
 
+			power_elapsed_time[i - 1] = ituSceneFindWidget(&theScene, tmp);
+			if (NULL == power_elapsed_time[i - 1])
+				assert(power_elapsed_time[i - 1]);
 
+		}
+
+	}
+
+	
+	
 	log_writer_poweron_mode();
-
 	log_writer_start();
 	return false;
 }
 bool PowerOnTimer(ITUWidget* widget, char* param)
 {
+	static unsigned int counter;
+	counter++;
+	if (1 != counter%8)
+		 return false;
+
+	char tmp[64] = {0};
+	int i;
+	for (i = 1; i <= 5; i++)
+	{
+		//elapse_time = SDL_GetTicks() - log_writer[i].action_time
+		//
+		get_time_format_string(get_elapsed_time_channel(i), tmp);
+		ituTextSetString(power_elapsed_time[i - 1], tmp);	
+		
+		ituTextSetStringInt(power_fail[i - 1], get_fail_count(i));
+		
+		get_fail_total_stringcount(i,tmp);
+		ituTextSetString(power_count[i - 1], tmp);
+	}
+	
 	return false;
 }
 

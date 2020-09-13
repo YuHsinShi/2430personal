@@ -91,11 +91,12 @@ static FILE* wrhandle;
 #define LOG_WRITER_STATUS_IDLE 		0
 #define LOG_WRITER_STATUS_BOOTING 	1
 #define LOG_WRITER_STATUS_POWER_OFF 	2
+#define LOG_WRITER_STATUS_END			3
 
 
-#define LOG_WRITER_CMD_NORMAL 		0
+#define LOG_WRITER_CMD_NORMAL 			0
 #define LOG_WRITER_CMD_FAIL_BOOT 		1
-
+#define LOG_WRITER_CMD_OK_BOOT 			2
 
 #define LOG_WRITER_MODE_NORMAL		0
 #define LOG_WRITER_MODE_POWER_ONOFF		1
@@ -107,7 +108,7 @@ struct logwrite_t {
 	char folder_path[64];	//path for writing 
 	char file_name;			//the name of latest log
 	unsigned int num; 				//num of the log 
-	unsigned int handle; 			//handle NULL not open or closed
+	FILE* handle; 			//handle NULL not open or closed
 	unsigned int byte_counter; 		//counting byte to END the opened file
 	unsigned int last_time; 			//last time to generate system time string
 
@@ -117,8 +118,11 @@ struct logwrite_t {
 	// for PowerOnOff mode
 	unsigned int power_gpio;
 	unsigned int action_time; 
+	unsigned int elapse_time;
 	unsigned int status;
 	unsigned int booting_count; 
+	unsigned int fail_count;
+	unsigned int total_count;
 //time
 };
 
@@ -162,7 +166,6 @@ void log_writer_get_next_file_handle(char index)
 
 
 	log_writer[index].handle =NULL;
-
 
 	log_writer_get_current_file_handle(index);
 
@@ -228,11 +231,13 @@ static void* WritingTask(void* arg)
 			
 			*/
 				if(LOG_WRITER_CMD_FAIL_BOOT==cmd) //jump to next 
-				{
-				
+				{				
 					log_writer_get_next_file_handle(index);
-
 				}
+				else if (LOG_WRITER_CMD_OK_BOOT == cmd) //jump to next 
+				{
+					log_writer_get_next_file_handle(index);
+				}				
 				else
 				{
 					if(NULL ==	log_writer[index].handle)
@@ -292,6 +297,24 @@ void header_set(char* buf,int readLen,int channel,int cmd)
 
 }
 
+
+void get_fail_total_stringcount(int channel,char* buffer)
+{
+	snprintf(buffer, 64, "%d/%d", log_writer[channel - 1].booting_count, log_writer[channel - 1].total_count);
+	
+}
+
+void get_fail_count(int channel)
+{
+	return log_writer[channel - 1].fail_count;
+}
+
+void get_elapsed_time_channel(int channel)
+{
+	return log_writer[channel - 1].elapse_time;
+}
+
+
 static void* ReadUartToLogTask(void* arg)
 {
 int i;
@@ -299,17 +322,17 @@ int readLen;
 char index;
 char* pos;
 char cmd=0;
-	
 	printf("ExternalTask start\n");
 
     while (!extQuit)
     {
 		//power control if this is in booting mode
-
-
 		
 		for(index=0;index<5;index++)
 		{
+		
+			log_writer[index].elapse_time = (SDL_GetTicks() - log_writer[index].action_time)/1000;
+
 			if(LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
 			{
 				if(LOG_WRITER_STATUS_IDLE == log_writer[index].status) //do booting
@@ -321,16 +344,16 @@ char cmd=0;
 					log_writer[index].status=LOG_WRITER_STATUS_BOOTING; //booting
 					log_writer[index].action_time = SDL_GetTicks();
 					log_writer[index].alive_flag=0;
-					
+					log_writer[index].booting_count++;
+					if (log_writer[index].booting_count >= log_writer[index].total_count )
+						log_writer[index].status = LOG_WRITER_STATUS_END;
+
 				}
 				else if(LOG_WRITER_STATUS_BOOTING == log_writer[index].status)	
-				{
+				{			
 				
-				
-					if (SDL_GetTicks() - log_writer[index].action_time >= 30*1000)
+					if (log_writer[index].elapse_time >= 30 )
 					{
-
-
 						ithGpioSetOut(log_writer[index].power_gpio);
 						ithGpioClear(log_writer[index].power_gpio); //power off 
 
@@ -340,22 +363,25 @@ char cmd=0;
 						header_set(inDataBuf,0,index,LOG_WRITER_CMD_FAIL_BOOT);//force to end this file handle
 						mq_send(extOutQueue, inDataBuf,HEADER_SHIFT, 0);
 						
+						log_writer[index].fail_count++;
 						log_writer[index].status=LOG_WRITER_STATUS_POWER_OFF; //booting
 						log_writer[index].action_time = SDL_GetTicks();
-
-
 					}
 				}
 				else  if(LOG_WRITER_STATUS_POWER_OFF == log_writer[index].status)
 				{
 					//power off time 
-					if (SDL_GetTicks() - log_writer[index].action_time >= 2*1000)
+					if (log_writer[index].elapse_time >= 3 )
 					{
 						log_writer[index].status=LOG_WRITER_STATUS_IDLE; //exceed the resting time do booting
-
 					}
 
 				}
+				else  if (LOG_WRITER_STATUS_END == log_writer[index].status)
+				{
+					continue;
+				}
+				
 				else
 				{
 
@@ -365,8 +391,6 @@ char cmd=0;
 			}
 
 		}
-
-
 			//for log caputure.
 		for(index=0;index<5;index++)
 		{
@@ -395,16 +419,15 @@ char cmd=0;
 
 							if(uart[index].timestamp)
 							{					
-								int min,hour,sec;
-								
-								min =get_min_passed();
-								hour =get_hour_passed();
-								sec =get_sec_passed();
+								unsigned int min, hour, sec;
+								unsigned int total;
+								total = get_elapsed_total_seconds();
+								min = get_min_passed(total);
+								hour = get_hour_passed(total);
+								sec = get_sec_passed(total);
 							
 								snprintf(&inDataBuf[HEADER_RESERVED-LOG_TIMESTAMP_LEN],LOG_TIMESTAMP_LEN,"\n[%.2d:%.2d:%.2d]\n",hour,min,sec);
 								inDataBuf[HEADER_RESERVED-1]=0xa;//force to change line
-
-
 //								printf("TIME= %s",&inDataBuf[HEADER_SHIFT];
 								pos=&inDataBuf[HEADER_RESERVED-HEADER_SHIFT-LOG_TIMESTAMP_LEN];
 
@@ -423,15 +446,6 @@ char cmd=0;
 						{
 							pos=&inDataBuf[HEADER_RESERVED-HEADER_SHIFT];
 						}
-
-				
-					if(LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
-					{
-						//searching
-					//	if*()
-					}
-
-
 					/*
 					memcpy(pos,&readLen,4); //BYTE 0-3
 					*(pos+4)= index;		//BYTE 4					
@@ -441,23 +455,22 @@ char cmd=0;
 					header_set(pos,readLen,index,cmd);
 
 					DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
-					
-
 						
 					 mq_send(extOutQueue, pos,readLen, 0);
 
-					/*
-					for(i=0;i<readLen;i++){
-					printf("0x%x ", inDataBuf[i+HEADER_SHIFT]);
-					}
-					printf("\n");
-					*/
-
-					//log_writer[index].status=LOG_WRITER_STATUS_RUNNIG;
-
-
-					//update last tick and status
-					
+					 if (LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
+					 {
+						 //searching
+						 if (NULL != strstr(pos, "booting"))
+						 {
+							 ithGpioSetOut(log_writer[index].power_gpio);
+							 ithGpioClear(log_writer[index].power_gpio); //power off 
+							 log_writer[index].status = LOG_WRITER_STATUS_POWER_OFF; //booting
+							 log_writer[index].action_time = SDL_GetTicks();
+							 header_set(inDataBuf, 0, index, LOG_WRITER_CMD_OK_BOOT);//force to end this file handle
+							 mq_send(extOutQueue, inDataBuf, HEADER_SHIFT, 0);
+						 }
+					 }
 
 				}
 		}
@@ -479,6 +492,7 @@ char cmd=0;
 void init_log_writer()
 {
 	int index;
+	
 	
 	log_writer[0].itp_uart_index=ITP_DEVICE_UART1;
 	log_writer[1].itp_uart_index=ITP_DEVICE_UART2;
@@ -507,9 +521,12 @@ void init_log_writer()
 		}
 
 
-		log_writer[index].alive_flag=0;
-		log_writer[index].byte_counter=0;		
-		log_writer[index].num=0;	
+		log_writer[index].alive_flag	= 0;
+		log_writer[index].byte_counter	= 0;		
+		log_writer[index].num			= 0;	
+		log_writer[index].fail_count	= 0;
+		log_writer[index].booting_count = 0;
+		log_writer[index].total_count = 100;
 
 	}
 	
@@ -601,8 +618,6 @@ void ExternalInit(void)
 
 
 
-log_writer_normal_mode();
-log_writer_start();
 
 
 }

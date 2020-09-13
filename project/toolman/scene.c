@@ -120,45 +120,51 @@ void SceneLoad(void)
 //=================
 static unsigned int start_tick;
 
-void Test_timeformat_out()
-{
-#define LOG_TIMESTAMP_LEN		11 //10//[12:34:56] //10 content with /0
-	char tmp[64] = {0};
-	int min, hour, sec;
 
-	min = get_min_passed();
-	hour = get_hour_passed();
-	sec = get_sec_passed();
-
-	snprintf(tmp, LOG_TIMESTAMP_LEN, "[%0.2d:%0.2d:%0.2d]", hour, min, sec);
-	printf("%s\n", tmp);
-
-}
-int get_hour_passed()
+unsigned int get_hour_passed(unsigned int seconds)
 {
 	unsigned int tmp;
-	tmp = get_elapsed_total_seconds()/3660;
+	tmp = seconds / 3660;
 	return tmp;
 
 }
 
-int get_min_passed()
+int get_min_passed(unsigned int seconds)
 {
 	unsigned int tmp;
-	tmp = get_elapsed_total_seconds()%3600;//erased hour
+	tmp = seconds % 3600;//erased hour
 	tmp=tmp/60; //get minutes 
 	return tmp;
 
 }
-int get_sec_passed()
+unsigned int get_sec_passed(unsigned int seconds)
 {
 	unsigned int tmp;
-	tmp	= get_elapsed_total_seconds()%60;
+	tmp = seconds % 60;
 	return tmp;
 }
+
+unsigned int get_time_format_string(unsigned int timetick, char* buf)
+{
+	#define LOG_TIMESTAMP_LEN		16 //10//[12:34:56] //10 content with /0
+	char tmp[64] = { 0 };
+	unsigned int min, hour, sec;
+
+	min = get_min_passed(timetick);
+	sec = get_sec_passed(timetick);
+
+	snprintf(buf, LOG_TIMESTAMP_LEN, "%0.2d:%0.2d", min, sec);
+	//printf("%s\n", buf);
+	return 0;
+}
+
+
+
+
+
 //elapsed_ticker
 
-int get_elapsed_total_seconds()
+unsigned int get_elapsed_total_seconds()
 {
 	return 	(SDL_GetTicks()-start_tick)/1000;		
 
