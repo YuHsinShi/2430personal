@@ -219,7 +219,7 @@ static void* WritingTask(void* arg)
 			index= wbf[4];
 			cmd= wbf[5];
 
-			DBG("WR %d , %d/%d byte..\r\n",index, wrlen,log_writer[index].byte_counter );
+			//DBG("WR %d , %d/%d byte..\r\n",index, wrlen,log_writer[index].byte_counter );
 			
 			/*
 			
@@ -289,7 +289,7 @@ static void* WritingTask(void* arg)
 //	DBG("wri: %d byte finished\r\n", counter);
 }
 
-void header_set(char* buf,int readLen,int channel,int cmd)
+void header_set(char* buf,int readLen,char channel,char cmd)
 {
 	memcpy(buf,&readLen,4); //BYTE 0-3
 	*(buf+4)= channel;		//BYTE 4					
@@ -304,12 +304,12 @@ void get_fail_total_stringcount(int channel,char* buffer)
 	
 }
 
-void get_fail_count(int channel)
+unsigned int get_fail_count(int channel)
 {
 	return log_writer[channel - 1].fail_count;
 }
 
-void get_elapsed_time_channel(int channel)
+unsigned int get_elapsed_time_channel(int channel)
 {
 	return log_writer[channel - 1].elapse_time;
 }
@@ -398,17 +398,19 @@ char cmd=0;
 				// Read data from UART port
 				
 				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_RESERVED], EXTERNAL_BUFFER_SIZE);
+				/*
 				if(readLen > 0)
 				{
+				
 					DBG("UART RD: ch %d: %d byte(%d)..(%x,%x)\r\n",index, readLen,readLen,log_writer[index].itp_uart_index,ITP_DEVICE_UART1);
 					for(i=0;i<readLen;i++){
 					printf("0x%x ", inDataBuf[i+HEADER_RESERVED]);
 					}
 					printf("\n");
-
+					
 					continue;
 				}
-				
+				*/
 				if(readLen > 0)
 				{
 					log_writer[index].alive_flag++; // uart aive
@@ -454,7 +456,7 @@ char cmd=0;
 
 					header_set(pos,readLen,index,cmd);
 
-					DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
+					//DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
 						
 					 mq_send(extOutQueue, pos,readLen, 0);
 
@@ -463,6 +465,7 @@ char cmd=0;
 						 //searching
 						 if (NULL != strstr(pos, "booting"))
 						 {
+							 printf("BOOTING OK~	\n");
 							 ithGpioSetOut(log_writer[index].power_gpio);
 							 ithGpioClear(log_writer[index].power_gpio); //power off 
 							 log_writer[index].status = LOG_WRITER_STATUS_POWER_OFF; //booting
