@@ -463,7 +463,7 @@ char cmd=0;
 					 if (LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
 					 {
 						 //searching
-						 if (NULL != strstr(pos, "booting"))
+						 if (NULL != strstr(pos, "itu loading time"))
 						 {
 							 printf("BOOTING OK~	\n");
 							 ithGpioSetOut(log_writer[index].power_gpio);
