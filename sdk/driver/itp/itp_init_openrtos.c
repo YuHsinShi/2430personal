@@ -720,6 +720,12 @@ void itpInit(void)
     itpTaskVcdInit();
 #endif
 
+	//20200916 law
+	//tmp add for go key light
+	go_key_led(85);//
+
+
+
     // set locale
     setlocale(LC_CTYPE, "C-UTF-8");
 

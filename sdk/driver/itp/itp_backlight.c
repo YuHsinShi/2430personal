@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2011 ITE Tech. Inc. All Rights Reserved.
  */
 /** @file
@@ -22,6 +22,27 @@
     #define GPIO_MODE ITH_GPIO_MODE2
     #define BL_PWM ITH_PWM5
 #endif
+
+void go_key_led(int duty)
+{
+	#define GO_LED_BACKLIGHT_PIN		40		
+	int PWM = 1; //use timer ith_PWM2
+	int mode = 0;
+    
+
+	
+	printf("gpio_pin:%d PWM:%d mode:%d duty=%d\n",GO_LED_BACKLIGHT_PIN,PWM+1,mode,duty);
+	
+    ithPwmReset(PWM, GO_LED_BACKLIGHT_PIN, mode);
+	ithPwmInit(PWM, 1000, duty);
+
+	ithPwmSetDutyCycle(PWM,duty);
+	ithPwmEnable(PWM, GO_LED_BACKLIGHT_PIN, mode);
+
+
+}
+
+
 static const unsigned int blDutyCycleTable[] = { CFG_BACKLIGHT_DUTY_CYCLES };
 static unsigned int blLastValue = CFG_BACKLIGHT_DEFAULT_DUTY_CYCLE;
 

@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Sep 08 17:54:55 2020
+# Thu Sep 17 10:18:47 2020
 #
 #
 set(CFG_CTRLBOARD y)

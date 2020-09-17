@@ -74,6 +74,9 @@ retry_backup:
 
     ConfigInit();
 
+
+//	NetworkInit_wifi_on();
+
 #ifdef CFG_NET_ENABLE
     NetworkInit();
     #ifdef CFG_NET_WIFI

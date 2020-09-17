@@ -113,6 +113,95 @@ static void *_CAN2Thread()
     }
 }
 
+void can_cmd_parser_to_ui_0909(char* cmd)
+{
+	/*
+	//UNLOCK				{0xFE,0x05,0x39,0x00,0xC4},
+	//ENGINE START			{0xFE,0x05,0x39,0x02,0xC2},	
+	//SPORT  MODE			{0xFE,0x05,0x39,0x09,0xBB},
+	
+	//SPEED VALUE			{0XFE,0X05,0X34,0X00,0X00}
+
+	left on:	FE 05 39 49 7B		
+
+	right on:	FE 05 39 4A 7A		
+
+	hazard on:	FE 05 39 4B 79		
+
+
+	left off:	FE 05 56 49 5E		
+	right off:	FE 05 56 4A 5D		
+	hazard off: FE 05 56 4B 5C		
+	*/
+		if( (0x39 ==cmd[2])	)
+		{
+			if(0x00 ==cmd[3])
+			{	
+				ui_set_unlock_mode();
+			}
+			else if(0x02 ==cmd[3])
+			{
+				ui_engine_start();
+			}
+			else if(0x09 ==cmd[3])
+			{
+				ui_set_sport_mode_on();
+			}
+			else if(0x02 ==cmd[3])
+			{
+				ui_engine_start();
+			}				
+			else if(0x49 ==cmd[3])
+			{
+				ui_set_left_on();
+			}	
+			
+			else if(0x4a ==cmd[3])
+			{
+				ui_set_right_on();
+			}			
+			
+			else if(0x4b ==cmd[3])
+			{
+				ui_set_hazard_on();
+			}			
+			else
+			{
+
+			}
+			
+		}
+		else if(0x34 ==cmd[2])
+		{
+			ui_set_meter_speed_value(cmd[3]);
+	
+		}
+		else if(0x56 ==cmd[2])
+		{
+			if(0x49 ==cmd[3])
+			{
+				ui_set_left_off();
+			}	
+			
+			else if(0x4a ==cmd[3])
+			{
+				ui_set_right_off();
+			}			
+			
+			else if(0x4b ==cmd[3])
+			{
+				ui_set_hazard_off();
+			}	
+		}
+		else
+		{
+
+		}
+		
+
+}
+
+
 static void *_CAN1RECVThread()
 {
 	CAN_RXOBJ _rxObj;
@@ -167,46 +256,16 @@ static void *_CAN1RECVThread()
 //				
 			//UNLOCK				{0xFE,0x05,0x39,0x00,0xC4},
 			//ENGINE START			{0xFE,0x05,0x39,0x02,0xC2},
+
 			//WINKER LEFT			{0xFE,0x05,0x39,0x49,0x7B},
 			//WINKER RIGHT			{0xFE,0x05,0x39,0x49,0x7A},
+
 			//SPORT  MODE			{0xFE,0x05,0x39,0x09,0xBB},
 			//SPEED VALUE			{0XFE,0X05,0X34,0X00,0X00};
+			
 
-						if(0x39 ==_rxObj.RXData[2]  )	
-						{
-							if(0x00 ==_rxObj.RXData[3]) 
-							{
-									ui_set_unlock_mode();
-							}
-							else if(0x02 ==_rxObj.RXData[2]) 
-							{ 
-									ui_engine_start();
-							}
-							else if(0x49 ==_rxObj.RXData[2]) 
-							{
-									if(0x7B ==_rxObj.RXData[3])
-										ui_set_winker_left();						
-									else
-										ui_set_winker_right();
-							}						
-							else if(0x09 ==_rxObj.RXData[2]) 
-							{ 
-									ui_set_sport_mode_on();	
-							}
-							else{
-								
-							}
-						}
-						else if(0x34 ==_rxObj.RXData[2])
-						{
-							ui_set_meter_speed_value(_rxObj.RXData[3]);
+			can_cmd_parser_to_ui_0909(_rxObj.RXData);
 
-						}
-						else
-						{
-
-						}
-						
 
 			}
 			

@@ -53,7 +53,59 @@ static ITUContainer* ContainerMainMeter;
 
 static int winker_status;
 
-int auto_run=1;	
+static int hazard_status=0;
+static int left_status=0;
+static int right_status=0;
+
+
+int auto_run=0;	
+
+
+
+
+#define UI_FUNCT_PRINT	printf("%s\n",__func__);
+void ui_set_hazard_on()
+{
+	UI_FUNCT_PRINT
+	hazard_status=1;
+}
+
+void ui_set_hazard_off()
+{
+	UI_FUNCT_PRINT
+
+	hazard_status=0;
+}
+void ui_set_left_on()
+{
+	UI_FUNCT_PRINT
+
+	left_status=1;
+}
+
+void ui_set_left_off()
+{
+	UI_FUNCT_PRINT
+
+	left_status=0;
+}
+
+
+void ui_set_right_on()
+{
+	UI_FUNCT_PRINT
+
+	right_status=1;
+}
+
+void ui_set_right_off()
+{
+	UI_FUNCT_PRINT
+
+	right_status=0;
+}
+
+
 void ui_set_meter_speed_value(int value)
 {	
 if( (value < 99) && (value > 0) )
@@ -72,6 +124,8 @@ void ui_set_winker_right()
 	winker_status=0x02; 
 
 }
+
+
 
 void ui_set_sport_mode_on()
 {	
@@ -117,12 +171,25 @@ void SpeedMeterUpdate()
 	ituSpriteGoto(mainSprite_TenDigit, ten); // show ten number 
 	ituSpriteGoto(mainSprite_Digit, digit); // show digit number 
 	
-	
-	//leo
-	if(speed < 71)
+
+
+	if(hazard_status)
 	{
-		ituSpriteGoto(mainSpriteSpeedBar, speed); // show speed bar
+		ituWidgetSetVisible(mainSpriteSpeedBar,0);	
 	}
+	else
+	{
+		ituWidgetSetVisible(mainSpriteSpeedBar,1);	
+		//leo
+		if(speed < 71)
+		{
+		
+		
+			ituSpriteGoto(mainSpriteSpeedBar, speed); // show speed bar
+		}
+
+	}
+	
 
 }
 
@@ -244,10 +311,24 @@ if(auto_run)
 		ui_set_sport_mode_on();
 	}
 
+	WinkerLRStatusUpdate();
+
+}
+else
+{	
+	if(left_status)
+		ituWidgetSetVisible(mainIconLeft, 1);	
+	else
+		ituWidgetSetVisible(mainIconLeft, 0);	
+
+	if(right_status)
+		ituWidgetSetVisible(mainIconRight, 1);	
+	else
+		ituWidgetSetVisible(mainIconRight, 0);	
+
 
 }
 
-	WinkerLRStatusUpdate();
 
 	//leo
 	SemicolonFlash();
