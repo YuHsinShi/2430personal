@@ -58,7 +58,8 @@ static int left_status=0;
 static int right_status=0;
 
 
-int auto_run=0;	
+static int auto_run=1;	
+static int	accelerate;
 
 
 
@@ -280,6 +281,7 @@ bool MainLayerOnSimulateControl(ITUWidget* widget, char* param)
 
 bool MainLayerOnTimer(ITUWidget* widget, char* param)
 {
+
 	if (NULL == mainSprite_TenDigit)
 		return false;
 
@@ -312,6 +314,21 @@ if(auto_run)
 	}
 
 	WinkerLRStatusUpdate();
+
+
+	if (speed >= 99){
+		accelerate=0;
+	}
+	else if (speed <= 0){
+		accelerate=1;}
+	else{
+		
+	}
+
+	if(accelerate)
+		++speed;
+	else 
+		--speed;
 
 }
 else
