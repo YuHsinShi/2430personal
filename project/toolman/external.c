@@ -232,10 +232,14 @@ static void* WritingTask(void* arg)
 			*/
 				if(LOG_WRITER_CMD_FAIL_BOOT==cmd) //jump to next 
 				{				
+					DBG("WritingTask cmd = LOG_WRITER_CMD_FAIL_BOOT\n");
+
 					log_writer_get_next_file_handle(index);
 				}
 				else if (LOG_WRITER_CMD_OK_BOOT == cmd) //jump to next 
 				{
+				
+					DBG("WritingTask cmd = LOG_WRITER_CMD_OK_BOOT\n");
 					log_writer_get_next_file_handle(index);
 				}				
 				else
@@ -390,15 +394,16 @@ char cmd=0;
 
 			}
 
-		}
+//		}
 			//for log caputure.
-		for(index=0;index<5;index++)
-		{
+//		for(index=0;index<5;index++)
+//		{
 				memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE); 
 				// Read data from UART port
 				
 				readLen = read(	log_writer[index].itp_uart_index , &inDataBuf[HEADER_RESERVED], EXTERNAL_BUFFER_SIZE);
-				/*
+				/*	
+		
 				if(readLen > 0)
 				{
 				
@@ -407,10 +412,11 @@ char cmd=0;
 					printf("0x%x ", inDataBuf[i+HEADER_RESERVED]);
 					}
 					printf("\n");
-					
+
 					continue;
 				}
-				*/
+				*/			
+
 				if(readLen > 0)
 				{
 					log_writer[index].alive_flag++; // uart aive
@@ -456,14 +462,14 @@ char cmd=0;
 
 					header_set(pos,readLen,index,cmd);
 
-					//DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
+					DBG("read ch %d: %d byte(%d)..\r\n",index, readLen,readLen);
 						
 					 mq_send(extOutQueue, pos,readLen, 0);
 
 					 if (LOG_WRITER_MODE_POWER_ONOFF == log_writer[index].mode)
 					 {
-						 //searching
-						 if (NULL != strstr(pos, "itu loading time"))
+						 //searching content
+						 if (NULL != strstr(&inDataBuf[HEADER_RESERVED], "[Main]AudioPlay"))
 						 {
 							 printf("BOOTING OK~	\n");
 							 ithGpioSetOut(log_writer[index].power_gpio);

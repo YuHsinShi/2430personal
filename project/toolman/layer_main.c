@@ -206,6 +206,7 @@ bool PowerOnTimer(ITUWidget* widget, char* param)
 	counter++;
 	if (1 != counter%8)
 		 return false;
+	unsigned int elasped=0;
 
 	char tmp[64] = {0};
 	int i;
@@ -213,7 +214,9 @@ bool PowerOnTimer(ITUWidget* widget, char* param)
 	{
 		//elapse_time = SDL_GetTicks() - log_writer[i].action_time
 		//
-		get_time_format_string(get_elapsed_time_channel(i), tmp);
+		elasped=get_elapsed_time_channel(i);
+	//	printf("elased =%d ",elasped);
+		get_time_format_string(elasped, tmp);
 		ituTextSetString(power_elapsed_time[i - 1], tmp);	
 		
 		ituTextSetStringInt(power_fail[i - 1], get_fail_count(i));
@@ -221,8 +224,8 @@ bool PowerOnTimer(ITUWidget* widget, char* param)
 		get_fail_total_stringcount(i,tmp);
 		ituTextSetString(power_count[i - 1], tmp);
 	}
-	
-	return false;
+//			printf("END\n ");
+	return true;
 }
 
 bool PowerOnLeave(ITUWidget* widget, char* param)
