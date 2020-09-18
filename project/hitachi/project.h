@@ -17,6 +17,35 @@
 extern "C" {
 #endif
 
+#define STATUS_NUM 12
+#define MODE_NUM (RMODE_NUM+MOREMODE_NUM)
+#define RMODE_NUM 4
+#define MOREMODE_NUM 12
+#define AIRFORCE_NUM 7
+#define MODESHOW_NUM 7
+#define EXAM_REC_MAX_ITEM 99
+
+bool temp_big_show;
+bool humidity_container_show;
+bool warning_btn_show;
+bool emergency_btn_show;
+bool filter_btn_show;
+int humidityValueIndex;
+int curHumidityValueIndex;
+int temperatureValueIndex;
+int curTempValueIndex;
+bool inductionSetting_checked;
+int modeIndex;
+const int temperatureValueSet[21];
+bool timingSet;
+const int BgIndex[16];
+int mode_show[MODESHOW_NUM];
+int examineRecordTotalItem;
+int examineDayRecord[EXAM_REC_MAX_ITEM][3];
+int examineTimeRecord[EXAM_REC_MAX_ITEM][2];
+int examineAddrRecord[EXAM_REC_MAX_ITEM];
+int examineNoRecord[EXAM_REC_MAX_ITEM];
+
 /**
 * Initializes screen module.
 */

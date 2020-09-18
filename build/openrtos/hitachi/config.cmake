@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Thu Sep 17 19:28:57 2020
+# Fri Sep 18 11:40:36 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -24,7 +24,7 @@ set(CFG_LCD_ENABLE y)
 set(CFG_LCD_WIDTH "720")
 set(CFG_LCD_HEIGHT "720")
 set(CFG_LCD_PITCH "1440")
-set(CFG_LCD_INIT_SCRIPT "lcd_script-HS-0_hitachi.txt")
+set(CFG_LCD_INIT_SCRIPT "lcd_script-HS-0_hitachi_ok.txt")
 set(CFG_CMDQ_ENABLE y)
 set(CFG_M2D_ENABLE y)
 set(CFG_JPEG_HW_ENABLE y)

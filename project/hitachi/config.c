@@ -86,7 +86,7 @@ void ConfigExit(void)
 static void ConfigSavePublic(void)
 {
     FILE* f;
-    char buf[8];
+    char buf[16];
 
     // network
     iniparser_set(cfgIni, "tcpip:dhcp", theConfig.dhcp ? "y" : "n");
