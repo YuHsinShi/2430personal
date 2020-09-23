@@ -11,4 +11,6 @@ include_directories(
 add_library(nor STATIC
     nor.c
     nor_msg.h
+	nor_2nd.c
+
 )

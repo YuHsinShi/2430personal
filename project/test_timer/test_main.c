@@ -232,8 +232,9 @@ void* TestFunc_PWM_BACKLIGHT(void* arg)
     ioctl(ITP_DEVICE_BACKLIGHT, ITP_IOCTL_RESET, NULL);
 
     for(count = 0 ; count <= 100 ; count++){
-        ithPwmSetDutyCycle(PWM,blDutyCycleTable[count%10]);
-        printf("ITH_PWM%d enable ,blDutyCycleTable = %d\n",PWM+1,blDutyCycleTable[count%10]);
+        //ithPwmSetDutyCycle(PWM,blDutyCycleTable[count%10]);
+		ithPwmSetDutyCycle(PWM,90);
+        printf("ITH_PWM%d enable ,blDutyCycleTable = %d .gpio=%d\n",PWM+1,blDutyCycleTable[count%10],gpio_pin);
         ithPwmEnable(PWM, gpio_pin, mode);
         sleep(1);
         printf("ITH_PWM%d disable\n",PWM+1);

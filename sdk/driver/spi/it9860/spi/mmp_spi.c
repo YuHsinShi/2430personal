@@ -89,6 +89,7 @@ static SPI_OBJECT SpiObjects[2] =
         PTHREAD_MUTEX_INITIALIZER      // mutex
     }
 };
+	
 
 static PORT_IO_MAPPING_ENTRY tSpiMisoMappingTable[] =
 {
@@ -96,6 +97,9 @@ static PORT_IO_MAPPING_ENTRY tSpiMisoMappingTable[] =
     {SPI_0, 22, 3}, {SPI_0, 33, 3},
     //SPI_1
     {SPI_1, 18, 3}, {SPI_1, 37, 3}, {SPI_1, 41, 3}
+
+    ,{SPI_1, 17, 3} //lawrence add for spi slave
+    ,{SPI_0, 21, 3} //lawrence add for spi slave
 };
 
 static PORT_IO_MAPPING_ENTRY tSpiMosiMappingTable[] =
@@ -104,6 +108,10 @@ static PORT_IO_MAPPING_ENTRY tSpiMosiMappingTable[] =
     {SPI_0, 21, 3}, {SPI_0, 29, 3},
     //SPI_1
     {SPI_1, 17, 3}, {SPI_1, 36, 3}, {SPI_1, 40, 3}
+
+    ,{SPI_1, 18, 3} //lawrence add for spi slave
+    
+    ,{SPI_0, 22, 3} //lawrence add for spi slave
 };
 
 static PORT_IO_MAPPING_ENTRY tSpiClockMappingTable[] =
@@ -112,6 +120,7 @@ static PORT_IO_MAPPING_ENTRY tSpiClockMappingTable[] =
     {SPI_0, 19, 3}, {SPI_0, 24, 3}, {SPI_0, 27, 3},
     //SPI_1
     {SPI_1, 15, 3}, {SPI_1, 34, 3}, {SPI_1, 38, 3}
+
 };
 
 static PORT_IO_MAPPING_ENTRY tSpiChipSelMappingTable[] =
@@ -1279,7 +1288,7 @@ mmpSpiPioRead(
             result = false;
             break;
         }
-        //usleep(10000); // SPI slave test (waiting for slave Tx sending)
+       // usleep(10000); // SPI slave test (waiting for slave Tx sending)
         if (_spiFifoReadData(port, outData, outDataSize) == false)
         {
             SPI_ERROR_MSG("Read data fail.\n");

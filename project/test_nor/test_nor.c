@@ -27,7 +27,12 @@ uint8_t slave_cmd[SLAVE_TEST_SIZE] = {0};
 
 bool slaveCallbackFunc(uint32_t inData)
 {
-    static uint32_t callback_index = 0;
+	
+	printf("SPI slave receive 0x%08X.\n", (uint8_t)inData);
+	return true;
+    
+	
+	static uint32_t callback_index = 0;
     static uint32_t freerun_index = 0;
 
     if (freerun_index % 2)
@@ -53,33 +58,338 @@ bool slaveCallbackFunc(uint32_t inData)
     return true;
 }
 
+uint32_t BLEndianUint32(uint32_t value)
+{
+    return ((value & 0x000000FF) << 24) |  ((value & 0x0000FF00) << 8) |  ((value & 0x00FF0000) >> 8) | ((value & 0xFF000000) >> 24);   
+}
+void ite_idle()
+{
+    uint8_t cmd[5] ={0x01,0x01,0x0,0x0,0x00};
+	uint8_t dat[5]={0};
+	//mmpSpiPioRead(SPI_1, cmd , 2, dat,2, 0);
+mmpSpiPioWrite(SPI_1, cmd , 5, 0,0, 0);
+/*	printf("read_register addr 0x%x\n",addr);
+	for(int i=0;i<9;i++)
+	printf("0x%x ",indata[i]);	
+		printf("\n");
+*/
+	
+}
+void read_register(uint32_t addr)
+{
+    uint8_t cmd[9] ={0x0};
+	uint8_t indata[9]={0};
+	uint32_t *cmd_reg_addr=0;
+	uint32_t addr_endian;
+
+	cmd[0]=0x45;
+	//addr_endian= BLEndianUint32(addr);
+	addr_endian= addr;
+	cmd_reg_addr=(uint32_t*)&cmd[1];
+	memcpy(cmd_reg_addr,&addr_endian,4);
+
+	memset(indata,9,0);
+	mmpSpiPioRead(SPI_1, cmd , 9, indata,4, 4);
+
+	printf("read_register addr 0x%x\n",addr);
+	for(int i=0;i<9;i++)
+	printf("0x%x ",indata[i]);	
+		printf("\n");
+
+	
+}
+void get_chip_id_ite()
+{
+    uint8_t cmd[9] ={0x05,0x04,0x0,0x0,0xd8,0x00,0x0,0x0,0x0};
+	uint8_t indata[9]={0};
+
+	memset(indata,9,0);
+	mmpSpiPioRead(SPI_1, cmd , 5, indata,4, 4);
+
+	printf("get_chip_id_ite\n");
+	for(int i=0;i<9;i++)
+	printf("0x%x ",indata[i]);	
+		printf("\n");
+
+}
+
+void indirect_write(uint32_t addr,uint32_t data)
+{
+	uint8_t cmd[9] ={0x0};
+	uint8_t indata[9]={0};
+	uint32_t *tmp_u32=0;
+	uint32_t addr_endian;
+	uint32_t data_endian;
+
+	cmd[0]=0x04;
+	//addr_endian= BLEndianUint32(addr);
+	addr_endian= addr;
+	tmp_u32=(uint32_t*)&cmd[1];
+	memcpy(tmp_u32,&addr_endian,4);
+
+	//data_endian= BLEndianUint32(data);
+	data_endian= data; 
+
+	tmp_u32=(uint32_t*)&cmd[5];
+	
+	memcpy(tmp_u32,&data_endian,4);
+
+
+	mmpSpiPioWrite(SPI_1, cmd , 9, 0,0, 0);
+
+
+}
+
+void read_indirect_packet9()
+{
+    uint8_t cmd =0x9f;
+	uint8_t indata[9]={0};
+
+	memset(indata,9,0);
+	mmpSpiPioRead(SPI_1, &cmd , 1, indata,5, 5);
+	printf("read_indirect_packet9 \n");
+	for(int i=0;i<5;i++)
+	printf("0x%x ",indata[i]);	
+		printf(" \n");
+}
+
+void read_indirect_packet10()
+{
+    uint8_t cmd =0x90;
+	uint8_t indata[9]={0};
+
+	memset(indata,9,0);
+	mmpSpiPioRead(SPI_1, &cmd , 1, indata,5, 5);
+	printf("read_indirect_packet10 \n");
+	for(int i=0;i<5;i++)
+	printf("0x%x ",indata[i]);	
+		printf(" \n");
+}
+
+void read_cmd_array_packet(uint8_t* cmd,uint8_t cmd_size,uint8_t data_length)
+{
+   // uint8_t cmd =0x9f;
+	uint8_t data[64]={0};
+	uint8_t length_tmp;
+		if(data_length>64)
+			   length_tmp=64;
+	//memset(indata,9,0);
+	mmpSpiPioRead(SPI_1, cmd , cmd_size, data,length_tmp, length_tmp);
+	printf("read_cmd_array_packet \n");
+
+for(uint8_t i=0;i<length_tmp;i++)
+		printf("0x%x ",data[i]);	
+		printf(" \n");
+}
+
+uint8_t read_cmd_packet(uint8_t cmd,uint8_t data_length)
+{
+   // uint8_t cmd =0x9f;
+	uint8_t indata[9]={0};
+
+	//memset(indata,9,0);
+	mmpSpiPioRead(SPI_1, &cmd , 1, indata,data_length, data_length);
+	printf("read_cmd_packet cmd %x :\n",cmd);
+	for(int i=0;i<data_length;i++)
+	printf("0x%x ",indata[i]);	
+		printf(" \n");
+		
+		return indata[0];
+}
+
+void write_cmd_packet(uint8_t cmd,uint8_t data_length)
+{
+   // uint8_t cmd =0x9f;
+	uint8_t data[9]={0};
+
+	//memset(indata,9,0);
+	mmpSpiPioWrite(SPI_1, &cmd , 1, data,data_length, data_length);
+//	printf("read_indirect_packet9 \n");
+//	for(int i=0;i<5;i++)
+//	printf("0x%x ",indata[i]);	
+//		printf(" \n");
+}
+
+
+void write_cmd_array_packet(uint8_t* cmd,uint8_t cmd_size,uint8_t data_length)
+{
+   // uint8_t cmd =0x9f;
+	uint8_t data[2]={0};
+
+	//memset(indata,9,0);
+	mmpSpiPioWrite(SPI_1, cmd , cmd_size, data,data_length, data_length);
+//	printf("read_indirect_packet9 \n");
+//	for(int i=0;i<5;i++)
+//	printf("0x%x ",indata[i]);	
+//		printf(" \n");
+}
+
+void read_nor_id()
+{
+	
+		printf("read_nor_id \n");
+	
+		ite_idle(); //packet 0
+		
+		ite_idle();  //packet 1
+
+		//get_chip_id_ite();
+		read_register(0xd8000004);	//packet 2	
+		read_register(0xd8000004);//packet 3
+		
+		read_register(0xd8000000);//packet 4
+		read_register(0xd8000000);//packet 5
+		
+		
+		//set bypass mode of the chip
+		indirect_write(0xd1000230,0x800a8005);	//packet 6
+		indirect_write(0xd1000234,0x80078006);	//packet 7
+		indirect_write(0xd1000204,0x02000000);	//packet 8
+
+
+		read_indirect_packet9();
+		read_indirect_packet10();
+}
+
+
+
+void write_slave_nor()
+{
+	uint8_t cmd[8]={0};
+	uint8_t ret;
+	
+	
+	
+	
+
+	
+	
+			//set bypass mode of the chip
+		indirect_write(0xd1000230,0x800a8005);	//packet 6
+		indirect_write(0xd1000234,0x80078006);	//packet 7
+		indirect_write(0xd1000204,0x02000000);	//packet 8
+	
+
+	
+	
+		read_register(0xd8000004);//packet3
+		read_register(0xd8000004);//packet3
+
+		read_register(0xb8000004);//packet4
+		read_register(0xb8000004);//packet4
+		
+		read_cmd_packet(0x9f,5); //packet 6
+		read_cmd_packet(0x90,5);//packet 7
+		
+		write_cmd_packet(0x6,0);//packet 8
+		
+		cmd[0]=0x01;
+		cmd[1]=0x00;		
+		write_cmd_array_packet(cmd,2,0); //packet 9
+		
+		read_cmd_packet(0x05,1);//packet 10
+		read_cmd_packet(0x05,1);//packet 11
+		write_cmd_packet(0x6,0);//packet 12
+
+		cmd[0]=0xd8;
+		cmd[1]=0x00;		
+		cmd[2]=0x00;		
+		cmd[3]=0x00;		
+		write_cmd_array_packet(cmd,4,0); //packet 13
+		//while(1);
+
+		//wait until ret=0x
+		while(1)
+		{
+			ret= read_cmd_packet(0x05,1);//packet 14 /
+			if(0x40 ==ret )
+				break;
+			usleep(100*1000);
+		}
+		printf("GOT 0x40\n");
+		write_cmd_packet(0x6,0);//packet 32
+		
+
+		//packet 33 ,start to write content
+		
+		uint8_t* rom_content=NULL;
+		#define ROM_SIZE  64
+		rom_content = malloc(ROM_SIZE);
+		if(NULL==rom_content)
+		{
+			printf("rom_content ERROR \n");
+			return;
+		}
+		uint8_t j=0;	
+		for(unsigned int i=0;i<ROM_SIZE-4;i++)
+		{
+			//value=(uint8_t) i;
+			j=j%128;
+			rom_content[i+4]=j+0x10;
+			j++;
+		}		
+		
+		rom_content[0]=0x02;
+		rom_content[1]=0x00;		
+		rom_content[2]=0x00;		
+		rom_content[3]=0x00;		
+//		write_cmd_array_packet(rom_content,ROM_SIZE,0); //packet 13
+		mmpSpiPioWrite(SPI_1, rom_content , ROM_SIZE-1, 0,0, 0);
+
+		read_cmd_packet(0x05,1);//
+		write_cmd_packet(0x4,0);//
+		read_cmd_packet(0x05,1);//
+		
+		//printf("GOT 0x40\n");
+
+		cmd[0]=0x03;
+		cmd[1]=0x00;		
+		cmd[2]=0x00;		
+		cmd[3]=0x00;		
+		
+		read_cmd_array_packet(cmd,4,64);
+
+}
+
+
+
+
 void spi_test_master()
 {
-    mmpSpiInitialize(SPI_0, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_10M);
-    mmpSpiInitialize(SPI_1, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_10M);
-    mmpSpiSetSlaveCallbackFunc(SPI_1, slaveCallbackFunc);
+    mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_1M);
+    mmpSpiInitialize(SPI_0, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_1M);
+    mmpSpiSetSlaveCallbackFunc(SPI_0, slaveCallbackFunc);
     uint32_t i = 0;
-    for (i = 0; i < SLAVE_TEST_SIZE; i++)
-		slave_cmd[i] = i;
-    sleep(1);
+    uint8_t cmd[9] ={0x05,0x04,0x0,0x0,0xd8,0x04,0x0,0x0,0x0};
+	uint8_t rd_cmd=0xf;
+	uint8_t indata[9]={0};
+	
+	sleep(1);
 
     uint32_t send_index = 0;
     uint8_t master_recv_buffer = 0;
+
+
+	//read_nor_id();
+	write_slave_nor();
+    while(1);
+
+
+
     while(1)
     {
-        //mmpSpiPioWrite(SPI_0, slave_cmd + send_index, 1, 0, 0, 0);
-        master_recv_buffer = 0;
-        mmpSpiPioRead(SPI_0, slave_cmd + send_index, 1, &master_recv_buffer, 1, 0);
+		/*
+		    SPI_PORT    port,
+    uint8_t     *inCommand,
+    uint32_t    inCommandSize,
+    uint8_t     *inData,
+    uint32_t    inDataSize,
+    uint8_t     dataLength)*/
+//        mmpSpiPioWrite(SPI_1, cmd , 9, indata,9, 9);
+	 
+		 printf("\n");
 
-        if (master_recv_buffer == *(slave_cmd + send_index))
-        {
-            printf("SPI master receive 0x%08X.\n", master_recv_buffer);
-        }
-        else
-        {
-            printf("SPI master receive(error) 0x%08X.\n", master_recv_buffer);
-            while(1) sleep(1);
-        }
+		printf("SPI master receive 0x%08X.\n", master_recv_buffer);
 
         send_index++;
         send_index %= SLAVE_TEST_SIZE;
@@ -496,11 +806,92 @@ void test_nor()
 }
 */
 
+
+bool slaveCallbackFunc2(uint32_t inData)
+{
+    static uint32_t callback_index = 0;
+    static uint32_t freerun_index = 0;
+
+    if (freerun_index % 2)
+    {
+        freerun_index = 0;
+        return true;
+    }
+    freerun_index++;
+
+    if ((uint8_t)inData == slave_cmd[callback_index % SLAVE_TEST_SIZE])
+    {
+        printf("SPI slave receive 0x%08X.\n", (uint8_t)inData);
+    }
+    else
+    {
+        printf("SPI slave receive(error) 0x%08X.\n", (uint8_t)inData);
+        while(1) sleep(1);
+    }
+
+    callback_index++;
+    callback_index %= SLAVE_TEST_SIZE;
+
+    return true;
+}
+void spi_test_law()
+{
+    mmpSpiInitialize(SPI_0, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_1M);
+    mmpSpiInitialize(SPI_1, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_1M);
+    mmpSpiSetSlaveCallbackFunc(SPI_1, slaveCallbackFunc2);
+    uint32_t i = 0;
+    for (i = 0; i < SLAVE_TEST_SIZE; i++)
+		slave_cmd[i] = i;
+    sleep(1);
+
+    uint32_t send_index = 0;
+    uint8_t master_recv_buffer = 0;
+    while(1)
+    {
+        //mmpSpiPioWrite(SPI_0, slave_cmd + send_index, 1, 0, 0, 0);
+        master_recv_buffer = 0;
+        mmpSpiPioRead(SPI_0, slave_cmd + send_index, 1, &master_recv_buffer, 1, 0);
+
+        if (master_recv_buffer == *(slave_cmd + send_index))
+        {
+            printf("SPI master receive 0x%08X.\n", master_recv_buffer);
+        }
+        else
+        {
+            printf("SPI master receive(error) 0x%08X.\n", master_recv_buffer);
+            while(1) sleep(1);
+        }
+
+        send_index++;
+        send_index %= SLAVE_TEST_SIZE;
+        usleep(200000);
+    }
+	
+}
+
+
 void* TestFunc(void* arg)
 {
     //itpInit();
+	ithGpioSetOut(48);
+	ithGpioSetMode(48, ITH_GPIO_MODE0);
+	ithGpioClear(48);
+	ithGpioSetOut(49);
+	ithGpioSetMode(49, ITH_GPIO_MODE0);
+	ithGpioClear(49);
 
-    spi_test_master();
+	ithGpioSetOut(50);
+	ithGpioSetMode(50, ITH_GPIO_MODE0);
+	ithGpioClear(50);
+	
+	//usleep(1000);
+	read_nor_id();
+    //usleep(1000);
+
+	//Nor2nd_Init();
+//        spi_test_master();
+//spi_test_law();
+	
 while(1);
     //mmpSpiInitialize(SPI_SEL, SPI_OP_MASTR);
     NorInitial(SPI_SEL, SPI_CSN_0);

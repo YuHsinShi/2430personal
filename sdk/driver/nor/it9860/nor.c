@@ -2815,3 +2815,242 @@ NorGetAttitude(
 
     return data;
 }
+
+
+
+
+
+#if 1 //for second nor
+
+
+#define NOR_SPI_PORT  SPI_1
+#define NOR_SPI_CSN   SPI_CSN_1
+static unsigned long norBlockSizeInBytes2nd;
+
+
+
+NOR_OBJECT   NorObjects2nd = 
+    {
+     0,                             // refCount
+     SPI_1,                         // port
+     SPI_CSN_1,                     // chipSelectPin
+     {0},                           // id
+     {0},                           // context
+     PTHREAD_MUTEX_INITIALIZER,     // mutex
+     0,                             // protectCount
+     NULL                           // protectInfo
+    };
+
+
+static void Nor2nd_Write(
+    uint32_t    address,
+    uint8_t     *inData,
+    uint32_t    inDataSize)
+{
+
+    NOR_OBJECT       *norObject = &NorObjects2nd;
+    uint32_t         SWPIndex   = 0;
+    NOR_PROTECT_ITEM *SWPITemp  = NULL;
+    NOR_RESULT       result     = 0;
+
+    if (inData == NULL || inDataSize == 0)
+    {
+        NOR_ERROR_MSG("inData = 0x%08X, inDataSize = %d, nothing to write.\n", inData, inDataSize);
+        return 1;
+    }
+
+    if ((address + inDataSize) > (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock * norObject->context.totalBlocks))
+    {
+        NOR_ERROR_MSG("Write from 0x%08X to 0x%08X, out of boundary.\n", address, address + inDataSize);
+        return 1;
+    }
+
+    pthread_mutex_lock(&norObject->mutex);
+
+    do
+    {
+        uint32_t    headBlockStart      = (address / (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock)) * (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock);
+        uint32_t    headBlockEnd        = headBlockStart + (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock);
+        uint32_t    headBlockAddrOffset = address - headBlockStart;
+        uint32_t    tailBlockStart      = ((address + inDataSize - 1) / (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock)) * (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock);
+        uint32_t    tailBlockEnd        = ((address + inDataSize) == tailBlockStart) ? tailBlockStart : (tailBlockStart + (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock));
+        uint32_t    tailBlockAddrOffset = (address + inDataSize) - tailBlockStart;
+        uint32_t    programBlockCount   = (tailBlockEnd - headBlockStart) / (norObject->context.bytesPerSector * norObject->context.sectorsPerBlock);
+
+        NOR_LOG_MSG("headBlockStart = 0x%08X\n",        headBlockStart);
+        NOR_LOG_MSG("headBlockEnd = 0x%08X\n",          headBlockEnd);
+        NOR_LOG_MSG("headBlockAddrOffset = 0x%08X\n",   headBlockAddrOffset);
+        NOR_LOG_MSG("tailBlockStart = 0x%08X\n",        tailBlockStart);
+        NOR_LOG_MSG("tailBlockEnd = 0x%08X\n",          tailBlockEnd);
+        NOR_LOG_MSG("tailBlockAddrOffset = 0x%08X\n",   tailBlockAddrOffset);
+        NOR_LOG_MSG("programBlockCount = %d\n",         programBlockCount);
+
+        if (norEnableWrite(norObject) == false)
+        {
+            NOR_ERROR_MSG("norEnableWrite() fail.\n");
+            result = 1;
+            break;
+        }
+
+        if (programBlockCount > 1)
+        {
+            uint32_t    i               = 0;
+            uint32_t    currNorAddress  = address;
+            uint8_t     *currDataPtr    = inData;
+
+            //printf("1. ## cNorAddr = 0x%x, currDataPtr = 0x%x ##\n", currNorAddress, currDataPtr);
+
+            for (i = 0; i < programBlockCount; i++)
+            {
+                if (i == 0)
+                {
+                    //printf("2. ## cNorAddr = 0x%x, currDataPtr = 0x%x ##\n", currNorAddress, currDataPtr);
+                    //printf("2. ## update size = %d ##\n", (headBlockEnd - address));
+                    if (norUpdate(norObject, currNorAddress, currDataPtr, (headBlockEnd - address)) == false)
+                    {
+                        result = 1;
+                        break;
+                    }
+                    currNorAddress  += (headBlockEnd - address);
+                    currDataPtr     += (headBlockEnd - address);
+                }
+                else if (i == (programBlockCount - 1))
+                {
+                    //printf("3. ## cNorAddr = 0x%x, currDataPtr = 0x%x ##\n", currNorAddress, currDataPtr);
+                    //printf("3. ## tailBlockAddrOffset = %d ##\n", (tailBlockAddrOffset));
+                    if (norUpdate(norObject, currNorAddress, currDataPtr, tailBlockAddrOffset) == false)
+                    {
+                        result = 1;
+                        break;
+                    }
+                }
+                else
+                {
+                  if (norUpdate(norObject, currNorAddress, currDataPtr, norObject->context.bytesPerSector * norObject->context.sectorsPerBlock) == false)
+                    {
+                        result = 1;
+                        break;
+                    }
+                    currNorAddress  += norObject->context.bytesPerSector * norObject->context.sectorsPerBlock;
+                    currDataPtr     += norObject->context.bytesPerSector * norObject->context.sectorsPerBlock;
+                }
+            }
+        }
+        else
+        {
+            if (norUpdate(norObject, address, inData, inDataSize) == false)
+            {
+                result = 1;
+                break;
+            }
+        }
+
+        if (norDisableWrite(norObject) == false)
+        {
+            NOR_ERROR_MSG("norDisableWrite() fail.\n");
+            result = 1;
+            break;
+        }
+    } while (0);
+
+    pthread_mutex_unlock(&norObject->mutex);
+
+
+
+    return result;
+
+
+
+
+}
+
+	
+
+static bool
+nor2ndReadDeviceID(
+		NOR_OBJECT	*norObject,
+		NOR_ID		*id)
+	{
+		bool		result		= true;
+		uint8_t 	command[5]	= {0};
+		uint8_t 	id1[2]		= {0};
+		uint8_t 	id2[3]		= {0};
+	
+
+		do
+		{
+			command[0] = JEDEC_READ_ID;
+			if (mmpSpiPioRead(norObject->port, command, 1, id2, 3, 0) == false)
+			{
+				result = false;
+				break;
+			}
+			command[0] = READ_ID_CMD;
+			if (mmpSpiPioRead(norObject->port, command, 4, id1, 2, 0) == false)
+			{
+				result = false;
+				break;
+			}
+			id->manufatureID	= id1[0];
+			id->deviceID		= (((uint16_t)id2[1]) << 8) | id2[2];
+			id->deviceID2		= id1[1];
+		} while (0);
+	
+		return result;
+	}
+
+ void Nor2nd_Init(void)
+{
+	
+    NOR_OBJECT  *norObject  = &NorObjects2nd;
+    NOR_ID      id          = {0};
+	bool		foundId = false;
+	int i;
+
+
+	
+	nor2ndReadDeviceID(norObject, &id);
+	norDisableWrite(norObject);
+	for ( i = 0; i < (sizeof(nor_support_vendor) / sizeof(nor_support_vendor[0])); i++)
+	{
+		if ((id.manufatureID == nor_support_vendor[i].id.manufatureID)
+			&& (id.deviceID == nor_support_vendor[i].id.deviceID)
+			&& (id.deviceID2 == nor_support_vendor[i].id.deviceID2 || nor_support_vendor[i].id.deviceID2 == 0xFF))
+		{
+			foundId = true;
+			break;
+		}
+	}
+	if (foundId == true)
+	{
+		memcpy(&norObject->id, &id, sizeof(NOR_ID));
+		norGetContext(norObject, &nor_support_vendor[i]);
+	
+		//g_vendor = nor_support_vendor[i].vendorID;
+	
+		printf( "\n========================================\n");
+		printf( "			 2nd NOR (%d, %d) init\n");
+		printf( "========================================\n");
+		printf( "Manufacturer	 : 0x%02X\n",		nor_support_vendor[i].id.manufatureID);
+		printf( "Device ID1 	 : 0x%04X\n",		nor_support_vendor[i].id.deviceID);
+		printf( "Device ID2 	 : 0x%02X\n",		nor_support_vendor[i].id.deviceID2);
+		printf( "Name			 : %s\n",			nor_support_vendor[i].deviceName);
+		printf( "Page Size		 : %d Bytes\n", 	norObject->context.bytesPerPage);
+		printf( "Sector Size	 : %d Bytes\n", 	norObject->context.bytesPerSector);
+		printf( "Sector in Block : %d\n",			norObject->context.sectorsPerBlock);
+		printf( "Total Blocks	 : %d\n",			norObject->context.totalBlocks);
+		printf( "Size			 : %d MB\n\n",		(uint32_t)norObject->context.bytesPerSector * norObject->context.sectorsPerBlock * norObject->context.totalBlocks / 1048567);
+	}
+	else
+	{
+		NOR_ERROR_MSG("Unsupport norflash 0x%02X 0x%04X 0x%02X\n", id.manufatureID, id.deviceID, id.deviceID2);
+	}
+
+//    NorInitial(NOR_SPI_PORT, NOR_SPI_CSN);	
+//    norBlockSizeInBytes2nd = NorGetAttitude(NOR_SPI_PORT, NOR_SPI_CSN, NOR_ATTITUDE_PAGE_SIZE) * NorGetAttitude(NOR_SPI_PORT, NOR_SPI_CSN, NOR_ATTITUDE_PAGE_PER_SECTOR) * NorGetAttitude(NOR_SPI_PORT, NOR_SPI_CSN, NOR_ATTITUDE_SECTOR_PER_BLOCK);
+}
+
+
+
+#endif
+	
