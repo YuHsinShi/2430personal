@@ -883,12 +883,68 @@ void* TestFunc(void* arg)
 	ithGpioSetOut(50);
 	ithGpioSetMode(50, ITH_GPIO_MODE0);
 	ithGpioClear(50);
-	
+
+	mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_5M);
+	mmpSpiInitialize(SPI_0, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_1M);
+	mmpSpiSetSlaveCallbackFunc(SPI_0, slaveCallbackFunc);
 	//usleep(1000);
 	read_nor_id();
     //usleep(1000);
 
-	//Nor2nd_Init();
+	Nor2nd_Init();
+
+
+		uint8_t* rom_content=NULL;
+		
+		uint8_t* rom_read_content=NULL;
+#define ROM_SIZE  1024*1024
+#define ROM_SIZE_WRITE_PIECE  1024*1024
+
+		rom_content = malloc(ROM_SIZE);
+		rom_read_content = malloc(ROM_SIZE);
+
+		if( (NULL==rom_content)||(NULL==rom_read_content) )
+		{
+			printf("rom_content ERROR \n");
+			return;
+		}
+		uint8_t j=0;	
+		for(unsigned int i=0;i<ROM_SIZE-4;i++)
+		{
+			//value=(uint8_t) i;
+			j=j%128;
+			rom_content[i+4]=j+0x10;
+			j++;
+		}		
+			uint32_t tick;
+		//tick=SDL_GetTicks();
+		printf("Nor2nd_Write start \n");
+		tick = xTaskGetTickCount();
+
+
+
+	uint32_t addr=NULL; 
+
+	for(uint32_t i=0;i<16;i++)
+	{
+		addr=ROM_SIZE_WRITE_PIECE*i;
+		printf("Nor2nd_Write addr=0x%x \n",addr);
+		Nor2nd_Write(addr,rom_content,ROM_SIZE_WRITE_PIECE);
+		printf("Nor2nd_Read addr=0x%x \n",addr);
+
+		Nor2nd_Read(addr,rom_read_content,ROM_SIZE_WRITE_PIECE);
+		printf("Nor2nd_Compare addr=0x%x \n",addr);
+		if(0 != memcmp(rom_content,rom_read_content,ROM_SIZE_WRITE_PIECE ) )
+		{
+			printf("WRITE ERROR in address 0x%x \n",addr);
+
+			break;
+		}
+		//tick=(SDL_GetTicks()-tick);
+	}
+
+		printf("Nor2nd_Write finished elapsed %d \n",elased_tick(tick));
+
 //        spi_test_master();
 //spi_test_law();
 	
