@@ -49,8 +49,8 @@ void homebus_test()
 	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
     HOMEBUS_READ_DATA tHomebusReadData = { 0 };
     HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
-	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x31, 0x32, 0x33};
-//	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x0, 0x0, 0x0};
+//	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x31, 0x32, 0x33};
+	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x01, 0x01, 0x01};
 
 	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
 	int len = 0, count = 0;
