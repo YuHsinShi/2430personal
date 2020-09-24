@@ -337,6 +337,7 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
         ITE_LINK_LIBRARY_IF_DEFINED(CFG_SW_UART swUart)
         ITE_LINK_LIBRARY_IF_DEFINED(CFG_SW_SERIAL_PORT swSerialPort)
         ITE_LINK_LIBRARY_IF_DEFINED(CFG_OLED_CTRL oledCtrl)
+        ITE_LINK_LIBRARY_IF_DEFINED(CFG_HOMEBUS homebus)
         if (DEFINED CFG_ALT_CPU_CUSTOM_DEVICE)
         target_link_libraries(${CMAKE_PROJECT_NAME}
             customDevice

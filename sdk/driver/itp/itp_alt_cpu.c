@@ -39,6 +39,10 @@ extern ITPDevice itpDeviceAltCpuCustom;
 extern ITPDevice itpDeviceOledCtrl;
 #endif
 
+#ifdef CFG_HOMEBUS
+extern ITPDevice itpDeviceHomebus;
+#endif
+
 typedef struct
 {
     int         engineMode;
@@ -73,6 +77,9 @@ static ALT_CPU_ENGINE gptAltCpuEngineArray[] =
 #endif
 #ifdef CFG_OLED_CTRL
     {ALT_CPU_OLED_CTRL, &itpDeviceOledCtrl},
+#endif
+#ifdef CFG_HOMEBUS
+    {ALT_CPU_HOMEBUS, &itpDeviceHomebus},
 #endif
 };
 

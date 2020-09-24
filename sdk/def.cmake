@@ -1596,6 +1596,14 @@ if (DEFINED CFG_ALT_CPU_ENABLE)
         endif()
     endif()
 
+    if (DEFINED CFG_HOMEBUS)
+        add_definitions(
+            -DCFG_HOMEBUS
+            -DCFG_GPIO_HOMEBUS_TXD=${CFG_GPIO_HOMEBUS_TXD}
+            -DCFG_GPIO_HOMEBUS_RXD=${CFG_GPIO_HOMEBUS_RXD}
+        )
+    endif()
+
     ITE_ADD_DEFINITIONS_IF_DEFINED(CFG_ALT_CPU_CUSTOM_DEVICE)
 endif()
 

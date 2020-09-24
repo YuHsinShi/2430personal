@@ -28,6 +28,7 @@ extern "C" {
 #define ALT_CPU_OLED_CTRL       5
 #define ALT_CPU_SW_UART			6
 #define ALT_CPU_SW_SERIAL_PORT	7
+#define ALT_CPU_HOMEBUS       	8
 #define ALT_CPU_CUSTOM_DEVICE   255
 
 #define ITP_IOCTL_ALT_CPU_SWITCH_ENG    ITP_IOCTL_CUSTOM_CTL_ID0

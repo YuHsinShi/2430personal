@@ -31,4 +31,8 @@ if (DEFINED CFG_ALT_CPU_ENABLE)
     if (DEFINED CFG_OLED_CTRL)
         add_subdirectory(oledCtrl)
     endif()
+    
+    if (DEFINED CFG_HOMEBUS)
+        add_subdirectory(homebus)
+    endif()
 endif()
