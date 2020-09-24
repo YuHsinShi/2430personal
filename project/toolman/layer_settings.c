@@ -125,6 +125,10 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 	index_selected = 0;
 
 	setting_para_update();
+
+
+	//burn_writer_start();
+	
 	return false;
 }
 

@@ -167,6 +167,9 @@ retry_backup:
 
     SceneInit();
     SceneLoad();
+
+
+	burn_writer_start();
     ret = SceneRun();
 
     SceneExit();

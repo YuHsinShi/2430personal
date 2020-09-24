@@ -464,7 +464,7 @@ _spiSetGPIO(
 
     if (!_spiAssign970Gpio(port))
     {
-        printf("BBAA\n");
+        printf("_spiSetGPIO error\n");
         return false;
     }
 

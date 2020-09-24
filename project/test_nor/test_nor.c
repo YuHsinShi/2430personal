@@ -356,8 +356,8 @@ void write_slave_nor()
 
 void spi_test_master()
 {
-    mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_1M);
-    mmpSpiInitialize(SPI_0, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_1M);
+    mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_40M);
+    mmpSpiInitialize(SPI_0, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_40M);
     mmpSpiSetSlaveCallbackFunc(SPI_0, slaveCallbackFunc);
     uint32_t i = 0;
     uint8_t cmd[9] ={0x05,0x04,0x0,0x0,0xd8,0x04,0x0,0x0,0x0};
@@ -371,8 +371,8 @@ void spi_test_master()
 
 
 	//read_nor_id();
-	write_slave_nor();
-    while(1);
+	//write_slave_nor();
+    //while(1);
 
 
 
@@ -385,11 +385,11 @@ void spi_test_master()
     uint8_t     *inData,
     uint32_t    inDataSize,
     uint8_t     dataLength)*/
-//        mmpSpiPioWrite(SPI_1, cmd , 9, indata,9, 9);
+        mmpSpiPioWrite(SPI_1, cmd , 9, indata,0, 0);
 	 
 		 printf("\n");
 
-		printf("SPI master receive 0x%08X.\n", master_recv_buffer);
+	//	printf("SPI master receive 0x%08X.\n", master_recv_buffer);
 
         send_index++;
         send_index %= SLAVE_TEST_SIZE;
@@ -873,6 +873,9 @@ void spi_test_law()
 void* TestFunc(void* arg)
 {
     //itpInit();
+	//return;
+
+#if 1
 	ithGpioSetOut(48);
 	ithGpioSetMode(48, ITH_GPIO_MODE0);
 	ithGpioClear(48);
@@ -884,14 +887,19 @@ void* TestFunc(void* arg)
 	ithGpioSetMode(50, ITH_GPIO_MODE0);
 	ithGpioClear(50);
 
-	mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_5M);
+	mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_20M);
 	mmpSpiInitialize(SPI_0, SPI_OP_SLAVE, CPO_0_CPH_0, SPI_CLK_1M);
 	mmpSpiSetSlaveCallbackFunc(SPI_0, slaveCallbackFunc);
 	//usleep(1000);
 	read_nor_id();
+	//indirect_write(0xd1000230,0x800a8005);	//packet 6
+	//indirect_write(0xd1000234,0x80078006);	//packet 7
+	//indirect_write(0xd1000204,0x02000000);	//packet 8
+
     //usleep(1000);
 
 	Nor2nd_Init();
+	while(1);
 
 
 		uint8_t* rom_content=NULL;
@@ -944,8 +952,9 @@ void* TestFunc(void* arg)
 	}
 
 		printf("Nor2nd_Write finished elapsed %d \n",elased_tick(tick));
-
-//        spi_test_master();
+#else
+        spi_test_master();
+#endif
 //spi_test_law();
 	
 while(1);
