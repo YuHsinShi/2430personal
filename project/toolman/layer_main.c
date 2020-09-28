@@ -77,9 +77,6 @@ bool UartCaptureOnTimer(ITUWidget* widget, char* param)
 	}
 
 
-
-
-
 	if (StorageCheckUSBAvailabe())
 			ituWidgetSetVisible(BackgroundWarning,0);
 	else 

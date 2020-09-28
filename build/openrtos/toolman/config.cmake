@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Thu Sep 24 10:05:09 2020
+# Fri Sep 25 14:14:00 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -51,13 +51,14 @@ set(CFG_NOR_PARTITION1_SIZE "0x260000")
 set(CFG_NOR_PARTITION2 y)
 set(CFG_NOR_PARTITION2_SIZE "0x40000")
 set(CFG_NOR_PARTITION3 y)
-# CFG_SD0_ENABLE is not set
+set(CFG_SD0_ENABLE y)
 set(CFG_GPIO_SD0_CARD_DETECT "22")
 set(CFG_GPIO_SD0_IO "14, 13, 15, 16, 17, 18, -1, -1, -1, -1")
 
 #
 # (unvisible)
 #
+# CFG_SDIO_ENABLE is not set
 
 #
 # (unvisible)
@@ -218,6 +219,7 @@ set(CFG_WATCHDOG_REFRESH_INTERVAL 1)
 set(CFG_MEMDBG_ENABLE y)
 set(CFG_ROM_COMPRESS y)
 # CFG_DPU_ENABLE is not set
+# CFG_SD_DUAL_BOOT is not set
 set(CFG_CPU_WB y)
 # CFG_CPU_WRITE_ADDR0_DETECT is not set
 
@@ -282,6 +284,9 @@ set(CFG_AUDIO_SPECIAL_CASE_BUFFER_SIZE "64")
 # CFG_NAND_ENABLE is not set
 set(CFG_NOR_CACHE_FLUSH_INTERVAL "0")
 # CFG_NOR_ENABLE_DTRMODE is not set
+# CFG_SD0_NO_PIN_SHARE is not set
+# CFG_SD0_STATIC is not set
+# CFG_SD0_CARD_1BIT is not set
 # CFG_SD1_ENABLE is not set
 set(CFG_MMC_ENABLE y)
 # CFG_RAMDISK_ENABLE is not set
@@ -380,6 +385,9 @@ set(CFG_POWER_DOZE y)
 #
 # GPIO
 #
+# CFG_SD0_CARD_DETECT_ACTIVE_HIGH is not set
+set(CFG_GPIO_SD0_POWER_ENABLE "-1")
+set(CFG_GPIO_SD0_WRITE_PROTECT "-1")
 set(CFG_GPIO_UART1_RX "47")
 set(CFG_GPIO_UART1_TX "-1")
 set(CFG_GPIO_UART2_RX "46")

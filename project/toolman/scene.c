@@ -176,8 +176,66 @@ void set_timecounter_start()
 	return;
 }
 //=================
+int flash_lever=5;
+void led_flash_set_level(int level)
+{
+	flash_lever= level;
+
+}
+
+void led_flash()
+{
+	static unsigned int counter=0;
+	static int flag=0;
+
+if(0 >=flash_lever)
+{
+
+	ithGpioSetOut(51);
+	ithGpioSetMode(51, ITH_GPIO_MODE0);
+	ithGpioSet(51);
 
 
+	ithGpioSetOut(52);
+	ithGpioSetMode(52, ITH_GPIO_MODE0);
+	ithGpioSet(52);
+	 return;
+}
+
+	if((flash_lever-1) == (counter%flash_lever) )
+	{
+		if(flag)
+		{
+			ithGpioSetOut(51);
+			ithGpioSetMode(51, ITH_GPIO_MODE0);
+			ithGpioSet(51);
+
+
+			ithGpioSetOut(52);
+			ithGpioSetMode(52, ITH_GPIO_MODE0);
+			ithGpioSet(52);
+			flag=0;
+
+		}	
+		else
+		{
+			ithGpioSetOut(51);
+			ithGpioSetMode(51, ITH_GPIO_MODE0);
+			ithGpioClear(51);
+			
+			ithGpioSetOut(52);
+			ithGpioSetMode(52, ITH_GPIO_MODE0);
+			ithGpioClear(52);
+
+			flag=1;
+
+		}
+		counter=0;
+
+	}
+
+	counter++;
+}
 
 
 int SceneRun(void)
@@ -198,6 +256,7 @@ int SceneRun(void)
         tick = SDL_GetTicks();
 
         frames++;
+		led_flash();
 
 #ifdef FPS_ENABLE
         if (tick - lasttick >= 1000)

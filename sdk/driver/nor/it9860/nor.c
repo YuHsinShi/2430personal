@@ -131,6 +131,8 @@ typedef enum
     WIN_W25Q256JVFSQ,
     ZB_25VQ128,
     ZB_25VQ64,
+    
+    XTS_NOR,
     UNKNOW_VENDOR = 0xFFFF
 } NOR_VENDOR_ID;
 
@@ -267,7 +269,10 @@ NOR_VENDOR_CONTEXT  nor_support_vendor[] = {
     {0xEF, 0x4018, 0x17, "WIN_W25Q128JV",    WIN_W25Q128JV   },
     {0xEF, 0x4019, 0x18, "WIN_W25Q256JVFSQ", WIN_W25Q256JVFSQ},
     {0x5E, 0x4018, 0x17, "ZB_25VQ128",       ZB_25VQ128      },
-    {0x5E, 0x4017, 0x16, "ZB_25VQ64",        ZB_25VQ64       }
+    {0x5E, 0x4017, 0x16, "ZB_25VQ64",        ZB_25VQ64       },
+
+	
+    {0x0b, 0x4018, 0x17, "XTS NOR",        XTS_NOR       }
 };
 
 //=============================================================================
@@ -2827,6 +2832,7 @@ NorGetAttitude(
 #define NOR_SPI_PORT  SPI_1
 #define NOR_SPI_CSN   SPI_CSN_1
 static unsigned long norBlockSizeInBytes2nd;
+static pthread_mutex_t	nor2nd_mutex;
 
 
 TickType_t elased_tick(TickType_t start)
@@ -3494,6 +3500,7 @@ nor2ndUpdate(
     {
         if (blockStartAddress == address)
         {
+        /*
             // Doesn't need copy.
             if (nor2ndErase(norObject, blockStartAddress) == false)
             {
@@ -3501,7 +3508,7 @@ nor2ndUpdate(
                 result = false;
                 break;
             }
-
+		*/
             if (nor2ndWrite(norObject, address, inData, inDataSize) == false)
             {
                 NOR_ERROR_MSG("norWrite(0x%08X, 0x%08X, 0x%08X, 0x%08X) fail.\n", norObject, address, inData, inDataSize);
@@ -3525,6 +3532,7 @@ nor2ndUpdate(
 
             nor2ndRead(norObject, blockStartAddress, readBackBuffer, norObject->context.bytesPerSector);
             memcpy(readBackBuffer + dataUpdateOffset, inData, inDataSize);
+			/*
 
             // Doesn't need copy.
             if (nor2ndErase(norObject, blockStartAddress) == false)
@@ -3534,7 +3542,7 @@ nor2ndUpdate(
                 result = false;
                 break;
             }
-
+			*/
             if (nor2ndWrite(norObject, blockStartAddress, readBackBuffer, norObject->context.bytesPerSector) == false)
             {
                 NOR_ERROR_MSG("norWrite(0x%08X, 0x%08X, 0x%08X, 0x%08X) fail.\n", norObject, address, inData, inDataSize);
@@ -3786,14 +3794,20 @@ nor2ndReadDeviceID(
 }
 
 
- void Nor2nd_Init(void)
+ int Nor2nd_Init(void)
 {
 	
 	NOR_OBJECT	*norObject	= &NorObjects2nd;
 	NOR_ID		id			= {0};
 	bool		foundId = false;
 	int i;
+	if(NULL == nor2nd_mutex)
+	{
+		pthread_mutex_init(&nor2nd_mutex, NULL);
+		NorObjects2nd.mutex=nor2nd_mutex;
+	}
 
+	
 	nor2ndReadDeviceID(norObject, &id);
 	nor2ndDisableWrite(norObject);
 	for ( i = 0; i < (sizeof(nor_support_vendor) / sizeof(nor_support_vendor[0])); i++)
@@ -3825,14 +3839,16 @@ nor2ndReadDeviceID(
 		printf( "Sector in Block : %d\n",			norObject->context.sectorsPerBlock);
 		printf( "Total Blocks	 : %d\n",			norObject->context.totalBlocks);
 		printf( "Size			 : %d MB\n\n",		(uint32_t)norObject->context.bytesPerSector * norObject->context.sectorsPerBlock * norObject->context.totalBlocks / 1048567);
+		return 1;
+
 	}
 	else
 	{
 		NOR_ERROR_MSG("Unsupport norflash 0x%02X 0x%04X 0x%02X\n", id.manufatureID, id.deviceID, id.deviceID2);
+		return -1;
 	}
 
-//	  NorInitial(NOR_SPI_PORT, NOR_SPI_CSN);	
-//	  norBlockSizeInBytes2nd = NorGetAttitude(NOR_SPI_PORT, NOR_SPI_CSN, NOR_ATTITUDE_PAGE_SIZE) * NorGetAttitude(NOR_SPI_PORT, NOR_SPI_CSN, NOR_ATTITUDE_PAGE_PER_SECTOR) * NorGetAttitude(NOR_SPI_PORT, NOR_SPI_CSN, NOR_ATTITUDE_SECTOR_PER_BLOCK);
+	return -1;
 }
 
 

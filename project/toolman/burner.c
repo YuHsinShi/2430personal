@@ -62,7 +62,7 @@ switch(channel)
 }
 
 
-int get_slave_chip_id()
+int get_ite_chip_id()
 {
 	uint32_t chip_id;
 
@@ -72,18 +72,30 @@ int get_slave_chip_id()
 	printf("0x%x ",indata[i]);	
 		printf("\n");
 
-	if(indata[3]==0x9 && indata[2]==0x60)
+	if( (indata[3]==0x9) && (indata[2]==0x60) )
 	{
 		printf("chip id is %x%x",indata[2],indata[3]);
 		return 1;
 	}
+	else if ( (indata[3]==0x9 && indata[2]==0x70))
+		return 2;
 	else
-		return 0;
+		return -1;
 
 }
 
+int set_bypass_mode_970()
+{
+	printf("set_bypass_mode \n");
 
-int set_bypass_mode()
+	/*write_slave_register(0xd1000230,0x800a8005);	
+	write_slave_register(0xd1000234,0x80078006);	
+	write_slave_register(0xd1000204,0x02000000);	
+*/
+	return 0;
+}
+
+int set_bypass_mode_960()
 {
 	printf("set_bypass_mode \n");
 
@@ -150,7 +162,7 @@ void read_slave_register(uint32_t addr,uint8_t* indata )
 void writing_progressing(uint32_t i)
 {
 	
-#define ROM_SIZE_WRITE_PIECE  1024*1024
+#define ROM_SIZE_WRITE_PIECE  4*1024*1024 //1024*1024
 
 
 	uint8_t* rom_content=NULL;
@@ -166,18 +178,27 @@ void writing_progressing(uint32_t i)
 
 	char filepath_tmp[64];
 	uint32_t read_size;
+	uint32_t rom_size_total;
 	FILE* fp;
 	uint32_t addr;
-
+	float percent;
 	//for(i=1;i<=5;i++)
 	{
 			snprintf(filepath_tmp,64,"E:/%d.rom",i);
 			fp = fopen(filepath_tmp, "r");
 			if (NULL == fp)
+			{
 				printf("fp can not open %s\n",filepath_tmp);
+				return;
+			}
+
+			fseek(fp, 0, SEEK_END);
+			rom_size_total = ftell(fp);
+			fseek(fp, 0, SEEK_SET);
 
 
-			Nor2nd_Init();
+			
+			led_flash_set_level(8);
 
 
 			uint32_t tick;
@@ -185,7 +206,9 @@ void writing_progressing(uint32_t i)
 			printf("Nor2nd_Write start \n");
 			tick = xTaskGetTickCount();
 
-
+			int flashing=32;
+			
+			led_flash_set_level(flashing);
 			addr=0x0;//write from 0 address
 			while(1)
 			{
@@ -205,13 +228,79 @@ void writing_progressing(uint32_t i)
 					break;
 				}
 				addr+=read_size;
+				percent= (float)((float)addr/(float)rom_size_total);
+					printf("progress %f percent \n",percent*100);
+					
+					printf("flashing %d \n",flashing);
+					led_flash_set_level(flashing);
+					flashing=flashing-10;
+					
 
 			}	
 
 		printf("Nor2nd_Write finished elapsed %d \n",elased_tick(tick));
+			led_flash_set_level(0);
+			sleep(10);
 
 	}
 
+}
+
+//ret 1: nor init OK
+//ret -1: can not found slave device or not supported nor
+int burner_check_mode()
+{
+
+	//use fastest mode to check slave
+		SPI_CLK_LAB my_clk;
+	int ret;
+	for(my_clk=SPI_CLK_40M;my_clk>=SPI_CLK_5M;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+		ret =	get_ite_chip_id();
+		//check if slave is iTE chip // change to nor mode if in iTE mode
+		if(ret >0)
+		{	
+			if(1== ret) //960 series
+			{
+				set_bypass_mode_960();
+				if(1==Nor2nd_Init())
+				{
+				  return 1;//
+				}
+			}
+			else if(2== ret) //960 series
+			{
+
+				set_bypass_mode_970();
+				if(1==Nor2nd_Init())
+				{
+				  return 1;//
+				}
+
+			}
+			else
+			{
+
+			}
+		}
+		
+
+		if(1==Nor2nd_Init())	//check if slave is nor chip
+		{
+			return 1;
+
+		}
+		else
+		{
+				//do nothing check 
+		}
+
+		mmpSpiTerminate(SPI_1);
+
+	}
+
+return -1;
 }
 
 
@@ -219,27 +308,22 @@ static void* burnningTask(void* arg)
 {
 	uint32_t i;
 	int ret;
-	mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_5M);
 
 	
-	sleep(1);
 	while(1)
 	{
 		//for(i=1;i<=5;i++)
 		i=1;
 		{
 			printf("channel=%d\n",i);
-			switch_to_channel(i);
-			// get id 
-			ret=get_slave_chip_id();
-			if(ret)
+			//switch_to_channel(i);
+			if(1 == burner_check_mode())
 			{
-				//chip is ready to existed
-
-				//bypass mode
-				set_bypass_mode();
-				writing_progressing(i);
-				//burn_slave_nor();
+			   writing_progressing(1);
+			}
+			else
+			{
+			
 			}
 			sleep(1);
 
