@@ -169,7 +169,7 @@ retry_backup:
     SceneLoad();
 
 
-	burn_writer_start();
+	
     ret = SceneRun();
 
     SceneExit();

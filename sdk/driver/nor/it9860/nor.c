@@ -3450,6 +3450,51 @@ static bool nor2ndEnableWrite(NOR_OBJECT* norObject)
 	 return result;
  }
 
+	 
+ NOR_RESULT	 Nor2ndEraseAll()
+{
+		 NOR_RESULT  result 	 = 0;
+		 NOR_OBJECT  *norObject  = &NorObjects2nd;
+	 
+		 pthread_mutex_lock(&norObject->mutex);
+
+	 
+		 do
+		 {
+			 if (nor2ndSendCommand(norObject, WRITE_EN, 0, 0, 0) == false)
+			 {
+				 NOR_ERROR_MSG("Send WRITE_EN fail.\n");
+				 result = 1;
+				 break;
+			 }
+	 
+			 // Erase all
+			 if (nor2ndSendCommand(norObject, ERASE_ALL, 0, 0, 0) == false)
+			 {
+				 NOR_ERROR_MSG("Send ERASE_ALL fail.\n");
+				 result = 1;
+				 break;
+			 }
+	 
+			 // Wait erase finished
+			 if (nor2ndWaitReady(norObject, 100))
+			 {
+				 NOR_ERROR_MSG("Wait nor ready fail\n");
+				 result = 1;
+			 }
+	 
+			 if (norSendCommand(norObject, WRITE_DIS, 0, 0, 0) == false)
+			 {
+				 NOR_ERROR_MSG("Send WRITE_DIS fail.\n");
+				 result = 1;
+				 break;
+			 }
+		 } while (0);
+	 
+		 pthread_mutex_unlock(&norObject->mutex);
+	 
+		 return result;
+}
 
 static bool
 nor2ndErase(
@@ -3508,7 +3553,7 @@ nor2ndUpdate(
                 result = false;
                 break;
             }
-		*/
+            */
             if (nor2ndWrite(norObject, address, inData, inDataSize) == false)
             {
                 NOR_ERROR_MSG("norWrite(0x%08X, 0x%08X, 0x%08X, 0x%08X) fail.\n", norObject, address, inData, inDataSize);
@@ -3532,8 +3577,7 @@ nor2ndUpdate(
 
             nor2ndRead(norObject, blockStartAddress, readBackBuffer, norObject->context.bytesPerSector);
             memcpy(readBackBuffer + dataUpdateOffset, inData, inDataSize);
-			/*
-
+/*
             // Doesn't need copy.
             if (nor2ndErase(norObject, blockStartAddress) == false)
             {
@@ -3542,7 +3586,7 @@ nor2ndUpdate(
                 result = false;
                 break;
             }
-			*/
+            */
             if (nor2ndWrite(norObject, blockStartAddress, readBackBuffer, norObject->context.bytesPerSector) == false)
             {
                 NOR_ERROR_MSG("norWrite(0x%08X, 0x%08X, 0x%08X, 0x%08X) fail.\n", norObject, address, inData, inDataSize);

@@ -232,3 +232,106 @@ bool PowerOnLeave(ITUWidget* widget, char* param)
 }
 
 #endif
+
+#if 1
+static ITUProgressBar* ProgressBarCh[6];
+static ITUProgressBar* ProgressBarOnGoing;
+
+static ITUText* Text_BurnChannel;
+static ITUText* Text_Progress1;
+
+	static ITUText* Text_burnstatus;
+
+static int ProgressValue[6];
+static int cur=1;
+
+void BurnerUpdateBars()
+{
+	int i;
+	
+
+	
+	ituTextSetStringInt(Text_Progress1, ProgressValue[cur]);
+	ituTextSetStringInt(Text_BurnChannel, cur);
+	ituProgressBarSetValue(ProgressBarOnGoing, ProgressValue[cur]);
+
+	for (i = 1; i <= 5; i++)
+	{
+		ituProgressBarSetValue(ProgressBarCh[i], ProgressValue[i]);
+	}
+
+}
+
+//layer burner
+bool BurnerOnEnter(ITUWidget* widget, char* param)
+{
+	int i;
+	char tmp[64];
+	ProgressBarOnGoing = ituSceneFindWidget(&theScene, "ProgressBarOnGoing");
+	if (NULL == ProgressBarOnGoing)
+		assert(ProgressBarOnGoing);
+
+	
+		Text_BurnChannel = ituSceneFindWidget(&theScene, "Text_BurnChannel");
+		Text_Progress1 = ituSceneFindWidget(&theScene, "Text_Progress1");
+		Text_burnstatus =ituSceneFindWidget(&theScene, "Text_burnstatus");
+
+	for (i = 1; i <= 5; i++)
+	{
+		//=========================================
+		snprintf(tmp, 64, "ProgressBarCH%d", i);
+		ProgressBarCh[i] = ituSceneFindWidget(&theScene, tmp);
+		if (NULL == ProgressBarCh[i])
+			assert(ProgressBarCh[i]);
+
+	}
+	BurnerUpdateBars();
+
+	burn_switching_start();
+	return true;
+}
+
+bool BurnerOnLeave(ITUWidget* widget, char* param)
+{
+
+	return true;
+}
+bool BurnerOnTimer(ITUWidget* widget, char* param)
+{
+	/*
+
+	float percent;
+	int value;
+
+	percent = (float)ProgressValue[cur] / 100.0;
+	
+	value = percent * 100;
+	ituProgressBarSetValue(ProgressBarOnGoing, value);
+	
+	ProgressValue[cur]++;
+	if (ProgressValue[cur] > 100)
+	{
+		ProgressValue[cur] = 0;
+		cur++;
+	}
+
+	if (0== (ProgressValue%20) )
+		ituWidgetSetVisible(ProgressBarCh1, 0);
+	else
+		ituWidgetSetVisible(ProgressBarCh1, 1);
+		*/
+
+	BurnerUpdateBars();
+
+
+
+	return false;
+}
+
+void BurnerOnTimer_ui_set(int set_cur,int value)
+{
+	cur = set_cur;
+	ProgressValue[cur] = value;
+}
+
+#endif

@@ -187,18 +187,24 @@ void led_flash()
 {
 	static unsigned int counter=0;
 	static int flag=0;
+//#define LED1_IO	51
+//#define LED2_IO 52
+
+
+#define LED1_IO	24
+#define LED2_IO 25
 
 if(0 >=flash_lever)
 {
 
-	ithGpioSetOut(51);
-	ithGpioSetMode(51, ITH_GPIO_MODE0);
-	ithGpioSet(51);
+	ithGpioSetOut(LED1_IO);
+	ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
+	ithGpioSet(LED1_IO);
 
 
-	ithGpioSetOut(52);
-	ithGpioSetMode(52, ITH_GPIO_MODE0);
-	ithGpioSet(52);
+	ithGpioSetOut(LED2_IO);
+	ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+	ithGpioSet(LED2_IO);
 	 return;
 }
 
@@ -206,26 +212,26 @@ if(0 >=flash_lever)
 	{
 		if(flag)
 		{
-			ithGpioSetOut(51);
-			ithGpioSetMode(51, ITH_GPIO_MODE0);
-			ithGpioSet(51);
+			ithGpioSetOut(LED1_IO);
+			ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
+			ithGpioSet(LED1_IO);
 
 
-			ithGpioSetOut(52);
-			ithGpioSetMode(52, ITH_GPIO_MODE0);
-			ithGpioSet(52);
+			ithGpioSetOut(LED2_IO);
+			ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+			ithGpioSet(LED2_IO);
 			flag=0;
 
 		}	
 		else
 		{
-			ithGpioSetOut(51);
-			ithGpioSetMode(51, ITH_GPIO_MODE0);
-			ithGpioClear(51);
+			ithGpioSetOut(LED1_IO);
+			ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
+			ithGpioClear(LED1_IO);
 			
-			ithGpioSetOut(52);
-			ithGpioSetMode(52, ITH_GPIO_MODE0);
-			ithGpioClear(52);
+			ithGpioSetOut(LED2_IO);
+			ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+			ithGpioClear(LED2_IO);
 
 			flag=1;
 

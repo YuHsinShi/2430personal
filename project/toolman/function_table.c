@@ -17,6 +17,10 @@ extern bool SettingOnEnter(ITUWidget* widget, char* param);
 extern bool Setting_next(ITUWidget* widget, char* param);
 extern bool Setting_prev(ITUWidget* widget, char* param);
 
+extern bool BurnerOnEnter(ITUWidget* widget, char* param);
+extern bool BurnerOnTimer(ITUWidget* widget, char* param);
+extern bool BurnerOnLeave(ITUWidget* widget, char* param);
+
 ITUActionFunction actionFunctions[] =
 {
 	"MainOnEnter", MainOnEnter,
@@ -32,5 +36,9 @@ ITUActionFunction actionFunctions[] =
 	"SettingOnEnter", SettingOnEnter,
 	"Setting_next", Setting_next,
 	"Setting_prev", Setting_prev,
+
+	"BurnerOnEnter", BurnerOnEnter,
+	"BurnerOnTimer", BurnerOnTimer,
+	"BurnerOnLeave",BurnerOnLeave,
     NULL, NULL
 };
