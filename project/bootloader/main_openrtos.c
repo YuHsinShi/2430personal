@@ -1,4 +1,4 @@
-﻿#include <locale.h>
+#include <locale.h>
 #include <pthread.h>
 #include <sys/ioctl.h>
 #include "openrtos/FreeRTOS.h"

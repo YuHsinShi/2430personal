@@ -408,7 +408,7 @@ static void DriveMount(ITPDisk* disks)
         DriveMountDisk(ITP_DISK_SD1);
     #endif
     
-    #ifdef CFG_NAND_ENABLE
+    #if 0//def CFG_NAND_ENABLE
         DriveMountDisk(ITP_DISK_NAND);
     #endif
     

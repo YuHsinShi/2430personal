@@ -8,7 +8,7 @@
 #include <string.h>
 #include <malloc.h>
 #include "spinfdrv.h"
-#include "../driver/spi/it9860/axispi/axispi_hw.h"
+#include "ssp/mmp_axispi.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -1196,7 +1196,7 @@ uint8_t spiNf_Initial(SPI_NF_INFO *info)
 
 	gUseDummyReadId = 0;
 
-#ifdef USE_MMP_DRIVER
+#ifdef USE_AXISPI_ENGINE
 	if(gSpiAddrBuf == NULL)
 	{
 	    gNfAddrBase = (uint8_t*)malloc(5 + AXISPI_ALIGN_SIZE - 1);
@@ -1220,6 +1220,8 @@ uint8_t spiNf_Initial(SPI_NF_INFO *info)
         result = mmpSpiInitialize(NF_SPI_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_20M);
         #endif
     }
+#else
+	result = mmpSpiInitialize(NF_SPI_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_20M);
 #endif
 
     #ifdef USE_AXISPI_ENGINE

@@ -96,8 +96,7 @@ config RTC_ENABLE
 config RTC_MODULE
     default "itp_rtc_sw.c"
 
-config SPI_ENABLE
-    def_bool n
+
 
 
 config GPIO_UART0_TX
@@ -160,7 +159,8 @@ config BUILD_UPGRADE
     def_bool y
 
 
-
+config SPI_ENABLE
+    def_bool n
 
 
 ######################################################################

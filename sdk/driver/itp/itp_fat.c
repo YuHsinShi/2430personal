@@ -286,7 +286,7 @@ static int FatClose(int file, void* info)
 {
     int ret = f_close(openFiles[file]);
 
-    #ifdef  CFG_NAND_ENABLE
+    #if 0 //def  CFG_NAND_ENABLE
     ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
     #endif
 
@@ -916,7 +916,7 @@ static int FatFflush(int file)
 {
     int ret = f_flush(openFiles[file]);
 
-    #ifdef  CFG_NAND_ENABLE
+    #if 0 //def  CFG_NAND_ENABLE
     ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
     #endif
 
