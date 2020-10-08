@@ -408,7 +408,8 @@ static void DriveMount(ITPDisk* disks)
         DriveMountDisk(ITP_DISK_SD1);
     #endif
     
-    #if 0//def CFG_NAND_ENABLE
+	#ifdef CFG_NAND_ENABLE //mount by manual
+    //#if 0//def CFG_NAND_ENABLE //mount by manual
         DriveMountDisk(ITP_DISK_NAND);
     #endif
     

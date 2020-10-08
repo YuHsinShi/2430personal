@@ -95,8 +95,9 @@ retry_backup:
 //    SceneInit();
  //   SceneLoad();
 
+	burn_evb_test();
 
-	
+	//burn_switching_start();
     ret = SceneRun();
 
    // SceneExit();

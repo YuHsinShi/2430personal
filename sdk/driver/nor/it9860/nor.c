@@ -3838,7 +3838,7 @@ nor2ndReadDeviceID(
 }
 
 
- int Nor2nd_Init(void)
+ int Nor2nd_Init(SPI_PORT     port)
 {
 	
 	NOR_OBJECT	*norObject	= &NorObjects2nd;
@@ -3850,6 +3850,8 @@ nor2ndReadDeviceID(
 		pthread_mutex_init(&nor2nd_mutex, NULL);
 		NorObjects2nd.mutex=nor2nd_mutex;
 	}
+
+	norObject->port=port;
 
 	
 	nor2ndReadDeviceID(norObject, &id);

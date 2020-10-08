@@ -11,6 +11,9 @@ static pthread_t burnTask;
 #define BURNER_STATUS_ROM_NOT_EXISTED	-1
 #define BURNER_STATUS_ROM_NOT_EXISTED	-1
 
+
+#define SPI_BURNNIGN_PORT	 SPI_1
+
 void set_io_high(unsigned int pin)
 {
 	ithGpioSetOut(pin);
@@ -164,8 +167,22 @@ int set_bypass_mode_960()
 	return 0;
 }
 
+FILE* writing_file_locate()
+{
+	char filepath_tmp[64];
+	FILE* fp;
+int i=1;
+	snprintf(filepath_tmp,64,"A:/%d.rom",i);
+	fp = fopen(filepath_tmp, "r");
+	if (NULL == fp)
+	{
+		printf("fp can not open %s\n",filepath_tmp);
+	}
+	return fp;
 
-void writing_progressing(uint32_t i)
+}
+
+void writing_nor_progressing(FILE* fp)
 {
 	
 #define ROM_SIZE_WRITE_PIECE  2*1024*1024 //1024*1024
@@ -174,20 +191,12 @@ void writing_progressing(uint32_t i)
 	uint8_t* rom_content=NULL;
 	uint8_t* rom_read_content=NULL;
 
-	char filepath_tmp[64];
+
 	uint32_t read_size;
 	uint32_t rom_size_total;
-	FILE* fp;
 	uint32_t addr;
 	float percent;
 
-			snprintf(filepath_tmp,64,"E:/%d.rom",i);
-			fp = fopen(filepath_tmp, "r");
-			if (NULL == fp)
-			{
-				printf("fp can not open %s\n",filepath_tmp);
-				return;
-			}
 
 			fseek(fp, 0, SEEK_END);
 			rom_size_total = ftell(fp);
@@ -249,8 +258,8 @@ void writing_progressing(uint32_t i)
 				//	printf("flashing %d \n",flashing);
 				//	led_flash_set_level(flashing);
 				//	flashing=flashing-10;
-					BurnerOnTimer_ui_set(0,(int)(percent*100)); //update current bar
-					BurnerOnTimer_ui_set(i,(int)(percent*100));  //update rest bar
+					//BurnerOnTimer_ui_set(0,(int)(percent*100)); //update current bar
+					//BurnerOnTimer_ui_set(i,(int)(percent*100));  //update rest bar
 
 			}	
 
@@ -259,6 +268,11 @@ void writing_progressing(uint32_t i)
 		free(rom_content);
 		free(rom_read_content);
 
+}
+void UpgradeSPI_NAND()
+{
+	//mount nand
+	UpgradePackage_burner();
 }
 
 //ret 1: nor init OK
@@ -270,10 +284,11 @@ int burner_check_mode()
 		SPI_CLK_LAB my_clk;
 	int ret;
 
-	
+	char id[8];
+
 	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
 	{
-		mmpSpiInitialize(SPI_1, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
 		ret =	get_ite_chip_id();
 		//check if slave is iTE chip // change to nor mode if in iTE mode
 		if(ret >0)
@@ -281,16 +296,27 @@ int burner_check_mode()
 			if(1== ret) //960 series
 			{
 				set_bypass_mode_960();
-				if(1==Nor2nd_Init())
+				
+				
+				if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))
 				{
 				  return 0x960;//
 				}
+				
+				if(0 == check_spi_nand_id())
+				{		
+					UpgradeSPI_NAND();
+					return 0x960;//
+				}
+
+
+
 			}
 			else if(2== ret) //960 series
 			{
 
 				set_bypass_mode_970();
-				if(1==Nor2nd_Init())
+				if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))
 				{
 					return 0x970;//
 
@@ -304,7 +330,7 @@ int burner_check_mode()
 		}
 		
 
-		if(1==Nor2nd_Init())	//check if slave is nor chip
+		if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))	//check if slave is nor chip
 		{
 			return 1;
 
@@ -314,7 +340,7 @@ int burner_check_mode()
 				//do nothing check 
 		}
 
-		mmpSpiTerminate(SPI_1);
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
 
 	}
 
@@ -367,12 +393,12 @@ void burn_switching_task(void* arg)
 	
 				switch_to_channel(i);
 
-				BurnerOnTimer_ui_set(i,0); //update current bar
+			//	BurnerOnTimer_ui_set(i,0); //update current bar
 
 				if(1 == burner_check_mode())
 				{
 					//ic found 
-				   writing_progressing(i);
+				   writing_nor_progressing(i);
 				
 				   mmpSpiTerminate(SPI_1);
 				}
@@ -396,5 +422,34 @@ void burn_switching_start()
 	pthread_create(&switchTask, NULL, burn_switching_task, NULL);
 }
 
+void burn_evb_test()
+{
+	printf("burn_evb_test\n");
+
+//set_bypass_mode_960();
+FILE* fp;
+
+//fp = writing_file_locate();
+
+UpgradeSPI_NAND();
+//burner_check_mode();
+
+//writing_nor_progressing(fp);
+return;
+
+//check_spi_nand_id();
+//UpgradeSPI_NAND();
+//burner_check_mode();
+/*
+burner_check_mode();
+
+FILE* fp;
+
+fp = writing_file_locate();
+
+
+writing_nor_progressing(fp);
+*/
+}
 
 

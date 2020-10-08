@@ -45,11 +45,11 @@ typedef struct _SPI_OBJECT
 {
     int                         refCount;
     pthread_mutex_t             mutex;
+    int                         dma_ch;
+    int                         dma_slave_ch;
     SPI_HW_PORT                 hwPort;
     SPI_OP_MODE                 opMode;
     SPI_CONFIG_MAPPING_ENTRY    tMappingEntry;
-    uint32_t                    dma_ch;
-    uint32_t                    dma_slave_ch;
     char                        *ch_name;
     char                        *slave_ch_name;
     // Slave Mode
@@ -82,11 +82,15 @@ static SPI_OBJECT SpiObjects[2] =
 {
     {
         0,                             // refCount
-        PTHREAD_MUTEX_INITIALIZER      // mutex
+        PTHREAD_MUTEX_INITIALIZER,     // mutex
+        -1,                            // dma_ch
+        -1                             // dma_slave_ch
     },
     {
         0,                             // refCount
-        PTHREAD_MUTEX_INITIALIZER      // mutex
+        PTHREAD_MUTEX_INITIALIZER,     // mutex
+        -1,                            // dma_ch
+        -1                             // dma_slave_ch
     }
 };
 	
@@ -321,6 +325,8 @@ _spiResetSpiObject(
     object->slaveReadThreadTerminate    = false;
     //object->slaveReadThread = NULL;
     object->slaveCallBackFunc           = NULL;
+    object->dma_ch                      = -1;
+    object->dma_slave_ch                = -1;
 }
 
 // #define CFG_SPI0_MOSI_GPIO          18
@@ -707,7 +713,7 @@ _spiDmaWriteData(
     // Wait ilde
     if (_spiWaitDmaIdle(port, SpiObjects[port].dma_ch) == false)
     {
-        SPI_ERROR_MSG("Wait DMA idle timeout.\n");
+        SPI_ERROR_MSG(" Wait DMA idle timeout.port %d \n",port);
         result = false;
     }
 
@@ -989,6 +995,8 @@ mmpSpiTerminate(
 #ifdef SPI_USE_DMA
         ithDmaFreeCh(SpiObjects[port].dma_ch);
         ithDmaFreeCh(SpiObjects[port].dma_slave_ch);
+        SpiObjects[port].dma_ch = -1;
+        SpiObjects[port].dma_slave_ch = -1;
     #ifdef SPI_USE_DMA_INTR
         sem_destroy(&SpiObjects[port].SpiDmaMutex);
     #endif

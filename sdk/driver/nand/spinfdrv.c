@@ -284,6 +284,7 @@ static int spi_write(uint8_t *cBuf, uint32_t cLen, uint8_t *dBuf, uint32_t dLen)
 	uint32_t rst;
 
 	#ifdef	ENABLE_CTRL_1
+	dd
 	if(gEnSpiCsCtrl)	mmpSpiSetControlMode(SPI_CONTROL_NAND);
 	#endif
 	
@@ -295,15 +296,21 @@ static int spi_write(uint8_t *cBuf, uint32_t cLen, uint8_t *dBuf, uint32_t dLen)
         /* workaround solution: I don't know why!! */
         /* It needs this delay time 2ms for SPI NAND + AXISPI NOR */ 
         usleep(2);
-        
+
+     //  printf("[LAW]spi_write pio  %d  %d bytes\n",NF_SPI_PORT,dLen);
+
         rst = mmpSpiPioWrite(NF_SPI_PORT, cBuf, cLen, dBuf, dLen, 8);
-        
+
+       // printf("[LAW]spi_write pio  ret=%d  \n",rst);
+		
         /* workaround solution: I don't know why!! */
         /* It needs this delay time 2ms for SPI NAND + AXISPI NOR */ 
         usleep(2);
     }
-	else	
-	{
+	else{
+        //printf("[LAW]spi_write dma  %d  %d bytes\n",NF_SPI_PORT,dLen);
+
+
 	    rst = mmpSpiDmaWrite(NF_SPI_PORT, cBuf, cLen, dBuf, dLen, 8);
 	}
     #endif
@@ -329,6 +336,7 @@ static void spinf_error(uint8_t errCode)
 	printf("[SPINF ERROR] error code = %x\n",errCode);
 }
 #else	//use win32 spi driver
+dd
 static int spi_read(uint8_t *cBuf, uint32_t cLen, uint8_t *dBuf, uint32_t dLen)	//(SPI_COMMAND_INFO *cmd)
 {
 	uint32_t rst;
@@ -1222,6 +1230,7 @@ uint8_t spiNf_Initial(SPI_NF_INFO *info)
     }
 #else
 	result = mmpSpiInitialize(NF_SPI_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_20M);
+//already initial in 
 #endif
 
     #ifdef USE_AXISPI_ENGINE
@@ -1859,6 +1868,69 @@ void spiNf_SetSpiCsCtrl(uint32_t csCtrl)
 	printf("spiNf_SetSpiCsCtrl(%x)\n",csCtrl);
 	gEnSpiCsCtrl = csCtrl;
 }
+
+
+//=============================================================================
+/**
+* check_spi_nand_id //for SPI_NAND
+*
+* @return 0 If successful. Otherwise, return a nonzero value.
+*/
+//=============================================================================
+uint8_t check_spi_nand_id()
+{
+	unsigned char SpiCmd[2];
+	unsigned char SpiData[3];
+	unsigned char regStatus;
+	unsigned char nand_id[3];
+	
+	int spiret,i;	
+    
+	//reset 0xFF
+    if(_cmdReset())
+    {
+        printf("[SPINF ERR] reset commnad fail:0\n");
+        spiret = SPINF_ERROR_RESET_CMD_FAIL;
+        goto errRdIdEnd;
+    }
+    
+    for(i=0; i<4; i++)
+    {
+	      if( spiNf_getFeature(0xA0+0x10*i, &regStatus) )
+	      {
+	          printf("[SPINF ERR] get feature commnad fail\n");
+	          spiret = SPINF_ERROR_GET_FEATURE_CMD_FAIL;
+	          goto errRdIdEnd;
+	      }    
+    }
+    
+	SpiData[0]=0;SpiData[1]=0;SpiData[2]=0;
+	SpiCmd[0] = 0x9F;
+	spiret = spi_read(SpiCmd, 1, SpiData, 3);
+	
+    nand_id[0] = SpiData[0];
+    nand_id[1] = SpiData[1];
+    nand_id[2] = SpiData[2];
+
+	if(spiret==SPINF_OK)
+	{
+		printf("SPI READ ID PASS, data=%02x,%02x,%02x\n",nand_id[0],nand_id[1],nand_id[2]);
+		spiret = 0;
+	}
+	else	
+	{
+		printf("SPI READ ID FAIL,result=%x\n",spiret);  
+	}
+
+errRdIdEnd:
+	
+	return (spiret);
+}
+
+
+
+
+
 
 #ifdef __cplusplus
 }

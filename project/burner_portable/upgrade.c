@@ -898,3 +898,53 @@ int UpgradeGetResult(void)
 {
     return upgradeResult;
 }
+#if 1
+
+ int UpgradePackage_burner(void)
+{
+    int ret = 0;
+    ITCStream* fwStream = NULL;
+
+    if (upgradeUrl[0] == '\0')
+    {
+       // open from USB drive
+       fwStream = OpenUsbPackage("NAND.PKG");
+       if (!fwStream)
+       {
+           ret = -1;
+           printf("packages unavailable: %s\n", CFG_UPGRADE_FILENAME_LIST);
+           return ret;
+       }
+    }
+
+    ret = ugCheckCrc(fwStream, NULL);
+    if (ret)
+    {
+        printf("check crc fail: %d.\n", ret);
+        return ret;
+    }
+
+    ret = ugUpgradePackage(fwStream);
+    if (ret)
+    {
+        printf("upgrade fail: %d.\n", ret);
+        return ret;
+    }
+
+#if 1 //def CFG_UPGRADE_DELETE_PKGFILE_AFTER_FINISH
+    if (upgradeUrl[0] == '\0')
+    {
+        remove(pkgFilePath);
+    }
+#endif
+
+    printf("upgrade success!\n");
+    
+#if defined(CFG_UPGRADE_DELAY_AFTER_FINISH) && CFG_UPGRADE_DELAY_AFTER_FINISH > 0
+    sleep(CFG_UPGRADE_DELAY_AFTER_FINISH);
+#endif    
+        
+    return 0;
+}
+
+#endif 

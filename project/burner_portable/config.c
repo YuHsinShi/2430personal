@@ -93,7 +93,7 @@ void SettingInit()
 
 
 	}
-	Setting_PrintAll();
+	//Setting_PrintAll();
 
 }
 

@@ -485,7 +485,7 @@ void itpInit(void)
 #endif
 
     // init nand device
-#ifdef CFG_NAND_ENABLE
+#ifdef CFG_NAND_ENABLE 
     itpRegisterDevice(ITP_DEVICE_NAND, &itpDeviceNand);
     ioctl(ITP_DEVICE_NAND, ITP_IOCTL_INIT, NULL);
 #endif
