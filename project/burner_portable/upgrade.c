@@ -156,9 +156,11 @@ static ITCStream* OpenUsbPackage(char* path)
     for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
     {
         driveStatus = &driveStatusTable[i];
-        if (driveStatus->avail && driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17)
-        {
+//        if (driveStatus->avail && driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17)
+        if (driveStatus->avail && driveStatus->disk >= ITP_DISK_SD0 )
+		{
             char buf[PATH_MAX], *ptr, *saveptr;
+			
 
             // get file path from list
             strcpy(buf, path);
@@ -184,6 +186,7 @@ static ITCStream* OpenUsbPackage(char* path)
     printf("cannot find package file.\n");
     return NULL;
 }
+
 
 #ifdef CFG_NET_ENABLE
 
@@ -900,7 +903,7 @@ int UpgradeGetResult(void)
 }
 #if 1
 
- int UpgradePackage_burner(void)
+ int UpgradePackage_burner(char* name)
 {
     int ret = 0;
     ITCStream* fwStream = NULL;
@@ -908,7 +911,7 @@ int UpgradeGetResult(void)
     if (upgradeUrl[0] == '\0')
     {
        // open from USB drive
-       fwStream = OpenUsbPackage("NAND.PKG");
+       fwStream = OpenUsbPackage(name);
        if (!fwStream)
        {
            ret = -1;
@@ -931,7 +934,7 @@ int UpgradeGetResult(void)
         return ret;
     }
 
-#if 1 //def CFG_UPGRADE_DELETE_PKGFILE_AFTER_FINISH
+#if 0 //def CFG_UPGRADE_DELETE_PKGFILE_AFTER_FINISH
     if (upgradeUrl[0] == '\0')
     {
         remove(pkgFilePath);
@@ -946,5 +949,51 @@ int UpgradeGetResult(void)
         
     return 0;
 }
+  int UpgradePackage_burner_SD(void)
+ {
+	 int ret = 0;
+	 ITCStream* fwStream = NULL;
+ 
+	 if (upgradeUrl[0] == '\0')
+	 {
+		// open from USB drive
+		fwStream = OpenUsbPackage("NAND.PKG");
+		if (!fwStream)
+		{
+			ret = -1;
+			printf("packages unavailable: %s\n", CFG_UPGRADE_FILENAME_LIST);
+			return ret;
+		}
+	 }
+ 
+	 ret = ugCheckCrc(fwStream, NULL);
+	 if (ret)
+	 {
+		 printf("check crc fail: %d.\n", ret);
+		 return ret;
+	 }
+ 
+	 ret = ugUpgradePackage(fwStream);
+	 if (ret)
+	 {
+		 printf("upgrade fail: %d.\n", ret);
+		 return ret;
+	 }
+ 
+#if 1 //def CFG_UPGRADE_DELETE_PKGFILE_AFTER_FINISH
+	 if (upgradeUrl[0] == '\0')
+	 {
+		 remove(pkgFilePath);
+	 }
+#endif
+ 
+	 printf("upgrade success!\n");
+	 
+#if defined(CFG_UPGRADE_DELAY_AFTER_FINISH) && CFG_UPGRADE_DELAY_AFTER_FINISH > 0
+	 sleep(CFG_UPGRADE_DELAY_AFTER_FINISH);
+#endif    
+		 
+	 return 0;
+ }
 
 #endif 

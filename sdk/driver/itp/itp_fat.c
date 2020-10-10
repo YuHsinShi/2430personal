@@ -1327,6 +1327,9 @@ static int FatIoctl(int file, unsigned long request, void* ptr, void* info)
     switch (request)
     {
     case ITP_IOCTL_MOUNT:
+
+
+		printf("[FatIoctl]ITP_IOCTL_MOUNT..%d \n",ptr);
         ret = FatMount((ITPDisk)ptr, false);
         if (ret)
         {

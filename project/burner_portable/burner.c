@@ -271,8 +271,13 @@ void writing_nor_progressing(FILE* fp)
 }
 void UpgradeSPI_NAND()
 {
+	init_nand_workaround();
+	//mount_nand();
+	
+	//UpgradeSPI_NAND();
+
 	//mount nand
-	UpgradePackage_burner();
+	UpgradePackage_burner("NAND.PKG");
 }
 
 //ret 1: nor init OK
@@ -296,10 +301,12 @@ int burner_check_mode()
 			if(1== ret) //960 series
 			{
 				set_bypass_mode_960();
-				
+				usleep(1000);
 				
 				if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))
 				{
+				
+					UpgradePackage_burner("NOR.PKG");
 				  return 0x960;//
 				}
 				
@@ -312,7 +319,7 @@ int burner_check_mode()
 
 
 			}
-			else if(2== ret) //960 series
+			else if(2== ret) //970 series
 			{
 
 				set_bypass_mode_970();
@@ -425,31 +432,38 @@ void burn_switching_start()
 void burn_evb_test()
 {
 	printf("burn_evb_test\n");
+//	return;
 
-//set_bypass_mode_960();
+//
 FILE* fp;
+//printf("PLUG NAND==========\n");
 
-//fp = writing_file_locate();
+//sleep(10);
+mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_10M);
 
-UpgradeSPI_NAND();
-//burner_check_mode();
+set_bypass_mode_960();
+//usleep(1000);
+//Nor2nd_Init(SPI_BURNNIGN_PORT);
+UpgradeSPI_NAND("NAND.PKG");
 
-//writing_nor_progressing(fp);
+
+
 return;
 
-//check_spi_nand_id();
-//UpgradeSPI_NAND();
-//burner_check_mode();
+//sleep(10);
 /*
-burner_check_mode();
-
-FILE* fp;
-
-fp = writing_file_locate();
+printf("START ING==========\n");
 
 
-writing_nor_progressing(fp);
+init_nand_workaround();
+mount_nand();
+
+UpgradeSPI_NAND();
+
+return;
 */
+
+
 }
 
 

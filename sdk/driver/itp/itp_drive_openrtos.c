@@ -334,6 +334,7 @@ sdio_exit:
 #endif // defined(CFG_SD0_ENABLE) || defined(CFG_SD1_ENABLE) || defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST)
 }
 
+
 static void DriveMount(ITPDisk* disks)
 {
     int i;
@@ -359,7 +360,7 @@ static void DriveMount(ITPDisk* disks)
                 DriveMountDisk(ITP_DISK_SD1);
         #endif
         
-        #ifdef CFG_NAND_ENABLE
+        #if 1 //def CFG_NAND_ENABLE
             if (disks[j] == ITP_DISK_NAND)
                 DriveMountDisk(ITP_DISK_NAND);
         #endif
@@ -408,7 +409,7 @@ static void DriveMount(ITPDisk* disks)
         DriveMountDisk(ITP_DISK_SD1);
     #endif
     
-	#ifdef CFG_NAND_ENABLE //mount by manual
+	#if 0 //def CFG_NAND_ENABLE //mount by manual
     //#if 0//def CFG_NAND_ENABLE //mount by manual
         DriveMountDisk(ITP_DISK_NAND);
     #endif

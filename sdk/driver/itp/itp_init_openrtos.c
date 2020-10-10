@@ -142,6 +142,16 @@ static void MemDbgHandler(void *arg)
     itpErrorMemDbgAbort();
 }
 #endif // CFG_MEMDBG_ENABLE
+void init_nand_workaround()
+{
+#if 1  //def CFG_NAND_ENABLE 
+		itpRegisterDevice(ITP_DEVICE_NAND, &itpDeviceNand);
+		ioctl(ITP_DEVICE_NAND, ITP_IOCTL_INIT, NULL);
+#endif
+
+
+
+}
 
 void itpInit(void)
 {
@@ -485,7 +495,7 @@ void itpInit(void)
 #endif
 
     // init nand device
-#ifdef CFG_NAND_ENABLE 
+#if 0  //def CFG_NAND_ENABLE 
     itpRegisterDevice(ITP_DEVICE_NAND, &itpDeviceNand);
     ioctl(ITP_DEVICE_NAND, ITP_IOCTL_INIT, NULL);
 #endif
