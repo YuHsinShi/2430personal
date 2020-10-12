@@ -397,7 +397,7 @@ static void DriveMount(ITPDisk* disks)
     }
     else
     {
-    #ifdef CFG_NOR_ENABLE
+    #if 0 //def CFG_NOR_ENABLE
         DriveMountDisk(ITP_DISK_NOR);
     #endif
     

@@ -1,9 +1,6 @@
 set(PROJ_NAME ${CMAKE_PROJECT_NAME})
 
-if (DEFINED CFG_BOOTLOADER_ENABLE)
-    set(CMAKE_PROJECT_NAME bootloader)
-    add_subdirectory(../bootloader ../bootloader)
-endif()
+
 
 set(CMAKE_PROJECT_NAME ${PROJ_NAME})
 
@@ -39,18 +36,18 @@ endif()
 
 add_executable(${CMAKE_PROJECT_NAME}
    # audio.c
-    config.c
+   # config.c
     project.h
-    external.c
-    external_process.c
-    function_table.c
+    #external.c
+    #external_process.c
+    #function_table.c
     main.c
-    reset.c
-    scene.c
-    scene.h
-    storage.c
+    #reset.c
+    #scene.c
+    #scene.h
+    #storage.c
     upgrade.c
-    backup.c
+    #backup.c
 	burner.c
     )
 
@@ -65,8 +62,8 @@ endif()
 
 
 # files
-configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/config.ini ${CMAKE_BINARY_DIR}/data/public/config.ini COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/setting.ini ${CMAKE_BINARY_DIR}/data/public/setting.ini COPYONLY)
+#configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/config.ini ${CMAKE_BINARY_DIR}/data/public/config.ini COPYONLY)
+#configure_file(${PROJECT_SOURCE_DIR}/project/${CMAKE_PROJECT_NAME}/setting.ini ${CMAKE_BINARY_DIR}/data/public/setting.ini COPYONLY)
 
 
 # build

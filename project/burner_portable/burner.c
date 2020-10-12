@@ -1,6 +1,7 @@
 ﻿#include "ite/itu.h"
+#include "ite/itp.h"
 #include "project.h"
-#include "scene.h"
+//#include "scene.h"
 
 #include "ssp/mmp_spi.h"
 
@@ -539,12 +540,12 @@ void burn_process(void* arg)
 
 }
 
-void burn_evb_test()
+void burn_process_start()
 {
 
 	static pthread_t burn_task;
 
-	printf("burn_evb_test\n");
+	printf("burn_process_start\n");
 	pthread_create(&burn_task, NULL, burn_process, NULL);
 
 }
