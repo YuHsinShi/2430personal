@@ -22,13 +22,18 @@ extern void BackupDestroy(void);
 
 
 
-
-
-
 int SDL_main(int argc, char *argv[])
+{
+burn_led_congtrol();
+
+burn_evb_test();
+
+}
+int SDL_main2(int argc, char *argv[])
 {
     int ret = 0;
     int restryCount = 0;
+	/*
     
 #ifdef CFG_LCD_MULTIPLE
     ioctl(ITP_DEVICE_SCREEN, ITP_IOCTL_RESET, (void*)0);
@@ -40,7 +45,6 @@ int SDL_main(int argc, char *argv[])
 //printf("HOLDING \n");
 
 //while(1);
-
 
 
 #ifdef CFG_CHECK_FILES_CRC_ON_BOOTING
@@ -78,22 +82,23 @@ retry_backup:
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
         printf("Couldn't initialize SDL: %s\n", SDL_GetError());
 
-    ConfigInit();
-	SettingInit();
+   // ConfigInit();
+	//SettingInit();
 
 #ifdef CFG_NET_ENABLE
     NetworkInit();
     WebServerInit();
 #endif // CFG_NET_ENABLE
 
-    ExternalInit();
+//    ExternalInit();
 #if defined(CFG_UPGRADE_FROM_UART)
 	UpgradeUartInit();
 #endif
     StorageInit();
-
+*/
 //    SceneInit();
  //   SceneLoad();
+	burn_led_congtrol();
 
 	burn_evb_test();
 

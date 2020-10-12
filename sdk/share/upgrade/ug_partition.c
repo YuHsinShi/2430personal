@@ -218,6 +218,10 @@ repartition:
         par.start[i] = inc;
         par.size[i] = device->size[i];
         inc += device->size[i];
+
+		LOG_INFO "(%d) inc 0x%x.size=0x%x \n",i,inc,par.size[i]  LOG_END
+
+		
     }
 
     LOG_INFO "Unmount %s disk(s)...\n", device_table[device->device_type] LOG_END

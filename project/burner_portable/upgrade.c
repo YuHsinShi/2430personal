@@ -188,6 +188,7 @@ static ITCStream* OpenUsbPackage(char* path)
 }
 
 
+
 #ifdef CFG_NET_ENABLE
 
 static size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
@@ -902,69 +903,154 @@ int UpgradeGetResult(void)
     return upgradeResult;
 }
 #if 1
+ //ret 1: in SD card
+ //ret 2: in USB disc
+ //ret -1: not found file in SD or USB
+ int CheckUpdateFileExisted(char* name)
+ {
+	 ITPDriveStatus* driveStatusTable;
+	 ITPDriveStatus* driveStatus = NULL;
+	 int i;
+	 unsigned char path[32];
+	 // try to find the package drive
+	 ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
+ 
+	 for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
+	 {
+		 driveStatus = &driveStatusTable[i];
+		 if (driveStatus->avail && driveStatus->disk >= ITP_DISK_SD0 )
+		 {
+ 
+			 snprintf(path,32,"%s%s",driveStatus->name,name);
+			 printf("PATH=%s\n",path);
+			 
+			 if(0 == access(path,04)) //check if readable
+			 {
+				 return 1;
+			 }
+		 }
+	 }
 
- int UpgradePackage_burner(char* name)
-{
-    int ret = 0;
-    ITCStream* fwStream = NULL;
+	 for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
+	 {
+		 driveStatus = &driveStatusTable[i];
+		 if (driveStatus->avail && driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17)
+		 {
+ 
+			 snprintf(path,32,"%s%s",driveStatus->name,name);
+			 printf("PATH=%s\n",path);
+			 
+			 if(0 == access(path,04)) //check if readable
+			 {
+				 return 2;
+			 }
 
-    if (upgradeUrl[0] == '\0')
-    {
-       // open from USB drive
-       fwStream = OpenUsbPackage(name);
-       if (!fwStream)
-       {
-           ret = -1;
-           printf("packages unavailable: %s\n", CFG_UPGRADE_FILENAME_LIST);
-           return ret;
-       }
-    }
+		 }
+	 }
 
-    ret = ugCheckCrc(fwStream, NULL);
-    if (ret)
-    {
-        printf("check crc fail: %d.\n", ret);
-        return ret;
-    }
 
-    ret = ugUpgradePackage(fwStream);
-    if (ret)
-    {
-        printf("upgrade fail: %d.\n", ret);
-        return ret;
-    }
+	 
+	 return -1;
+ }
 
-#if 0 //def CFG_UPGRADE_DELETE_PKGFILE_AFTER_FINISH
-    if (upgradeUrl[0] == '\0')
-    {
-        remove(pkgFilePath);
-    }
-#endif
 
-    printf("upgrade success!\n");
-    
-#if defined(CFG_UPGRADE_DELAY_AFTER_FINISH) && CFG_UPGRADE_DELAY_AFTER_FINISH > 0
-    sleep(CFG_UPGRADE_DELAY_AFTER_FINISH);
-#endif    
-        
-    return 0;
+
+ FILE* UpdateFileOpen(char* name)
+ {
+	 ITPDriveStatus* driveStatusTable;
+	 ITPDriveStatus* driveStatus = NULL;
+	 int i;
+	 unsigned char path[32];
+	 FILE* fp=NULL;
+
+	  // try to find the package drive
+	 ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
+ 
+	 for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
+	 {
+		 driveStatus = &driveStatusTable[i];
+		 if (driveStatus->avail)
+		 {
+			if(  (driveStatus->disk >= ITP_DISK_SD0)
+			 ||  (driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17) )
+			{
+				 snprintf(path,32,"%s%s",driveStatus->name,name);
+				 printf("UpdateFileOpen PATH=%s\n",path);
+				 fp  =fopen(path,"r") ;
+				if(fp != NULL)
+				 {
+					 return fp;
+				 }
+			}
+		 }
+	 }
+
+
+
+	 
+	 printf("UpdateFileOpen NULL \n");
+	 return NULL;
+ }
+
+
+ ITCStream* OpenPackage(char* path)
+ {
+		 ITPDriveStatus* driveStatusTable;
+		 ITPDriveStatus* driveStatus = NULL;
+		 int i;
+	 
+		 // try to find the package drive
+		 ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
+	 
+		 for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
+		 {
+			 driveStatus = &driveStatusTable[i];
+		 	   if (driveStatus->avail 
+			   	&& ( (driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17) 
+			   	   ||(driveStatus->disk >= ITP_DISK_SD0 ) ) )
+			 {
+				 char buf[PATH_MAX], *ptr, *saveptr;
+				 
+	 
+				 // get file path from list
+				 strcpy(buf, path);
+				 ptr = strtok_r(buf, " ", &saveptr);
+				 do
+				 {
+					 strcpy(pkgFilePath, driveStatus->name);
+					 strcat(pkgFilePath, ptr);
+	 
+					 if (itcFileStreamOpen(&fileStream, pkgFilePath, false) == 0)
+					 {
+						 printf("found package file %s\n", pkgFilePath);
+						 return &fileStream.stream;
+					 }
+					 else
+					 {
+						 printf("try to fopen(%s) fail:0x%X\n", pkgFilePath, errno);
+					 }
+				 }
+				 while ((ptr = strtok_r(NULL, " ", &saveptr)) != NULL);
+			 }
+		 }
+		 printf("cannot find package file.\n");
+		 return NULL;
 }
-  int UpgradePackage_burner_SD(void)
+
+
+ 
+ int burner_UpgradePackage(char* name)
  {
 	 int ret = 0;
 	 ITCStream* fwStream = NULL;
  
-	 if (upgradeUrl[0] == '\0')
-	 {
-		// open from USB drive
-		fwStream = OpenUsbPackage("NAND.PKG");
-		if (!fwStream)
-		{
-			ret = -1;
-			printf("packages unavailable: %s\n", CFG_UPGRADE_FILENAME_LIST);
-			return ret;
-		}
-	 }
+	fwStream = OpenPackage(name);
+	if (!fwStream)
+	{
+		ret = -1;
+		printf("packages unavailable: %s\n", name);
+		return ret;
+	}
  
 	 ret = ugCheckCrc(fwStream, NULL);
 	 if (ret)
@@ -980,18 +1066,10 @@ int UpgradeGetResult(void)
 		 return ret;
 	 }
  
-#if 1 //def CFG_UPGRADE_DELETE_PKGFILE_AFTER_FINISH
-	 if (upgradeUrl[0] == '\0')
-	 {
-		 remove(pkgFilePath);
-	 }
-#endif
+
  
 	 printf("upgrade success!\n");
-	 
-#if defined(CFG_UPGRADE_DELAY_AFTER_FINISH) && CFG_UPGRADE_DELAY_AFTER_FINISH > 0
-	 sleep(CFG_UPGRADE_DELAY_AFTER_FINISH);
-#endif    
+	 ugSetProrgessPercentage100();
 		 
 	 return 0;
  }

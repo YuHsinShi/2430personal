@@ -83,72 +83,14 @@ void set_timecounter_start()
 	return;
 }
 //=================
-int flash_lever=5;
+unsigned int flash_lever=8;
 void led_flash_set_level(int level)
 {
-	flash_lever= level;
+	//flash_lever= level;
 
 }
 
-void led_flash()
-{
-	static unsigned int counter=0;
-	static int flag=0;
-//#define LED1_IO	51
-//#define LED2_IO 52
 
-
-#define LED1_IO	24
-#define LED2_IO 25
-
-if(0 >=flash_lever)
-{
-
-	ithGpioSetOut(LED1_IO);
-	ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
-	ithGpioSet(LED1_IO);
-
-
-	ithGpioSetOut(LED2_IO);
-	ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
-	ithGpioSet(LED2_IO);
-	 return;
-}
-
-	if((flash_lever-1) == (counter%flash_lever) )
-	{
-		if(flag)
-		{
-			ithGpioSetOut(LED1_IO);
-			ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
-			ithGpioSet(LED1_IO);
-
-
-			ithGpioSetOut(LED2_IO);
-			ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
-			ithGpioSet(LED2_IO);
-			flag=0;
-
-		}	
-		else
-		{
-			ithGpioSetOut(LED1_IO);
-			ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
-			ithGpioClear(LED1_IO);
-			
-			ithGpioSetOut(LED2_IO);
-			ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
-			ithGpioClear(LED2_IO);
-
-			flag=1;
-
-		}
-		counter=0;
-
-	}
-
-	counter++;
-}
 
 
 int SceneRun(void)
@@ -167,7 +109,7 @@ int SceneRun(void)
         tick = SDL_GetTicks();
 
         frames++;
-		led_flash();
+
 
 #ifdef FPS_ENABLE
         if (tick - lasttick >= 1000)

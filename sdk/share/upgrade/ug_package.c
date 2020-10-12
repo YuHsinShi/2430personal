@@ -201,6 +201,11 @@ end:
     itcStreamClose(file);
     return ret;
 }
+void ugSetProrgessPercentage100()
+{
+	ugProgressPercentage=100;
+
+}
 
 int ugGetProrgessPercentage(void)
 {

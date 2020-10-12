@@ -6,6 +6,8 @@
 
 #ifndef WIN32
 static pthread_t burnTask;
+static float percent_rom;
+
 
 #define BURNER_STATUS_IDLE	0
 #define BURNER_STATUS_ROM_NOT_EXISTED	-1
@@ -184,7 +186,8 @@ int i=1;
 
 void writing_nor_progressing(FILE* fp)
 {
-	
+	if(NULL== fp )
+		return;
 #define ROM_SIZE_WRITE_PIECE  2*1024*1024 //1024*1024
 
 
@@ -195,21 +198,18 @@ void writing_nor_progressing(FILE* fp)
 	uint32_t read_size;
 	uint32_t rom_size_total;
 	uint32_t addr;
-	float percent;
 
 
 			fseek(fp, 0, SEEK_END);
 			rom_size_total = ftell(fp);
 			fseek(fp, 0, SEEK_SET);		
 
-
+			percent_rom=0.01;
+			
 			uint32_t tick;
-			//tick=SDL_GetTicks();
+			tick=SDL_GetTicks();
 			printf("Nor2nd_Write start \n");
 			tick = xTaskGetTickCount();
-
-
-
 
 			rom_content = malloc(ROM_SIZE_WRITE_PIECE);
 			rom_read_content = malloc(ROM_SIZE_WRITE_PIECE);
@@ -252,8 +252,8 @@ void writing_nor_progressing(FILE* fp)
 					
 				}
 				addr+=read_size;
-				percent= (float)((float)addr/(float)rom_size_total);
-					printf("progress %f percent \n",percent*100);
+				percent_rom= (float)((float)addr/(float)rom_size_total);
+					printf("progress %f percent \n",percent_rom*100);
 					
 				//	printf("flashing %d \n",flashing);
 				//	led_flash_set_level(flashing);
@@ -269,20 +269,11 @@ void writing_nor_progressing(FILE* fp)
 		free(rom_read_content);
 
 }
-void UpgradeSPI_NAND()
-{
-	init_nand_workaround();
-	//mount_nand();
-	
-	//UpgradeSPI_NAND();
 
-	//mount nand
-	UpgradePackage_burner("NAND.PKG");
-}
 
 //ret 1: nor init OK
 //ret -1: can not found slave device or not supported nor
-int burner_check_mode()
+int burner_auto_set_bypass()
 {
 
 	//use fastest mode to check slave
@@ -291,9 +282,9 @@ int burner_check_mode()
 
 	char id[8];
 
-	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
+//	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
 	{
-		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_10M);
 		ret =	get_ite_chip_id();
 		//check if slave is iTE chip // change to nor mode if in iTE mode
 		if(ret >0)
@@ -301,33 +292,19 @@ int burner_check_mode()
 			if(1== ret) //960 series
 			{
 				set_bypass_mode_960();
-				usleep(1000);
 				
-				if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))
-				{
-				
-					UpgradePackage_burner("NOR.PKG");
-				  return 0x960;//
-				}
-				
-				if(0 == check_spi_nand_id())
-				{		
-					UpgradeSPI_NAND();
-					return 0x960;//
-				}
-
-
+				//mmpSpiTerminate(SPI_BURNNIGN_PORT);
+				return 0x960;//
 
 			}
 			else if(2== ret) //970 series
 			{
 
 				set_bypass_mode_970();
-				if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))
-				{
-					return 0x970;//
+				
+				//mmpSpiTerminate(SPI_BURNNIGN_PORT);
+				return 0x970;//
 
-				}
 
 			}
 			else
@@ -337,17 +314,9 @@ int burner_check_mode()
 		}
 		
 
-		if(1==Nor2nd_Init(SPI_BURNNIGN_PORT))	//check if slave is nor chip
-		{
-			return 1;
 
-		}
-		else
-		{
-				//do nothing check 
-		}
 
-		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+		//mmpSpiTerminate(SPI_BURNNIGN_PORT);
 
 	}
 
@@ -355,20 +324,69 @@ return -1;
 }
 
 
+int burner_check_storage_type()
+{
+
+	int ret;
+
+	if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
+	{
+		return 1;//
+	}
+	
+	if(0==check_spi_nand_id())
+	{
+		return 2;//
+	
+	}
+	return -1;
+	/*
+
+	//use fastest mode to check slave
+		SPI_CLK_LAB my_clk;
+
+	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+
+		if(1== 	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
+		{
+			return 1;//
+		}
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+
+	}
+
+
+	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+
+		if(0==check_spi_nand_id())
+		{
+			return 2;//
+		
+		}
+		
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+	}
+	*/
+return -1;
+}
+
+//check it is ROM or PKG in USB or SD card
+int burner_check_update()
+{
+
+//	UpgradeSPI_NAND("NAND.PKG");
+//	UpgradeSPI_NAND("NOR.PKG");
+
+
+}
 static void* burnningTask(void* arg)
 {
 
-	if(1 == burner_check_mode())
-	{
-		//ic found 
-	   writing_progressing(1);
-		
-	   mmpSpiTerminate(SPI_1);
-	}
-	else
-	{
-		//fail connection fail, check cable
-	}
+
 	
 }
 
@@ -402,17 +420,7 @@ void burn_switching_task(void* arg)
 
 			//	BurnerOnTimer_ui_set(i,0); //update current bar
 
-				if(1 == burner_check_mode())
-				{
-					//ic found 
-				   writing_nor_progressing(i);
-				
-				   mmpSpiTerminate(SPI_1);
-				}
-				else
-				{
-					//fail connection fail, check cable
-				}
+
 				sleep(1);
 			}
 	
@@ -429,40 +437,198 @@ void burn_switching_start()
 	pthread_create(&switchTask, NULL, burn_switching_task, NULL);
 }
 
-void burn_evb_test()
+
+#define UPDATE_FILE_NOR_ROM_NAME  "NOR.ROM"
+#define UPDATE_FILE_NOR_PKG_NAME  "NOR.PKG"
+#define UPDATE_FILE_NAND_PKG_NAME  "NAND.PKG"
+//#define UPDATE_FILE_NAND_PKG_NAME  "RES_32M.PKG"
+static int flagmode;
+
+int get_progress_percent()
 {
-	printf("burn_evb_test\n");
-//	return;
+//PKG
+	//ugGetProrgessPercentage();
+int ret;
+	if( 0 ==flagmode)
+	{
+		ret = ugGetProrgessPercentage();
+	}
+	else if( 1 ==flagmode)
+	{
+		ret=  (int)(percent_rom*100);
 
-//
-FILE* fp;
-//printf("PLUG NAND==========\n");
+	}
+	else
+	{
+		ret= 0;
+	}
 
-//sleep(10);
-mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_10M);
+			return ret;
+}
 
-set_bypass_mode_960();
-//usleep(1000);
-//Nor2nd_Init(SPI_BURNNIGN_PORT);
-UpgradeSPI_NAND("NAND.PKG");
+void nor_flash_update_process()
+{
+	FILE* fp;
 
+	if( CheckUpdateFileExisted(UPDATE_FILE_NOR_ROM_NAME)>0 )
+	{
+			flagmode=1;
+			fp =UpdateFileOpen(UPDATE_FILE_NOR_ROM_NAME);
+			writing_nor_progressing(fp);
 
-
-return;
-
-//sleep(10);
+			return;
+	}
 /*
-printf("START ING==========\n");
-
-
-init_nand_workaround();
-mount_nand();
-
-UpgradeSPI_NAND();
-
-return;
+	if(CheckUpdateFileExisted(UPDATE_FILE_NOR_PKG_NAME) > 0)
+	{
+		burner_UpgradePackage(UPDATE_FILE_NOR_PKG_NAME);
+		return;
+	}
 */
 
+}
+
+void nand_flash_update_process()
+{
+
+
+	if(CheckUpdateFileExisted(UPDATE_FILE_NAND_PKG_NAME) > 0)
+	{
+		flagmode=0;
+		init_nand_workaround();
+		burner_UpgradePackage(UPDATE_FILE_NAND_PKG_NAME);
+		return;
+	}
+
+}
+
+
+
+void burn_process(void* arg)
+{
+	int ret ;
+	printf("burn_process\n");
+	burner_auto_set_bypass();//
+	{
+	sleep(1);
+
+	printf("GO\n");
+		ret = burner_check_storage_type();
+
+		if(1==ret)
+		{
+			//is NOR
+			 //check PKG or ROM
+			nor_flash_update_process();
+
+		}
+		else if(2==ret)
+		{
+			// is NAND
+			nand_flash_update_process();
+
+		}
+		else
+		{
+
+		}
+
+	}
+
+	return;
+
+}
+
+void burn_evb_test()
+{
+
+	static pthread_t burn_task;
+
+	printf("burn_evb_test\n");
+	pthread_create(&burn_task, NULL, burn_process, NULL);
+
+}
+
+void burn_led_congtrol_process(void* arg)
+{
+	static unsigned int counter=0;
+	static int flag=0;
+	int percent;
+#define LED1_IO	24
+#define LED2_IO 25
+
+ithGpioSetOut(LED1_IO);
+ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);
+ithGpioSet(LED1_IO);
+ithPrintf("burn_led_congtrol_process");
+int sleep=0;
+while(1)
+{
+		percent = get_progress_percent();
+
+		sleep=120-percent;
+		
+		//ithPrintf("percent=%d",percent);
+		if(0==percent)
+		{
+			ithGpioSetOut(LED2_IO);
+			ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+			ithGpioSet(LED2_IO);
+
+
+		}
+		else if(100 == percent)
+		{
+			ithGpioSetOut(LED2_IO);
+			ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+			ithGpioClear(LED2_IO);
+
+		}
+		else
+		{
+
+			if(flag)
+			{
+	
+				ithGpioSetOut(LED2_IO);
+				ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+				ithGpioSet(LED2_IO);
+				flag=0;
+	
+			}	
+			else
+			{
+				ithGpioSetOut(LED2_IO);
+				ithGpioSetMode(LED2_IO, ITH_GPIO_MODE0);
+				ithGpioClear(LED2_IO);
+	
+				flag=1;
+	
+			}
+
+		}
+
+
+	
+
+			usleep(sleep*1000);
+	
+}	
+	
+
+	
+	
+}
+
+
+
+void burn_led_congtrol()
+{
+
+	static pthread_t burn_task;
+
+	printf("burn_led_congtrol\n");
+	pthread_create(&burn_task, NULL, burn_led_congtrol_process, NULL);
 
 }
 

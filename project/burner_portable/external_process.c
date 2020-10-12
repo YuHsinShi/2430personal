@@ -54,6 +54,4 @@ void ExternalProcessEvent(ExternalEvent* ev)
     }
 }
 
-void ExternalProcessInit(void)
-{
-}
+

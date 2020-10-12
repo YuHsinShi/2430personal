@@ -1229,7 +1229,7 @@ uint8_t spiNf_Initial(SPI_NF_INFO *info)
         #endif
     }
 #else
-	result = mmpSpiInitialize(NF_SPI_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_20M);
+//	result = mmpSpiInitialize(NF_SPI_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_20M);
 //already initial in 
 #endif
 
@@ -1889,7 +1889,7 @@ uint8_t check_spi_nand_id()
 	//reset 0xFF
     if(_cmdReset())
     {
-        printf("[SPINF ERR] reset commnad fail:0\n");
+        printf("[check_spi_nand_id ERR] reset commnad fail:0\n");
         spiret = SPINF_ERROR_RESET_CMD_FAIL;
         goto errRdIdEnd;
     }
@@ -1898,7 +1898,7 @@ uint8_t check_spi_nand_id()
     {
 	      if( spiNf_getFeature(0xA0+0x10*i, &regStatus) )
 	      {
-	          printf("[SPINF ERR] get feature commnad fail\n");
+	          printf("[check_spi_nand_id ERR] get feature commnad fail\n");
 	          spiret = SPINF_ERROR_GET_FEATURE_CMD_FAIL;
 	          goto errRdIdEnd;
 	      }    
@@ -1914,12 +1914,12 @@ uint8_t check_spi_nand_id()
 
 	if(spiret==SPINF_OK)
 	{
-		printf("SPI READ ID PASS, data=%02x,%02x,%02x\n",nand_id[0],nand_id[1],nand_id[2]);
+		printf("check_spi_nand_id READ ID PASS, data=%02x,%02x,%02x\n",nand_id[0],nand_id[1],nand_id[2]);
 		spiret = 0;
 	}
 	else	
 	{
-		printf("SPI READ ID FAIL,result=%x\n",spiret);  
+		printf("check_spi_nand_id READ ID FAIL,result=%x\n",spiret);  
 	}
 
 errRdIdEnd:

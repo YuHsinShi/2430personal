@@ -179,6 +179,10 @@ static Driver driverTable[ITH_DISK_MAX] =
     { NULL, msc_initfunc, 13 },
     { NULL, msc_initfunc, 14 },
     { NULL, msc_initfunc, 15 },
+
+//	{NULL,nor_initfunc,	(unsigned long)&norDrvParam	},
+
+
     {
         NULL,
 #ifdef CFG_RAMDISK_ENABLE
