@@ -1,14 +1,14 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Sat Oct 10 20:48:12 2020
+# Sun Oct 11 23:26:38 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
 set(CFG_RAM_SIZE "0x4000000")
 set(CFG_RAM_INIT_SCRIPT "IT9860_360Mhz_DDR2_360Mhz.scr")
 set(CFG_TILING_WIDTH_128 0)
-set(CFG_WATCHDOG_ENABLE y)
+# CFG_WATCHDOG_ENABLE is not set
 set(CFG_DCPS_ENABLE y)
 set(CFG_NOR_ENABLE y)
 set(CFG_NOR_USE_AXISPI y)
@@ -49,7 +49,7 @@ set(CFG_DBG_STATS y)
 set(CFG_DBG_STATS_HEAP y)
 set(CFG_DEF_BUILD_MINSIZEREL y)
 set(CFG_SYSTEM_NAME "burner")
-# CFG_GCC_LTO is not set
+set(CFG_GCC_LTO y)
 set(CFG_BUILD_INIPARSER y)
 set(CFG_BUILD_SDL y)
 set(CFG_BUILD_UPGRADE y)
@@ -131,10 +131,6 @@ set(CFG_CHIP_PKG_IT9866 y)
 # CFG_CHIP_PKG_IT9868 is not set
 # CFG_CHIP_PKG_888_66 is not set
 set(CFG_MMAP_SIZE "0")
-set(CFG_WATCHDOG_TIMEOUT 10)
-set(CFG_WATCHDOG_REFRESH_INTERVAL 1)
-# CFG_WATCHDOG_INTR is not set
-# CFG_WATCHDOG_IDLETASK is not set
 # CFG_EXT_WATCHDOG_ENABLE is not set
 
 #
@@ -247,7 +243,7 @@ set(CFG_UART0_BAUDRATE "115200")
 # CFG_UART3_ENABLE is not set
 # CFG_UART4_ENABLE is not set
 # CFG_UART5_ENABLE is not set
-# CFG_UART_FORCE_FLUSH is not set
+set(CFG_UART_FORCE_FLUSH y)
 # CFG_SWUART_CODEC_ENABLE is not set
 # CFG_USBHCC is not set
 # CFG_USB1_ENABLE is not set
@@ -318,7 +314,7 @@ set(CFG_DBG_STATS_PERIOD "10")
 # CFG_DBG_STATS_FAT is not set
 # CFG_ENABLE_UART_CLI is not set
 # CFG_BOOT_TESTBIN_ENABLE is not set
-# CFG_DBG_OUTPUT_DEBUG_FILES is not set
+set(CFG_DBG_OUTPUT_DEBUG_FILES y)
 
 #
 # Upgrade
