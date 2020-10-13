@@ -283,9 +283,9 @@ int burner_auto_set_bypass()
 
 	char id[8];
 
-//	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
+	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
 	{
-		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, SPI_CLK_10M);
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
 		ret =	get_ite_chip_id();
 		//check if slave is iTE chip // change to nor mode if in iTE mode
 		if(ret >0)
@@ -294,7 +294,7 @@ int burner_auto_set_bypass()
 			{
 				set_bypass_mode_960();
 				
-				//mmpSpiTerminate(SPI_BURNNIGN_PORT);
+				mmpSpiTerminate(SPI_BURNNIGN_PORT);
 				return 0x960;//
 
 			}
@@ -303,7 +303,7 @@ int burner_auto_set_bypass()
 
 				set_bypass_mode_970();
 				
-				//mmpSpiTerminate(SPI_BURNNIGN_PORT);
+				mmpSpiTerminate(SPI_BURNNIGN_PORT);
 				return 0x970;//
 
 
@@ -317,7 +317,7 @@ int burner_auto_set_bypass()
 
 
 
-		//mmpSpiTerminate(SPI_BURNNIGN_PORT);
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
 
 	}
 
@@ -330,16 +330,30 @@ int burner_check_storage_type()
 
 	int ret;
 
-	if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
+
+		SPI_CLK_LAB my_clk;
+
+	for(my_clk=SPI_CLK_10M;my_clk>=SPI_CLK_5M;my_clk-- )
 	{
-		return 1;//
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+
+		if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
+		{
+			return 1;//
+		}
+		
+		if(0==check_spi_nand_id())
+		{
+			return 2;//
+		
+		}
+
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+
 	}
-	
-	if(0==check_spi_nand_id())
-	{
-		return 2;//
-	
-	}
+
+
+
 	return -1;
 	/*
 

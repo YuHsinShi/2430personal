@@ -982,7 +982,11 @@ mmpSpiTerminate(
     SPI_PORT port)
 {
     int32_t result = 0;
-    pthread_mutex_destroy(&SwitchMutex);
+    
+#if 0
+    //pthread_mutex_destroy(&SwitchMutex);
+#endif
+
     pthread_mutex_lock(&SpiObjects[port].mutex);
 
     SpiObjects[port].refCount--;
