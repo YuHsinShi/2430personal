@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Sun Oct 11 23:26:38 2020
+# Mon Oct 12 23:24:16 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -214,6 +214,7 @@ set(CFG_PRIVATE_DRIVE "A")
 set(CFG_PUBLIC_DRIVE "B")
 set(CFG_TEMP_DRIVE "C")
 set(CFG_BACKUP_DRIVE "D")
+set(CFG_USB_DEVICE_DRIVE "B")
 
 #
 # Peripheral
@@ -247,7 +248,25 @@ set(CFG_UART_FORCE_FLUSH y)
 # CFG_SWUART_CODEC_ENABLE is not set
 # CFG_USBHCC is not set
 # CFG_USB1_ENABLE is not set
-# CFG_USB_DEVICE is not set
+set(CFG_USB_DEVICE y)
+set(CFG_USB_DEVICE_USB0 y)
+set(CFG_USBD_MASS_STORAGE y)
+# CFG_USBD_NCM is not set
+# CFG_USBD_HID_DEVICE is not set
+# CFG_USBD_HID_MOUSE is not set
+# CFG_USBD_HID_KBD is not set
+# CFG_USBD_ACM is not set
+set(CFG_USB_VENDOR_ID "0x048D")
+set(CFG_USB_PRODUCT_ID "0x0970")
+set(CFG_USBD_STR_MANUFACTURER "ITE Tech.")
+set(CFG_USBD_STR_PRODUCT "Castor3")
+set(CFG_USBD_STR_SERIAL_NUMBER "907012344321")
+set(CFG_USB_DEVICE_DISKS "0")
+set(CFG_USBD_LUN_VENDOR_ID "'G','e','n','e','r','i','c',' '")
+set(CFG_USBD_LUN0_PRODUCT_ID "'S','t','o','r','a','g','e',' ','I','N','T','E','R','N','A','L'")
+set(CFG_USBD_LUN1_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','1',' ',' '")
+set(CFG_USBD_LUN2_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','2',' ',' '")
+set(CFG_USBD_LUN3_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','3',' ',' '")
 # CFG_IRDA_ENABLE is not set
 # CFG_KEYPAD_ENABLE is not set
 # CFG_TOUCH_ENABLE is not set
@@ -274,6 +293,7 @@ set(CFG_POWER_DOZE y)
 #
 set(CFG_GPIO_SD0_POWER_ENABLE "-1")
 set(CFG_GPIO_SD0_WRITE_PROTECT "-1")
+set(CFG_GPIO_USB_ID_PIN "20")
 set(CFG_SPI1_MISO_GPIO "41")
 set(CFG_SPI1_MOSI_GPIO "40")
 set(CFG_SPI1_CLOCK_GPIO "38")
