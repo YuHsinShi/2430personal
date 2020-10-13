@@ -23,7 +23,7 @@ static ITCFileStream fileStream;
 static ITCStream* upgradeStream;
 static char pkgFilePath[PATH_MAX];
 
-#if defined(CFG_UPGRADE_FROM_UART)
+#if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 
 #define CHECK_TIME			10
 
@@ -417,7 +417,7 @@ static int UpgradePackage(void)
     return 0;
 }
 
-#if defined(CFG_UPGRADE_FROM_UART)
+#if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 static void UartTimeout_handler(timer_t timerid, int arg)
 {
 	int i;
@@ -866,7 +866,7 @@ int UpgradeProcess(int code)
         for (;;)
             sleep(UINT_MAX);
     }
-#if defined(CFG_UPGRADE_FROM_UART)
+#if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 	else if(code == QUIT_UPGRADE_UART)
 	{
 		printf("QUIT_UPGRADE_UART\n");

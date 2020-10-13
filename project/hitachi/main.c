@@ -80,11 +80,11 @@ retry_backup:
 
 	ScreenInit();
     ExternalInit();
-#if defined(CFG_UPGRADE_FROM_UART)
+#if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 	UpgradeUartInit();
 #endif
     StorageInit();
-   // AudioInit();
+    AudioInit();
 
 #ifdef CFG_SHT20_ENABLE
     SHT20_Init();
@@ -102,8 +102,8 @@ retry_backup:
 
     ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_EXIT, NULL);
 
-  //  AudioExit();
-#if defined(CFG_UPGRADE_FROM_UART)
+    AudioExit();
+#if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 	UpgradeUartExit();
 #endif
     ExternalExit();

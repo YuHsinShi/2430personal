@@ -1,8 +1,8 @@
-#include "ite/itu.h"
+﻿#include "ite/itu.h"
 
-//extern void MainReset(void);
+extern void MainReset(void);
 
 void resetScene(void)
 {
-    //MainReset();
+    MainReset();
 }

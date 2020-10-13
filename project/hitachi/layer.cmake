@@ -17,4 +17,5 @@ add_executable(${CMAKE_PROJECT_NAME}
 	layer_power_off.c
 	layer_trial_run.c
 	layer_air_flow.c
+	layer_ai.c
     )

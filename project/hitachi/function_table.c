@@ -4,8 +4,8 @@
 extern bool MainOnEnter(ITUWidget* widget, char* param);
 extern bool MainOnTimer(ITUWidget* widget, char* param);
 extern bool MainCoverFlowOnChanged(ITUWidget* widget, char* param);
-extern bool MainRModeRadBoxOnPress(ITUWidget* widget, char* param);
-extern bool MainRMoreModeBackgroundBtnOnPress(ITUWidget* widget, char* param);
+//extern bool MainRModeRadBoxOnPress(ITUWidget* widget, char* param);
+//extern bool MainRMoreModeBackgroundBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainHumidityBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainTempBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainLStatusChkBoxOnPress(ITUWidget* widget, char* param);
@@ -14,8 +14,8 @@ extern bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool MainTopAutoChkBoxOnPress(ITUWidget* widget, char* param);
 extern bool MainAirForceTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool MainAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param);
-extern bool MainRAICheckBoxOnPress(ITUWidget* widget, char* param);
-
+//extern bool MainRAICheckBoxOnPress(ITUWidget* widget, char* param);
+extern bool MainCModeShowButtonOnPress(ITUWidget* widget, char* param);
 
 extern bool WarningResetBtnOnPress(ITUWidget* widget, char* param);
 
@@ -54,6 +54,7 @@ extern bool TimingOnLeave(ITUWidget* widget, char* param);
 extern bool TimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool TimingSingleSettingBtnOnPress(ITUWidget* widget, char* param);
 extern bool TimingSingleChkBoxOnPress(ITUWidget* widget, char* param);
+extern bool TimingSingleSettingHrWheelOnChanged(ITUWidget* widget, char* param);
 extern bool TimingWeekSettingBtnOnPress(ITUWidget* widget, char* param);
 extern bool TimingWeekSettingTempSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool TimingWeekSettingDaySaveBtnOnPress(ITUWidget* widget, char* param);
@@ -128,15 +129,19 @@ extern bool AirFlowOnEnter(ITUWidget* widget, char* param);
 extern bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param);
 extern bool AirFlowHTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool AirFlowVTrackBarOnChanged(ITUWidget* widget, char* param);
+extern bool AirFlowRadioBoxOnPress(ITUWidget* widget, char* param);
 
+extern bool AiOnEnter(ITUWidget* widget, char* param);
+extern bool AiRadioBoxOnPress(ITUWidget* widget, char* param);
+extern bool AiAutoCheckBoxOnPress(ITUWidget* widget, char* param);
 
 ITUActionFunction actionFunctions[] =
 {
 	"MainOnEnter", MainOnEnter,
 	"MainOnTimer", MainOnTimer,
 	"MainCoverFlowOnChanged", MainCoverFlowOnChanged,
-	"MainRModeRadBoxOnPress", MainRModeRadBoxOnPress,
-	"MainRMoreModeBackgroundBtnOnPress", MainRMoreModeBackgroundBtnOnPress,
+	//"MainRModeRadBoxOnPress", MainRModeRadBoxOnPress,
+	//"MainRMoreModeBackgroundBtnOnPress", MainRMoreModeBackgroundBtnOnPress,
 	"MainHumidityBtnOnPress",MainHumidityBtnOnPress,
 	"MainTempBtnOnPress", MainTempBtnOnPress,
 	"MainLStatusChkBoxOnPress", MainLStatusChkBoxOnPress,
@@ -145,7 +150,8 @@ ITUActionFunction actionFunctions[] =
 	"MainTopAutoChkBoxOnPress", MainTopAutoChkBoxOnPress,
 	"MainAirForceTrackBarOnChanged", MainAirForceTrackBarOnChanged,
 	"MainAirForceAutoChkBoxOnPress", MainAirForceAutoChkBoxOnPress,
-	"MainRAICheckBoxOnPress", MainRAICheckBoxOnPress,
+	//"MainRAICheckBoxOnPress", MainRAICheckBoxOnPress,
+	"MainCModeShowButtonOnPress", MainCModeShowButtonOnPress,
 
 	"WarningResetBtnOnPress", WarningResetBtnOnPress,
 
@@ -184,6 +190,7 @@ ITUActionFunction actionFunctions[] =
 	"TimingOnLeave", TimingOnLeave,
 	"TimingSingleSettingSaveBtnOnPress", TimingSingleSettingSaveBtnOnPress,
 	"TimingSingleSettingBtnOnPress", TimingSingleSettingBtnOnPress,
+	"TimingSingleSettingHrWheelOnChanged", TimingSingleSettingHrWheelOnChanged,
 	"TimingSingleChkBoxOnPress", TimingSingleChkBoxOnPress,
 	"TimingWeekSettingBtnOnPress", TimingWeekSettingBtnOnPress,
 	"TimingWeekSettingTempSaveBtnOnPress", TimingWeekSettingTempSaveBtnOnPress,
@@ -259,6 +266,11 @@ ITUActionFunction actionFunctions[] =
 	"AirFlowAutoChkBoxOnPress", AirFlowAutoChkBoxOnPress,
 	"AirFlowHTrackBarOnChanged", AirFlowHTrackBarOnChanged,
 	"AirFlowVTrackBarOnChanged", AirFlowVTrackBarOnChanged,
+	"AirFlowRadioBoxOnPress", AirFlowRadioBoxOnPress,
+
+	"AiOnEnter", AiOnEnter,
+	"AiRadioBoxOnPress", AiRadioBoxOnPress,
+	"AiAutoCheckBoxOnPress", AiAutoCheckBoxOnPress,
 
     NULL, NULL
 };

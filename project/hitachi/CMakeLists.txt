@@ -67,22 +67,6 @@ if (DEFINED CFG_SCREENSHOT_ENABLE)
         )
 endif()
 
-if (DEFINED CFG_UPGRADE_FROM_UART)
-    add_definitions(
-        -DCFG_UPGRADE_FROM_UART
-        )
-endif()
-
-if (DEFINED CFG_UPGRADE_UART0)
-    add_definitions(
-        -DCFG_UPGRADE_UART0
-        )
-elseif (DEFINED CFG_UPGRADE_UART1)
-    add_definitions(
-        -DCFG_UPGRADE_UART1
-        )
-endif()
-
 if (DEFINED CFG_UPGRADE_GUI)
     add_definitions(
         -DCFG_UPGRADE_GUI
@@ -141,7 +125,7 @@ endif()
     )
     
 add_executable(${CMAKE_PROJECT_NAME}
-    #audio.c
+    audio.c
     config.c
     project.h
     external.c
@@ -190,7 +174,7 @@ if (DEFINED CFG_NET_WIFI)
 endif()
 
 # upgrade fw from uart
-if (DEFINED CFG_UPGRADE_FROM_UART)
+if (DEFINED CFG_UPGRADE_FROM_UART_RUN_TIME)
     add_executable(${CMAKE_PROJECT_NAME}
         upgrade_uart.c
         )

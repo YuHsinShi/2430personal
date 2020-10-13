@@ -1,4 +1,4 @@
-#include <sys/ioctl.h>
+﻿#include <sys/ioctl.h>
 #include <sys/time.h>
 #include <assert.h>
 #include <math.h>
@@ -29,7 +29,7 @@
 
 #define GESTURE_THRESHOLD           40
 #define MAX_COMMAND_QUEUE_SIZE      8
-#define MOUSEDOWN_LONGPRESS_DELAY   1000
+#define MOUSEDOWN_LONGPRESS_DELAY   5000//1000
 
 extern ITUActionFunction actionFunctions[];
 extern void resetScene(void);
@@ -621,8 +621,8 @@ int SceneRun(void)
 
     #endif          // _WIN32
                 }
-             //   if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-             //       AudioPlayKeySound();
+                if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
+                    AudioPlayKeySound();
 
                 break;
 
@@ -663,8 +663,8 @@ int SceneRun(void)
                         lastx   = ev.button.x;
                         lasty   = ev.button.y;
                     }
-//                    if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-//                        AudioPlayKeySound();
+                    if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
+                        AudioPlayKeySound();
 
     #ifdef CFG_SCREENSHOT_ENABLE
                     if (ev.button.x < 50 && ev.button.y > CFG_LCD_HEIGHT - 50)
@@ -758,8 +758,8 @@ int SceneRun(void)
                         lastx   = ev.tfinger.x;
                         lasty   = ev.tfinger.y;
                     }
-//                    if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-//                        AudioPlayKeySound();
+                    if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
+                        AudioPlayKeySound();
 
     #ifdef CFG_SCREENSHOT_ENABLE
                     if (ev.tfinger.x < 50 && ev.tfinger.y > CFG_LCD_HEIGHT - 50)
