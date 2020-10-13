@@ -249,6 +249,7 @@ void BurnerUpdateBars()
 {
 	int i;
 	
+	ProgressValue[cur] = get_progress_percent();
 
 	
 	ituTextSetStringInt(Text_Progress1, ProgressValue[cur]);
@@ -328,10 +329,9 @@ bool BurnerOnTimer(ITUWidget* widget, char* param)
 	return false;
 }
 
-void BurnerOnTimer_ui_set(int set_cur,int value)
+void BurnerOnTimer_ui_set(int set_cur)
 {
 	cur = set_cur;
-	ProgressValue[cur] = value;
 }
 
 #endif

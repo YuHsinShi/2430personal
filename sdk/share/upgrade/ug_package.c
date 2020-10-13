@@ -206,6 +206,10 @@ int ugGetProrgessPercentage(void)
 {
     return ugProgressPercentage;
 }
+void ugSetProrgessPercentage(int value)
+{
+	ugProgressPercentage=value;
+}
 
 void ugRestoreStart(void)
 {
