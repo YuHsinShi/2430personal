@@ -166,7 +166,7 @@ int ugUpgradeRawData(ITCStream *f, ITPDisk disk, bool restore)
         goto end;
     }
 
-    LOG_INFO "[%d%%] Writing", ugGetProrgessPercentage() LOG_END
+    LOG_INFO "[%d%%] Writing\n", ugGetProrgessPercentage() LOG_END
 
     remainsize = filesize;
 

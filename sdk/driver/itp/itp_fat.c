@@ -179,6 +179,10 @@ static Driver driverTable[ITH_DISK_MAX] =
     { NULL, msc_initfunc, 13 },
     { NULL, msc_initfunc, 14 },
     { NULL, msc_initfunc, 15 },
+
+//	{NULL,nor_initfunc,	(unsigned long)&norDrvParam	},
+
+
     {
         NULL,
 #ifdef CFG_RAMDISK_ENABLE
@@ -286,7 +290,7 @@ static int FatClose(int file, void* info)
 {
     int ret = f_close(openFiles[file]);
 
-    #ifdef  CFG_NAND_ENABLE
+    #if 0 //def  CFG_NAND_ENABLE
     ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
     #endif
 
@@ -916,7 +920,7 @@ static int FatFflush(int file)
 {
     int ret = f_flush(openFiles[file]);
 
-    #ifdef  CFG_NAND_ENABLE
+    #if 0 //def  CFG_NAND_ENABLE
     ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
     #endif
 
@@ -1327,6 +1331,9 @@ static int FatIoctl(int file, unsigned long request, void* ptr, void* info)
     switch (request)
     {
     case ITP_IOCTL_MOUNT:
+
+
+		printf("[FatIoctl]ITP_IOCTL_MOUNT..%d \n",ptr);
         ret = FatMount((ITPDisk)ptr, false);
         if (ret)
         {

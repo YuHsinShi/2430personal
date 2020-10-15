@@ -156,9 +156,11 @@ static ITCStream* OpenUsbPackage(char* path)
     for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
     {
         driveStatus = &driveStatusTable[i];
-        if (driveStatus->avail && driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17)
-        {
+//        if (driveStatus->avail && driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17)
+        if (driveStatus->avail && driveStatus->disk >= ITP_DISK_SD0 )
+		{
             char buf[PATH_MAX], *ptr, *saveptr;
+			
 
             // get file path from list
             strcpy(buf, path);
@@ -184,6 +186,8 @@ static ITCStream* OpenUsbPackage(char* path)
     printf("cannot find package file.\n");
     return NULL;
 }
+
+
 
 #ifdef CFG_NET_ENABLE
 
@@ -1063,8 +1067,7 @@ int UpgradeGetResult(void)
 	 }
  
 
-	 ug_UnmoutNAND();//add for unmount upgraded NAND
-
+ 
 	 printf("upgrade success!\n");
 	 ugSetProrgessPercentage100();
 		 

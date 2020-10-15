@@ -11,6 +11,15 @@
 
 #define LOG_PREFIX   __FILE__ ":" TOSTRING(__LINE__) ": "
 
+#define CFG_UG_ERR 	1
+
+#define CFG_UG_DBG 1
+#define LOG_WARN	 1
+#define CFG_UG_INFO 1
+
+
+
+
 #ifdef CFG_UG_ERR
     #define LOG_ERR     PRINTF("ERR:" LOG_PREFIX
 #else

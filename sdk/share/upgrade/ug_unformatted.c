@@ -30,5 +30,7 @@ int ugUpgradeUnformatted(ITCStream *f, ITPDisk disk)
 
     LOG_DBG "unformatted_size=%ld\n", fmt.unformatted_size LOG_END
 
+    LOG_DBG "##RESERVERD SIZE?####=%lx#######\n", fmt.unformatted_size LOG_END
+
     return ret;
 }

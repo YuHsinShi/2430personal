@@ -202,6 +202,23 @@ end:
     return ret;
 }
 
+ void ug_UnmoutNAND()
+{
+int ret;
+	 ret = ioctl(ITP_DEVICE_FAT, ITP_IOCTL_UNMOUNT, ITP_DISK_NAND);
+	if (ret)
+	{
+		LOG_ERR "Unmount NAND disk(s) fail\n"	LOG_END
+	}
+}
+
+
+void ugSetProrgessPercentage100()
+{
+	ugProgressPercentage=100;
+
+}
+
 int ugGetProrgessPercentage(void)
 {
     return ugProgressPercentage;

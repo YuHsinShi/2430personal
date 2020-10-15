@@ -131,8 +131,6 @@ typedef enum
     WIN_W25Q256JVFSQ,
     ZB_25VQ128,
     ZB_25VQ64,
-    
-    XTS_NOR,
     UNKNOW_VENDOR = 0xFFFF
 } NOR_VENDOR_ID;
 
@@ -269,10 +267,7 @@ NOR_VENDOR_CONTEXT  nor_support_vendor[] = {
     {0xEF, 0x4018, 0x17, "WIN_W25Q128JV",    WIN_W25Q128JV   },
     {0xEF, 0x4019, 0x18, "WIN_W25Q256JVFSQ", WIN_W25Q256JVFSQ},
     {0x5E, 0x4018, 0x17, "ZB_25VQ128",       ZB_25VQ128      },
-    {0x5E, 0x4017, 0x16, "ZB_25VQ64",        ZB_25VQ64       },
-
-	
-    {0x0b, 0x4018, 0x17, "XTS NOR",        XTS_NOR       }
+    {0x5E, 0x4017, 0x16, "ZB_25VQ64",        ZB_25VQ64       }
 };
 
 //=============================================================================
@@ -2845,7 +2840,10 @@ return ((0xFFFFFFFF - start + tick) / portTICK_PERIOD_MS);
 }
 
 
-NOR_OBJECT	 NorObjects2nd = 
+static NOR_OBJECT NorObjects2nd;
+
+/*
+= 
 {
  0, 							// refCount
  SPI_1, 						// port
@@ -2857,7 +2855,7 @@ NOR_OBJECT	 NorObjects2nd =
  NULL							// protectInfo
 };
  
-
+*/
 
 static bool
 nor2ndSendCommand(
@@ -3836,34 +3834,66 @@ nor2ndReadDeviceID(
 
 	return result;
 }
+static char nor2nd_name[32];
+static uint32_t nor2nd_size;
 
+char* get_nor2nd_name()
+{
+	return nor2nd_name;
+}
 
- int Nor2nd_Init(void)
+ int Nor2nd_Init(SPI_PORT     port)
 {
 	
 	NOR_OBJECT	*norObject	= &NorObjects2nd;
 	NOR_ID		id			= {0};
-	bool		foundId = false;
+//	bool		foundId = false;
 	int i;
+	
 	if(NULL == nor2nd_mutex)
 	{
 		pthread_mutex_init(&nor2nd_mutex, NULL);
 		NorObjects2nd.mutex=nor2nd_mutex;
 	}
 
+	norObject->port=port;
+
 	
 	nor2ndReadDeviceID(norObject, &id);
 	nor2ndDisableWrite(norObject);
+	
 	for ( i = 0; i < (sizeof(nor_support_vendor) / sizeof(nor_support_vendor[0])); i++)
 	{
 		if ((id.manufatureID == nor_support_vendor[i].id.manufatureID)
 			&& (id.deviceID == nor_support_vendor[i].id.deviceID)
 			&& (id.deviceID2 == nor_support_vendor[i].id.deviceID2 || nor_support_vendor[i].id.deviceID2 == 0xFF))
 		{
-			foundId = true;
-			break;
+			memcpy(&norObject->id, &id, sizeof(NOR_ID));
+			norGetContext(norObject, &nor_support_vendor[i]);
+			printf( "\n========================================\n");
+			printf( "			 2nd NOR init\n");
+			printf( "========================================\n");
+			printf( "Manufacturer	 : 0x%02X\n",		nor_support_vendor[i].id.manufatureID);
+			printf( "Device ID1 	 : 0x%04X\n",		nor_support_vendor[i].id.deviceID);
+			printf( "Device ID2 	 : 0x%02X\n",		nor_support_vendor[i].id.deviceID2);
+			printf( "Name			 : %s\n",			nor_support_vendor[i].deviceName);
+			printf( "Page Size		 : %d Bytes\n", 	norObject->context.bytesPerPage);
+			printf( "Sector Size	 : %d Bytes\n", 	norObject->context.bytesPerSector);
+			printf( "Sector in Block : %d\n",			norObject->context.sectorsPerBlock);
+			printf( "Total Blocks	 : %d\n",			norObject->context.totalBlocks);
+			nor2nd_size=(uint32_t)norObject->context.bytesPerSector * norObject->context.sectorsPerBlock * norObject->context.totalBlocks / 1048567;
+
+			printf( "Size			 : %d MB\n\n",	nor2nd_size);
+			snprintf(nor2nd_name,32,"%s(%d MB)",nor_support_vendor[i].deviceName,nor2nd_size);
+
+
+			return 1;
 		}
 	}
+
+
+
+/*	
 	if (foundId == true)
 	{
 		memcpy(&norObject->id, &id, sizeof(NOR_ID));
@@ -3891,6 +3921,8 @@ nor2ndReadDeviceID(
 		NOR_ERROR_MSG("Unsupport norflash 0x%02X 0x%04X 0x%02X\n", id.manufatureID, id.deviceID, id.deviceID2);
 		return -1;
 	}
+*/
+	NOR_ERROR_MSG("Unsupport norflash 0x%02X 0x%04X 0x%02X\n", id.manufatureID, id.deviceID, id.deviceID2);
 
 	return -1;
 }

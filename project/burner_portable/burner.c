@@ -17,66 +17,6 @@ static float percent_rom;
 
 #define SPI_BURNNIGN_PORT	 SPI_1
 
-
-
-#define UPDATE_FILE_NOR_ROM_NAME  "NOR.ROM"
-#define UPDATE_FILE_NOR_PKG_NAME  "NOR.PKG"
-#define UPDATE_FILE_NAND_PKG_NAME  "NAND.PKG"
-//#define UPDATE_FILE_NAND_PKG_NAME  "RES_32M.PKG"
-
-static volatile bool bunrQuit;
-
-static int flagmode;
-
-static unsigned char* display_str[]
-={"DETECTING..","NAND","NOR"};
-
-static unsigned char* display_info_str[]
-={" "," "," "};
-	
-char* get_burn_status_string()
-{
-	int ret;
-		if( 1 ==flagmode) //NAND
-		{
-
-			return display_str[1];
-		}
-		else if( 2 ==flagmode) //NOR
-		{
-
-			return display_str[2];	
-		}
-		else
-		{
-			return display_str[0];
-
-		}
-
-
-}
-
-char* get_burn_info_string()
-{
-	int ret;
-		if( 1 ==flagmode) //NAND
-		{
-			return get_nand_name();	
-
-		}
-		else if( 2 ==flagmode) //NOR
-		{
-			return get_nor2nd_name();	
-		}
-		else
-		{
-			return display_info_str[0];
-
-		}
-
-
-}
-
 void set_io_high(unsigned int pin)
 {
 	ithGpioSetOut(pin);
@@ -91,63 +31,44 @@ void set_io_low(unsigned int pin)
 	ithGpioClear(pin);
 
 }
-static char rom_file_name[32]={UPDATE_FILE_NOR_ROM_NAME};
-
-#define ROM_FILE_NAME_CH1 "1.ROM"
-#define ROM_FILE_NAME_CH2 "2.ROM"
-#define ROM_FILE_NAME_CH3 "3.ROM"
-#define ROM_FILE_NAME_CH4 "4.ROM"
-#define ROM_FILE_NAME_CH5 "5.ROM"
-
-
-
 
 void switch_to_channel(int channel)
 {
+switch(channel)
+{
+	case 1:
+		set_io_low(48);
+		set_io_low(49);
+		set_io_low(50);
+		break;
+	case 2:
+		set_io_low(48);
+		set_io_low(49);
+		set_io_high(50);
 
-	switch(channel)
-	{
-		case 1:
-			set_io_low(48);
-			set_io_low(49);
-			set_io_low(50);
-			strcpy(rom_file_name,ROM_FILE_NAME_CH1);
-			break;
-		case 2:
-			set_io_low(48);
-			set_io_low(49);
-			set_io_high(50);
-			strcpy(rom_file_name,ROM_FILE_NAME_CH2);
+		break;
+	case 3:
+		set_io_low(48);
+		set_io_high(49);
+		set_io_low(50);
+		break;
+	case 4:
+		set_io_low(48);
+		set_io_high(49);
+		set_io_high(50);
+		break;
+	case 5:
+		
+		set_io_high(48);
+		set_io_high(49);
+		set_io_low(50);
+		break;
+	default:
+		printf("not defined ");
+		break;
+		
 
-			break;
-		case 3:
-			set_io_low(48);
-			set_io_high(49);
-			set_io_low(50);
-			
-			strcpy(rom_file_name,ROM_FILE_NAME_CH3);
-			break;
-		case 4:
-			set_io_low(48);
-			set_io_high(49);
-			set_io_high(50);
-			
-			strcpy(rom_file_name,ROM_FILE_NAME_CH4);
-			break;
-		case 5:
-			
-			set_io_high(48);
-			set_io_high(49);
-			set_io_low(50);
-			
-			strcpy(rom_file_name,ROM_FILE_NAME_CH5);
-			break;
-		default:
-			printf("not defined ");
-			break;
-			
-
-	}
+}
 
 }
 
@@ -212,8 +133,8 @@ int get_ite_chip_id()
 	uint8_t indata[16]={0};
 	read_slave_register(0xd8000004,indata);//packet3
 	for(int i=0;i<9;i++)
-	//printf("0x%x ",indata[i]);	
-	//	printf("\n");
+	printf("0x%x ",indata[i]);	
+		printf("\n");
 
 	if( (indata[3]==0x9) && (indata[2]==0x60) )
 	{
@@ -249,12 +170,22 @@ int set_bypass_mode_960()
 	return 0;
 }
 
+FILE* writing_file_locate()
+{
+	char filepath_tmp[64];
+	FILE* fp;
+int i=1;
+	snprintf(filepath_tmp,64,"A:/%d.rom",i);
+	fp = fopen(filepath_tmp, "r");
+	if (NULL == fp)
+	{
+		printf("fp can not open %s\n",filepath_tmp);
+	}
+	return fp;
 
+}
 
-//ret -1: upgrade fail
-//ret 1: upgrade OK
-
-int writing_nor_progressing(FILE* fp)
+void writing_nor_progressing(FILE* fp)
 {
 	if(NULL== fp )
 		return;
@@ -287,7 +218,7 @@ int writing_nor_progressing(FILE* fp)
 			if( (NULL==rom_content)||(NULL==rom_read_content) )
 			{
 				printf("rom_content ERROR \n");
-				return -1;
+				return;
 			}
 
 			addr=0x0;//write from 0 address
@@ -312,7 +243,7 @@ int writing_nor_progressing(FILE* fp)
 						printf("WRITE ERROR in address 0x%x \n",addr);
 						printf("rom_content 0x%x,0x%x,0x%x,0x%x \n",rom_content[0],rom_content[1],rom_content[2],rom_content[3]);
 						printf("rom_read_content 0x%x,0x%x,0x%x,0x%x \n",rom_read_content[0],rom_read_content[1],rom_read_content[2],rom_read_content[3]);
-						return -1;
+						return;
 					}
 					
 					else
@@ -337,13 +268,9 @@ int writing_nor_progressing(FILE* fp)
 
 		free(rom_content);
 		free(rom_read_content);
-		return 1;
 
 }
 
-
-#define MAX_SPI_CLK 		SPI_CLK_20M
-#define MIN_SPI_CLK 		SPI_CLK_5M
 
 //ret 1: nor init OK
 //ret -1: can not found slave device or not supported nor
@@ -356,7 +283,7 @@ int burner_auto_set_bypass()
 
 	char id[8];
 
-	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
+	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
 	{
 		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
 		ret =	get_ite_chip_id();
@@ -366,83 +293,100 @@ int burner_auto_set_bypass()
 			if(1== ret) //960 series
 			{
 				set_bypass_mode_960();
-				ret= 0x960;//
+				
+				mmpSpiTerminate(SPI_BURNNIGN_PORT);
+				return 0x960;//
+
 			}
 			else if(2== ret) //970 series
 			{
+
 				set_bypass_mode_970();
-				ret= 0x970;//
+				
+				mmpSpiTerminate(SPI_BURNNIGN_PORT);
+				return 0x970;//
+
+
 			}
 			else
 			{
-				printf("unknown chip id\n");
+
 			}
-			
-			mmpSpiTerminate(SPI_BURNNIGN_PORT);
-			return ret;
 		}
-		else
-		{
-			mmpSpiTerminate(SPI_BURNNIGN_PORT);
-		}
-
-	}
-
-return ret;
-}
-
-int burner_check_storage_type_nor()
-{
-
-	int ret=-1;
+		
 
 
-		SPI_CLK_LAB my_clk;
-
-	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
-	{
-		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
-
-		if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
-		{	
-			ret=nor_flash_update_process();
-		}
-		mmpSpiTerminate(SPI_BURNNIGN_PORT);
-
-	}
-	return ret;
-
-}
-int burner_check_storage_type_nand()
-{
-
-	int ret=-1;
-
-
-		SPI_CLK_LAB my_clk;
-
-	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
-	{
-		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
-//sleep(1);
-		if(0==check_spi_nand_id())
-		{
-			//sleep(1);
-
-			ret =nand_flash_update_process();
-		}
-		//sleep(1);
 
 		mmpSpiTerminate(SPI_BURNNIGN_PORT);
 
 	}
-	return ret;
 
+return -1;
 }
+
 
 int burner_check_storage_type()
 {
 
+	int ret;
+
+
+		SPI_CLK_LAB my_clk;
+
+	for(my_clk=SPI_CLK_10M;my_clk>=SPI_CLK_5M;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+
+		if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
+		{
+			return 1;//
+		}
+		
+		if(0==check_spi_nand_id())
+		{
+			return 2;//
+		
+		}
+
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+
+	}
+
+
+
+	return -1;
+	/*
+
+	//use fastest mode to check slave
+		SPI_CLK_LAB my_clk;
+
+	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+
+		if(1== 	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
+		{
+			return 1;//
+		}
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+
+	}
+
+
+	for(my_clk=SPI_CLK_20M;my_clk>=SPI_CLK_5M;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+
+		if(0==check_spi_nand_id())
+		{
+			return 2;//
+		
+		}
+		
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+	}
+	*/
+return -1;
 }
 
 //check it is ROM or PKG in USB or SD card
@@ -482,18 +426,17 @@ void burn_switching_task(void* arg)
 #ifndef WIN32
 
 		
-		while(!bunrQuit)
+		while(1)
 		{
 			for(i=1;i<=5;i++)
 			{
 	
 				switch_to_channel(i);
 
-				BurnerOnTimer_ui_set(i); //update current bar
+			//	BurnerOnTimer_ui_set(i,0); //update current bar
 
-				burn_process();
 
-				sleep(2);
+				sleep(1);
 			}
 	
 		}
@@ -510,17 +453,22 @@ void burn_switching_start()
 }
 
 
+#define UPDATE_FILE_NOR_ROM_NAME  "NOR.ROM"
+#define UPDATE_FILE_NOR_PKG_NAME  "NOR.PKG"
+#define UPDATE_FILE_NAND_PKG_NAME  "NAND.PKG"
+//#define UPDATE_FILE_NAND_PKG_NAME  "RES_32M.PKG"
+static int flagmode;
 
 int get_progress_percent()
 {
 //PKG
 	//ugGetProrgessPercentage();
 int ret;
-	if( 1 ==flagmode)
+	if( 0 ==flagmode)
 	{
 		ret = ugGetProrgessPercentage();
 	}
-	else if( 2 ==flagmode)
+	else if( 1 ==flagmode)
 	{
 		ret=  (int)(percent_rom*100);
 
@@ -533,54 +481,38 @@ int ret;
 			return ret;
 }
 
-
-//ret 0: can not find PKG
-//ret -1: upgrade fail
-//ret 1: upgrade OK
-
-int nor_flash_update_process()
+void nor_flash_update_process()
 {
 	FILE* fp;
-	int ret;
 
-	if( CheckUpdateFileExisted(rom_file_name)>0 )
+	if( CheckUpdateFileExisted(UPDATE_FILE_NOR_ROM_NAME)>0 )
 	{
-			flagmode=2;
+			flagmode=1;
+			fp =UpdateFileOpen(UPDATE_FILE_NOR_ROM_NAME);
+			writing_nor_progressing(fp);
 
-			fp =UpdateFileOpen(rom_file_name);
-			ret =writing_nor_progressing(fp);
-
-			return ret;
+			return;
 	}
-	else
+/*
+	if(CheckUpdateFileExisted(UPDATE_FILE_NOR_PKG_NAME) > 0)
 	{
-			return 0;
+		burner_UpgradePackage(UPDATE_FILE_NOR_PKG_NAME);
+		return;
 	}
-
+*/
 
 }
-//ret 0: can not find PKG
-//ret -1: upgrade fail
-//ret 1: upgrade OK
 
-int nand_flash_update_process()
+void nand_flash_update_process()
 {
 
 
 	if(CheckUpdateFileExisted(UPDATE_FILE_NAND_PKG_NAME) > 0)
 	{
-		flagmode=1;
+		flagmode=0;
 		init_nand_workaround();
-		if(0 == burner_UpgradePackage(UPDATE_FILE_NAND_PKG_NAME) )
-			return 1;
-		else 
-			return -1;
-
-
-	}
-	else
-	{
-			return 0;
+		burner_UpgradePackage(UPDATE_FILE_NAND_PKG_NAME);
+		return;
 	}
 
 }
@@ -591,27 +523,34 @@ void burn_process(void* arg)
 {
 	int ret ;
 	printf("burn_process\n");
-
-	percent_rom=0;
-	ugSetProrgessPercentage(0);
-	flagmode=0;
-
-	
 	burner_auto_set_bypass();//
-
-	if(burner_check_storage_type_nor() >= 0)
 	{
-		printf("burn_process NOR END\n");
-		return;
+	sleep(1);
+
+	printf("GO\n");
+		ret = burner_check_storage_type();
+
+		if(1==ret)
+		{
+			//is NOR
+			 //check PKG or ROM
+			nor_flash_update_process();
+
+		}
+		else if(2==ret)
+		{
+			// is NAND
+			nand_flash_update_process();
+
+		}
+		else
+		{
+
+		}
 
 	}
 
-	if(burner_check_storage_type_nand() >= 0)
-	{
-		printf("burn_process NAND END\n");
-		return;
-	}
-
+	return;
 
 }
 

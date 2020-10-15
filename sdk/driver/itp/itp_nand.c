@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2011 ITE Tech. Inc. All Rights Reserved.
  */
 /** @file

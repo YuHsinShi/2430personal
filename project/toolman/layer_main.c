@@ -240,7 +240,8 @@ static ITUProgressBar* ProgressBarOnGoing;
 static ITUText* Text_BurnChannel;
 static ITUText* Text_Progress1;
 
-	static ITUText* Text_burnstatus;
+static ITUText* Text_burnstatus;
+static ITUText* Text_info;
 
 static int ProgressValue[6];
 static int cur=1;
@@ -252,6 +253,9 @@ void BurnerUpdateBars()
 	ProgressValue[cur] = get_progress_percent();
 
 	
+	ituTextSetStringImpl(Text_info, get_burn_info_string());
+	ituTextSetStringImpl(Text_burnstatus, 	get_burn_status_string());
+
 	ituTextSetStringInt(Text_Progress1, ProgressValue[cur]);
 	ituTextSetStringInt(Text_BurnChannel, cur);
 	ituProgressBarSetValue(ProgressBarOnGoing, ProgressValue[cur]);
@@ -276,6 +280,7 @@ bool BurnerOnEnter(ITUWidget* widget, char* param)
 		Text_BurnChannel = ituSceneFindWidget(&theScene, "Text_BurnChannel");
 		Text_Progress1 = ituSceneFindWidget(&theScene, "Text_Progress1");
 		Text_burnstatus =ituSceneFindWidget(&theScene, "Text_burnstatus");
+		Text_info = ituSceneFindWidget(&theScene, "Text_info");
 
 	for (i = 1; i <= 5; i++)
 	{
@@ -321,6 +326,7 @@ bool BurnerOnTimer(ITUWidget* widget, char* param)
 	else
 		ituWidgetSetVisible(ProgressBarCh1, 1);
 		*/
+	
 
 	BurnerUpdateBars();
 
