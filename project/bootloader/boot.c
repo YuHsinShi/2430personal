@@ -179,7 +179,7 @@ void* LoadImage(void* arg)
     bool compressed;
     int fd = -1;
 
-#if defined(CFG_UPGRADE_IMAGE_NAND)
+#if 0//defined(CFG_UPGRADE_IMAGE_NAND)
     fd = open(":nand", O_RDONLY, 0);
     LOG_DBG "nand fd: 0x%X\n", fd LOG_END
 #elif defined(CFG_UPGRADE_IMAGE_NOR)

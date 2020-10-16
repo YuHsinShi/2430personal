@@ -195,7 +195,7 @@ static void InitFileSystem(void)
 #endif // defined(CFG_FS_FAT)
 
     // mount disks on booting
-#ifdef CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER
+#if 0 //def CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER
     if(!ioctl(ITP_DEVICE_NAND, ITP_IOCTL_NAND_CHECK_REMAP, NULL))
     {
         ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, NULL);
@@ -1125,7 +1125,7 @@ void* BootloaderMain(void* arg)
                         ioctl(ITP_DEVICE_NOR, ITP_IOCTL_FLUSH, NULL);
                     #endif
 
-				    #ifdef CFG_NAND_ENABLE
+				    #if 0 //def CFG_NAND_ENABLE
 				        ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
 				    #endif
 

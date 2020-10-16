@@ -482,7 +482,7 @@ void burn_switching_task(void* arg)
 #ifndef WIN32
 
 		
-		while(!bunrQuit)
+		while(1)
 		{
 			for(i=1;i<=5;i++)
 			{

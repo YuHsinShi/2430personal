@@ -114,7 +114,7 @@ static void* MainTask(void* arg)
     // init nand device
 #ifdef CFG_NAND_ENABLE
     itpRegisterDevice(ITP_DEVICE_NAND, &itpDeviceNand);
-    ioctl(ITP_DEVICE_NAND, ITP_IOCTL_INIT, NULL);
+   /// ioctl(ITP_DEVICE_NAND, ITP_IOCTL_INIT, NULL);
 #endif
 
     // init nor device
