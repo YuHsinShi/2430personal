@@ -21,6 +21,11 @@ extern bool BurnerOnEnter(ITUWidget* widget, char* param);
 extern bool BurnerOnTimer(ITUWidget* widget, char* param);
 extern bool BurnerOnLeave(ITUWidget* widget, char* param);
 
+extern bool LayerEditOnEnter(ITUWidget* widget, char* param);
+extern bool LayerEditNextItem(ITUWidget* widget, char* param);
+
+extern bool LayerEditPrevItem(ITUWidget* widget, char* param);
+
 ITUActionFunction actionFunctions[] =
 {
 	"MainOnEnter", MainOnEnter,
@@ -40,5 +45,9 @@ ITUActionFunction actionFunctions[] =
 	"BurnerOnEnter", BurnerOnEnter,
 	"BurnerOnTimer", BurnerOnTimer,
 	"BurnerOnLeave",BurnerOnLeave,
+
+	"LayerEditOnEnter", LayerEditOnEnter,
+	"LayerEditNextItem", LayerEditNextItem,
+	"LayerEditPrevItem", LayerEditPrevItem,
     NULL, NULL
 };

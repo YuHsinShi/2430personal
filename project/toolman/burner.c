@@ -137,7 +137,7 @@ void switch_to_channel(int channel)
 		case 5:
 			
 			set_io_high(48);
-			set_io_high(49);
+			set_io_low(49);
 			set_io_low(50);
 			
 			strcpy(rom_file_name,ROM_FILE_NAME_CH5);
@@ -258,7 +258,7 @@ int writing_nor_progressing(FILE* fp)
 {
 	if(NULL== fp )
 		return;
-#define ROM_SIZE_WRITE_PIECE  2*1024*1024 //1024*1024
+#define ROM_SIZE_WRITE_PIECE  512*1024 //1024*1024
 
 
 	uint8_t* rom_content=NULL;
@@ -473,7 +473,9 @@ void burn_writer_start()
 }
 
 
-#endif
+static pthread_t switchTask;
+static bool switchTaskQuit;
+
 
 void burn_switching_task(void* arg)
 {
@@ -482,7 +484,7 @@ void burn_switching_task(void* arg)
 #ifndef WIN32
 
 		
-		while(1)
+		while(!switchTaskQuit)
 		{
 			for(i=1;i<=5;i++)
 			{
@@ -501,12 +503,22 @@ void burn_switching_task(void* arg)
 }
 
 
+
 void burn_switching_start()
 {
-	static pthread_t switchTask;
+	switchTaskQuit=false;
+
 
 	printf("burn_writer_start\n");
 	pthread_create(&switchTask, NULL, burn_switching_task, NULL);
+}
+void burn_switching_stop()
+{
+
+	printf("burn_writer_start\n");
+	
+	switchTaskQuit=true;
+	pthread_join(switchTask, NULL);
 }
 
 
@@ -708,4 +720,4 @@ void burn_led_congtrol()
 
 }
 
-
+#endif

@@ -249,7 +249,7 @@ static int cur=1;
 void BurnerUpdateBars()
 {
 	int i;
-	
+#ifndef WIN32	
 	ProgressValue[cur] = get_progress_percent();
 
 	
@@ -264,7 +264,7 @@ void BurnerUpdateBars()
 	{
 		ituProgressBarSetValue(ProgressBarCh[i], ProgressValue[i]);
 	}
-
+#endif
 }
 
 //layer burner
@@ -292,14 +292,17 @@ bool BurnerOnEnter(ITUWidget* widget, char* param)
 
 	}
 	BurnerUpdateBars();
-
+#ifndef WIN32
 	burn_switching_start();
+#endif	
 	return true;
 }
 
 bool BurnerOnLeave(ITUWidget* widget, char* param)
 {
-
+#ifndef WIN32
+	burn_switching_stop();
+#endif
 	return true;
 }
 bool BurnerOnTimer(ITUWidget* widget, char* param)
@@ -340,4 +343,142 @@ void BurnerOnTimer_ui_set(int set_cur)
 	cur = set_cur;
 }
 
+#endif
+#if 1 //for edit layer
+#define MAX_ITEMS 5
+
+typedef struct
+{
+	int id;
+	char title[32];
+	char description[128];
+	int items;//number of items
+	char content[5][64];//selection content , max five
+} Edit_item;
+
+Edit_item editems[] =
+{ 
+	{ 1, "buad rate", "set buad rate of uart", 3,{ "9600", "4800", "115200" } },
+	{ 2, "parity", "set parity of uart", 3, { "NONE", "ODD", "EVEN" } },
+	{ 3, "data bit", "set data bit of uart", 3, { "6", "7", "8" } },
+	{ 4, "stop bit", "set stop bit of uart", 3, { "1", "1.5", "2" } },
+	{ 5, "FILE SIZE", "set the max file size of each capture logs \n (unit: KB)", 3, { "5", "10", "20" } },
+	{ 6, "FILE NUMBER", "set file number to close files ", 3, { "10", "20", "30" } },
+	{ 7, "TIME STAMP", "Add time stamp to capture logs", 2, { "YES", "NO"} },
+	{ 8, "TIME INTERVAL", "Set time interval to close file and jump to next \n (unit: minutes)", 4, { "1", "30", "50","100" } },
+	{ 0, "========", "==", 3, { "x", "x", "x" } },//END ITEMS
+
+};
+
+static ITUText* Text_Title;
+static ITUTextBox* TextBox_Description;
+static ITUWheel* Wheel_setting;
+static int id_select;
+int matchid=1;//showing in the beginning
+
+static void update_settingWheel_ui()
+{
+	char* array[10] = { 0 };
+	int j;
+
+
+	//find match id
+
+	ituTextSetStringImpl(Text_Title, editems[matchid].title);
+	ituTextBoxSetString(TextBox_Description, editems[matchid].description);
+
+
+	for (j = 0; j<editems[matchid].items; j++)
+	{
+		array[j] = editems[matchid].content[j];
+	}
+	
+	ituWheelSetItemTree(Wheel_setting, &array, j);
+}
+static bool LayerEditCheckLegal(int want_id)
+{
+	int j;
+
+	
+	for (j = 0; editems[j].id != 0; j++)
+	{
+		if (editems[j].id == want_id)
+		{
+			matchid = j;
+			return true;
+		}
+	}
+
+	return false;
+}
+bool LayerEditOnEnter(ITUWidget* widget, char* param)
+{
+	Text_Title = ituSceneFindWidget(&theScene, "Text_Title");
+	if (NULL == Text_Title)
+		assert(Text_Title);
+
+
+	TextBox_Description = ituSceneFindWidget(&theScene, "TextBox_Description");
+
+	Wheel_setting = ituSceneFindWidget(&theScene, "Wheel_setting");
+
+
+	id_select = matchid;
+	
+	update_settingWheel_ui();
+	
+	return false;
+}
+
+
+void SetSelectedWheelItem()
+{
+/*
+	ituTextSetStringInt(Text_settingTimeInterval, uart[index_selected].fileInterval);
+	ituTextSetStringInt(Text_settingTimeStamp, uart[index_selected].timestamp);
+	ituTextSetStringInt(Text_settingFileNum, uart[index_selected].fileNum);
+	ituTextSetStringInt(Text_settingFilesize, uart[index_selected].fileMaxsize);
+	ituTextSetStringInt(Text_settingDatabit, uart[index_selected].databit);
+	ituTextSetStringInt(Text_settingStopbit, uart[index_selected].stopbit);
+	ituTextSetStringInt(Text_settingBaud, uart[index_selected].baud_rate);
+*/
+
+//editems[matchid].content[j];
+
+}
+
+
+bool LayerEditNextItem(ITUWidget* widget, char* param)
+{
+	int want_id;
+	want_id = id_select + 1;
+	if (LayerEditCheckLegal(want_id))
+	{
+		id_select = want_id;
+		update_settingWheel_ui();
+	}
+	else
+		printf("ITEM END\n");
+
+
+	return false;
+
+}
+
+bool LayerEditPrevItem(ITUWidget* widget, char* param)
+{
+	int want_id;
+	want_id = id_select - 1;
+	if (LayerEditCheckLegal(want_id))
+	{
+		id_select = want_id;
+		update_settingWheel_ui();
+	}
+	else
+		printf("ITEM END\n");
+
+
+	return false;
+
+}
 #endif

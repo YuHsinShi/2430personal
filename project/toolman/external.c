@@ -510,6 +510,8 @@ void init_log_writer()
 	log_writer[4].itp_uart_index=ITP_DEVICE_UART5;
 
 
+//	ithUartSetBaudRate(ITP_DEVICE_UART1,115200)
+//	ithUartSetParity(ITP_DEVICE_UART1,ITH_UART_NONE,8,1);
 
 	log_writer[0].power_gpio=27;
 	log_writer[1].power_gpio=28;

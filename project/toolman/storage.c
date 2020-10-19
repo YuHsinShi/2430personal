@@ -197,7 +197,9 @@ bool StorageCheckSpace(char *DrivePath, uint64_t checkSize)
 
 int StorageCheckUSBAvailabe(void)
 {
-
+#ifdef WIN32
+	return 1;
+#endif 
     {
         ITPDriveStatus* driveStatusTable;
         ITPDriveStatus* driveStatus = NULL;
