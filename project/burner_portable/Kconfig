@@ -162,7 +162,9 @@ config BUILD_UPGRADE
 config SPI_ENABLE
     def_bool n
 
-
+config BUILD_CLI
+	def_bool y
+	
 ######################################################################
 # Start of bootloader setting
 ######################################################################

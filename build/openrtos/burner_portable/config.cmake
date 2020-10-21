@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Mon Oct 12 23:24:16 2020
+# Wed Oct 21 19:03:47 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -54,6 +54,7 @@ set(CFG_BUILD_INIPARSER y)
 set(CFG_BUILD_SDL y)
 set(CFG_BUILD_UPGRADE y)
 set(CFG_SPI_ENABLE y)
+set(CFG_BUILD_CLI y)
 set(CFG_BOOTLOADER_ENABLE y)
 
 #
@@ -116,7 +117,7 @@ set(CFG_DEV_DEVELOP y)
 set(CFG_OPENRTOS_HEAP_SIZE "0")
 # CFG_OPENRTOS_USE_TRACE_FACILITY is not set
 # CFG_OPENRTOS_GENERATE_RUN_TIME_STATS is not set
-# CFG_OPENRTOS_CLI is not set
+set(CFG_OPENRTOS_CLI y)
 
 #
 # System
@@ -255,13 +256,14 @@ set(CFG_USBD_MASS_STORAGE y)
 # CFG_USBD_HID_DEVICE is not set
 # CFG_USBD_HID_MOUSE is not set
 # CFG_USBD_HID_KBD is not set
-# CFG_USBD_ACM is not set
-set(CFG_USB_VENDOR_ID "0x048D")
-set(CFG_USB_PRODUCT_ID "0x0970")
-set(CFG_USBD_STR_MANUFACTURER "ITE Tech.")
-set(CFG_USBD_STR_PRODUCT "Castor3")
+set(CFG_USBD_ACM y)
+# CFG_DBG_USB is not set
+set(CFG_USB_VENDOR_ID "0x1D6B")
+set(CFG_USB_PRODUCT_ID "0x0106")
+set(CFG_USBD_STR_MANUFACTURER "Toolman")
+set(CFG_USBD_STR_PRODUCT "TOOLDEBUG (Interface 0)")
 set(CFG_USBD_STR_SERIAL_NUMBER "907012344321")
-set(CFG_USB_DEVICE_DISKS "0")
+set(CFG_USB_DEVICE_DISKS "0, 1")
 set(CFG_USBD_LUN_VENDOR_ID "'G','e','n','e','r','i','c',' '")
 set(CFG_USBD_LUN0_PRODUCT_ID "'S','t','o','r','a','g','e',' ','I','N','T','E','R','N','A','L'")
 set(CFG_USBD_LUN1_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','1',' ',' '")
@@ -367,6 +369,7 @@ set(CFG_UPGRADE_FILENAME_LIST "ITEPKG03.PKG")
 set(CFG_UPGRADE_DELAY_AFTER_FINISH "0")
 set(CFG_UPGRADE_USB_DETECT_TIMEOUT "200")
 set(CFG_UPGRADE_USB_TIMEOUT "8000")
+# CFG_UPGRADE_USB_DEVICE is not set
 set(CFG_UPGRADE_PACKAGE_VERSION "1.0")
 # CFG_UPGRADE_BACKUP_PACKAGE is not set
 set(CFG_UPGRADE_MARK_POS "0")
@@ -416,8 +419,14 @@ set(CFG_ITP_INFO y)
 #
 
 #
-# cli (unvisible)
+# cli
 #
+set(CFG_CLI_ERR y)
+set(CFG_CLI_WARN y)
+set(CFG_CLI_INFO y)
+# CFG_CLI_DBG is not set
+set(CFG_CLI_USB_ACM y)
+set(CFG_CLI_BUF_SIZE "0x20000")
 
 #
 # (unvisible)

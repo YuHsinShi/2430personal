@@ -607,16 +607,18 @@ void itpInit(void)
 #endif
 
     // init usb device mode as mass storage device
-#if defined(CFG_USBD_FILE_STORAGE) || defined(CFG_USBD_MASS_STORAGE)
+if(is_in_msc_mode())
+{
     itpRegisterDevice(ITP_DEVICE_USBDFSG, &itpDeviceUsbdFsg);
     ioctl(ITP_DEVICE_USBDFSG, ITP_IOCTL_INIT, NULL);
-#endif
+}
 
     // init usb device mode as rs232 device
-#if defined(CFG_USBD_ACM)
+if(	is_in_acm_mode())
+{
     itpRegisterDevice(ITP_DEVICE_USBDACM, &itpDeviceUsbdAcm);
     ioctl(ITP_DEVICE_USBDACM, ITP_IOCTL_INIT, NULL);
-#endif
+}
 
 #if defined(CFG_USBD_NCM)
     itpRegisterDevice(ITP_DEVICE_USBDNCM, &itpDeviceUsbdNcm);
