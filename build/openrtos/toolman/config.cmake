@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Oct 13 19:19:07 2020
+# Wed Oct 21 20:52:21 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -281,7 +281,15 @@ set(CFG_AUDIO_SPECIAL_CASE_BUFFER_SIZE "64")
 #
 # Storage
 #
-# CFG_NAND_ENABLE is not set
+set(CFG_NAND_ENABLE y)
+set(CFG_SPI_NAND y)
+# CFG_SPI_NAND_USE_AXISPI is not set
+set(CFG_SPI_NAND_USE_SPI1 y)
+set(CFG_NAND_PAGE_SIZE "2048")
+set(CFG_NAND_BLOCK_SIZE "64")
+# CFG_SPI_NAND_BOOT is not set
+set(CFG_NAND_ECC_DATA_SIZE "21")
+set(CFG_NAND_SPARE_SIZE "24")
 set(CFG_NOR_CACHE_FLUSH_INTERVAL "0")
 # CFG_NOR_ENABLE_DTRMODE is not set
 # CFG_SD0_NO_PIN_SHARE is not set
@@ -295,6 +303,8 @@ set(CFG_MMC_ENABLE y)
 #
 # File System
 #
+set(CFG_NAND_RESERVED_SIZE "0x1000000")
+# CFG_NAND_PARTITION0 is not set
 set(CFG_NOR_PARTITION3_SIZE "0")
 set(CFG_PRIVATE_DRIVE "A")
 set(CFG_PUBLIC_DRIVE "B")

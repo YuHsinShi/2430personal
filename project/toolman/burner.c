@@ -561,7 +561,7 @@ int nor_flash_update_process()
 
 			fp =UpdateFileOpen(rom_file_name);
 			ret =writing_nor_progressing(fp);
-
+			fclose(fp);
 			return ret;
 	}
 	else

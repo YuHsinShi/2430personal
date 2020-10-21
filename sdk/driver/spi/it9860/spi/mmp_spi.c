@@ -936,7 +936,7 @@ mmpSpiInitialize(
         }
 
         _spiSetRegisters(port, mode, format, sclk_divider);
-
+/*
         printf( "\n========================================\n");
         printf( "               SPI %d init\n", port);
         printf( "========================================\n");
@@ -944,6 +944,8 @@ mmpSpiInitialize(
         printf( "SClock Divider: %d\n",        sclk_divider);
         printf( "WCLK          : %.2f MHz\n",   wclk);
         printf( "SPI Clock     : %.2f MHz\n\n", wclk / (((float)sclk_divider + 1) * 2));
+*/
+	printf( "SPI Clock	   : %.2f MHz\n\n", wclk / (((float)sclk_divider + 1) * 2));
 
 #ifdef SPI_USE_DMA
         if (_spiInitDma(port) == false)
@@ -1010,10 +1012,11 @@ mmpSpiTerminate(
         {
             SpiObjects[port].slaveReadThreadTerminate = true;
         }
-
+/*
         printf( "========================================\n");
         printf( "             SPI %d terminated.\n", port);
         printf( "========================================\n");
+        */
     }
 
     pthread_mutex_unlock(&SpiObjects[port].mutex);
