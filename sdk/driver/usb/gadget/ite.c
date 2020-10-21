@@ -93,7 +93,7 @@ static struct usb_function          *f_hid_kbd;
 static int ite_do_config(struct usb_configuration *c)
 {
 	int ret = 0;
-
+#if defined(CFG_USBD_MASS_STORAGE)
 if(	is_in_msc_mode())
 {
 	f_msg = usb_get_function(fi_msg);
@@ -106,6 +106,7 @@ if(	is_in_msc_mode())
 	if (ret)
 		goto err_func_msg;
 }
+#endif
 
 #if defined(CFG_USBD_NCM)
     f_ncm = usb_get_function(fi_ncm);
@@ -131,6 +132,7 @@ if(	is_in_msc_mode())
 		goto err_func_uvc1;
 #endif
 
+#if defined(CFG_USBD_ACM)
 if(	is_in_acm_mode())
 {
 	f_acm = usb_get_function(fi_acm);
@@ -143,6 +145,7 @@ if(	is_in_acm_mode())
 	if (ret)
 		goto err_func_acm1;
 }
+#endif
 
 #if defined(CFG_USBD_HID_DEVICE)
 	f_hid = usb_get_function(fi_hid);
@@ -202,15 +205,22 @@ err_func_hid1:
 	usb_put_function(f_hid);
 #endif
 err_func_hid:
+#if defined(CFG_USBD_ACM)
+
 if( is_in_acm_mode())
 {
 	usb_remove_function(c, f_acm);
 }
+#endif
+
 err_func_acm1:
+#if defined(CFG_USBD_ACM)
 if( is_in_acm_mode())
 {
 	usb_put_function(f_acm);
 }
+#endif
+
 err_func_acm:
 #if defined(CFG_USBD_UVC)
 	usb_remove_function(c, f_uvc);
@@ -228,15 +238,20 @@ err_func_ncm1:
     usb_put_function(f_ncm);
 #endif
 err_func_ncm:
+#if defined(CFG_USBD_MASS_STORAGE)
 if(is_in_msc_mode())
 {
 	usb_remove_function(c, f_msg);
 }
+#endif
 err_func_msg:
+
+#if defined(CFG_USBD_MASS_STORAGE)
 if(is_in_msc_mode())
 {
 	usb_put_function(f_msg);
 }
+#endif
 err:
 	return ret;
 }
@@ -265,7 +280,7 @@ static int ite_bind(struct usb_composite_dev *cdev)
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
 	ite_config_driver.iConfiguration = strings_dev[STRING_DESCRIPTION_IDX].id;
-
+#if defined(CFG_USBD_MASS_STORAGE)
 if(is_in_msc_mode())
 {
 
@@ -276,7 +291,7 @@ if(is_in_msc_mode())
 		goto err;
 	}
 }
-
+#endif 
 #if defined(CFG_USBD_NCM)
 	fi_ncm = usb_get_function_instance("ncm");
 	if (IS_ERR(fi_ncm)) {
@@ -292,6 +307,7 @@ if(is_in_msc_mode())
 		goto err_ncm_inst;
 	}
 #endif
+#if defined(CFG_USBD_ACM)
 
 if(	is_in_acm_mode())
 {
@@ -301,6 +317,7 @@ if(	is_in_acm_mode())
 		goto err_uvc_inst;
 	}
 }
+#endif
 #if defined(CFG_USBD_HID_DEVICE)
 	fi_hid = usb_get_function_instance("hid-dev");
 	if (IS_ERR(fi_hid)) {
@@ -348,10 +365,12 @@ err_hid_kbd_inst:
 	usb_put_function_instance(fi_hid_kbd);
 #endif
 err_acm_inst:
+#if defined(CFG_USBD_ACM)
 if( is_in_acm_mode())
 {
 	usb_put_function_instance(fi_acm);
 }
+#endif
 err_uvc_inst:
 #if defined(CFG_USBD_UVC)
 	usb_put_function_instance(fi_uvc);
@@ -361,10 +380,12 @@ err_ncm_inst:
 	usb_put_function_instance(fi_ncm);
 #endif
 err_fsg_inst:
+#if defined(CFG_USBD_MASS_STORAGE)
 if(is_in_msc_mode())
 {
 	usb_put_function_instance(fi_msg);
 }
+#endif
 err:
 	return status;
 }
@@ -385,13 +406,14 @@ static int ite_unbind(struct usb_composite_dev *cdev)
     usb_put_function(f_hid_kbd);
     usb_put_function_instance(fi_hid_kbd);
 #endif
+#if defined(CFG_USBD_MASS_STORAGE)
 
 if(is_in_msc_mode())
 {
 	usb_put_function(f_msg);
 	usb_put_function_instance(fi_msg);
 }
-
+#endif
 #if defined(CFG_USBD_NCM)
 	usb_put_function(f_ncm);
 	usb_put_function_instance(fi_ncm);
@@ -401,12 +423,13 @@ if(is_in_msc_mode())
 	usb_put_function(f_uvc);
 	usb_put_function_instance(fi_uvc);
 #endif
-
+#if defined(CFG_USBD_ACM)
 if(	is_in_acm_mode())
 {
 	usb_put_function(f_acm);
 	usb_put_function_instance(fi_acm);
 }
+#endif
 	printf("ite_unbind() \n");
 
 	return 0;

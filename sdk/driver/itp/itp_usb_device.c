@@ -87,6 +87,7 @@ static void* UsbDeviceDetectHandler(void* arg)
 				heapStatHandler();
 				printf(" Enter Device Mode ~~~~~~~~~~~~~~~ \n");
  
+				#if defined(CFG_USBD_MASS_STORAGE)
                 if(is_in_msc_mode())
 				{
 	                #if defined(CFG_FS_FAT)
@@ -94,19 +95,20 @@ static void* UsbDeviceDetectHandler(void* arg)
 	                ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_UNMOUNT, (void*)diskTable);
 	                #endif
             	}
-
+				#endif
                 iteUsbRegisterGadget();
-
+				#if defined(CFG_USBD_MASS_STORAGE)
 				if(is_in_msc_mode())
 				{
                 	ioctl(ITP_DEVICE_USBDFSG, ITP_IOCTL_ENABLE, NULL);
 				}
-				
+				#endif
+				#if defined(CFG_USBD_ACM)
 				if( is_in_acm_mode())
 				{
 		            ioctl(ITP_DEVICE_USBDACM, ITP_IOCTL_ENABLE, NULL);
 				}
-
+				#endif
                 #if defined(CFG_USBD_NCM)
                 while (!ioctl(ITP_DEVICE_USBDNCM, ITP_IOCTL_IS_CONNECTED, NULL)) {
                     sleep(1);
@@ -132,17 +134,18 @@ static void* UsbDeviceDetectHandler(void* arg)
 				#endif
 				
 				printf(" Leave Device Mode ~~~~~~~~~~~~~~~ \n");
-
+				#if defined(CFG_USBD_ACM)
 				if( is_in_acm_mode())
 				{
 	                ioctl(ITP_DEVICE_USBDACM, ITP_IOCTL_DISABLE, NULL);
 				}
-
+				#endif
                 #if defined(CFG_USBD_NCM)
                 ioctl(ITP_DEVICE_ETHERNET, ITP_IOCTL_DISABLE, NULL); /* netif down & remove & call ncm_close */
                 #endif // #if defined(CFG_USBD_NCM)
 
 				iteUsbUnRegisterGadget();
+				#if defined(CFG_USBD_MASS_STORAGE)
 
 				if(is_in_msc_mode())
 				{
@@ -152,6 +155,7 @@ static void* UsbDeviceDetectHandler(void* arg)
 	                ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_ENABLE, NULL);
 	                #endif // #if defined(CFG_FS_FAT)
 				}
+				#endif
 				connected = false;
 
 				heapStatHandler();

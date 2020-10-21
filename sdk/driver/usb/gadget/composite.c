@@ -2446,6 +2446,7 @@ void usb_composite_overwrite_options(struct usb_composite_dev *cdev,
 
 	if (covr->bcdDevice)
 		desc->bcdDevice = cpu_to_le16(covr->bcdDevice);
+#if defined(CFG_USBD_MASS_STORAGE)
 if(1==is_in_msc_mode())
 {
 	if (covr->serial_number) {
@@ -2453,6 +2454,7 @@ if(1==is_in_msc_mode())
 		dev_str[USB_GADGET_SERIAL_IDX].s = covr->serial_number;
 	}
 }
+#endif
 	if (covr->manufacturer) {
 		desc->iManufacturer = dev_str[USB_GADGET_MANUFACTURER_IDX].id;
 		dev_str[USB_GADGET_MANUFACTURER_IDX].s = covr->manufacturer;
