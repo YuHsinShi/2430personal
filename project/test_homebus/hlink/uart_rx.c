@@ -381,12 +381,28 @@ unsigned char  dress_assign(void)
 void rx_deal(void)
 {
   unsigned char i;
-
+	int count;
   check_data=0;
-
-  if(rx_finish)
+/*
+  rx_data_lenth = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &rx_data);
+  if(rx_data_lenth > 5) {
+	  printf("Homebus Read(%d) :\n", rx_data_lenth);
+	  for(count = 0; count < len; count++) {
+		  printf("0x%x ", rx_data[count]);
+	  }
+	  printf("\r\n");
+  }
+  else
   {
-      rx_finish=0;
+		return;
+  }
+  homebus_recvdata();
+*/
+return;
+
+//  if(rx_finish)
+  {
+  //    rx_finish=0;
       
       
     

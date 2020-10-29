@@ -173,10 +173,55 @@ void homebus_init()
 
 }
 
+void homebus_senddata(char* buf,char len)
+{
+	printf("homebus_senddata \n", len);
+	int count;
+
+	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
+		
+	tHomebusWriteData.len = len;
+	tHomebusWriteData.pWriteDataBuffer =buf;
+
+	for(count = 0; count < len; count++) {
+		printf("0x%x ", buf[count]);
+	}
+	printf("\r\n");
+
+
+
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
+	printf("homebus_senddata end\n");	
+}
+
+void homebus_recvdata(char* buf,char len)
+{
+int recv_len;
+int count;
+	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
+
+	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
+
+
+	recv_len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+	if(recv_len > 0) {
+		printf("Homebus Read(%d) :\n", len);
+		for(count = 0; count < len; count++) {
+			printf("0x%x ", pReadData[count]);
+		}
+		printf("\r\n");
+	}
+
+
+
+}
+
 void homebus_control()
 {
 		homebus_init();
 
+static int counter;
+int flag=0;
 	while(1)
 	{
 		tx_deal();
@@ -184,7 +229,29 @@ void homebus_control()
 		init_tx_deal();//10 ms
 		system_tx_check();//10 ms
 		usleep(5000);
+/*
+		if(999==counter)
+		{
+			if(0==flag)
+			{
+			printf("power on\n");
+				homebus_api_power_on();
+				flag =1;
+			}
+			else
+			{
+				printf("power off\n");
+
+				homebus_api_power_off();
+				flag =0;
+			}
+			counter=0;
+
+		}
+		counter++;
+			
 	}
+*/
 
 }
 

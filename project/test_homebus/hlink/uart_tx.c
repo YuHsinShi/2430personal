@@ -38,126 +38,170 @@
 
 
 #if 1 // porting modified
+
+
+
+unsigned char  system_status;//系统开关机
+unsigned char system_mode;//系统模式  共20个模式
+unsigned char system_wind;//系统风量
+unsigned char tempset;//设定温度
+unsigned char tempset_auto;//自动模式设定温度
+unsigned char tempset_cool;//制冷模式设定温度
+unsigned char tempset_heat;//制热模式设定温度
+unsigned char half_set;//0.5度设定
+unsigned char dry_set;//系统设定湿度
+
+unsigned char 	mode_enable;//模式类型  大于40种组合
+unsigned char 	wind_enable;//风量类型 0：3档   1：3档+自动   2：4档    3：4档+自动  4：6档    5：6档+自动
+
+
+unsigned char temp_ad_value;//温度传感器ad值 
+unsigned char temp_value;//温度传感器温度值
+
+
+unsigned char wind_mode;//风向模式  0：普通风向  1：3D风  2：超远风
+unsigned char  wind_board_enable;//是否有导风板
+unsigned char  winddir_enable;//导风板类型 0：无导风板 1：有一个导风板  2：四方向导风板 3：一方向导风板  4：3D出风口 5：二方向导风板
+unsigned char  wind_board_status;//导风板1是否摆动 1：摆动   0：停止
+unsigned char  wind_board_angle;//导风板1摆动角度 范围1~7
+unsigned char  wind_horizontal_status;//导风板2是否摆动 1：摆动   0：停止
+unsigned char  wind_horizontal_angle;//导风板2摆动角度 范围1~7
+unsigned char  wind_board2_status;//导风板3是否摆动 1：摆动   0：停止
+unsigned char  wind_board2_angle;//导风板3摆动角度 范围1~7
+unsigned char  wind_horizontal2_status;//导风板4是否摆动 1：摆动   0：停止
+unsigned char  wind_horizontal2_angle;//导风板4摆动角度 范围1~7
+unsigned char  wind_board_set;//导风板统一设定 1：为统一设定 0：为单独设定
+
+
+unsigned char save_flag,save_used,save_set_enable;//节能标志,节能是否有效、节能是否可以操作
+unsigned char sleep_flag,sleep_used,sleep_set_enable;//睡眠标志,睡眠是否有效、睡眠是否可以操作
+unsigned char mute_flag,mute_used,mute_set_enable;//静音标志,静音是否有效、静音是否可以操作
+unsigned char health_flag,health_used,health_set_enable;//健康标志,健康是否有效、健康是否可以操作
+unsigned char heat_flag,heat_used,heat_set_enable;//辅热标志,辅热是否有效、辅热是否可以操作
+unsigned char forest_wind_flag,forest_wind_used,forest_wind_set_enable;//森林风标志,森林风是否有效、森林风是否可以操作
+
+unsigned char human_flag,human_used,human_set_enable;//人感标志,人感是否有效、人感是否可以操作
+unsigned char human_sensor,human_sensor_used;//人感2标志,人感2有效
+
+unsigned char 	self_clean_flag,self_clean_used,self_clean_enable;//自清洁标志,自清洁是否有效、自清洁是否可以操作
+unsigned int 	  self_clean_flag_b;//各室内机自清洁标志
+unsigned char 	high_temp_disinfect_flag,high_temp_disinfect_used,high_temp_disinfect_set_enable;//高温杀标志,高温杀是否有效、高温杀是否可以操作
+unsigned int 	  high_temp_disinfect_flag_b;//各室内机高温杀标志
+unsigned char 	power_wind_check_flag,power_wind_flag_used,power_wind_set_enable;//强力标志,强力是否有效、强力是否可以操作
+unsigned int 	  power_wind_check_flag_b;//各室内机强力标志
+
+
 unsigned char d1_d3_check;
 unsigned char initialize_10ms;
-unsigned char initialize_flag;
-unsigned char initialize_cnt;
-unsigned char initialize_step;
+unsigned char initialize_flag;  //系统初始化标志    1：表示初始化结束
+unsigned char initialize_cnt;  //系统初始化计数
+unsigned char initialize_step; //系统初始化步骤
 unsigned char line_init_flag;
-unsigned char tx_system_nuber1;
-unsigned char tx_dress_nuber1;
-unsigned char tx_system_nuber2;
-unsigned char tx_dress_nuber2;
-unsigned char line_control_double;
-unsigned char master_flag;
+unsigned char tx_system_nuber1;//通信对象冷媒系统
+unsigned char tx_dress_nuber1;//通信对象冷媒地址
+unsigned char tx_system_nuber2;//通信对象冷媒系统
+unsigned char tx_dress_nuber2;//通信对象冷媒地址
+unsigned char line_control_double;//有亲子线控器
+unsigned char master_flag;//亲子标志 0：亲线控器 1：子线控器
 
-unsigned char master_flag_write;
 
-unsigned char already_tx_nuber;
-unsigned char basedata[16][50];
-unsigned char option_data[16][50];
-unsigned char option_data_new[16][50];
-unsigned char option_backup[16][50];
 
-	unsigned char option_new_backup[16][50];
-	unsigned char option_data_new1[16][50];
-	unsigned char option_new1_backup[16][50];
-	unsigned char option_all_set_new[16];
-	unsigned char option_all_set_new1[16];
-	unsigned char option_all_set[16];
+unsigned char already_tx_nuber;//正在发码的室内机序号 从0至（total_machine-1）
+unsigned char basedata[16][50];//用于保存室内机数据  basedata[i][1]表示室内机系统  basedata[i][2]表示室内机地址
 
-	unsigned char a3d_wind_err;
-	
+unsigned char option_data[16][50];//各台室内机机能设定数据1G
+unsigned char option_data_new[16][50];//各台室内机机能设定数据2G
+unsigned char option_data_new1[16][50];//各台室内机机能设定数据3G
+
+unsigned char option_backup[16][50];//各台室内机机能设定数据1G临时数组
+unsigned char option_new_backup[16][50];//各台室内机机能设定数据2G临时数组
+unsigned char option_new1_backup[16][50];//各台室内机机能设定数据3G临时数组
+
+unsigned char option_all_set[16];//各台室内机机能设定数据1G共同设定
+unsigned char option_all_set_new[16];//各台室内机机能设定数据2G共同设定
+unsigned char option_all_set_new1[16];//各台室内机机能设定数据3G共同设定
+
+
+
+unsigned char line_protocol;//线控器1、2、3G支持标志
+unsigned char line_g25_flag;//线控器2.5G支持标志
+unsigned int  inroom_2g5_protocol;//各台室内机机2.5G支持标志
+unsigned int	inroom_2g_protocol;//各台室内机机2G支持标志
+unsigned int  inroom_3g_protocol;//各台室内机机3G支持标志
+unsigned char	total_machine;//实际连接的室内机台数
+
+
+
+
+
+unsigned char tx_change_flag;//状态改变发码标志 1：表示有改变 发码后为0
+unsigned char tx_time_1s_cnt;//状态改变发码计数
+
+unsigned char server_set_status;//服务设定状态 为1时表示正处于设定状态，不能开机
+unsigned char a3d_wind_use;//是否有3D出风口
+unsigned char a3d_wind_err;//3D出风口报警
+
+
+unsigned char compress_preheat_reset;//压缩机预热解除
+unsigned char emergency_set_status;
+unsigned char emergency_flag;//应急运转标志
+unsigned char try_run_flag;//试运行标志
+unsigned char try_run_set;//试运行设定标志
+unsigned char try_run_fre;//试运行频率
+
+
+
+unsigned char hh_flag;//品牌 0：日立  1：海信  2：约克
+
+
+
+
+unsigned char  center_control_all;//集控全禁止
+unsigned char center_control_onoff;//集控开关机禁止
+unsigned char 	center_onoff_flag;////集控开关机禁止下允许开机标志
+unsigned char center_control_mode;//集控模式禁止
+unsigned char center_control_wind;//集控风量禁止
+unsigned char center_control_windboard;//集控导风板禁止
+unsigned char center_control_tempset;//集控设定温度禁止
+
+
+
+unsigned char  machine_type;//室内机机型
+unsigned char  machine_type1;//室内机机型1
+
+unsigned char err_now_flag;//正在报警标志
+unsigned char  err_reset_flag;//报警复位
+unsigned char  filter_reset;//滤网复位
+
+
+unsigned char tempset_min_warm_rx;//制热设定温度下限
+unsigned char tempset_max_warm_rx;//制热设定温度上限
+unsigned char tempset_min_cool_rx;//制冷设定温度下限
+unsigned char tempset_max_cool_rx;//制冷设定温度上限
+unsigned char pointcheck1_data[50];//点检1接收数据
+unsigned char pointcheck2_data[16];//点检2接收数据
+
+
+
+
+
+
+
 unsigned char line_change_flag	;
+unsigned char option_tx_flag;
+unsigned char option_set_flag;
+unsigned char single_line_tx_flag;
+unsigned char half_set_change;
 
 
-
-unsigned char 	line_g25_flag;
-unsigned char inroom_2g5_protocol;
-unsigned char	inroom_2g_protocol;
-unsigned char	total_machine;
-
-unsigned char	line_control_dress;
-unsigned char tt_nuber;
-
-unsigned char tt_data;
-unsigned char system_mode;
-unsigned char  system_status;
-
-
-unsigned char tx_change_flag;
-unsigned char tx_time_1s_cnt;
 unsigned char initialize1_check;
 
 unsigned char wifi_power_control;
 unsigned char wifi_tx_flag;
 unsigned char wifi_moudle_set;
 unsigned char confirm_system_status;
-unsigned char server_set_status;
-unsigned char a3d_wind_use;
-unsigned char option_tx_flag;
-unsigned char option_set_flag;
-unsigned char single_line_tx_flag;
-unsigned char half_set_change;
-unsigned char wind_mode;
-
-unsigned char self_tx_data;
-unsigned char  confirm_run_nuber;
-unsigned char system_wind;
-unsigned char    all_package_windnot_flag;
-unsigned char 	   ignore_flag;
-unsigned char 	   wind_board_enable;
-unsigned char 	   wind_board_status;
-
-unsigned char compress_preheat_reset;
-unsigned char emergency_set_status;
-unsigned char emergency_flag;
-unsigned char try_run_flag;
-unsigned char try_run_set;
-
-unsigned char try_run_fre;
-
-unsigned char wind_board_angle;
-
-unsigned char hh_flag;
-unsigned char save_flag;
-unsigned char sleep_flag;
-unsigned char human_flag;
 
 
-unsigned char wind_horizontal2_status;
-unsigned char wind_horizontal2_angle;
-unsigned char wind_board2_status;
-unsigned char wind_board2_angle;
-unsigned char center_control_tempset;
-unsigned char tempset;
-unsigned char dry_set;
-unsigned char  machine_type;
-unsigned char  machine_type1;
-
-unsigned char  err_reset_flag;
-
-unsigned char  filter_reset;
-unsigned char  temp_ad_value;
-unsigned char  wind_board_set;
-
-unsigned char  winddir_enable;
-unsigned char 	wind_horizontal_angle;
-
-unsigned char 	wind_horizontal_status;
-unsigned char 	mute_flag;
-unsigned char 	health_flag;
-unsigned char 	heat_flag;
-unsigned char 	forest_wind_flag;
-unsigned char 	self_clean_flag_b;
-unsigned char 	high_temp_disinfect_flag_b;
-unsigned char 	power_wind_check_flag_b;
-
-unsigned char human_sensor;
-unsigned char human_sensor_used;
-unsigned char inroom_3g_protocol;
-unsigned char line_protocol;
-unsigned char human_used;
 unsigned char option_hh;
 unsigned char temporary_system;
 unsigned char temporary_dress;
@@ -165,20 +209,20 @@ unsigned char temporary_dress;
 
 unsigned char backlight_cnt;
 unsigned char wind_board_set_3s;
-unsigned char 	half_set;
+
 unsigned char 	option_dress;
 unsigned char try_run_status;
-unsigned char 	wind_enable;
+
 unsigned char 	line_06_sent;
-unsigned char 	center_onoff_flag;
+
 unsigned char 	por_06_flag;
-unsigned char 	option_f1;
+unsigned char  option_f1;
 unsigned char self_clean_flag;
 
-unsigned char err_now_flag;
+
 
 unsigned char a3d_wind_led_flag;
-unsigned char err_4s_cnt;
+
 unsigned char system_tx_10ms;
 unsigned char self_check_flag;
 unsigned char tx_change_tx_flag;
@@ -189,7 +233,26 @@ unsigned char cloud_servers_cmd;
 unsigned char did0_data;
 unsigned char did0_lenth;
 
+unsigned char err_4s_cnt;
 unsigned char  err_4s_nuber;
+unsigned char self_tx_data;
+unsigned char  confirm_run_nuber;
+
+unsigned char    all_package_windnot_flag;
+unsigned char 	   ignore_flag;
+unsigned char	line_control_dress;
+unsigned char tt_nuber;
+
+unsigned char tt_data;
+unsigned char master_flag_write;
+
+
+
+
+
+
+
+
 
 
 #endif
@@ -238,7 +301,8 @@ void init_tx_deal(void)
 {
   unsigned char step_time;
 
-  if(d1_d3_check==0)return;
+ // if(d1_d3_check==0)return;
+  initialize_10ms++;
 
   if((initialize_10ms>=100)&&(initialize_flag==0))
   {
@@ -834,6 +898,8 @@ unsigned char get_index(void)
 void tx_deal(void)
 {
 	unsigned char i;
+
+	line_control_dress=master_flag+1;
          
          tx_ack_next_deal();
          
@@ -842,7 +908,7 @@ void tx_deal(void)
 
          //if(tx_start)return;
          
-         if(no_data_cnt<1)return;
+
          /////////////////////////////////////////////////
          
 
@@ -873,15 +939,25 @@ void tx_deal(void)
 		tx_multi=TXTab[Index].Multi;
 		TxFuncPtr=TXTab[Index].CurrentOperate;
 		(*TxFuncPtr)();//ִ�е�ǰ�����Ĳ���
-		/*
+		
 
 			//TODO: send data
 			//tx_total: toatal data send
 			//tx_data: address 
 		int ret;
-		//len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
+			
+
+
+		homebus_senddata(&tx_data[0],tx_total);
+			
 					
-        */
+        
+
+		next_tx_flag=tx_finish_flag; 
+		tx_finish_flag=0;
+
+
+		
 }
 /********************************************************************************
 ********************************************************************************/
@@ -3521,8 +3597,8 @@ void system_tx_check(void)
 
   unsigned char i;
   
-  if(system_tx_10ms==0)return;
-  system_tx_10ms=0;
+//  if(system_tx_10ms==0)return;
+//  system_tx_10ms=0;
   
   
   
@@ -3648,4 +3724,26 @@ void system_tx_check(void)
 }
 /********************************************************************************
 ********************************************************************************/
+
+//===============================================================================
+//trigger to send data out for normal 
+void homebus_api_trigger()
+{
+	tx_change_flag=1;
+	tx_time_1s_cnt=0;
+}
+
+void homebus_api_power_on()
+{
+	system_status=1;
+	homebus_api_trigger();
+}
+
+
+void homebus_api_power_off()
+{
+	system_status=0;
+	
+	homebus_api_trigger();
+}
 
