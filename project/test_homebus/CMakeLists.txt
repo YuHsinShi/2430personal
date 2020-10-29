@@ -9,6 +9,8 @@ add_executable(${CMAKE_PROJECT_NAME}
     
 add_executable(${CMAKE_PROJECT_NAME}
     test_homebus.c
+	hlink/uart_tx.c
+	hlink/uart_rx.c
     )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
