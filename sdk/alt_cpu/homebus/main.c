@@ -69,8 +69,6 @@ uint8_t homebusIsTxCollision(uint8_t val)
     else if(getGpioValue(ptHandle->rxdGpio, 1) == val){
         return 0;
     } else {
-        uint32_t *pDebugAddr = (uint32_t *) (15 * 1024);
-        *pDebugAddr = ENDIAN_SWAP32(0x12345678);
         return 1;
     }
 }
@@ -83,10 +81,11 @@ static int homebusTxSendDataOut(void)
 	uint8_t dataValue = 0;
 	int i = 0, j = 0;
 	int parity_num = 0;
-
+    ptHandle->parity = ODD;
+    
 	for(j = 0; j < ptHandle->txWriteLen; j++) {
 		dataValue = ptHandle->pWriteData[j];
-		
+		parity_num = 0;
 		//start bit
 		setGpioValue(ptHandle->txdGpio, 0);
         chkTime = getCurTimer(0);
@@ -107,10 +106,11 @@ static int homebusTxSendDataOut(void)
 			}
 			nextChkTime += ptHandle->txTickPerbit;
 			while (getDuration(0, chkTime) <= nextChkTime);
+            // if(homebusIsTxCollision(dataValue & (0x1 << i))) return TX_COLLISION; //collision
             setGpioValue(ptHandle->txdGpio, 1);
             nextChkTime += ptHandle->txTickPerbit;
             while (getDuration(0, chkTime) <= nextChkTime);
-          //  if(homebusIsTxCollision(dataValue & (0x1 << i))) return TX_COLLISION; //collision
+            // if(homebusIsTxCollision(dataValue & (0x1 << i))) return TX_COLLISION; //collision
 		}
 		
 		//parity bit
@@ -130,6 +130,7 @@ static int homebusTxSendDataOut(void)
 				else {
 					setGpioValue(ptHandle->txdGpio, 1);
 				}
+                ptHandle->parity = EVEN;
 				break;
 			case NONE:
 				setGpioValue(ptHandle->txdGpio, 0);
@@ -237,7 +238,7 @@ static void homebusProcessInitCmd(void)
     ptHandle->tickPerMs = (cpuClk / 1000);
     ptHandle->txdGpio = ENDIAN_SWAP32(pInitData->txdGpio);
     ptHandle->rxdGpio = ENDIAN_SWAP32(pInitData->rxdGpio);
-    ptHandle->parity = ENDIAN_SWAP32(pInitData->parity);
+    // ptHandle->parity = ENDIAN_SWAP32(pInitData->parity);
     
     //TXD GPIO init
     setGpioMode(ptHandle->txdGpio, 0);

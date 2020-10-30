@@ -396,8 +396,9 @@ void rx_deal(void)
   {
 		return;
   }
-  homebus_recvdata();
 */
+	homebus_recvdata(rx_data,&rx_data_lenth);
+
 return;
 
 //  if(rx_finish)

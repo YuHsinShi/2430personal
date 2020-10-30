@@ -148,9 +148,7 @@ void homebus_init()
 {
 
 
-	ithGpioSetOut(34);
-	ithGpioSetMode(34, ITH_GPIO_MODE0);
-	ithGpioClear(34);
+
 
 
 
@@ -177,6 +175,9 @@ void homebus_senddata(char* buf,char len)
 {
 	printf("homebus_senddata \n", len);
 	int count;
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioClear(34);
 
 	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
 		
@@ -191,26 +192,43 @@ void homebus_senddata(char* buf,char len)
 
 
 	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
-	printf("homebus_senddata end\n");	
+	//printf("homebus_senddata end\n");	
+
+	
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioSet(34);
 }
 
-void homebus_recvdata(char* buf,char len)
+void homebus_recvdata(char* buf,unsigned char* len)
 {
-int recv_len;
+unsigned int recv_len;
 int count;
 	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
 
 	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
 
+    tHomebusReadData.len = MAX_DATA_SIZE;//CMD_LEN;
+    tHomebusReadData.pReadDataBuffer = pReadData;
 
 	recv_len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+
+
+if(recv_len>50)	
+{
+	printf("recv_len ERROR (%d)\n", recv_len);
+	return;
+}
 	if(recv_len > 0) {
-		printf("Homebus Read(%d) :\n", len);
-		for(count = 0; count < len; count++) {
+		printf("Homebus Read(%d) :\n", recv_len);
+		for(count = 0; count < recv_len; count++) {
 			printf("0x%x ", pReadData[count]);
 		}
 		printf("\r\n");
 	}
+
+	//memcpy(buf,pReadData,recv_len);
+	//*len=recv_len;
 
 
 
@@ -222,6 +240,19 @@ void homebus_control()
 
 static int counter;
 int flag=0;
+/*
+while(1)
+{
+
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioSet(34);
+
+	homebus_recvdata(0,0);
+	
+	usleep(10000);
+}
+*/
 	while(1)
 	{
 		tx_deal();
@@ -250,9 +281,8 @@ int flag=0;
 		}
 		counter++;
 			
-	}
 */
-
+		}
 }
 
 

@@ -900,7 +900,15 @@ void tx_deal(void)
 	unsigned char i;
 
 	line_control_dress=master_flag+1;
-         
+/*
+	if(initialize_flag)
+	{
+		tx_system_nuber1=0x01;
+		tx_dress_nuber1=0x04;
+		tx_system_nuber2=0x01;
+		tx_dress_nuber2=0x04;
+	}
+  */       
          tx_ack_next_deal();
          
          

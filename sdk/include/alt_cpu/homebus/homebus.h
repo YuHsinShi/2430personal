@@ -48,7 +48,7 @@ typedef struct
     unsigned int cpuClock;
     unsigned int txdGpio;
 	unsigned int rxdGpio;
-	unsigned int parity;
+	// unsigned int parity;
 } HOMEBUS_INIT_DATA;
 
 typedef struct
