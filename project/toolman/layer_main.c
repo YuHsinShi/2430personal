@@ -371,19 +371,56 @@ Edit_item editems[] =
 };
 
 static ITUText* Text_Title;
+static ITUText* Text_EditChannel;
 static ITUTextBox* TextBox_Description;
 static ITUWheel* Wheel_setting;
-static int id_select;
-int matchid=1;//showing in the beginning
+static int channel_select=0;
 
+static int id_select;
+int matchid=0;//showing in the beginning
+
+static void list_conver_struc(int index_set)
+{
+	int baud;
+
+	switch (matchid+1)
+	{
+		case 1: 	
+			uart[channel_select].baud_rate = atoi(editems[matchid].content[index_set]);
+			printf("ch %d baud rate%d \n", channel_select+1,uart[channel_select].baud_rate);
+		break;
+
+		default:
+		break;
+	}
+}
+
+static int struc_conver_foucusindex()
+{
+	int baud;
+
+	switch (matchid + 1)
+	{
+	case 1:
+		//{ "9600", "4800", "115200" }
+		//uart[channel_select].baud_rate
+
+
+			return 2;
+	default:
+		break;
+	}
+}
 static void update_settingWheel_ui()
 {
 	char* array[10] = { 0 };
 	int j;
-
+	int foucs_index;
 
 	//find match id
-
+	char tmp[64];
+	snprintf(tmp,64, "Channel %d", channel_select+1);
+	ituTextSetStringImpl(Text_EditChannel, tmp);
 	ituTextSetStringImpl(Text_Title, editems[matchid].title);
 	ituTextBoxSetString(TextBox_Description, editems[matchid].description);
 
@@ -394,6 +431,14 @@ static void update_settingWheel_ui()
 	}
 	
 	ituWheelSetItemTree(Wheel_setting, &array, j);
+
+	//list_conver_struc(Wheel_setting->focusIndex); //from focus to memory
+	//set focus item to current value
+	foucs_index= struc_conver_foucusindex();
+	ituWheelGoto(Wheel_setting, foucs_index);
+
+
+
 }
 static bool LayerEditCheckLegal(int want_id)
 {
@@ -416,8 +461,8 @@ bool LayerEditOnEnter(ITUWidget* widget, char* param)
 	Text_Title = ituSceneFindWidget(&theScene, "Text_Title");
 	if (NULL == Text_Title)
 		assert(Text_Title);
-
-
+	
+	Text_EditChannel = ituSceneFindWidget(&theScene, "Text_EditChannel");
 	TextBox_Description = ituSceneFindWidget(&theScene, "TextBox_Description");
 
 	Wheel_setting = ituSceneFindWidget(&theScene, "Wheel_setting");
@@ -427,7 +472,7 @@ bool LayerEditOnEnter(ITUWidget* widget, char* param)
 	
 	update_settingWheel_ui();
 	
-	return false;
+	return true;
 }
 
 
@@ -454,6 +499,8 @@ bool LayerEditNextItem(ITUWidget* widget, char* param)
 	want_id = id_select + 1;
 	if (LayerEditCheckLegal(want_id))
 	{
+		update_settingWheel_ui(); //save previous setting 
+
 		id_select = want_id;
 		update_settingWheel_ui();
 	}
