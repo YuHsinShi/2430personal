@@ -65,9 +65,10 @@ void SettingInit()
 		snprintf(tmp, 64, "uart%d:baud_rate", i);
 		uart[i - 1].baud_rate = iniparser_getint(setting_ini, tmp, 115200);
 
-		snprintf(tmp, 64, "uart%d:parity", i);
-		str = iniparser_getstring(setting_ini, tmp, "NONE");
-		strcpy(uart[i - 1].parity, str);
+		//snprintf(tmp, 64, "uart%d:parity", i);
+		//str = iniparser_getstring(setting_ini, tmp, "NONE");
+		uart[i - 1].parity = 0;
+
 
 		snprintf(tmp, 64, "uart%d:databit", i);
 		uart[i - 1].databit = iniparser_getint(setting_ini, tmp, 8);

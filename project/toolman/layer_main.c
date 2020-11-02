@@ -356,16 +356,26 @@ typedef struct
 	char content[5][64];//selection content , max five
 } Edit_item;
 
+
+#define ID_BAUD_RATE		1
+#define ID_PARITY			2
+#define ID_DBIT				3
+#define ID_SBIT				4
+#define ID_WRITE_FILESIZE	5
+#define ID_WRITE_FILENUM	6
+#define ID_TIMESTAMP		7
+#define ID_TIMEINTERVAL			8
+
 Edit_item editems[] =
 { 
 	{ 1, "buad rate", "set buad rate of uart", 3,{ "9600", "4800", "115200" } },
 	{ 2, "parity", "set parity of uart", 3, { "NONE", "ODD", "EVEN" } },
 	{ 3, "data bit", "set data bit of uart", 3, { "6", "7", "8" } },
-	{ 4, "stop bit", "set stop bit of uart", 3, { "1", "1.5", "2" } },
-	{ 5, "FILE SIZE", "set the max file size of each capture logs \n (unit: KB)", 3, { "5", "10", "20" } },
+	{ 4, "stop bit", "set stop bit of uart", 2, { "1", "2" } },
+	{ 5, "FILE SIZE", "set the max file size of each capture logs \n (unit: KB)", 3, { "5", "20","100" } },
 	{ 6, "FILE NUMBER", "set file number to close files ", 3, { "10", "20", "30" } },
-	{ 7, "TIME STAMP", "Add time stamp to capture logs", 2, { "YES", "NO"} },
-	{ 8, "TIME INTERVAL", "Set time interval to close file and jump to next \n (unit: minutes)", 4, { "1", "30", "50","100" } },
+	{ 7, "TIME STAMP", "Add time stamp to capture logs", 2, { "NO", "YES"} },
+	{ 8, "TIME INTERVAL", "Set time interval to close file and jump to next \n (unit: minutes)", 4, { "1", "30", "60","100" } },
 	{ 0, "========", "==", 3, { "x", "x", "x" } },//END ITEMS
 
 };
@@ -377,39 +387,121 @@ static ITUWheel* Wheel_setting;
 static int channel_select=0;
 
 static int id_select;
-int matchid=0;//showing in the beginning
+int matchid=1;//showing in the beginning
 
-static void list_conver_struc(int index_set)
+//used in other UI layers 
+unsigned char* uart_parity_to_string(int value)
+{
+
+	if (value < editems[ID_PARITY - 1].items)
+		return &(editems[ID_PARITY - 1].content[value]);
+	else
+		return NULL;
+
+		
+}
+
+
+//from wheel foucs index save to struceture
+static void foucusindex_conver_struc(int id,int index_focus)
 {
 	int baud;
+	printf("id %d ,focus index =%d \n",id, index_focus);
+	int intvalue;
+	intvalue = atoi(editems[id - 1].content[index_focus]);
 
-	switch (matchid+1)
+	switch (id)
 	{
-		case 1: 	
-			uart[channel_select].baud_rate = atoi(editems[matchid].content[index_set]);
-			printf("ch %d baud rate%d \n", channel_select+1,uart[channel_select].baud_rate);
+	case ID_BAUD_RATE:
+		uart[channel_select].baud_rate = intvalue;
 		break;
+
+	case ID_DBIT:
+		uart[channel_select].databit = intvalue;
+		break;
+	case ID_SBIT:
+		uart[channel_select].stopbit = intvalue;
+		break;
+	case ID_WRITE_FILESIZE:
+		uart[channel_select].fileMaxsize = intvalue;
+		break;
+
+	case ID_WRITE_FILENUM:
+		uart[channel_select].fileNum = intvalue;
+
+		break;
+	case ID_TIMEINTERVAL:
+		uart[channel_select].fileInterval = intvalue;
+		break;
+	
+	case ID_PARITY:
+		uart[channel_select].parity = index_focus;// 0:NONE,1:ODD, 2:EVEN
+		printf("ch %d parity %d \n", channel_select + 1, uart[channel_select].parity);
+		break;
+	case ID_TIMESTAMP: //display type
+		uart[channel_select].timestamp = index_focus; // 0: NO, 1:YES
 
 		default:
 		break;
 	}
 }
 
-static int struc_conver_foucusindex()
+
+
+//from structure to current wheel
+static int struc_conver_foucusindex(int id)
 {
 	int baud;
+	int cmpvalue;
 
-	switch (matchid + 1)
+	switch (id)
 	{
-	case 1:
-		//{ "9600", "4800", "115200" }
-		//uart[channel_select].baud_rate
+	case ID_BAUD_RATE:
+		cmpvalue = uart[channel_select].baud_rate;
+		break;
+	case ID_DBIT:
+		cmpvalue = uart[channel_select].databit;
+		break;
+	case ID_SBIT:
+		cmpvalue = uart[channel_select].stopbit;
+		break;
+	case ID_WRITE_FILESIZE:
+		cmpvalue = uart[channel_select].fileMaxsize;
+		break;
+	case ID_WRITE_FILENUM:
+		cmpvalue = uart[channel_select].fileNum;
+		break;
+	case ID_TIMEINTERVAL:
+		cmpvalue = uart[channel_select].fileInterval;
+		break;
 
-
-			return 2;
+	case ID_PARITY: //display type
+		if (-1 == uart[channel_select].parity )
+		{ 
+			return editems[id - 1].items;
+		}
+		else
+		{
+			return uart[channel_select].parity; // 0=>NONE, 1->ODD, 2->EVEN
+		}
+		
+	case ID_TIMESTAMP: //display type
+			return uart[channel_select].timestamp; // 1=YES,0=NO
 	default:
 		break;
 	}
+
+	for (int j = 0; j < editems[id - 1].items; j++)
+	{
+		if (cmpvalue == atoi(editems[id - 1].content[j]))
+		{
+			return j;
+		}
+
+	}
+	return  editems[id - 1].items;
+
+
 }
 static void update_settingWheel_ui()
 {
@@ -421,20 +513,20 @@ static void update_settingWheel_ui()
 	char tmp[64];
 	snprintf(tmp,64, "Channel %d", channel_select+1);
 	ituTextSetStringImpl(Text_EditChannel, tmp);
-	ituTextSetStringImpl(Text_Title, editems[matchid].title);
-	ituTextBoxSetString(TextBox_Description, editems[matchid].description);
+	ituTextSetStringImpl(Text_Title, editems[matchid-1].title);
+	ituTextBoxSetString(TextBox_Description, editems[matchid-1].description);
 
 
-	for (j = 0; j<editems[matchid].items; j++)
+	for (j = 0; j<editems[matchid-1].items; j++)
 	{
-		array[j] = editems[matchid].content[j];
+		array[j] = editems[matchid-1].content[j];
 	}
 	
 	ituWheelSetItemTree(Wheel_setting, &array, j);
 
 	//list_conver_struc(Wheel_setting->focusIndex); //from focus to memory
 	//set focus item to current value
-	foucs_index= struc_conver_foucusindex();
+	foucs_index= struc_conver_foucusindex(matchid);
 	ituWheelGoto(Wheel_setting, foucs_index);
 
 
@@ -449,7 +541,7 @@ static bool LayerEditCheckLegal(int want_id)
 	{
 		if (editems[j].id == want_id)
 		{
-			matchid = j;
+			matchid = editems[j].id;
 			return true;
 		}
 	}
@@ -499,7 +591,7 @@ bool LayerEditNextItem(ITUWidget* widget, char* param)
 	want_id = id_select + 1;
 	if (LayerEditCheckLegal(want_id))
 	{
-		update_settingWheel_ui(); //save previous setting 
+		foucusindex_conver_struc(id_select, Wheel_setting->focusIndex);//save previous setting 
 
 		id_select = want_id;
 		update_settingWheel_ui();
@@ -518,6 +610,8 @@ bool LayerEditPrevItem(ITUWidget* widget, char* param)
 	want_id = id_select - 1;
 	if (LayerEditCheckLegal(want_id))
 	{
+		foucusindex_conver_struc(id_select, Wheel_setting->focusIndex);//save previous setting 
+
 		id_select = want_id;
 		update_settingWheel_ui();
 	}

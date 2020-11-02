@@ -66,7 +66,7 @@ void setting_para_update()
 	ituTextSetStringInt(Text_settingStopbit, uart[index_selected].stopbit);
 	ituTextSetStringInt(Text_settingBaud, uart[index_selected].baud_rate);
 	
-	ituTextSetString(Text_settingParity, uart[index_selected].parity);
+	ituTextSetString(Text_settingParity, uart_parity_to_string(uart[index_selected].parity));
 
 
 

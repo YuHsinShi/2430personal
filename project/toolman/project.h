@@ -92,7 +92,7 @@ typedef struct
 {
 	//int enable;			//settings
 	int baud_rate;		//settings
-	char parity[8];			//settings
+	int parity;			//settings
 	int databit;		//settings
 	int stopbit;		//settings
 
