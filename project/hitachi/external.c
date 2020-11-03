@@ -10,236 +10,208 @@
 #define EXT_MAX_QUEUE_SIZE      8
 #define MAX_OUTDATA_SIZE        64
 
-#define UartHeader     		0xFF
-#define UartTotalLength     16
-#define UartPayloadLength   13
-
-// Example for UART payload reference
-#define UartPayload0   		0x00
-#define UartPayload1   		0x01
-#define UartPayload2   		0x02
-#define UartPayload3   		0x03
-#define UartPayload4   		0x04
-#define UartPayload5   		0x05
-#define UartPayload6   		0x06
-#define UartPayload7   		0x07
-#define UartPayload8   		0x08
-#define UartPayload9   		0x09
-#define UartPayload10  		0x0A
-#define UartPayload11  		0x0B
-#define UartPayload12  		0x0C
-#define UartCheckSum		0x4E  // CheckSum = payload0 + payload1 + ...... payload12
 
 #ifdef _WIN32
 #define WIN32_COM           5
 #endif
 
-typedef enum GET_UART_COMMAND_STATE_TAG
-{
-    GET_HEADER,
-    GET_LENGTH,
-    GET_PAYLOAD,
-    GET_CHECKSUM,
-} GET_UART_COMMAND_STATE;
-
 static mqd_t extInQueue = -1;
 static mqd_t extOutQueue = -1;
 static pthread_t extTask;
 static volatile bool extQuit;
-static unsigned char inDataBuf[EXTERNAL_BUFFER_SIZE];
-static unsigned char cmdBuf[EXTERNAL_BUFFER_SIZE];
-static unsigned int cmdPos = 0;
-static GET_UART_COMMAND_STATE gState = GET_HEADER;
-static unsigned int payloadCount = 0;
-static unsigned int checkSum = 0;
+
+
+
+#ifndef WIN32
+
+#include "alt_cpu/alt_cpu_device.h"
+#include "alt_cpu/homebus/homebus.h"
+
+#define MAX_DATA_SIZE 		128
+
+void homebus_init()
+{
+	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
+	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
+	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
+	//	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x31, 0x32, 0x33};
+	printf("Start Homebus\n");
+
+
+	tHomebusInitData.cpuClock = ithGetRiscCpuClock();
+	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
+	tHomebusInitData.rxdGpio = CFG_GPIO_HOMEBUS_RXD;		
+
+
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
+
+
+
+}
+
+void homebus_senddata(char* buf,unsigned char len)
+{
+	printf("homebus_senddata %d \n", len);
+
+	if(len >64)
+	{
+		printf("homebus_senddata %d \n", len);
+		return;
+	}
+	
+	int count;
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioClear(34);
+
+	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
 		
+	tHomebusWriteData.len = len;
+	tHomebusWriteData.pWriteDataBuffer =buf;
+
+	for(count = 0; count < len; count++) {
+		printf("0x%x ", buf[count]);
+	}
+	printf("\r\n");
+
+
+
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
+	//printf("homebus_senddata end\n");	
+
+	
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioSet(34);
+}
+
+void homebus_recvdata(char* buf,unsigned char* len)
+{
+unsigned int recv_len=0;
+int count=0;
+	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
+
+	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
+
+    tHomebusReadData.len = MAX_DATA_SIZE;//CMD_LEN;
+    tHomebusReadData.pReadDataBuffer = pReadData;
+
+int ret;
+uint8_t data_len;
+int timeout=10;
+
+while(timeout>0)
+{
+	ret = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+	if(recv_len >3)
+	{
+		data_len =pReadData[2];//protocol length
+	}
+	else
+	{
+		recv_len=recv_len+ret;
+		timeout--;		
+		usleep(1000);
+		continue;
+	}
+	
+	recv_len=recv_len+ret;
+	if(recv_len>=data_len)
+	{
+		break;
+	}
+	else
+	{
+	    tHomebusReadData.pReadDataBuffer = &pReadData[count];
+	}
+	usleep(10*1000); //9600
+
+		
+}
+if(recv_len>0)
+{
+	printf("Homebus Read(%d) :\n", recv_len);
+	for(count = 0; count < recv_len; count++) {
+		printf("0x%x ", pReadData[count]);
+	}
+	printf("\r\n");
+}
+	//memcpy(buf,pReadData,recv_len);
+	//*len=recv_len;
+
+
+
+}
+
+void homebus_control()
+{
+	homebus_init();
+
+	while(1)
+	{
+		tx_deal();
+		rx_deal();
+		init_tx_deal();//10 ms
+		system_tx_check();//10 ms
+		usleep(5000);
+	}
+}
+
+
+void Hlink_init()
+{
+	    int altCpuEngineType = ALT_CPU_HOMEBUS;
+
+	 //Load Engine on ALT CPU
+    ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_ALT_CPU_SWITCH_ENG, &altCpuEngineType);
+    ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
+//    homebus_test();	    
+	pthread_create(&extTask, NULL, homebus_control, NULL);
+
+}
+#endif
+
+
+
+
+
+void Hlink_send_state(int param)
+{
+#ifdef WIN32
+	printf("Hlink_send_state %d \n", param);
+#else 
+	switch (param)
+	{
+	case HLINK_POWER_ON:
+		homebus_api_power_on();
+		break;
+	case HLINK_POWER_OFF:
+		homebus_api_power_off();
+		break;
+
+	default:
+		printf("(ERROR) Hlink_send_state id = %d \n", param);
+		break;
+
+	}
+#endif
+	return;
+}
+
+bool Hlink_send(ITUWidget* widget, char* param)
+{
+	int i;
+	i = atoi(param[0]);
+	Hlink_send_state(i);
+	return false;
+}
+
+
 static void* ExternalTask(void* arg)
 {
     while (!extQuit)
     {
-       	ExternalEvent evOut;
-		ExternalEvent evIn;		
-		unsigned char readLen = 0;
-		unsigned char paramBuf[EXTERNAL_BUFFER_SIZE];
-		unsigned char outDataBuf[MAX_OUTDATA_SIZE];
-		unsigned int  i = 0, count = 0;
-		bool isToMc = false;
-		bool isCmdCompleted = false;
 
-#if defined(CFG_UART0_ENABLE) && !defined(CFG_DBG_UART0)
-		// Receive UI command
-		if (mq_receive(extOutQueue, (char*)&evIn, sizeof(ExternalEvent), 0) > 0)
-		{
-			isToMc = true;
-			memset(outDataBuf, 0, MAX_OUTDATA_SIZE);
-
-			outDataBuf[0] = 0x00;
-			outDataBuf[1] = 0x01;
-		}
-
-		// Check if need to send data to main controller
-		if (isToMc)
-		{
-#ifdef _WIN32
-            UartSend(WIN32_COM, outDataBuf, MAX_OUTDATA_SIZE);
-#else
-			write(ITP_DEVICE_UART0, outDataBuf, MAX_OUTDATA_SIZE);
-#endif
-		}
-
-		memset(inDataBuf, 0, EXTERNAL_BUFFER_SIZE);
-		// Read data from UART port
-#ifdef _WIN32
-        readLen = UartReceive(WIN32_COM, inDataBuf, EXTERNAL_BUFFER_SIZE);
-#else
-		readLen = read(ITP_DEVICE_UART0, inDataBuf, EXTERNAL_BUFFER_SIZE);
-#endif
-
-		// Example for UART error correction to avoid data shift
-		if (readLen)
-		{
-			while (readLen--)
-			{
-				switch (gState)
-				{
-					case GET_HEADER:
-						if (UartHeader == inDataBuf[count])
-						{
-							cmdBuf[cmdPos++] = inDataBuf[count];
-							gState = GET_LENGTH;
-						}
-						else
-						{
-							// printf("[GET_HEADER] Wrong, getstr=0x%x, len=%d\n", getstr[count], len);
-							cmdPos = 0;
-							memset(cmdBuf, 0, EXTERNAL_BUFFER_SIZE);
-							gState = GET_HEADER;
-						}
-						break;
-
-					case GET_LENGTH:
-						if (UartTotalLength == inDataBuf[count])
-						{
-							cmdBuf[cmdPos++] = inDataBuf[count];
-							gState = GET_PAYLOAD;
-						}
-						else
-						{
-							// printf("[GET_LENGTH] Wrong, getstr=0x%x\n", getstr[count]);
-							cmdPos = 0;
-							memset(cmdBuf, 0, EXTERNAL_BUFFER_SIZE);
-							gState = GET_HEADER;
-						}
-						break;
-
-					case GET_PAYLOAD:
-						if (payloadCount != (UartPayloadLength - 1))
-						{
-							gState = GET_PAYLOAD;
-							payloadCount++;
-						}
-						else
-						{
-							gState = GET_CHECKSUM;
-							payloadCount = 0;
-						}
-						cmdBuf[cmdPos++] = inDataBuf[count];
-						break;
-
-					case GET_CHECKSUM:
-					    // checkSum is sum of all payloads
-						for (i=0; i<UartPayloadLength; i++)
-							checkSum += cmdBuf[2+i];
-
-						if (checkSum == inDataBuf[count])
-						{
-							// Get one command
-							cmdBuf[cmdPos++] = inDataBuf[count];
-							isCmdCompleted = true;
-						}
-						else
-						{
-							printf("[GET_CHECKSUM] Wrong, checkSum=0x%x\n", checkSum);
-						}
-						checkSum = 0;
-						cmdPos = 0;
-						gState = GET_HEADER;
-						break;
-				}
-				count++;
-			}
-		}
-
-		// If read data is completed, start to parse data
-		if (isCmdCompleted)
-		{
-			// Parse data and check if need to send data to UI or main controller
-			// case 0x00~0x04 and default send data to UI
-			// case 0x05 send data to main controller
-			switch(cmdBuf[3])
-			{
-			case 0x00:
-				evIn.type = EXTERNAL_TEST0;
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x01:
-				evIn.type = EXTERNAL_TEST1;
-				evIn.arg1 = cmdBuf[4];
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x02:
-				evIn.type = EXTERNAL_TEST2;
-				evIn.arg1 = cmdBuf[4];
-				evIn.arg2 = cmdBuf[5];
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x03:
-				evIn.type = EXTERNAL_TEST3;
-				evIn.arg1 = cmdBuf[4];
-				evIn.arg2 = cmdBuf[5];
-				evIn.arg3 = cmdBuf[6];
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x04:
-				evIn.type = EXTERNAL_TEST4;
-				evIn.arg1 = cmdBuf[4];
-				evIn.arg2 = cmdBuf[5];
-				evIn.arg3 = cmdBuf[6];
-				paramBuf[0] = 0x0;
-				paramBuf[1] = 0x1;
-				paramBuf[2] = 0x2;
-				memcpy(evIn.buf1, paramBuf, EXTERNAL_BUFFER_SIZE); 
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-				break;
-
-			case 0x05:
-				memset(outDataBuf, 0 , MAX_OUTDATA_SIZE);
-				outDataBuf[0] = 0xFF;
-				outDataBuf[1] = 0xEE;
-				outDataBuf[2] = 0xCC;
-#ifdef _WIN32
-                UartSend(WIN32_COM, outDataBuf, MAX_OUTDATA_SIZE);
-#else
-				write(ITP_DEVICE_UART0, outDataBuf, MAX_OUTDATA_SIZE);
-#endif
-				break;
-				
-			default:
-				evIn.type = EXTERNAL_SHOW_MSG;
-			    memset(evIn.buf1, 0 , EXTERNAL_BUFFER_SIZE);
-                memcpy(evIn.buf1, cmdBuf, EXTERNAL_BUFFER_SIZE);
-				mq_send(extInQueue, (const char*)&evIn, sizeof (ExternalEvent), 0);
-                break;
-			}
-			memset(cmdBuf, 0, EXTERNAL_BUFFER_SIZE);
-			isCmdCompleted = false;
-		}
-
-#endif
         usleep(10000);
     }
     mq_close(extInQueue);
@@ -266,21 +238,6 @@ void ExternalInit(void)
 
     extQuit = false;
 
-#if defined(CFG_UART0_ENABLE) && !defined(CFG_DBG_UART0)
-#ifdef _WIN32
-	if(ComInit(WIN32_COM, CFG_UART0_BAUDRATE)) {
-		//ComInit Error
-		mq_close(extInQueue);
-		mq_close(extOutQueue);
-		extInQueue = -1;
-		extOutQueue = -1;
-		return;
-	}
-#else
-	itpRegisterDevice(ITP_DEVICE_UART0, &itpDeviceUart0);
-    ioctl(ITP_DEVICE_UART0, ITP_IOCTL_INIT, NULL);
-#endif
-#endif
 
     pthread_create(&extTask, NULL, ExternalTask, NULL);
 }

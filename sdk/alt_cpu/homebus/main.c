@@ -86,6 +86,7 @@ static int homebusTxSendDataOut(void)
 	for(j = 0; j < ptHandle->txWriteLen; j++) {
 		dataValue = ptHandle->pWriteData[j];
 		parity_num = 0;
+        
 		//start bit
 		setGpioValue(ptHandle->txdGpio, 0);
         chkTime = getCurTimer(0);
@@ -264,8 +265,9 @@ static void homebusMonitorRx(void)
         if(CurReadBit == 0 && ptHandle->rxPreReadBit != CurReadBit)
         {
             ptHandle->rxChkTime = getCurTimer(0);
-            ptHandle->rxNextReadTime = ptHandle->rxTickPerbit;
+            ptHandle->rxNextReadTime = ptHandle->rxTickPerbit + (ptHandle->rxTickPerbit>>1);
             ptHandle->readByte = 0x0;
+            ptHandle->rxBitIdx = 0;
             ptHandle->rxState = RX_PROCESSING;
         }
         else if(getDuration(0, ptHandle->rxChkTime) >= ptHandle->rxNextReadTime && ptHandle->rxState == RX_ACK) {
@@ -285,7 +287,7 @@ static void homebusMonitorRx(void)
 		}
 		else{
 			// Receive 1 Byte done
-			ptHandle->rxBitIdx = 0;
+			// ptHandle->rxBitIdx = 0;
             ptHandle->rxState = RX_ACK;
 			ptHandle->pReadData[ptHandle->rxWriteIdx] = ptHandle->readByte;
 			ptHandle->rxWriteIdx++;

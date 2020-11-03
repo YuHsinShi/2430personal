@@ -662,6 +662,19 @@ void DynamicLoadTpModule(void);
 }
 #endif
 
+
+
+
+#define HLINK_POWER_OFF		1
+#define HLINK_POWER_ON		2
+
+
+
+
+
+
+
+
 #endif /* PROJECT_H */
 /** @} */ // end of template
 

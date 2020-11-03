@@ -322,6 +322,9 @@ void StopScreenLock(void)
 		mainCoverFlow = ituSceneFindWidget(&theScene, "mainCoverFlow");
 		assert(mainCoverFlow);
 	}
+
+	Hlink_send_state(HLINK_POWER_ON); 
+
 	ituLayerGoto(mainLayer);
 	ituCoverFlowGoto(mainCoverFlow, 1);
 

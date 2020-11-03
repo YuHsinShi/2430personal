@@ -141,7 +141,12 @@ add_executable(${CMAKE_PROJECT_NAME}
     upgrade.c
     backup.c
     )
-
+	
+add_executable(${CMAKE_PROJECT_NAME}
+	hlink/uart_tx.c
+	hlink/uart_rx.c    
+	)
+	
 if (DEFINED CFG_SHT20_ENABLE)
     add_executable(${CMAKE_PROJECT_NAME}
         sht20_sensor.c

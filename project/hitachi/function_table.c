@@ -135,8 +135,14 @@ extern bool AiOnEnter(ITUWidget* widget, char* param);
 extern bool AiRadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool AiAutoCheckBoxOnPress(ITUWidget* widget, char* param);
 
+
+extern bool Hlink_send(ITUWidget* widget, char* param);
+
+
 ITUActionFunction actionFunctions[] =
 {
+	"Hlink_send", Hlink_send, //for hlink send , use para as input
+	
 	"MainOnEnter", MainOnEnter,
 	"MainOnTimer", MainOnTimer,
 	"MainCoverFlowOnChanged", MainCoverFlowOnChanged,
