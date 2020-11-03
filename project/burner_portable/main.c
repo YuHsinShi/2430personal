@@ -3,7 +3,7 @@
 
 int is_in_acm_mode()
 {
-	return 1;
+	return 0;
 }
 
 int is_in_msc_mode()
@@ -24,10 +24,7 @@ if(	is_in_acm_mode())
 }
 
 
-while(1)
-{
-sleep(1);
-}
+
 burn_led_congtrol();
 
 burn_process_start();

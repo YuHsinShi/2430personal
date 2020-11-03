@@ -15,7 +15,7 @@ static float percent_rom;
 #define BURNER_STATUS_ROM_NOT_EXISTED	-1
 
 
-#define SPI_BURNNIGN_PORT	 SPI_1
+#define SPI_BURNNIGN_PORT	 SPI_0
 
 void set_io_high(unsigned int pin)
 {
@@ -570,7 +570,7 @@ void burn_led_congtrol_process(void* arg)
 	static int flag=0;
 	int percent;
 #define LED1_IO	24
-#define LED2_IO 25
+#define LED2_IO 62
 
 ithGpioSetOut(LED1_IO);
 ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);

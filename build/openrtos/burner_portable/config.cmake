@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Wed Oct 21 19:03:47 2020
+# Tue Nov 03 15:32:53 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -185,7 +185,8 @@ set(CFG_CPU_WB y)
 set(CFG_NAND_ENABLE y)
 set(CFG_SPI_NAND y)
 # CFG_SPI_NAND_USE_AXISPI is not set
-set(CFG_SPI_NAND_USE_SPI1 y)
+set(CFG_SPI_NAND_USE_SPI0 y)
+# CFG_SPI_NAND_USE_SPI1 is not set
 set(CFG_NAND_PAGE_SIZE "2048")
 set(CFG_NAND_BLOCK_SIZE "64")
 # CFG_SPI_NAND_BOOT is not set
@@ -229,8 +230,9 @@ set(CFG_INTERNAL_RTC_TIMER "5")
 # CFG_I2C2_ENABLE is not set
 # CFG_I2C3_ENABLE is not set
 # CFG_I2S_ENABLE is not set
-# CFG_SPI0_ENABLE is not set
-set(CFG_SPI1_ENABLE y)
+set(CFG_SPI0_ENABLE y)
+# CFG_SPI0_40MHZ_ENABLE is not set
+# CFG_SPI1_ENABLE is not set
 # CFG_RGBTOMIPI_ENABLE is not set
 # CFG_WIEGAND_ENABLE is not set
 set(CFG_UART_ENABLE y)
@@ -296,10 +298,10 @@ set(CFG_POWER_DOZE y)
 set(CFG_GPIO_SD0_POWER_ENABLE "-1")
 set(CFG_GPIO_SD0_WRITE_PROTECT "-1")
 set(CFG_GPIO_USB_ID_PIN "20")
-set(CFG_SPI1_MISO_GPIO "41")
-set(CFG_SPI1_MOSI_GPIO "40")
-set(CFG_SPI1_CLOCK_GPIO "38")
-set(CFG_SPI1_CHIP_SEL_GPIO "42")
+set(CFG_SPI0_MISO_GPIO "22")
+set(CFG_SPI0_MOSI_GPIO "21")
+set(CFG_SPI0_CLOCK_GPIO "19")
+set(CFG_SPI0_CHIP_SEL_GPIO "20")
 
 #
 # Network
