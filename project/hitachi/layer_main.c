@@ -825,7 +825,7 @@ bool MainTempBtnOnPress(ITUWidget* widget, char* param)
 }
 
 
-bool MainLStatusChkBoxOnPress(ITUWidget* widget, char* param)
+bool MainLStatusChkBoxOnMouseUp(ITUWidget* widget, char* param)
 {
 	int status_index = atoi(param);
 

@@ -191,7 +191,7 @@ bool ExamineSubRadioBoxOnPress(ITUWidget* widget, char* param)
     return true;
 }
 
-bool ExamineBtnOnPress(ITUWidget* widget, char* param)
+bool ExamineBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	char tmp[32];
 

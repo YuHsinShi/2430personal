@@ -502,7 +502,7 @@ bool TrialRunAddrUpdateRadioBoxOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool TrialRunAddrUpdateBtnOnPress(ITUWidget* widget, char* param)
+bool TrialRunAddrUpdateBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	int i;
 	char tmp[32];

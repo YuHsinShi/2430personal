@@ -8,7 +8,7 @@ extern bool MainCoverFlowOnChanged(ITUWidget* widget, char* param);
 //extern bool MainRMoreModeBackgroundBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainHumidityBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainTempBtnOnPress(ITUWidget* widget, char* param);
-extern bool MainLStatusChkBoxOnPress(ITUWidget* widget, char* param);
+extern bool MainLStatusChkBoxOnMouseUp(ITUWidget* widget, char* param);
 extern bool MainTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool MainTopAutoChkBoxOnPress(ITUWidget* widget, char* param);
@@ -32,7 +32,7 @@ extern bool SetHumiditySetBtnOnPress(ITUWidget* widget, char* param);
 extern bool SetHumidityWheelOnChanged(ITUWidget* widget, char* param);
 
 extern bool MoreModeOnEnter(ITUWidget* widget, char* param);
-extern bool MoreModeRadioBoxOnPress(ITUWidget* widget, char* param);
+extern bool MoreModeRadioBoxOnMouseUp(ITUWidget* widget, char* param);
 
 extern bool InductionSettingOnEnter(ITUWidget* widget, char* param);
 extern bool InductionSettingTrackBarOnChanged(ITUWidget* widget, char* param);
@@ -80,17 +80,17 @@ extern bool TimingRestDeleteBtnOnPress(ITUWidget* widget, char* param);
 extern bool SettingOnEnter(ITUWidget* widget, char* param);
 extern bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool SettingTimeWheelOnChanged(ITUWidget* widget, char* param);
-extern bool SettingTimeBtnOnPress(ITUWidget* widget, char* param);
-extern bool SettingLightBtnOnPress(ITUWidget* widget, char* param);
+extern bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param);
+extern bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingLightBtnOnSlideUp(ITUWidget* widget, char* param);
-extern bool SettingScreenLockBtnOnPress(ITUWidget* widget, char* param);
+extern bool SettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingScreenLockSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool SettingScreenLockRadBoxOnPress(ITUWidget* widget, char* param);
 
 extern bool ExamineOnEnter(ITUWidget* widget, char* param);
 extern bool ExamineSubEnterBtnOnPress(ITUWidget* widget, char* param);
 extern bool ExamineSubRadioBoxOnPress(ITUWidget* widget, char* param);
-extern bool ExamineBtnOnPress(ITUWidget* widget, char* param);
+extern bool ExamineBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool ExamineShowModelRadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool ExamineModelTestRadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param);
@@ -123,7 +123,7 @@ extern bool TrialRunAddrUpdateSARadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunAddrUpdatePMBtnOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunAddrUpdateValueEnterBtnOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunAddrUpdateRadioBoxOnPress(ITUWidget* widget, char* param);
-extern bool TrialRunAddrUpdateBtnOnPress(ITUWidget* widget, char* param);
+extern bool TrialRunAddrUpdateBtnOnMouseUp(ITUWidget* widget, char* param);
 
 extern bool AirFlowOnEnter(ITUWidget* widget, char* param);
 extern bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param);
@@ -150,7 +150,7 @@ ITUActionFunction actionFunctions[] =
 	//"MainRMoreModeBackgroundBtnOnPress", MainRMoreModeBackgroundBtnOnPress,
 	"MainHumidityBtnOnPress",MainHumidityBtnOnPress,
 	"MainTempBtnOnPress", MainTempBtnOnPress,
-	"MainLStatusChkBoxOnPress", MainLStatusChkBoxOnPress,
+	"MainLStatusChkBoxOnMouseUp", MainLStatusChkBoxOnMouseUp,
 	"MainTopIndLightTrackBarOnChanged", MainTopIndLightTrackBarOnChanged,
 	"MainTopScreenLightTrackBarOnChanged", MainTopScreenLightTrackBarOnChanged,
 	"MainTopAutoChkBoxOnPress", MainTopAutoChkBoxOnPress,
@@ -174,7 +174,7 @@ ITUActionFunction actionFunctions[] =
 	"SetHumidityWheelOnChanged", SetHumidityWheelOnChanged,
 
 	"MoreModeOnEnter", MoreModeOnEnter,
-	"MoreModeRadioBoxOnPress", MoreModeRadioBoxOnPress,
+	"MoreModeRadioBoxOnMouseUp", MoreModeRadioBoxOnMouseUp,
 
 	"InductionSettingOnEnter", InductionSettingOnEnter,
 	"InductionSettingTrackBarOnChanged", InductionSettingTrackBarOnChanged,
@@ -223,17 +223,17 @@ ITUActionFunction actionFunctions[] =
 	"SettingOnEnter", SettingOnEnter,
 	"SettingTimeSaveBtnOnPress", SettingTimeSaveBtnOnPress,
 	"SettingTimeWheelOnChanged", SettingTimeWheelOnChanged,
-	"SettingTimeBtnOnPress", SettingTimeBtnOnPress,
-	"SettingLightBtnOnPress", SettingLightBtnOnPress,
+	"SettingTimeBtnOnMouseUp", SettingTimeBtnOnMouseUp,
+	"SettingLightBtnOnMouseUp", SettingLightBtnOnMouseUp,
 	"SettingLightBtnOnSlideUp", SettingLightBtnOnSlideUp,
-	"SettingScreenLockBtnOnPress", SettingScreenLockBtnOnPress,
+	"SettingScreenLockBtnOnMouseUp", SettingScreenLockBtnOnMouseUp,
 	"SettingScreenLockSaveBtnOnPress", SettingScreenLockSaveBtnOnPress,
 	"SettingScreenLockRadBoxOnPress", SettingScreenLockRadBoxOnPress,
 
 	"ExamineOnEnter", ExamineOnEnter,
 	"ExamineSubEnterBtnOnPress", ExamineSubEnterBtnOnPress,
 	"ExamineSubRadioBoxOnPress", ExamineSubRadioBoxOnPress,
-	"ExamineBtnOnPress", ExamineBtnOnPress,
+	"ExamineBtnOnMouseUp", ExamineBtnOnMouseUp,
 	"ExamineShowModelRadioBoxOnPress", ExamineShowModelRadioBoxOnPress,
 	"ExamineModelTestRadioBoxOnPress", ExamineModelTestRadioBoxOnPress,
 	"ExamineModelTestEnterBtnOnPress", ExamineModelTestEnterBtnOnPress,
@@ -266,7 +266,7 @@ ITUActionFunction actionFunctions[] =
 	"TrialRunAddrUpdatePMBtnOnPress", TrialRunAddrUpdatePMBtnOnPress,
 	"TrialRunAddrUpdateValueEnterBtnOnPress", TrialRunAddrUpdateValueEnterBtnOnPress,
 	"TrialRunAddrUpdateRadioBoxOnPress", TrialRunAddrUpdateRadioBoxOnPress,
-	"TrialRunAddrUpdateBtnOnPress", TrialRunAddrUpdateBtnOnPress,
+	"TrialRunAddrUpdateBtnOnMouseUp", TrialRunAddrUpdateBtnOnMouseUp,
 
 	"AirFlowOnEnter", AirFlowOnEnter,
 	"AirFlowAutoChkBoxOnPress", AirFlowAutoChkBoxOnPress,

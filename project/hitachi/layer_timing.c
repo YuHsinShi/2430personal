@@ -86,7 +86,7 @@ static int tmpWeekTimeHrIndex = 0;
 static int WeekTimeHrIndex[MAX_WEEK_COUNT] = { 10, 14 };
 static int tmpWeekTimeMinIndex = 0;
 static int WeekTimeMinIndex[MAX_WEEK_COUNT] = { 30, 30 };
-static int tmpWeekDay[7] = {0};
+static int tmpWeekDay[8] = {0};
 static int WeekDay[MAX_WEEK_COUNT][8] = { { 1, 1, 1, 1, 1, 1, 1, 1 }, { 1, 1, 1, 1, 1, 1, 0, 0 } };
 static bool tmpPowerOn = false;
 static bool PowerOn[MAX_WEEK_COUNT] = { false, true };
@@ -103,7 +103,7 @@ static bool addingRest = false;
 
 bool TimingOnEnter(ITUWidget* widget, char* param)
 {
-	int i, j, dayItemCnt;
+	int i, j, dayItemCnt,W;
 	char tmp[64];
 
 	ITCTree* node;
@@ -358,7 +358,29 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 
 		sprintf(tmp, "%02d", restDayIndex[i]);
 		ituTextSetString(restSet[i].dayText, tmp);
+
+		if (restMonthIndex[i] == 1 || restMonthIndex[i] == 2)
+		{
+			W = (restDayIndex[i] + 2 * (restMonthIndex[i] + 12) + 3 * ((restMonthIndex[i] + 12) + 1) / 5 + restYearIndex[i] + restYearIndex[i] / 4 - restYearIndex[i] / 100 + restYearIndex[i] / 400) % 7;
+		}
+		else
+		{
+			W = (restDayIndex[i] + 2 * restMonthIndex[i] + 3 * (restMonthIndex[i] + 1) / 5 + restYearIndex[i] + restYearIndex[i] / 4 - restYearIndex[i] / 100 + restYearIndex[i] / 400) % 7;
+		}
+
+		if (W == 5 || W == 6)
+		{
+			ituCheckBoxSetChecked(restSet[i].selectCheckbox, true);
 	}
+		else
+		{
+			ituCheckBoxSetChecked(restSet[i].selectCheckbox, false);
+		}
+		
+	}
+
+	
+
 	
 	
 	return true;

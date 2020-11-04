@@ -123,7 +123,7 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 
 	return true;
 }
-bool SettingTimeBtnOnPress(ITUWidget* widget, char* param)
+bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 
 
@@ -240,7 +240,7 @@ bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param)
     return true;
 }
 
-bool SettingLightBtnOnPress(ITUWidget* widget, char* param)
+bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 
 	if (ituCheckBoxIsChecked(settingLightAutoCheckBox))
@@ -277,7 +277,7 @@ bool SettingLightBtnOnSlideUp(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool SettingScreenLockBtnOnPress(ITUWidget* widget, char* param)
+bool SettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	ituRadioBoxSetChecked(settingScreenLockRadioBox[0], false);
 	ituRadioBoxSetChecked(settingScreenLockRadioBox[1], false);

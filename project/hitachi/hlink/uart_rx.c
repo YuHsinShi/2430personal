@@ -805,7 +805,7 @@ void system_on_deal(void)
   
   set_status=0;
   pre_set_status=0;
-  //如果没有按下mode键 开机默认是制冷
+  //如果没有按下mode�?开机默认是制冷
   if(system_mode==0)
   {
     system_mode=0x02;

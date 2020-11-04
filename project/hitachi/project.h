@@ -664,9 +664,9 @@ void DynamicLoadTpModule(void);
 
 
 
-
-#define HLINK_POWER_OFF		1
-#define HLINK_POWER_ON		2
+//HLINK FUNCTION INDEX defined here
+#define HLINK_POWER_OFF		0
+#define HLINK_POWER_ON		1
 
 
 

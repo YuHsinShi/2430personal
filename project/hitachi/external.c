@@ -201,7 +201,7 @@ void Hlink_send_state(int param)
 bool Hlink_send(ITUWidget* widget, char* param)
 {
 	int i;
-	i = atoi(param[0]);
+	i = atoi(param);
 	Hlink_send_state(i);
 	return false;
 }

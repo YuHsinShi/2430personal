@@ -42,7 +42,7 @@ bool MoreModeOnEnter(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool MoreModeRadioBoxOnPress(ITUWidget* widget, char* param)
+bool MoreModeRadioBoxOnMouseUp(ITUWidget* widget, char* param)
 {
 	modeIndex = atoi(param);
 

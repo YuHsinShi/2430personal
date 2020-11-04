@@ -142,11 +142,13 @@ add_executable(${CMAKE_PROJECT_NAME}
     backup.c
     )
 	
+if (DEFINED CFG_ALT_CPU_ENABLE)
 add_executable(${CMAKE_PROJECT_NAME}
 	hlink/uart_tx.c
 	hlink/uart_rx.c    
 	)
-	
+endif()
+
 if (DEFINED CFG_SHT20_ENABLE)
     add_executable(${CMAKE_PROJECT_NAME}
         sht20_sensor.c
