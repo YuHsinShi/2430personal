@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Nov 03 15:32:53 2020
+# Wed Nov 04 11:38:56 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -28,7 +28,7 @@ set(CFG_NOR_PARTITION2_SIZE "0x40000")
 set(CFG_NOR_PARTITION3 y)
 set(CFG_SD0_ENABLE y)
 set(CFG_GPIO_SD0_CARD_DETECT "22")
-set(CFG_GPIO_SD0_IO "14, 13, 15, 16, 17, 18, -1, -1, -1, -1")
+set(CFG_GPIO_SD0_IO "51, 52, 53, 54, 55, 56, -1, -1, -1, -1")
 set(CFG_USB0_ENABLE y)
 set(CFG_MSC_ENABLE y)
 set(CFG_FS_FAT y)
@@ -186,7 +186,6 @@ set(CFG_NAND_ENABLE y)
 set(CFG_SPI_NAND y)
 # CFG_SPI_NAND_USE_AXISPI is not set
 set(CFG_SPI_NAND_USE_SPI0 y)
-# CFG_SPI_NAND_USE_SPI1 is not set
 set(CFG_NAND_PAGE_SIZE "2048")
 set(CFG_NAND_BLOCK_SIZE "64")
 # CFG_SPI_NAND_BOOT is not set
@@ -297,9 +296,9 @@ set(CFG_POWER_DOZE y)
 #
 set(CFG_GPIO_SD0_POWER_ENABLE "-1")
 set(CFG_GPIO_SD0_WRITE_PROTECT "-1")
-set(CFG_GPIO_USB_ID_PIN "20")
-set(CFG_SPI0_MISO_GPIO "22")
-set(CFG_SPI0_MOSI_GPIO "21")
+set(CFG_GPIO_USB_ID_PIN "23")
+set(CFG_SPI0_MISO_GPIO "21")
+set(CFG_SPI0_MOSI_GPIO "22")
 set(CFG_SPI0_CLOCK_GPIO "19")
 set(CFG_SPI0_CHIP_SEL_GPIO "20")
 
