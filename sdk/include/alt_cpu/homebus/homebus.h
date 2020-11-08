@@ -32,9 +32,15 @@ typedef enum
 
 typedef enum
 {
-	TX_COLLISION = -1,
-    RX_BUSY = -2,
-} HOMEBUS_EXCEPTION_CODE;
+	RX_BUSY = -2,
+    TX_COLLISION = -1,
+    IDLE = 0,
+    RX_ING,
+    RX_ACK,
+    TX_ING,
+    TX_ACK,
+    TX_NACK,
+} HOMEBUS_STATUS_CODE;
 
 //=============================================================================
 //                Macro Definition
@@ -48,12 +54,13 @@ typedef struct
     unsigned int cpuClock;
     unsigned int txdGpio;
 	unsigned int rxdGpio;
-	// unsigned int parity;
+	unsigned char uid[2];
 } HOMEBUS_INIT_DATA;
 
 typedef struct
 {
     unsigned int len;
+    // unsigned int status;
 	unsigned char pWriteBuffer[MAX_PORT_BUFFER_SIZE];
     unsigned char *pWriteDataBuffer;
 } HOMEBUS_WRITE_DATA;
@@ -61,6 +68,7 @@ typedef struct
 typedef struct
 {
     unsigned int len;
+    // unsigned int status;
 	unsigned char pReadBuffer[MAX_PORT_BUFFER_SIZE];
     unsigned char *pReadDataBuffer;
 } HOMEBUS_READ_DATA;

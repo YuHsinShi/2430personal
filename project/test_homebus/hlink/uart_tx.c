@@ -956,8 +956,11 @@ void tx_deal(void)
 			
 
 
-		homebus_senddata(&tx_data[0],tx_total);
-			
+		ret =homebus_senddata(&tx_data[0],tx_total);
+		if(ret >=10)
+		{
+			printf("homebus_senddata fail (NO ACK) \n");
+		}
 					
         
 

@@ -36,7 +36,22 @@
 //=============================================================================
 //                  Public Function Definition
 //=============================================================================
-void homebus_test()
+
+
+#if 1
+static void UartCallback(void* arg1, uint32_t arg2)
+{
+
+	uint8_t getstr1[32];
+	int len = 0;
+	len = read(ITP_DEVICE_UART2,getstr1,32);
+	
+	printf("0x%x-",getstr1[0]);
+}
+#endif
+
+
+void homebus_test_uart()
 {
 
 
@@ -70,47 +85,59 @@ void homebus_test()
 
     printf("Start Homebus\n");
 
+	ioctl(ITP_DEVICE_UART2, ITP_IOCTL_REG_UART_DEFER_CB, (void*)UartCallback);
 
 	tHomebusInitData.cpuClock = ithGetRiscCpuClock();
-	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
-    tHomebusInitData.rxdGpio = CFG_GPIO_HOMEBUS_RXD;
-
-
-
+    tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
+    tHomebusInitData.uid[0] = 0x01;
+    tHomebusInitData.uid[1] = 0x01;
 	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
 
-	while(1)
-{
-	printf("Next\n");
+
 
 
     tHomebusWriteData.len = 28;
     tHomebusWriteData.pWriteDataBuffer = &pWriteData[0];
+	printf("Homebus Write(ret=%d) start :\n", len);
 
 	len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
+	printf("Homebus Write(ret=%d) end :\n", len);
 
 	
 
 
-	usleep(10*1000*1000);
-//return;
+	while(1)
+	{
+
+	
+			usleep(1000);
+	
+	}
+
+
+/*
+
+    tHomebusReadData.len = MAX_DATA_SIZE;//CMD_LEN;
+    tHomebusReadData.pReadDataBuffer = pReadData;
+
+	
+while(1)
+{
+	len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+
+	len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+	if(len > 0) {
+		printf("Homebus Read(%d) :\n", len);
+		for(count = 0; count < len; count++) {
+			printf("0x%x ", pReadData[count]);
+		}
+		printf("\r\n");
+	}
+
+		usleep(1000);
+
 }
-	
-
-
-	#if 1
-			len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
-			if(len > 0) {
-				printf("Homebus Read(%d) :\n", len);
-				for(count = 0; count < len; count++) {
-					printf("0x%x ", pReadData[count]);
-				}
-				printf("\r\n");
-			}
-		#endif   
-		usleep(1000*1000*5);
-
-	
+*/
 return;
 
     printf("Homebus init OK\n");
@@ -153,10 +180,6 @@ void homebus_init()
 
 
 	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
-	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
-	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
-	//	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x31, 0x32, 0x33};
-
 	printf("Start Homebus\n");
 
 
@@ -165,20 +188,31 @@ void homebus_init()
 	tHomebusInitData.rxdGpio = CFG_GPIO_HOMEBUS_RXD;		
 
 
+	ithGpioSetOut(CFG_GPIO_HOMEBUS_TXD);
+	ithGpioSetMode(CFG_GPIO_HOMEBUS_TXD, ITH_GPIO_MODE0);
+	ithGpioSet(CFG_GPIO_HOMEBUS_TXD);
+	ithGpioSetOut(CFG_GPIO_HOMEBUS_RXD);
+	ithGpioSetMode(CFG_GPIO_HOMEBUS_RXD, ITH_GPIO_MODE0);
+	ithGpioSet(CFG_GPIO_HOMEBUS_RXD);
+
+	tHomebusInitData.uid[0]=0x02;
+	tHomebusInitData.uid[1]=0x01;
+
+
 	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
 
 
 
 }
 
-void homebus_senddata(char* buf,unsigned char len)
+int homebus_senddata(char* buf,unsigned char len)
 {
 	printf("homebus_senddata %d \n", len);
-
+int ret;
 	if(len >64)
 	{
-		printf("homebus_senddata %d \n", len);
-		return;
+		//printf("homebus_senddata %d \n", len);
+		return -1;
 	}
 	
 	int count;
@@ -198,16 +232,45 @@ void homebus_senddata(char* buf,unsigned char len)
 
 
 
-	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
+	ret= ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
 	//printf("homebus_senddata end\n");	
 
 	
 	ithGpioSetOut(34);
 	ithGpioSetMode(34, ITH_GPIO_MODE0);
 	ithGpioSet(34);
+	return ret;
 }
 
 void homebus_recvdata(char* buf,unsigned char* len)
+{
+unsigned int recv_len=0;
+int count=0;
+	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
+
+	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
+
+    tHomebusReadData.len = MAX_DATA_SIZE;//CMD_LEN;
+    tHomebusReadData.pReadDataBuffer = pReadData;
+
+	recv_len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+
+if(recv_len>0)
+{
+	printf("Homebus Read(%d) :\n", recv_len);
+	for(count = 0; count < recv_len; count++) {
+		printf("0x%x ", pReadData[count]);
+	}
+	printf("\r\n");
+}
+	//memcpy(buf,pReadData,recv_len);
+	//*len=recv_len;
+
+
+
+}
+
+void homebus_recvdata2(char* buf,unsigned char* len)
 {
 unsigned int recv_len=0;
 int count=0;
@@ -267,23 +330,7 @@ if(recv_len>0)
 
 void homebus_control()
 {
-		homebus_init();
-
-static int counter;
-int flag=0;
-/*
-while(1)
-{
-
-	ithGpioSetOut(34);
-	ithGpioSetMode(34, ITH_GPIO_MODE0);
-	ithGpioSet(34);
-
-	homebus_recvdata(0,0);
-	
-	usleep(10000);
-}
-*/
+	homebus_init();
 	while(1)
 	{
 		tx_deal();
@@ -291,29 +338,7 @@ while(1)
 		init_tx_deal();//10 ms
 		system_tx_check();//10 ms
 		usleep(5000);
-/*
-		if(999==counter)
-		{
-			if(0==flag)
-			{
-			printf("power on\n");
-				homebus_api_power_on();
-				flag =1;
-			}
-			else
-			{
-				printf("power off\n");
-
-				homebus_api_power_off();
-				flag =0;
-			}
-			counter=0;
-
-		}
-		counter++;
-			
-*/
-		}
+	}
 }
 
 
@@ -331,8 +356,9 @@ void* TestFunc(void* arg)
     //Load Engine on ALT CPU
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_ALT_CPU_SWITCH_ENG, &altCpuEngineType);
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
-//    homebus_test();
-	homebus_control();
+    homebus_test_uart();
+	//homebus_control();
+    homebus_test();
 
 #ifdef CFG_DBG_TRACE
     vTraceStop();

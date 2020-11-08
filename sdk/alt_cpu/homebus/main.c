@@ -20,7 +20,7 @@ typedef enum
 {
     RX_IDLE = 0,
     RX_PROCESSING,
-    RX_ACK,
+    // RX_ACK,
 } MONITOR_RX_STATE;
 
 typedef enum
@@ -49,7 +49,8 @@ typedef struct
     uint32_t rxNextReadTime;
     uint32_t init;
     uint32_t tickPerMs;
-
+    
+    uint8_t collisionBypass;
     uint8_t parity;
     uint8_t readByte;
     uint8_t rxBitIdx;
@@ -65,7 +66,8 @@ static inline __attribute__((always_inline))
 uint8_t homebusIsTxCollision(uint8_t val)
 {
     HOMEBUS_HANDLE *ptHandle = &gptHomebusHandle;
-    if(ptHandle->rxState == RX_ACK) return 0; //ack no chk collision
+    // if(ptHandle->rxState == RX_ACK) return 0; //ack no chk collision
+    if(ptHandle->collisionBypass == 1) return 0; //ack no chk collision
     else if(getGpioValue(ptHandle->rxdGpio, 1) == val){
         return 0;
     } else {
@@ -163,17 +165,22 @@ static void homebusProcessWriteCmd(void)
             // Tx un-init
             return;
         }
+/*		
         else if(ptHandle->rxState != RX_IDLE)
         {
             pWriteData->len = ENDIAN_SWAP32(RX_BUSY); //rx busy
             return;
         }
+ */
         else
         {
             ptHandle->txWriteLen = ENDIAN_SWAP32(pWriteData->len);
             memcpy(ptHandle->pWriteData, pWriteData->pWriteBuffer, ptHandle->txWriteLen);
+            if (ptHandle->txWriteLen == 2 && (ptHandle->pWriteData[1] == 0x06 || ptHandle->pWriteData[1] == 0x15))
+                ptHandle->collisionBypass = 1;
             pWriteData->len = homebusTxSendDataOut();
             pWriteData->len = ENDIAN_SWAP32(pWriteData->len);
+            ptHandle->collisionBypass = 0;
         }
     }
 }
@@ -251,6 +258,11 @@ static void homebusProcessInitCmd(void)
     setGpioDir(ptHandle->rxdGpio, 1); //input mode
     
     ptHandle->init = 1;
+    
+    //tttt
+    // setGpioMode(55, 0);
+    // setGpioDir(55, 0);  //output mode
+    // setGpioValue(55, 1);
 }
 
 static void homebusMonitorRx(void)
@@ -261,7 +273,8 @@ static void homebusMonitorRx(void)
     if(ptHandle->init == 0) return;
     
     CurReadBit = getGpioValue(ptHandle->rxdGpio, 1);  //Get data from Rx GPIO
-    if(ptHandle->rxState == RX_IDLE || ptHandle->rxState == RX_ACK) {
+    // setGpioValue(55, CurReadBit);
+    if(ptHandle->rxState == RX_IDLE) {// || ptHandle->rxState == RX_ACK) {
         if(CurReadBit == 0 && ptHandle->rxPreReadBit != CurReadBit)
         {
             ptHandle->rxChkTime = getCurTimer(0);
@@ -269,33 +282,42 @@ static void homebusMonitorRx(void)
             ptHandle->readByte = 0x0;
             ptHandle->rxBitIdx = 0;
             ptHandle->rxState = RX_PROCESSING;
+            // setGpioValue(55, CurReadBit);
         }
-        else if(getDuration(0, ptHandle->rxChkTime) >= ptHandle->rxNextReadTime && ptHandle->rxState == RX_ACK) {
+        // else if(getDuration(0, ptHandle->rxChkTime) >= ptHandle->rxNextReadTime && ptHandle->rxState == RX_ACK) {
             // data frame end, send ack
-            ptHandle->txWriteLen = 2;
-            ptHandle->pWriteData[0] = 0x21;
-            ptHandle->pWriteData[1] = 0x06;
-            homebusTxSendDataOut();
-            ptHandle->rxState = RX_IDLE;
-        }
+            // ptHandle->txWriteLen = 2;
+            // ptHandle->pWriteData[0] = 0x21;
+            // ptHandle->pWriteData[1] = 0x06;
+            // homebusTxSendDataOut();
+            // ptHandle->rxState = RX_IDLE;
+        // }
 	}
     else if(getDuration(0, ptHandle->rxChkTime) >= ptHandle->rxNextReadTime && ptHandle->rxState == RX_PROCESSING) {
+        // ptHandle->rxChkTime = getCurTimer(0);
         if(ptHandle->rxBitIdx < 8) {
+            // setGpioValue(55, CurReadBit);
 			ptHandle->readByte |= (CurReadBit << ptHandle->rxBitIdx);	
 			ptHandle->rxBitIdx++;
             ptHandle->rxNextReadTime += ptHandle->rxTickPerbit;
 		}
-		else{
+		else// if (ptHandle->rxBitIdx == 8)
+        {
+            // setGpioValue(55, 1);
 			// Receive 1 Byte done
 			// ptHandle->rxBitIdx = 0;
-            ptHandle->rxState = RX_ACK;
+            ptHandle->rxState = RX_IDLE;//RX_PROCESSING;//RX_ACK;
 			ptHandle->pReadData[ptHandle->rxWriteIdx] = ptHandle->readByte;
 			ptHandle->rxWriteIdx++;
             if(ptHandle->rxWriteIdx >= MAX_PORT_BUFFER_SIZE) {
 	        	ptHandle->rxWriteIdx -= MAX_PORT_BUFFER_SIZE;
         	}
-            ptHandle->rxNextReadTime += (ptHandle->tickPerMs<<2);// 4ms for ack
+            // ptHandle->rxNextReadTime += (ptHandle->tickPerMs<<2);// 4ms for ack
+            // ptHandle->rxNextReadTime += ptHandle->rxTickPerbit;
 		}
+        // else {
+            // ptHandle->rxState = RX_IDLE;
+        // }
 	}
 	ptHandle->rxPreReadBit = CurReadBit;
 }
@@ -319,14 +341,14 @@ int main(int argc, char **argv)
 				case WRITE_DATA_CMD_ID:
                     homebusProcessWriteCmd();
                     break;
-				case READ_DATA_CMD_ID:
-					homebusProcessReadCmd();
+			//	case READ_DATA_CMD_ID:
+			//		homebusProcessReadCmd();
 					break;
                 default:
                     break;
             }
             ALT_CPU_COMMAND_REG_WRITE(RESPONSE_CMD_REG, (uint16_t) inputCmd);
         }
-        homebusMonitorRx();
+        //homebusMonitorRx();
     }
 }
