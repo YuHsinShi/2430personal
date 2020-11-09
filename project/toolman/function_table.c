@@ -26,6 +26,10 @@ extern bool LayerEditNextItem(ITUWidget* widget, char* param);
 
 extern bool LayerEditPrevItem(ITUWidget* widget, char* param);
 
+extern bool LayerEditSave(ITUWidget* widget, char* param);
+
+extern bool LayerEditSelectNext(ITUWidget* widget, char* param);
+
 ITUActionFunction actionFunctions[] =
 {
 	"MainOnEnter", MainOnEnter,
@@ -49,5 +53,7 @@ ITUActionFunction actionFunctions[] =
 	"LayerEditOnEnter", LayerEditOnEnter,
 	"LayerEditNextItem", LayerEditNextItem,
 	"LayerEditPrevItem", LayerEditPrevItem,
+	"LayerEditSave", LayerEditSave,
+	"LayerEditSelectNext", LayerEditSelectNext,
     NULL, NULL
 };

@@ -385,6 +385,10 @@ static ITUText* Text_EditChannel;
 static ITUTextBox* TextBox_Description;
 static ITUWheel* Wheel_setting;
 static int channel_select=0;
+static int focus_edit;//focusing change //0:channel 1: wheel item
+
+
+static ITUIcon* IconBoarder;
 
 static int id_select;
 int matchid=1;//showing in the beginning
@@ -399,6 +403,21 @@ unsigned char* uart_parity_to_string(int value)
 		return NULL;
 
 		
+}
+
+static draw_border(ITUWidget* widget)
+{
+	int x, y, wid, hei;
+	
+	wid=ituWidgetGetWidth(widget);
+	//IconBoarder
+	hei = ituWidgetGetHeight(widget);
+	x = ituWidgetGetX(widget);
+	y = ituWidgetGetY(widget);
+
+	ituWidgetSetDimension(IconBoarder, wid,hei+2);
+	ituWidgetSetPosition(IconBoarder, x, y-2);
+	//ituDrawLine();
 }
 
 
@@ -550,16 +569,21 @@ static bool LayerEditCheckLegal(int want_id)
 }
 bool LayerEditOnEnter(ITUWidget* widget, char* param)
 {
+
 	Text_Title = ituSceneFindWidget(&theScene, "Text_Title");
-	if (NULL == Text_Title)
-		assert(Text_Title);
+	assert(Text_Title);
 	
 	Text_EditChannel = ituSceneFindWidget(&theScene, "Text_EditChannel");
 	TextBox_Description = ituSceneFindWidget(&theScene, "TextBox_Description");
 
 	Wheel_setting = ituSceneFindWidget(&theScene, "Wheel_setting");
 
+	IconBoarder = ituSceneFindWidget(&theScene, "IconSelectedBoader");
 
+	focus_edit = 0;
+	draw_border(Text_EditChannel);
+	
+	
 	id_select = matchid;
 	
 	update_settingWheel_ui();
@@ -584,8 +608,7 @@ void SetSelectedWheelItem()
 
 }
 
-
-bool LayerEditNextItem(ITUWidget* widget, char* param)
+void LayerEditNextItem_wheel()
 {
 	int want_id;
 	want_id = id_select + 1;
@@ -594,17 +617,30 @@ bool LayerEditNextItem(ITUWidget* widget, char* param)
 		foucusindex_conver_struc(id_select, Wheel_setting->focusIndex);//save previous setting 
 
 		id_select = want_id;
-		update_settingWheel_ui();
+	
 	}
 	else
 		printf("ITEM END\n");
 
+}
+bool LayerEditNextItem(ITUWidget* widget, char* param)
+{
+
+	if (0 == focus_edit)
+	{ 
+			channel_select++;
+		if (channel_select >= 5)
+			channel_select = 0;
+	}
+	else
+		LayerEditNextItem_wheel();
+
+	update_settingWheel_ui();
 
 	return false;
 
 }
-
-bool LayerEditPrevItem(ITUWidget* widget, char* param)
+void LayerEditPrevItem_wheel()
 {
 	int want_id;
 	want_id = id_select - 1;
@@ -613,13 +649,53 @@ bool LayerEditPrevItem(ITUWidget* widget, char* param)
 		foucusindex_conver_struc(id_select, Wheel_setting->focusIndex);//save previous setting 
 
 		id_select = want_id;
-		update_settingWheel_ui();
 	}
 	else
 		printf("ITEM END\n");
 
+}
+
+bool LayerEditPrevItem(ITUWidget* widget, char* param)
+{
+
+	if (0 == focus_edit)
+	{
+		channel_select--;
+		if (channel_select < 0)
+			channel_select = 4;
+	}
+	else
+		LayerEditPrevItem_wheel();
+
+	update_settingWheel_ui();
 
 	return false;
 
 }
+
+
+bool LayerEditSave(ITUWidget* widget, char* param)
+{
+	ConfigSave();
+	return true;
+
+}
+
+bool LayerEditSelectNext(ITUWidget* widget, char* param)
+{
+
+	if (0 == focus_edit)
+	{
+		focus_edit = 1;
+		draw_border(Wheel_setting);
+	}
+	else
+	{
+
+		ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_main"));
+	}
+
+	return false;
+}
+
 #endif

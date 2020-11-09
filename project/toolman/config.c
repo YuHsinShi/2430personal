@@ -18,6 +18,7 @@ static bool cfgIsSaving;
 static int cfgSavingCount;
 static pthread_mutex_t cfgMutex  = PTHREAD_MUTEX_INITIALIZER;
 
+static dictionary* setting_ini;
 
 
 
@@ -40,7 +41,6 @@ int i;
 
 void SettingInit()
 {
-	static dictionary* setting_ini;
 	char tmp[64] = { 0 };
 	int i;
 
@@ -95,6 +95,65 @@ void SettingInit()
 
 	}
 	Setting_PrintAll();
+
+}
+
+static void iniparser_set_int(dictionary* ini, char* entry, int value)
+{
+	char tmp[16];
+	snprintf(tmp, 16, "%d", value);
+	iniparser_set(ini, entry, tmp);
+}
+
+static void  SettingSavePublic()
+{
+	char* str;
+	int i;
+	char tmp[64];
+	FILE* f;
+
+
+	for (i = 1; i <= 5; i++)
+	{
+
+		snprintf(tmp, 64, "uart%d:baud_rate", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].baud_rate);
+
+		snprintf(tmp, 64, "uart%d:parity", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].parity);
+
+		snprintf(tmp, 64, "uart%d:databit", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].databit);
+
+		snprintf(tmp, 64, "uart%d:stopbit", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].stopbit);
+
+
+
+		snprintf(tmp, 64, "uart%d:log_size", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].fileMaxsize);
+
+		snprintf(tmp, 64, "uart%d:log_time", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].fileInterval);
+
+		snprintf(tmp, 64, "uart%d:timestamp", i);
+		iniparser_set_int(setting_ini, tmp, uart[i - 1].timestamp);
+
+
+		snprintf(tmp, 64, "uart%d:keyword", i);
+		iniparser_set(setting_ini, tmp, uart[i - 1].keyword);
+		
+	}
+
+	f = fopen("B:/setting.ini", "wb");
+	if (!f)
+	{
+		printf("cannot open ini file: %s\n", CFG_PUBLIC_DRIVE ":/" INI_FILENAME);
+		return;
+	}
+
+	iniparser_dump_ini(setting_ini, f);
+	fclose(f);
 
 }
 
@@ -154,8 +213,7 @@ static void ConfigSavePublic(void)
 
     sprintf(buf, "%d", theConfig.audiolevel);
     iniparser_set(cfgIni, "sound:audiolevel", buf);
-
-    // save to file
+	    // save to file
     f = fopen(CFG_PUBLIC_DRIVE ":/" INI_FILENAME, "wb");
 	if (!f)
     {
@@ -181,6 +239,8 @@ static void* ConfigSaveTask(void* arg)
         pthread_mutex_lock(&cfgMutex);
 
         ConfigSavePublic();
+		
+		SettingSavePublic();
 
 #ifdef CFG_CHECK_FILES_CRC_ON_BOOTING
         UpgradeSetFileCrc(filepath);
