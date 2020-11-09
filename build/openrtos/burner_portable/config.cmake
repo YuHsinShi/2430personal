@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Wed Nov 04 11:38:56 2020
+# Mon Nov 09 11:57:19 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -297,8 +297,8 @@ set(CFG_POWER_DOZE y)
 set(CFG_GPIO_SD0_POWER_ENABLE "-1")
 set(CFG_GPIO_SD0_WRITE_PROTECT "-1")
 set(CFG_GPIO_USB_ID_PIN "23")
-set(CFG_SPI0_MISO_GPIO "21")
-set(CFG_SPI0_MOSI_GPIO "22")
+set(CFG_SPI0_MISO_GPIO "22")
+set(CFG_SPI0_MOSI_GPIO "21")
 set(CFG_SPI0_CLOCK_GPIO "19")
 set(CFG_SPI0_CHIP_SEL_GPIO "20")
 
