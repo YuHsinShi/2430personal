@@ -406,6 +406,8 @@ int burner_check_storage_type_nor()
 		if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
 		{	
 			ret=nor_flash_update_process();
+			if(ret>0)
+				return ret;
 		}
 		mmpSpiTerminate(SPI_BURNNIGN_PORT);
 
@@ -430,6 +432,9 @@ int burner_check_storage_type_nand()
 			//sleep(1);
 
 			ret =nand_flash_update_process();
+			
+			if(ret>0)
+				return ret;
 		}
 		//sleep(1);
 
@@ -757,11 +762,11 @@ int get_mode()
 
 	if(0 == ithGpioGet(KEY_GPIO) )
 	{			
-		return 0; //jump is off
+		return 1; //power from 3V3 ->ACM mode
 	}
 	else
 	{
-		return 1; //jump is on
+		return 0; //power from 5V and jump is on ->MSC mode
 	}
 
 

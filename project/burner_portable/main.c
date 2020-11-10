@@ -10,11 +10,15 @@ static int mode=USB_MODE_MSC;
 
 void set_mode_acm()
 {
+	printf("###SET ACM MODE ###\n");
+
 	mode = USB_MODE_ACM;
 }
 
 int is_in_acm_mode()
 {
+
+
 	if(USB_MODE_ACM == mode)
 		return 1;
 	else	
@@ -37,6 +41,10 @@ if(	is_in_acm_mode())
 	printf("###ENTER ACM MODE ###\n");
 
 	cliInit();
+}
+else
+{
+	printf("###ENTER MSC MODE ###\n");
 }
 
 
