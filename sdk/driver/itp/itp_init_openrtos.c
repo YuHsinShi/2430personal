@@ -161,11 +161,13 @@ void itpInit(void)
     int               wiegand_gpio[2];
     int               swuart_gpio;
     int               swuart_baudrate;
+#if defined(CFG_USBD_ACM)   
+
 	if(get_mode())
 	{
 		set_mode_acm();
 	}
-
+#endif
     // init lcd
 #ifdef CFG_LCD_ENABLE
     itpRegisterDevice(ITP_DEVICE_SCREEN, &itpDeviceScreen);

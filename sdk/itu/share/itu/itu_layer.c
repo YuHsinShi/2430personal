@@ -1,4 +1,4 @@
-﻿#include <assert.h>
+#include <assert.h>
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
@@ -263,6 +263,15 @@ static void LayerGoto(int arg)
     ituExecActions((ITUWidget*)layer, layer->actions, ITU_EVENT_ENTER, leaveLayer ? (int)leaveLayer->widget.name : 0);
     ituExecActions((ITUWidget*)layer, layer->actions, ITU_EVENT_DELAY, 0);
     ituWidgetUpdate(layer, ITU_EVENT_LAYOUT, 0, 0, 0);
+}
+
+
+void ituLayerShow(ITULayer* layer)
+{
+
+	ituWidgetOnActionImpl(layer,ITU_ACTION_SHOW, "0");
+
+
 }
 
 void ituLayerGoto(ITULayer* layer)

@@ -1,5 +1,6 @@
 #include "ite/itu.h"
 
+extern bool MainSelectedPressed(ITUWidget* widget, char* param);
 
 extern bool MainOnEnter(ITUWidget* widget, char* param);
 extern bool MainButtonOnMouseUp(ITUWidget* widget, char* param);
@@ -30,9 +31,16 @@ extern bool LayerEditSave(ITUWidget* widget, char* param);
 
 extern bool LayerEditSelectNext(ITUWidget* widget, char* param);
 
+extern bool LayerEditOnTimer(ITUWidget* widget, char* param);
+
+
+
 ITUActionFunction actionFunctions[] =
 {
 	"MainOnEnter", MainOnEnter,
+	"MainSelectedPressed",MainSelectedPressed,
+
+	
 	"MainButtonOnMouseUp", MainButtonOnMouseUp,
 	"UartCaptureOnTimer", UartCaptureOnTimer,
 	"UartCaptureOnEnter", UartCaptureOnEnter,
@@ -55,5 +63,8 @@ ITUActionFunction actionFunctions[] =
 	"LayerEditPrevItem", LayerEditPrevItem,
 	"LayerEditSave", LayerEditSave,
 	"LayerEditSelectNext", LayerEditSelectNext,
+	"LayerEditOnTimer", LayerEditOnTimer,
+
+
     NULL, NULL
 };

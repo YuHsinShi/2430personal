@@ -14,12 +14,51 @@ static bool bLogDisk = false;
 #endif
 
 
+static ITUScaleCoverFlow* ScaleCoverFlowMain;
 
 void MainReset(void)
 {
 }
+
+
+bool MainSelectedPressed(ITUWidget* widget, char* param)
+{
+	printf("==%d== ", ScaleCoverFlowMain->coverFlow.focusIndex);
+	switch (ScaleCoverFlowMain->coverFlow.focusIndex)
+	{
+		case 0:
+
+			ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_Power"));
+			break;
+		case 1:
+			ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_Burner"));
+
+			break;
+		case 2:
+			ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_Edit"));
+
+			break;
+		case 3:
+			ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_Settings"));
+
+			break;
+		case 4:
+			ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_uartcapture"));
+			break;
+
+		case 5:
+			ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_TimerRelayOnOff"));
+			break;
+	}
+	return true;
+}
+
 bool MainOnEnter(ITUWidget* widget, char* param)
 {
+	
+	ScaleCoverFlowMain = ituSceneFindWidget(&theScene, "ScaleCoverFlowMain");
+
+
 	return true;
 }
 
@@ -405,7 +444,7 @@ unsigned char* uart_parity_to_string(int value)
 		
 }
 
-static draw_border(ITUWidget* widget)
+static void draw_border(ITUWidget* widget)
 {
 	int x, y, wid, hei;
 	
@@ -415,9 +454,10 @@ static draw_border(ITUWidget* widget)
 	x = ituWidgetGetX(widget);
 	y = ituWidgetGetY(widget);
 
-	ituWidgetSetDimension(IconBoarder, wid,hei+2);
-	ituWidgetSetPosition(IconBoarder, x, y-2);
+	ituWidgetSetDimension(IconBoarder, wid+4,hei+4);
+	ituWidgetSetPosition(IconBoarder, x-2, y-2);
 	//ituDrawLine();
+	return;
 }
 
 
@@ -551,6 +591,7 @@ static void update_settingWheel_ui()
 
 
 }
+
 static bool LayerEditCheckLegal(int want_id)
 {
 	int j;
@@ -581,16 +622,22 @@ bool LayerEditOnEnter(ITUWidget* widget, char* param)
 	IconBoarder = ituSceneFindWidget(&theScene, "IconSelectedBoader");
 
 	focus_edit = 0;
+	
 	draw_border(Text_EditChannel);
-	
-	
+
 	id_select = matchid;
 	
 	update_settingWheel_ui();
-	
+
+	//ituLayerUpdate(ituSceneFindWidget(&theScene, "Layer_Edit"), ITU_EVENT_LAYOUT, 0, 0, 0);
+
 	return true;
 }
 
+bool LayerEditOnTimer(ITUWidget* widget, char* param)
+{
+		return true;
+}
 
 void SetSelectedWheelItem()
 {
