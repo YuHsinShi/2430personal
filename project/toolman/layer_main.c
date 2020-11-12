@@ -738,7 +738,7 @@ bool LayerEditSelectNext(ITUWidget* widget, char* param)
 	}
 	else
 	{
-
+		foucusindex_conver_struc(id_select, Wheel_setting->focusIndex);//save previous setting 
 		ituLayerGoto(ituSceneFindWidget(&theScene, "Layer_main"));
 	}
 
