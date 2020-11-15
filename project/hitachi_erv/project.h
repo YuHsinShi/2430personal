@@ -660,6 +660,12 @@ void DynamicLoadTpModule(void);
 }
 #endif
 
+
+
+//HLINK FUNCTION INDEX defined here
+#define HLINK_POWER_OFF		0
+#define HLINK_POWER_ON		1
+
 #endif /* PROJECT_H */
 /** @} */ // end of template
 

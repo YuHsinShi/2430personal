@@ -94,6 +94,11 @@ retry_backup:
     NCP18_Init();
 #endif
 
+#ifndef WIN32
+	Hlink_init();
+#endif
+
+
     SceneInit();
     SceneLoad();
     ret = SceneRun();

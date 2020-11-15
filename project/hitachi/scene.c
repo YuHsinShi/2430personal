@@ -554,7 +554,7 @@ int SceneRun(void)
 
         tick = SDL_GetTicks();
 
-#ifdef FPS_ENABLE
+#if 1//def FPS_ENABLE
         frames++;
         if (tick - lasttick >= 1000)
         {

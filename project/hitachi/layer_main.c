@@ -844,6 +844,8 @@ bool MainTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param)
 
 bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
+	printf("mainTopScreenLightTrackBar %d \n", mainTopScreenLightTrackBar->value);
+	ScreenSetBrightness(mainTopScreenLightTrackBar->value);
 	return true;
 }
 

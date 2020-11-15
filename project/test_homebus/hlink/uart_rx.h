@@ -10,7 +10,7 @@
 
 
 
-UART_RX_EXT unsigned char  rx_check_data[3],rx_data[50],rx_start,rx_cnt,rx_data_lenth,rx_finish,check_data;
+UART_RX_EXT unsigned char  rx_check_data[3],rx_data[150],rx_start,rx_cnt,rx_data_lenth,rx_finish,check_data;
 
 unsigned int mark_deal(unsigned int value,unsigned int nuber);
 void dress_confirm(void);
