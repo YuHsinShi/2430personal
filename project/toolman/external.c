@@ -512,13 +512,19 @@ void init_log_writer()
 
 //	ithUartSetBaudRate(ITP_DEVICE_UART1,115200)
 //	ithUartSetParity(ITP_DEVICE_UART1,ITH_UART_NONE,8,1);
-
+/*
 	log_writer[0].power_gpio=27;
 	log_writer[1].power_gpio=28;
 	log_writer[2].power_gpio=29;
 	log_writer[3].power_gpio=30;
 	log_writer[4].power_gpio=31;
-
+	v1
+*/ 
+	log_writer[0].power_gpio=50;
+	log_writer[1].power_gpio=51;
+	log_writer[2].power_gpio=52;
+	log_writer[3].power_gpio=53;
+	log_writer[4].power_gpio=54;
 
 	for(index=0;index<5;index++)
 	{

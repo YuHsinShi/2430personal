@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Nov 10 10:07:54 2020
+# Wed Nov 18 13:39:00 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)

@@ -15,7 +15,7 @@ static float percent_rom;
 #define BURNER_STATUS_ROM_NOT_EXISTED	-1
 
 
-#define SPI_BURNNIGN_PORT	 SPI_1
+#define SPI_BURNNIGN_PORT	 SPI_0
 
 
 
@@ -175,7 +175,7 @@ void write_slave_register(uint32_t addr, uint32_t data)
 	memcpy(tmp_u32, &data_endian, 4);
 
 
-	mmpSpiPioWrite(SPI_1, cmd, 9, 0, 0, 0);
+	mmpSpiPioWrite(SPI_BURNNIGN_PORT, cmd, 9, 0, 0, 0);
 
 
 }
@@ -194,7 +194,7 @@ void read_slave_register(uint32_t addr, uint8_t* indata)
 	cmd_reg_addr = (uint32_t*)&cmd[1];
 	memcpy(cmd_reg_addr, &addr_endian, 4);
 
-	mmpSpiPioRead(SPI_1, cmd, 9, indata, 4, 4);
+	mmpSpiPioRead(SPI_BURNNIGN_PORT, cmd, 9, indata, 4, 4);
 	/*
 	printf("read_slave_register addr 0x%x\n",addr);
 	for(int i=0;i<9;i++)
@@ -406,6 +406,8 @@ int burner_check_storage_type_nor()
 		if(1==	Nor2nd_Init(SPI_BURNNIGN_PORT) ) //960 series
 		{	
 			ret=nor_flash_update_process();
+			if(ret>0)
+				return ret;
 		}
 		mmpSpiTerminate(SPI_BURNNIGN_PORT);
 
@@ -430,6 +432,9 @@ int burner_check_storage_type_nand()
 			//sleep(1);
 
 			ret =nand_flash_update_process();
+			
+			if(ret>0)
+				return ret;
 		}
 		//sleep(1);
 
@@ -627,7 +632,7 @@ void burn_process(void* arg)
 
 }
 
-void burn_process_start()
+int burn_process_start()
 {
 
 	static pthread_t burn_task;
@@ -635,6 +640,7 @@ void burn_process_start()
 	printf("burn_process_start\n");
 	pthread_create(&burn_task, NULL, burn_process, NULL);
 
+return burn_task;
 }
 
 void burn_led_congtrol_process(void* arg)
@@ -642,8 +648,8 @@ void burn_led_congtrol_process(void* arg)
 	static unsigned int counter=0;
 	static int flag=0;
 	int percent;
-#define LED1_IO	24
-#define LED2_IO 25
+#define LED1_IO	56
+#define LED2_IO 57
 
 ithGpioSetOut(LED1_IO);
 ithGpioSetMode(LED1_IO, ITH_GPIO_MODE0);

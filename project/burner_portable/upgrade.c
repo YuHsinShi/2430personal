@@ -926,6 +926,8 @@ int UpgradeGetResult(void)
 			 
 			 if(0 == access(path,04)) //check if readable
 			 {
+			 
+				 printf("GOT SD card FILE\n");
 				 return 1;
 			 }
 		 }
@@ -942,6 +944,8 @@ int UpgradeGetResult(void)
 			 
 			 if(0 == access(path,04)) //check if readable
 			 {
+			 
+			 printf("GOT USB FILE\n");
 				 return 2;
 			 }
 
