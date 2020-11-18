@@ -8,15 +8,6 @@
 #include "alt_cpu/alt_cpu_device.h"
 #include "alt_cpu/homebus/homebus.h"
 
-#include "hlink/uart_tx.h"
-//#include "hlink/uart_rx.h"
-
-
-extern unsigned char master_flag,line_control_dress,line_init_flag;
-extern unsigned char initialize_flag;
-
-static unsigned char  rx_check_data[3],rx_data[150],rx_start,rx_cnt,rx_data_lenth,rx_finish,check_data;
-
 //=============================================================================
 //                  Constant Definition
 //=============================================================================
@@ -48,13 +39,32 @@ static unsigned char  rx_check_data[3],rx_data[150],rx_start,rx_cnt,rx_data_lent
 
 
 #if 1
-#define MAX_RING_BUFFER_SIZE	 100//1024
+#define MAX_RING_BUFFER_SIZE	 1024
 
 static int wr_index;
 static unsigned char ringbuf[MAX_RING_BUFFER_SIZE];
 
 static int rxReadIdx,rxWriteIdx;
 
+#include "openrtos/FreeRTOS.h"
+#include "openrtos/task.h"
+
+static TickType_t start;
+
+void tick_reset(void)
+{
+    /* Set first ticks value */
+    start = xTaskGetTickCount();
+}
+
+unsigned int get_sys_tick(void)
+{
+    TickType_t tick = xTaskGetTickCount();
+    if (tick >= start)
+        return ((tick - start) / portTICK_PERIOD_MS);
+    else
+        return ((0xFFFFFFFF - start + tick) / portTICK_PERIOD_MS);
+}
 
 static int ringbuff_read(unsigned char* pReadBuffer,int rxReadLen)
 {
@@ -83,7 +93,7 @@ static int ringbuff_read(unsigned char* pReadBuffer,int rxReadLen)
         memcpy(&pReadBuffer[tailSize], &ringbuf[0], cpySize - tailSize);
     }
 
-//	printf("\n r=%d,w=%d,size=%d\n",rxReadIdx,tmp_rxWriteIdx,cpySize);
+	printf("\n r=%d,w=%d,size=%d\n",rxReadIdx,tmp_rxWriteIdx,cpySize);
 
 
 
@@ -98,52 +108,31 @@ static int ringbuff_read(unsigned char* pReadBuffer,int rxReadLen)
 }
 
 
+
+
+
+
 static void UartCallback(void* arg1, uint32_t arg2)
 {
-	uint8_t getstr1[32],i;
-	int len = 0;
-	len = read(ITP_DEVICE_UART2,getstr1,32);	
-	
-	if(len>1)printf("len=%d \n",len);
 
-	
-    rx_check_data[2]=rx_check_data[1];
-    rx_check_data[1]=rx_check_data[0];
-    rx_check_data[0]=getstr1[0];
+		uint8_t getstr1[32];
+		int len = 0;
+		len = read(ITP_DEVICE_UART2,getstr1,32);
+		if(len>1)
+			printf("DROP DATA");
+//			printf("-0x%x",getstr1[0]);
+		
+		//pthread_mutex_lock(&gRingMutex);
 
-  if((rx_check_data[2]==0x12)&&(rx_check_data[1]==0x00)&&(rx_start==0))        
-  {
-    if((rx_check_data[0]<60)&&(rx_check_data[0]>5))
-    {
-    rx_start=1;
-    rx_data[0]=rx_check_data[2];
-    rx_data[1]=rx_check_data[1];
-    rx_cnt=2;
-    rx_data_lenth=rx_check_data[0];
-   //printf("ok1");
-    }
+		rxWriteIdx++;
+		if(rxWriteIdx>=MAX_RING_BUFFER_SIZE)
+		rxWriteIdx=0;
 
-  } 
-     
-   if(rx_start)
-  {
-   rx_data[rx_cnt]=rx_check_data[0];
-   rx_cnt++;
-   if(rx_cnt>=rx_data_lenth)
-   {
-    rx_cnt=0;
-    rx_start=0;
-    rx_finish=1;
-    
-    //printf("ok2");
-    
-                tx_data[0]=0x21;
-                tx_data[1]=0x06;
-                tx_total=2;
-                set_data_deal();
-   
-    }
-   }
+		//	printf("0x%x-",getstr1[0]);v
+		ringbuf[rxWriteIdx]=getstr1[0];
+
+		//pthread_mutex_unlock(&gRingMutex);
+		tick_reset();
 
 }
 
@@ -151,171 +140,56 @@ static void UartCallback(void* arg1, uint32_t arg2)
 static void *read_uart_ring(void *arg)
 { 
 unsigned char readbuf[MAX_RING_BUFFER_SIZE];
-unsigned char  rx_check_data[3],rx_data[150],rx_start,rx_cnt,rx_data_lenth,rx_finish,check_data;
 int len=0;
-int i,j;
+int i;
+int check_ack=0;
 	while(1)
 	{
-		len=ringbuff_read(readbuf,MAX_RING_BUFFER_SIZE);
-/*
-		if(len>0)
+		
+		//TX sending 
+		//regist a call back to send TX
+				//check buffer of sending ack,if tx collision?
+		
+		//cancel call back if send to RISC
+		
+		if( get_sys_tick() >= 2) //over 10 ms no data
 		{
-			printf("len=%d \n",len);
-			for(i=0;i<len;i++)
+			
+			len=ringbuff_read(readbuf,MAX_RING_BUFFER_SIZE);			
+			if(len>0)
 			{
+			//if ack 
+
+				printf("len=%d \n",len);
+				for(i=0;i<len;i++)
+				{
 				printf("0x%x ",readbuf[i]);
-			}
+				}
 				printf("\n ");
+
+
+
+
+			}
+
 		}
-
-*/	
-
-             
-/*
-
-    for(i=0;i<250;i++)
-		{
-		  rx_data[i]=ringbuf[i];//readbuf[i];//ringbuf[i];
-		}
-
 		
-		//printf("ok1"); 
-		
-		for(i=0;i<150;i++)
-		{
-		  rx_check_data[2]=rx_data[i];
-		  rx_check_data[1]=rx_data[i+1];
-		  rx_check_data[0]=rx_data[i+2];
-		  
-		  
-	if(((rx_check_data[1]==0x12)||(rx_check_data[1]==0x41)||(rx_check_data[1]==0x17))&&(rx_check_data[0]==0x06))
-  {
-    tx_repeat_cnt=0;
-     next_tx_flag=tx_finish_flag;
-     tx_finish_flag=0;
-     
+			usleep(2*1000);
+			
+		/*
 
-   
-  }
-  
-  else if(((rx_check_data[2]==0x12)||(rx_check_data[2]==0x21)||(rx_check_data[2]==0x41)||(rx_check_data[2]==0x17)||(rx_check_data[2]==0x71))&&
-          ((rx_check_data[1]==0x00)||(rx_check_data[1]==0x10)||(rx_check_data[1]==0x20)||(rx_check_data[1]==0x21)||(rx_check_data[1]==0x11)||
-           (rx_check_data[1]==0x22)||(rx_check_data[1]==0xf1)||(rx_check_data[1]==0xf2)||(rx_check_data[1]==0xe2)))
-  {
-    if((rx_check_data[0]<60)&&(rx_check_data[0]>5))
-    {
-    rx_data_lenth=rx_check_data[0];
-   // printf("ok2"); 
-
-      check_data=0;
-      
-      for(j=i;j<i+rx_data_lenth-1;j++)
-       {
-         check_data^=rx_data[j];
-       }
-     
-
-	
+		if(1==check_ack)
+			usleep(3*1000);
+		else
+			usleep(15*1000);
+		*/
 		
 		
-    ////////////////////////////////
-    if(rx_data[i+rx_data_lenth-1]==check_data)
-   {
-       printf("ok3"); 
-        if(rx_data[i+0]==0x12)
-        {
-           if(rx_data[i+6]==(master_flag+1))ack_tx_flag=1;
-           printf("ok4"); 
-           //
-               tx_data[0]=0x21;
-                tx_data[1]=0x06;
-                tx_total=2;
-                
-                
-                set_data_deal();
-              
-           //
-        }
-        else if(rx_data[i+0]==0x17)
-        {
-           if(rx_data[i+6]==(master_flag+1))
-           ack_3d_tx_flag=1;
-        }
-        else if(rx_data[i+0]==0x21)
-        {
-          if(tx_finish_flag)
-          {
-            if((rx_data[i+2]==tx_total)&&(check_data==xor_data)&&(rx_data[i+4]==line_control_dress))
-           {             
-                if((rx_data[i+5]==0xff)&&(rx_data[i+6]==0xff))
-                {
-                  timing_tx_flag=0;
-                  tx_finish_flag=0;
-                  tx_repeat_cnt=0;
-                }
-               
-           }
-           //rx_finish=0; 
-          }
-                       
-        }
-        else if(rx_data[i+0]==0x41)
-        {         
-          if(tx_finish_flag)
-          {
-            if((rx_data[i+2]==tx_total)&&(check_data==xor_data))
-            {
-              if((rx_data[i+5]==0xff)&&(rx_data[i+6]==0xff))                                          
-              {
-                line_control_tx=0;
-                tx_finish_flag=0;  
-                tx_repeat_cnt=0;
-                line_init_flag=0;
-              } 
-            }
-          
-            rx_finish=0;            
-          }        
-          else if((rx_data[i+1]==0xf1)&&(rx_data[i+2]==0x0c))line_ack_tx_flag=1;//地址变更要求时  
-          else if((rx_data[i+5]!=0xff)&&(rx_data[i+6]!=0xff))line_ack_tx_flag=1;
-        }
-        else if(rx_data[i+0]==0x71)
-        {
-          if(tx_finish_flag)
-          {
-            if((rx_data[i+2]==tx_total)&&(check_data==xor_data)&&(rx_data[i+4]==line_control_dress))
-            {
-              if(initialize_flag==0)
-              {
-                a3d_wind_tx_flag=0;
-                tx_finish_flag=0;
-                tx_repeat_cnt=0;
-              }
-            }
-          }
-        }
-         
-
-		
-    }
-
-    ///////////////////////////////
-    }
-   
-
-  } 
-		  
-		  
-		}
-*/ 
-	
-		usleep(3*1000);
 	}
 
 
 
 }
-
 #endif
 
 
@@ -411,33 +285,6 @@ while(1)
 */
 return;
 
-    printf("Homebus init OK\n");
-	usleep(1000*10);
-
-    tHomebusReadData.len = 1;//CMD_LEN;
-    tHomebusReadData.pReadDataBuffer = pReadData;
-
-    tHomebusWriteData.len = 2;//CMD_LEN;
-    tHomebusWriteData.pWriteDataBuffer = pWriteData;
-
-    while(1)
-    {
-        tHomebusReadData.len = 1;
-        // printf("write data *****\n");
-        len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
-        // printf("write data &&&&& (%d)\n", len);
-#if 1
-        len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
-        if(len > 0) {
-            printf("Homebus Read(%d) :\n", len);
-            for(count = 0; count < len; count++) {
-                printf("0x%x ", pReadData[count]);
-            }
-            printf("\r\n");
-        }
-#endif   
-        usleep(1000*1000*1);
-    }
 }
 
 
@@ -556,44 +403,45 @@ int ret;
 uint8_t data_len;
 int timeout=10;
 
-while(timeout>0)
-{
-	ret = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
-	if(recv_len >3)
+	while(timeout>0)
 	{
-		data_len =pReadData[2];//protocol length
-	}
-	else
-	{
+		ret = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+		if(recv_len >3)
+		{
+			data_len =pReadData[2];//protocol length
+		}
+		else
+		{
+			recv_len=recv_len+ret;
+			timeout--;		
+			usleep(1000);
+			continue;
+		}
+		
 		recv_len=recv_len+ret;
-		timeout--;		
-		usleep(1000);
-		continue;
+		if(recv_len>=data_len)
+		{
+			break;
+		}
+		else
+		{
+			tHomebusReadData.pReadDataBuffer = &pReadData[count];
+		}
+		usleep(10*1000); //9600
+
+			
 	}
 	
-	recv_len=recv_len+ret;
-	if(recv_len>=data_len)
+	if(recv_len>0)
 	{
-		break;
+		printf("Homebus Read(%d) :\n", recv_len);
+		for(count = 0; count < recv_len; count++) {
+			printf("0x%x ", pReadData[count]);
+		}
+		printf("\r\n");
 	}
-	else
-	{
-	    tHomebusReadData.pReadDataBuffer = &pReadData[count];
-	}
-	usleep(10*1000); //9600
-
-		
-}
-if(recv_len>0)
-{
-	printf("Homebus Read(%d) :\n", recv_len);
-	for(count = 0; count < recv_len; count++) {
-		printf("0x%x ", pReadData[count]);
-	}
-	printf("\r\n");
-}
-	//memcpy(buf,pReadData,recv_len);
-	//*len=recv_len;
+		//memcpy(buf,pReadData,recv_len);
+		//*len=recv_len;
 
 
 
@@ -601,12 +449,16 @@ if(recv_len>0)
 
 void homebus_control()
 {
+
+	printf("homebus_control:\n");
 	homebus_init();
+	printf("homebus_init END:\n");
+
 	while(1)
 	{
 		tx_deal();
 		rx_deal();
-		//init_tx_deal();//10 ms
+		init_tx_deal();//10 ms
 		system_tx_check();//10 ms
 		usleep(5000);
 	}
@@ -629,7 +481,7 @@ void* TestFunc(void* arg)
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
     homebus_test_uart();
 	//homebus_control();
-  //  homebus_test();
+   // homebus_test();
 
 #ifdef CFG_DBG_TRACE
     vTraceStop();
