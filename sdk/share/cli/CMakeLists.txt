@@ -18,6 +18,8 @@ add_library(cli STATIC
     cli.c
     cli_cfg.h
     cli_system.c
+	cli_system_target.c
+
 )
 
 if (DEFINED CFG_FS_FAT)

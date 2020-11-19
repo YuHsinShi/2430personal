@@ -251,6 +251,7 @@ void cliInit(void)
 #endif
 
     cliSystemInit();
+	cliTargetSystemInit();
 
 #ifdef CFG_CLI_UPGRADE
     cliUpgradeInit();
@@ -258,6 +259,9 @@ void cliInit(void)
 #ifdef CFG_ENABLE_UART_CLI
 	cliUartUpgradeInit();
 #endif
+
+
+
 
     // create command line interface task
     pthread_attr_init(&attr);
