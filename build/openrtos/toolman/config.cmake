@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Wed Nov 18 16:53:25 2020
+# Thu Nov 19 10:17:05 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -24,7 +24,7 @@ set(CFG_LCD_ENABLE y)
 set(CFG_LCD_WIDTH "480")
 set(CFG_LCD_HEIGHT "272")
 set(CFG_LCD_PITCH "960")
-set(CFG_LCD_INIT_SCRIPT "lcd_script-BLset.txt")
+set(CFG_LCD_INIT_SCRIPT "lcd_script-BLset-77-finish-newPCB-20201119.txt")
 set(CFG_CMDQ_ENABLE y)
 set(CFG_M2D_ENABLE y)
 set(CFG_JPEG_HW_ENABLE y)
@@ -285,7 +285,6 @@ set(CFG_NAND_ENABLE y)
 set(CFG_SPI_NAND y)
 set(CFG_SPI_NAND_USE_AXISPI y)
 # CFG_SPI_NAND_USE_SPI0 is not set
-# CFG_SPI_NAND_USE_SPI1 is not set
 set(CFG_NAND_PAGE_SIZE "2048")
 set(CFG_NAND_BLOCK_SIZE "64")
 # CFG_SPI_NAND_BOOT is not set
