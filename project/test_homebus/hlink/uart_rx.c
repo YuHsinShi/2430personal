@@ -383,28 +383,6 @@ void rx_deal(void)
   unsigned char i;
 	int count;
   check_data=0;
-/*
-  rx_data_lenth = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &rx_data);
-  if(rx_data_lenth > 5) {
-	  printf("Homebus Read(%d) :\n", rx_data_lenth);
-	  for(count = 0; count < len; count++) {
-		  printf("0x%x ", rx_data[count]);
-	  }
-	  printf("\r\n");
-  }
-  else
-  {
-		return;
-  }
-*/
-	homebus_recvdata(rx_data,&rx_data_lenth);
-
-return;
-
-//  if(rx_finish)
-  {
-  //    rx_finish=0;
-      
       
     
        for(i=1;i<rx_data_lenth-1;i++)
@@ -772,7 +750,6 @@ return;
        
 
     
-  }
 }
 
 
@@ -805,7 +782,7 @@ void system_on_deal(void)
   
   set_status=0;
   pre_set_status=0;
-  //如果没有按下mode键 开机默认是制冷
+  //如果没有按下mode�?开机默认是制冷
   if(system_mode==0)
   {
     system_mode=0x02;

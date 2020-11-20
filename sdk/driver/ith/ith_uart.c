@@ -172,8 +172,12 @@ void ithUartSetMode(
         ithGpioSetMode(rxPin, rxgpiomode);
         ithGpioSetIn(rxPin);
     }
-    ithGpioSetMode(txPin, txgpiomode);
-    ithGpioSetOut(txPin);
+	// ignore gpio -1
+	if(txPin != -1)
+	{
+    	ithGpioSetMode(txPin, txgpiomode);
+    	ithGpioSetOut(txPin);
+	}
 
     ithWriteRegMaskA(port + ITH_UART_MDR_REG, mode, ITH_UART_MDR_MODE_SEL_MASK);
 }

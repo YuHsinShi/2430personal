@@ -3634,6 +3634,7 @@ config UART2_ENABLE
 choice
     prompt "UART2 mode"
     depends on UART2_ENABLE
+    default UART2_FIFO if DEF_UART2_FIFO
 	config UART2_INTR
 		bool "UART2 Interrupt Enable"
 		help
@@ -7675,16 +7676,16 @@ config GPIO_HOMEBUS_TXD
     help_cht
         Homebus TXD 的 GPIO 接口。
 
-config GPIO_HOMEBUS_RXD
-    string "Homebus RXD Pin"
-    depends on HOMEBUS
-    default "-1"
-    help
-        The GPIO pin number for Homebus RXD.
-    help_cht
-        Homebus RXD 的 GPIO 號碼。
-    help_cht
-        Homebus RXD 的 GPIO 接口。
+#config GPIO_HOMEBUS_RXD
+#    string "Homebus RXD Pin"
+#    depends on HOMEBUS
+#    default "-1"
+#    help
+#        The GPIO pin number for Homebus RXD.
+#    help_cht
+#        Homebus RXD 的 GPIO 號碼。
+#    help_cht
+#        Homebus RXD 的 GPIO 接口。
 
 config GPIO_SN1_RST
     string "SENSOR RESET GPIO Pin"
@@ -9165,6 +9166,7 @@ choice
     default DBG_NONE if DEF_DBG_NONE
     default DBG_PRINTBUF if DEF_DBG_PRINTBUF
     default DBG_SWUART_CODEC if DEF_DBG_SWUART_CODEC
+    default DBG_UART1 if DEF_DBG_UART1
 	default DBG_UART5 if UART5_ENABLE
     default DBG_UART4 if UART4_ENABLE
     default DBG_UART3 if UART3_ENABLE

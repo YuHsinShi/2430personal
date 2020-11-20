@@ -41,8 +41,23 @@ config HOMEBUS
 config GPIO_HOMEBUS_TXD
     default "35"
 
-config GPIO_HOMEBUS_RXD
+config UART2_ENABLE
+    def_bool y
+
+config DEF_UART2_FIFO
+    def_bool y
+
+config UART2_BAUDRATE
+    default "9600"
+
+config GPIO_UART2_TX
+    default "-1"
+
+config GPIO_UART2_RX
     default "37"
+
+#config GPIO_HOMEBUS_RXD
+#    default "37"
 
 source "$CMAKE_SOURCE_DIR/sdk/Kconfig"
 
