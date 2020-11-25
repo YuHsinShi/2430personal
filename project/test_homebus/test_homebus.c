@@ -7,7 +7,6 @@
 #include "ite/itp.h"
 #include "alt_cpu/alt_cpu_device.h"
 #include "alt_cpu/homebus/homebus.h"
-#include "hlink/uart_rx.h"
 
 //=============================================================================
 //                  Constant Definition
@@ -37,11 +36,11 @@
 
 
 
-int homebus_senddata(char* buf,unsigned char len)
+int homebus_senddata(uint8_t* buf,unsigned char len)
 {
-	printf("homebus_senddata %d \n", len);
+	printf("Homebus Send(%d) :\n", len);
 int ret;
-	if(len >64)
+	if(0) //len >64)
 	{
 		//printf("homebus_senddata %d \n", len);
 		return -1;
@@ -58,7 +57,7 @@ int ret;
 	tHomebusWriteData.pWriteDataBuffer =buf;
 
 	for(count = 0; count < len; count++) {
-		printf("0x%x ", buf[count]);
+		printf("0x%2x ", buf[count]);
 	}
 	printf("\r\n");
 
@@ -71,6 +70,7 @@ int ret;
 	ithGpioSetOut(34);
 	ithGpioSetMode(34, ITH_GPIO_MODE0);
 	ithGpioSet(34);
+	
 	return ret;
 }
 
@@ -139,13 +139,14 @@ void homebus_test()
         len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
         // printf("read data &&&&& (%d)\n", len);
         if(len > 0) {
-            printf("Homebus Read(%d) :\n", len);
+            printf("Homebus Recv(%d) :\n", len);
             for(count = 0; count < len; count++) {
                 printf("0x%x ", pReadData[count]);
             }
             printf("\r\n");
-			rx_data_lenth =(unsigned char) len;
-			memcpy(rx_data,pReadData,len);
+//			rx_data_lenth =(unsigned char) len;
+//			memcpy(rx_data,pReadData,len);
+			rx_data_update(pReadData,len);
 			rx_deal();
         }
 #endif   
@@ -160,6 +161,69 @@ void homebus_test()
 
 
 
+
+
+void homebus_test_ABC()
+{
+	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
+    HOMEBUS_READ_DATA tHomebusReadData = { 0 };
+    HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
+	uint8_t pWriteData[MAX_DATA_SIZE] = {0};
+	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
+	int len = 0, count = 0, ret = 0;
+
+    printf("Start Homebus\n");
+    
+    tHomebusInitData.cpuClock = ithGetRiscCpuClock();
+	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
+    // tHomebusInitData.rxdGpio = CFG_GPIO_UART2_RX;//CFG_GPIO_HOMEBUS_RXD;
+    // tHomebusInitData.parity  = NONE;
+    tHomebusInitData.uid[0] = 0x01;
+    tHomebusInitData.uid[1] = 0x01;
+    
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
+    printf("Homebus init OK\n");
+
+
+		uint8_t i;
+
+		for(i=0;i<0xff;i++)
+		{
+			pWriteData[i]=i;
+
+		}
+
+	
+
+    while(1)
+    {
+
+
+		homebus_senddata(pWriteData,255);	
+
+
+        tHomebusReadData.len = 255;
+        len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
+        // printf("read data &&&&& (%d)\n", len);
+        if(len > 0) {
+            printf("Homebus Recv(%d) :\n", len);
+            for(count = 0; count < len; count++) {
+                printf("0x%x ", pReadData[count]);
+            }
+            printf("\r\n");
+//			rx_data_lenth =(unsigned char) len;
+//			memcpy(rx_data,pReadData,len);
+			rx_data_update(pReadData,len);
+			rx_deal();
+        }
+        usleep(1000*500);
+        // usleep(1000*1);
+        // usleep(1000*1000*1);
+    }
+}
+
+
+
 void* TestFunc(void* arg)
 {
     int altCpuEngineType = ALT_CPU_HOMEBUS;
@@ -170,9 +234,15 @@ void* TestFunc(void* arg)
 
     itpInit();
 
+
+
+
     //Load Engine on ALT CPU
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_ALT_CPU_SWITCH_ENG, &altCpuEngineType);
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
+
+//	homebus_test_ABC();
+
     homebus_test();
 
 #ifdef CFG_DBG_TRACE

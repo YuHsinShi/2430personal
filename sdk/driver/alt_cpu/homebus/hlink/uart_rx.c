@@ -378,6 +378,14 @@ unsigned char  dress_assign(void)
 }
 /********************************************************************************
 ********************************************************************************/
+void rx_data_update(unsigned char* pReadData,int len)
+{
+	rx_data_lenth =(unsigned char) len;
+	memcpy(rx_data,pReadData,len);
+
+}
+
+
 void rx_deal(void)
 {
   unsigned char i;
@@ -3285,4 +3293,191 @@ void save_option_rx_deal(void)
 ********************************************************************************/
 
 
+void rx_homebus_get_ack()
+{
+    tx_repeat_cnt=0;
+     next_tx_flag=tx_finish_flag;
+     tx_finish_flag=0;
 
+}
+
+
+void rx_homebus_frame_start()
+{
+    rx_start=1;
+    rx_data[0]=rx_check_data[2];
+    rx_data[1]=rx_check_data[1];
+    rx_cnt=2;
+    rx_data_lenth=rx_check_data[0];
+
+}
+
+//porting function from
+//__interrupt static void r_uart2_interrupt_receive(void) 
+ void rx_homebus_receive_parser(unsigned char RXD1)
+{
+    volatile unsigned char i;
+    volatile unsigned char err_type;
+    
+     
+    rx_check_data[2]=rx_check_data[1];
+    rx_check_data[1]=rx_check_data[0];
+    rx_check_data[0]=RXD1;
+
+  
+    
+  if(((rx_check_data[1]==0x12)||(rx_check_data[1]==0x41)||(rx_check_data[1]==0x17))&&(rx_check_data[0]==0x06)&&(rx_start==0))
+  {
+    tx_repeat_cnt=0;
+     next_tx_flag=tx_finish_flag;
+     tx_finish_flag=0;
+   
+  }
+  else if(((rx_check_data[2]==0x12)||(rx_check_data[2]==0x21)||(rx_check_data[2]==0x41)||(rx_check_data[2]==0x17)||(rx_check_data[2]==0x71))&&
+          ((rx_check_data[1]==0x00)||(rx_check_data[1]==0x10)||(rx_check_data[1]==0x20)||(rx_check_data[1]==0x21)||(rx_check_data[1]==0x11)||
+           (rx_check_data[1]==0x22)||(rx_check_data[1]==0xf1)||(rx_check_data[1]==0xf2)||(rx_check_data[1]==0xe2))&&(rx_start==0))
+  {
+    if((rx_check_data[0]<60)&&(rx_check_data[0]>5))
+    {
+    rx_start=1;
+    rx_data[0]=rx_check_data[2];
+    rx_data[1]=rx_check_data[1];
+    rx_cnt=2;
+    rx_data_lenth=rx_check_data[0];
+    }
+
+  } 
+    
+    
+   if(rx_start)
+  {
+   rx_data[rx_cnt]=rx_check_data[0];
+   rx_cnt++;
+   if((rx_cnt>=rx_data_lenth)||(rx_cnt>=60))
+   {
+    rx_cnt=0;
+    rx_start=0;
+    rx_finish=1;
+    
+    rx_check_data[2]=0;rx_check_data[1]=0;rx_check_data[0]=0;
+   ////////////////////////////////////////////////////////////////////
+      check_data=0;
+      for(i=1;i<rx_data_lenth-1;i++)
+       {
+         check_data^=rx_data[i];
+       }
+      
+      
+
+
+   if(rx_data[rx_data_lenth-1]==check_data)
+   {
+        
+        if(rx_data[0]==0x12)
+        {
+           if(rx_data[6]==(master_flag+1))ack_tx_flag=1;
+           
+        }
+        else if(rx_data[0]==0x17)
+        {
+           if(rx_data[6]==(master_flag+1))
+           ack_3d_tx_flag=1;
+        }
+        else if(rx_data[0]==0x21)
+        {
+          if(tx_finish_flag)
+          {
+            if((rx_data[2]==tx_total)&&(check_data==xor_data)&&(rx_data[4]==line_control_dress))
+           {             
+                if((rx_data[5]==0xff)&&(rx_data[6]==0xff)) //is Broad cast by myself
+                {
+                  timing_tx_flag=0;				
+                  tx_finish_flag=0;
+                  tx_repeat_cnt=0;
+                }
+               
+           }
+           //rx_finish=0; 
+          }
+                       
+        }
+        else if(rx_data[0]==0x41)
+        {         
+          if(tx_finish_flag)
+          {
+            if((rx_data[2]==tx_total)&&(check_data==xor_data))
+            {
+              if((rx_data[5]==0xff)&&(rx_data[6]==0xff))                                          
+              {
+                line_control_tx=0;
+                tx_finish_flag=0;  
+                tx_repeat_cnt=0;
+                line_init_flag=0;
+              } 
+            }
+          
+            rx_finish=0;            
+          }        
+          else if((rx_data[1]==0xf1)&&(rx_data[2]==0x0c))line_ack_tx_flag=1;//地址变更要求时  
+          else if((rx_data[5]!=0xff)&&(rx_data[6]!=0xff))line_ack_tx_flag=1;
+        }
+        else if(rx_data[0]==0x71)
+        {
+          if(tx_finish_flag)
+          {
+            if((rx_data[2]==tx_total)&&(check_data==xor_data)&&(rx_data[4]==line_control_dress))
+            {
+              if(initialize_flag==0)
+              {
+                a3d_wind_tx_flag=0;
+                tx_finish_flag=0;
+                tx_repeat_cnt=0;
+              }
+            }
+          }
+        }
+         
+
+    }
+    else
+    {
+      rx_finish=0;
+      
+       if(rx_data[0]==0x12)
+       {
+         if(rx_data[6]==(master_flag+1))nak_tx_flag=1;
+       }  
+       else  if(rx_data[0]==0x17)
+       {
+         if(rx_data[6]==(master_flag+1))
+         nak_3d_tx_flag=1;
+       }
+       else if(rx_data[0]==0x21)
+       {
+         if(tx_finish_flag)tx_finish_flag=0; 
+       }
+       else if(rx_data[0]==0x41)
+       {
+         if(tx_finish_flag)tx_finish_flag=0;       
+         else if((rx_data[1]==0xf1)&&(rx_data[2]==0x0c))line_nak_tx_flag=1;//地址变更要求时
+         else if((rx_data[5]!=0xff)&&(rx_data[6]!=0xff))line_nak_tx_flag=1;      
+        }
+
+     }
+     /////////////////////////////////////////////////////////////
+    }
+   }
+}
+
+
+//
+//rx_homebus_receive_parser_bypass(tHomebusReadData.len,tHomebusReadData.pReadBuffer);
+//
+void rx_homebus_receive_parser_bypass(int len,unsigned char* buf)
+{
+int i;
+	for(i=0;i<len;i++)		
+	{
+		rx_homebus_receive_parser(buf[i]);
+	}
+}

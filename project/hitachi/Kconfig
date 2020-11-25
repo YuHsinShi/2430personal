@@ -349,7 +349,7 @@ config ITU_FT_CACHE_ENABLE
     def_bool y
 
 config ITU_FT_CACHE_SIZE
-    default "0xFA000"
+    default "0x3E8000"
 
 config GCC_LTO
     def_bool y

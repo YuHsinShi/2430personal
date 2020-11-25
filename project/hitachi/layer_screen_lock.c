@@ -129,7 +129,7 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 
@@ -139,11 +139,11 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 		current_tmp_float = NCP18_Detect();
 		if (current_tmp_float > 0)
 		{
-			curTempValueIndex = = (int)((current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((current_tmp_float + 0.5) - 20) / 0.5;
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 
@@ -232,11 +232,12 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 
 	dist = curPosX - orgPosX;
 
-	if (abs(dist)>35)
+	if (abs(dist)>72)
 	{
 		StopScreenLock();
 		ret = true;
 	}
+
 
 	if (gtTickFirst)
 	{
@@ -258,7 +259,7 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 #else
@@ -266,11 +267,11 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 		current_tmp_float = NCP18_Detect();
 		if (current_tmp_float > 0)
 		{
-			curTempValueIndex = = (int)((current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((current_tmp_float + 0.5) - 20) / 0.5;
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 #else
@@ -322,8 +323,6 @@ void StopScreenLock(void)
 		mainCoverFlow = ituSceneFindWidget(&theScene, "mainCoverFlow");
 		assert(mainCoverFlow);
 	}
-
-
 	ituLayerGoto(mainLayer);
 	ituCoverFlowGoto(mainCoverFlow, 1);
 

@@ -103,7 +103,7 @@ void ScenePredraw(int arg);
  * Global instance variable of scene.
  */
 extern ITUScene theScene;
-extern ITUSprite* topWiFiSprite;
+//extern ITUSprite* topWiFiSprite;
 
 /** @} */ // end of ctrlboard_scene
 

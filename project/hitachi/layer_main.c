@@ -154,6 +154,7 @@ void MainReset(void)
 bool MainOnEnter(ITUWidget* widget, char* param)
 {
 	//int i = 0, wifi_established = -1;
+	int wifi_established = -1;
 	int i,x,y;
 	char tmp[32];
 	
@@ -493,7 +494,7 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			curTempValueIndex = =(int) ((-current_tmp_float + 0.5)-20)/0.5;
+			curTempValueIndex =(int) ((-current_tmp_float + 0.5)-20)/0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 
@@ -503,11 +504,11 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		current_tmp_float = NCP18_Detect();
 		if (current_tmp_float > 0)
 		{
-			curTempValueIndex = =(int) ((current_tmp_float + 0.5)-20)/0.5;
+			curTempValueIndex =(int) ((current_tmp_float + 0.5)-20)/0.5;
 		}
 		else
 		{
-			curTempValueIndex = =(int) ((-current_tmp_float + 0.5)-20)/0.5;
+			curTempValueIndex =(int) ((-current_tmp_float + 0.5)-20)/0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 
@@ -554,21 +555,21 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		ituTextSetString(mainCurHumidityValueText, tmp);
 	}
 
-//	if (theConfig.wifi_on_off == 1)
-//	{
-//#ifdef CFG_NET_WIFI_SDIO_NGPL
-//	    wifi_established = ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL);
-//#endif
-//
+	if (theConfig.wifi_on_off == 1)
+	{
+#ifdef CFG_NET_WIFI_SDIO_NGPL
+	    wifi_established = ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL);
+#endif
+
 //	    if (wifi_established)
 //	        ituSpriteGoto(topWiFiSprite, 2); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
 //		else
 //            ituSpriteGoto(topWiFiSprite, 1);
-//	}
-//	else
-//	{
+	}
+	else
+	{
 //		ituSpriteGoto(topWiFiSprite, 0); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
-//	}
+	}
 
 	return true;
 }
@@ -599,7 +600,7 @@ bool MainOnTimer(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 #else
@@ -607,11 +608,11 @@ bool MainOnTimer(ITUWidget* widget, char* param)
 		current_tmp_float = NCP18_Detect();
 		if (current_tmp_float > 0)
 		{
-			curTempValueIndex = = (int)((current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((current_tmp_float + 0.5) - 20) / 0.5;
 		}
 		else
 		{
-			curTempValueIndex = =(int) ((-current_tmp_float + 0.5)-20)/0.5;
+			curTempValueIndex =(int) ((-current_tmp_float + 0.5)-20)/0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 #else
@@ -844,8 +845,10 @@ bool MainTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param)
 
 bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
+	
 	printf("mainTopScreenLightTrackBar %d \n", mainTopScreenLightTrackBar->value);
 	ScreenSetBrightness(mainTopScreenLightTrackBar->value);
+	
 	return true;
 }
 

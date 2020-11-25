@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Nov 03 14:24:35 2020
+# Wed Nov 25 10:09:38 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -351,7 +351,12 @@ set(CFG_UART0_INTR y)
 set(CFG_UART0_BAUDRATE "115200")
 # CFG_UART0_RS485 is not set
 # CFG_UART1_ENABLE is not set
-# CFG_UART2_ENABLE is not set
+set(CFG_UART2_ENABLE y)
+# CFG_UART2_INTR is not set
+# CFG_UART2_DMA is not set
+set(CFG_UART2_FIFO y)
+set(CFG_UART2_BAUDRATE "9600")
+# CFG_UART2_RS485 is not set
 # CFG_UART3_ENABLE is not set
 # CFG_UART4_ENABLE is not set
 # CFG_UART5_ENABLE is not set
@@ -395,9 +400,10 @@ set(CFG_POWER_DOZE y)
 # GPIO
 #
 set(CFG_GPIO_PWM_NUMBER "1")
+set(CFG_GPIO_UART2_RX "37")
+set(CFG_GPIO_UART2_TX "-1")
 # CFG_GPIO_TOUCH_INT_ACTIVE_HIGH is not set
 set(CFG_GPIO_HOMEBUS_TXD "35")
-set(CFG_GPIO_HOMEBUS_RXD "37")
 
 #
 # Network
@@ -426,6 +432,7 @@ set(CFG_GPIO_HOMEBUS_RXD "37")
 # CFG_DBG_PRINTBUF is not set
 # CFG_DBG_SWUART_CODEC is not set
 set(CFG_DBG_UART0 y)
+# CFG_DBG_UART2 is not set
 # CFG_DBG_LCDCONSOLE is not set
 # CFG_DBG_OSDCONSOLE is not set
 set(CFG_DBG_ICE_SCRIPT "IT9070A1_Initial_DDR2_Mem_tiling_pitch2048_320MHZ.csf")

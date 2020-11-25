@@ -29,137 +29,11 @@ static volatile bool extQuit;
 
 #define MAX_DATA_SIZE 		128
 
-void homebus_init()
-{
-	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
-	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
-	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
-	//	uint8_t pWriteData[MAX_DATA_SIZE] = { 0x31, 0x32, 0x33};
-	printf("Start Homebus\n");
-
-
-	tHomebusInitData.cpuClock = ithGetRiscCpuClock();
-	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
-	tHomebusInitData.rxdGpio = CFG_GPIO_HOMEBUS_RXD;		
-
-
-	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
-
-
-
-}
-
-void homebus_senddata(char* buf,unsigned char len)
-{
-	printf("homebus_senddata %d \n", len);
-
-	if(len >64)
-	{
-		printf("homebus_senddata %d \n", len);
-		return;
-	}
-	
-	int count;
-	ithGpioSetOut(34);
-	ithGpioSetMode(34, ITH_GPIO_MODE0);
-	ithGpioClear(34);
-
-	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
-		
-	tHomebusWriteData.len = len;
-	tHomebusWriteData.pWriteDataBuffer =buf;
-
-	for(count = 0; count < len; count++) {
-		printf("0x%x ", buf[count]);
-	}
-	printf("\r\n");
-
-
-
-	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
-	//printf("homebus_senddata end\n");	
-
-	
-	ithGpioSetOut(34);
-	ithGpioSetMode(34, ITH_GPIO_MODE0);
-	ithGpioSet(34);
-}
-
-void homebus_recvdata(char* buf,unsigned char* len)
-{
-unsigned int recv_len=0;
-int count=0;
-	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
-
-	HOMEBUS_READ_DATA tHomebusReadData = { 0 };
-
-    tHomebusReadData.len = MAX_DATA_SIZE;//CMD_LEN;
-    tHomebusReadData.pReadDataBuffer = pReadData;
-
-int ret;
-uint8_t data_len;
-int timeout=10;
-
-while(timeout>0)
-{
-	ret = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
-	if(recv_len >3)
-	{
-		data_len =pReadData[2];//protocol length
-	}
-	else
-	{
-		recv_len=recv_len+ret;
-		timeout--;		
-		usleep(1000);
-		continue;
-	}
-	
-	recv_len=recv_len+ret;
-	if(recv_len>=data_len)
-	{
-		break;
-	}
-	else
-	{
-	    tHomebusReadData.pReadDataBuffer = &pReadData[count];
-	}
-	usleep(10*1000); //9600
-
-		
-}
-if(recv_len>0)
-{
-	printf("Homebus Read(%d) :\n", recv_len);
-	for(count = 0; count < recv_len; count++) {
-		printf("0x%x ", pReadData[count]);
-	}
-	printf("\r\n");
-}
-	//memcpy(buf,pReadData,recv_len);
-	//*len=recv_len;
-
-
-
-}
-
-void homebus_control()
-{
-	homebus_init();
-
-	while(1)
-	{
-		tx_deal();
-		rx_deal();
-		init_tx_deal();//10 ms
-		system_tx_check();//10 ms
-		usleep(5000);
-	}
-}
 
 
 void Hlink_init()
 {
+/*
 	    int altCpuEngineType = ALT_CPU_HOMEBUS;
 
 	 //Load Engine on ALT CPU
@@ -167,6 +41,9 @@ void Hlink_init()
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
 //    homebus_test();	    
 	pthread_create(&extTask, NULL, homebus_control, NULL);
+	
+*/
+
 
 }
 #endif

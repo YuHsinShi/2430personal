@@ -5,13 +5,12 @@ include_directories(
 
 add_executable(${CMAKE_PROJECT_NAME}
     test_$ENV{CFG_PLATFORM}.c
+
     )
     
 add_executable(${CMAKE_PROJECT_NAME}
-    test_homebus.c
-	hlink/uart_tx.c
-	hlink/uart_rx.c
-    )
+ test_homebus.c
+    )	   
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
 	risc

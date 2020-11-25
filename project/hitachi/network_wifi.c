@@ -12,10 +12,10 @@
 /* WIFI Static Varibles */
 static struct timeval       tvStart     = {0, 0}, tvEnd     = {0, 0},
                             tvStartWifi = {0, 0}, tvEndWifi = {0, 0};
-static WIFI_MGR_SETTING     gWifiSetting;
+WIFI_MGR_SETTING     gWifiSetting;
 static bool                 networkWifiIsReady, process_set  = false;
 static int                  wifimgr_init = WIFIMGR_ECODE_NOT_INIT;
-extern ITUSprite            *topWiFiSprite;
+//extern ITUSprite            *topWiFiSprite;
 
 
 
@@ -255,13 +255,13 @@ void NetworkWifiProcess(void)
         networkWifiIsReady = (bool)wifiMgr_is_wifi_available(&process_tv); //Return: NGPL(SSID Len)
         
         /* WIFI ICON */
-        if (networkWifiIsReady){
-            if (ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL))
-                ituSpriteGoto(topWiFiSprite, 2);
-            else
-                ituSpriteGoto(topWiFiSprite, 1);
-        }else
-            ituSpriteGoto(topWiFiSprite, 0);
+      //  if (networkWifiIsReady){
+      //     if (ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL))
+      //          ituSpriteGoto(topWiFiSprite, 2);
+      //      else
+      //          ituSpriteGoto(topWiFiSprite, 1);
+      //  }else
+      //      ituSpriteGoto(topWiFiSprite, 0);
 
 #if defined(CFG_POWER_SLEEP)
         wifimgr_init = NetworkWifiPowerSleep();

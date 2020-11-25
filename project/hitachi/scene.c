@@ -24,7 +24,7 @@
     #define DOUBLE_KEY_INTERVAL 200
 #endif
 
-//#define FPS_ENABLE
+#define FPS_ENABLE
 #define DOUBLE_KEY_ENABLE
 
 #define GESTURE_THRESHOLD           40
@@ -554,7 +554,7 @@ int SceneRun(void)
 
         tick = SDL_GetTicks();
 
-#if 1//def FPS_ENABLE
+#ifdef FPS_ENABLE
         frames++;
         if (tick - lasttick >= 1000)
         {
@@ -758,6 +758,7 @@ int SceneRun(void)
                         lastx   = ev.tfinger.x;
                         lasty   = ev.tfinger.y;
                     }
+					//debug
                     if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
                         AudioPlayKeySound();
 

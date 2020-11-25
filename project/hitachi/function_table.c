@@ -86,6 +86,8 @@ extern bool SettingLightBtnOnSlideUp(ITUWidget* widget, char* param);
 extern bool SettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingScreenLockSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool SettingScreenLockRadBoxOnPress(ITUWidget* widget, char* param);
+extern bool SettingWiFiBtnOnMouseUp(ITUWidget* widget, char* param);
+extern bool SettingWiFiSubBtnOnPress(ITUWidget* widget, char* param);
 
 extern bool ExamineOnEnter(ITUWidget* widget, char* param);
 extern bool ExamineSubEnterBtnOnPress(ITUWidget* widget, char* param);
@@ -138,6 +140,10 @@ extern bool AiAutoCheckBoxOnPress(ITUWidget* widget, char* param);
 
 extern bool Hlink_send(ITUWidget* widget, char* param);
 
+extern bool SettingWiFiPasswordOnEnter(ITUWidget* widget, char* param);
+extern bool SettingWiFiPasswordEnUpperCheckBoxOnPress(ITUWidget* widget, char* param);
+extern bool SettingWiFiPasswordEnterButtonOnPress(ITUWidget* widget, char* param);
+extern bool SettingWiFiPasswordBackButtonOnPress(ITUWidget* widget, char* param);
 
 ITUActionFunction actionFunctions[] =
 {
@@ -229,6 +235,8 @@ ITUActionFunction actionFunctions[] =
 	"SettingScreenLockBtnOnMouseUp", SettingScreenLockBtnOnMouseUp,
 	"SettingScreenLockSaveBtnOnPress", SettingScreenLockSaveBtnOnPress,
 	"SettingScreenLockRadBoxOnPress", SettingScreenLockRadBoxOnPress,
+	"SettingWiFiBtnOnMouseUp", SettingWiFiBtnOnMouseUp,
+	"SettingWiFiSubBtnOnPress", SettingWiFiSubBtnOnPress,
 
 	"ExamineOnEnter", ExamineOnEnter,
 	"ExamineSubEnterBtnOnPress", ExamineSubEnterBtnOnPress,
@@ -277,6 +285,10 @@ ITUActionFunction actionFunctions[] =
 	"AiOnEnter", AiOnEnter,
 	"AiRadioBoxOnPress", AiRadioBoxOnPress,
 	"AiAutoCheckBoxOnPress", AiAutoCheckBoxOnPress,
+	"SettingWiFiPasswordOnEnter", SettingWiFiPasswordOnEnter,
+	"SettingWiFiPasswordEnUpperCheckBoxOnPress", SettingWiFiPasswordEnUpperCheckBoxOnPress,
+	"SettingWiFiPasswordEnterButtonOnPress", SettingWiFiPasswordEnterButtonOnPress,
+	"SettingWiFiPasswordBackButtonOnPress", SettingWiFiPasswordBackButtonOnPress,
 
     NULL, NULL
 };

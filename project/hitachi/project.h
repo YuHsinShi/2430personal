@@ -47,6 +47,8 @@ int examineTimeRecord[EXAM_REC_MAX_ITEM][2];
 int examineAddrRecord[EXAM_REC_MAX_ITEM];
 int examineNoRecord[EXAM_REC_MAX_ITEM];
 int aiMode;
+bool wifi_connected;
+
 
 /**
 * Initializes screen module.
@@ -667,12 +669,6 @@ void DynamicLoadTpModule(void);
 //HLINK FUNCTION INDEX defined here
 #define HLINK_POWER_OFF		0
 #define HLINK_POWER_ON		1
-
-
-
-
-
-
 
 
 #endif /* PROJECT_H */

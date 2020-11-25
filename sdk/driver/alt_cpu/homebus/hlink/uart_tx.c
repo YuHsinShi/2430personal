@@ -42,89 +42,89 @@
 
 
 unsigned char  system_status;//系统开关机
-unsigned char system_mode;//系统模式  共20个模式
+unsigned char system_mode;//系统模式  �?0个模�?
 unsigned char system_wind;//系统风量
 unsigned char tempset;//设定温度
 unsigned char tempset_auto;//自动模式设定温度
 unsigned char tempset_cool;//制冷模式设定温度
 unsigned char tempset_heat;//制热模式设定温度
-unsigned char half_set;//0.5度设定
+unsigned char half_set;//0.5度设�?
 unsigned char dry_set;//系统设定湿度
 
-unsigned char 	mode_enable;//模式类型  大于40种组合
-unsigned char 	wind_enable;//风量类型 0：3档   1：3档+自动   2：4档    3：4档+自动  4：6档    5：6档+自动
+unsigned char 	mode_enable;//模式类型  大于40种组�?
+unsigned char 	wind_enable;//风量类型 0�?�?  1�?�?自动   2�?�?   3�?�?自动  4�?�?   5�?�?自动
 
 
-unsigned char temp_ad_value;//温度传感器ad值 
-unsigned char temp_value;//温度传感器温度值
+unsigned char temp_ad_value;//温度传感器ad�?
+unsigned char temp_value;//温度传感器温度�?
 
 
-unsigned char wind_mode;//风向模式  0：普通风向  1：3D风  2：超远风
+unsigned char wind_mode;//风向模式  0：普通风�? 1�?D�? 2：超远风
 unsigned char  wind_board_enable;//是否有导风板
-unsigned char  winddir_enable;//导风板类型 0：无导风板 1：有一个导风板  2：四方向导风板 3：一方向导风板  4：3D出风口 5：二方向导风板
-unsigned char  wind_board_status;//导风板1是否摆动 1：摆动   0：停止
-unsigned char  wind_board_angle;//导风板1摆动角度 范围1~7
-unsigned char  wind_horizontal_status;//导风板2是否摆动 1：摆动   0：停止
-unsigned char  wind_horizontal_angle;//导风板2摆动角度 范围1~7
-unsigned char  wind_board2_status;//导风板3是否摆动 1：摆动   0：停止
-unsigned char  wind_board2_angle;//导风板3摆动角度 范围1~7
-unsigned char  wind_horizontal2_status;//导风板4是否摆动 1：摆动   0：停止
-unsigned char  wind_horizontal2_angle;//导风板4摆动角度 范围1~7
+unsigned char  winddir_enable;//导风板类�?0：无导风�?1：有一个导风板  2：四方向导风�?3：一方向导风�? 4�?D出风�?5：二方向导风�?
+unsigned char  wind_board_status;//导风�?是否摆动 1：摆�?  0：停�?
+unsigned char  wind_board_angle;//导风�?摆动角度 范围1~7
+unsigned char  wind_horizontal_status;//导风�?是否摆动 1：摆�?  0：停�?
+unsigned char  wind_horizontal_angle;//导风�?摆动角度 范围1~7
+unsigned char  wind_board2_status;//导风�?是否摆动 1：摆�?  0：停�?
+unsigned char  wind_board2_angle;//导风�?摆动角度 范围1~7
+unsigned char  wind_horizontal2_status;//导风�?是否摆动 1：摆�?  0：停�?
+unsigned char  wind_horizontal2_angle;//导风�?摆动角度 范围1~7
 unsigned char  wind_board_set;//导风板统一设定 1：为统一设定 0：为单独设定
 
 
-unsigned char save_flag,save_used,save_set_enable;//节能标志,节能是否有效、节能是否可以操作
-unsigned char sleep_flag,sleep_used,sleep_set_enable;//睡眠标志,睡眠是否有效、睡眠是否可以操作
-unsigned char mute_flag,mute_used,mute_set_enable;//静音标志,静音是否有效、静音是否可以操作
-unsigned char health_flag,health_used,health_set_enable;//健康标志,健康是否有效、健康是否可以操作
-unsigned char heat_flag,heat_used,heat_set_enable;//辅热标志,辅热是否有效、辅热是否可以操作
-unsigned char forest_wind_flag,forest_wind_used,forest_wind_set_enable;//森林风标志,森林风是否有效、森林风是否可以操作
+unsigned char save_flag,save_used,save_set_enable;//节能标志,节能是否有效、节能是否可以操�?
+unsigned char sleep_flag,sleep_used,sleep_set_enable;//睡眠标志,睡眠是否有效、睡眠是否可以操�?
+unsigned char mute_flag,mute_used,mute_set_enable;//静音标志,静音是否有效、静音是否可以操�?
+unsigned char health_flag,health_used,health_set_enable;//健康标志,健康是否有效、健康是否可以操�?
+unsigned char heat_flag,heat_used,heat_set_enable;//辅热标志,辅热是否有效、辅热是否可以操�?
+unsigned char forest_wind_flag,forest_wind_used,forest_wind_set_enable;//森林风标�?森林风是否有效、森林风是否可以操作
 
-unsigned char human_flag,human_used,human_set_enable;//人感标志,人感是否有效、人感是否可以操作
+unsigned char human_flag,human_used,human_set_enable;//人感标志,人感是否有效、人感是否可以操�?
 unsigned char human_sensor,human_sensor_used;//人感2标志,人感2有效
 
-unsigned char 	self_clean_flag,self_clean_used,self_clean_enable;//自清洁标志,自清洁是否有效、自清洁是否可以操作
-unsigned int 	  self_clean_flag_b;//各室内机自清洁标志
+unsigned char 	self_clean_flag,self_clean_used,self_clean_enable;//自清洁标�?自清洁是否有效、自清洁是否可以操作
+unsigned int 	  self_clean_flag_b;//各室内机自清洁标�?
 unsigned char 	high_temp_disinfect_flag,high_temp_disinfect_used,high_temp_disinfect_set_enable;//高温杀标志,高温杀是否有效、高温杀是否可以操作
 unsigned int 	  high_temp_disinfect_flag_b;//各室内机高温杀标志
-unsigned char 	power_wind_check_flag,power_wind_flag_used,power_wind_set_enable;//强力标志,强力是否有效、强力是否可以操作
+unsigned char 	power_wind_check_flag,power_wind_flag_used,power_wind_set_enable;//强力标志,强力是否有效、强力是否可以操�?
 unsigned int 	  power_wind_check_flag_b;//各室内机强力标志
 
 
 unsigned char d1_d3_check;
 unsigned char initialize_10ms;
-unsigned char initialize_flag;  //系统初始化标志    1：表示初始化结束
-unsigned char initialize_cnt;  //系统初始化计数
-unsigned char initialize_step; //系统初始化步骤
+unsigned char initialize_flag;  //系统初始化标�?   1：表示初始化结束
+unsigned char initialize_cnt;  //系统初始化计�?
+unsigned char initialize_step; //系统初始化步�?
 unsigned char line_init_flag;
 unsigned char tx_system_nuber1;//通信对象冷媒系统
 unsigned char tx_dress_nuber1;//通信对象冷媒地址
 unsigned char tx_system_nuber2;//通信对象冷媒系统
 unsigned char tx_dress_nuber2;//通信对象冷媒地址
 unsigned char line_control_double;//有亲子线控器
-unsigned char master_flag;//亲子标志 0：亲线控器 1：子线控器
+unsigned char master_flag;//亲子标志 0：亲线控�?1：子线控�?
 
 
 
-unsigned char already_tx_nuber;//正在发码的室内机序号 从0至（total_machine-1）
-unsigned char basedata[16][50];//用于保存室内机数据  basedata[i][1]表示室内机系统  basedata[i][2]表示室内机地址
+unsigned char already_tx_nuber;//正在发码的室内机序号 �?至（total_machine-1�?
+unsigned char basedata[16][50];//用于保存室内机数�? basedata[i][1]表示室内机系�? basedata[i][2]表示室内机地址
 
-unsigned char option_data[16][50];//各台室内机机能设定数据1G
-unsigned char option_data_new[16][50];//各台室内机机能设定数据2G
-unsigned char option_data_new1[16][50];//各台室内机机能设定数据3G
+unsigned char option_data[16][50];//各台室内机机能设定数�?G
+unsigned char option_data_new[16][50];//各台室内机机能设定数�?G
+unsigned char option_data_new1[16][50];//各台室内机机能设定数�?G
 
-unsigned char option_backup[16][50];//各台室内机机能设定数据1G临时数组
-unsigned char option_new_backup[16][50];//各台室内机机能设定数据2G临时数组
-unsigned char option_new1_backup[16][50];//各台室内机机能设定数据3G临时数组
+unsigned char option_backup[16][50];//各台室内机机能设定数�?G临时数组
+unsigned char option_new_backup[16][50];//各台室内机机能设定数�?G临时数组
+unsigned char option_new1_backup[16][50];//各台室内机机能设定数�?G临时数组
 
-unsigned char option_all_set[16];//各台室内机机能设定数据1G共同设定
-unsigned char option_all_set_new[16];//各台室内机机能设定数据2G共同设定
-unsigned char option_all_set_new1[16];//各台室内机机能设定数据3G共同设定
+unsigned char option_all_set[16];//各台室内机机能设定数�?G共同设定
+unsigned char option_all_set_new[16];//各台室内机机能设定数�?G共同设定
+unsigned char option_all_set_new1[16];//各台室内机机能设定数�?G共同设定
 
 
 
-unsigned char line_protocol;//线控器1、2、3G支持标志
-unsigned char line_g25_flag;//线控器2.5G支持标志
+unsigned char line_protocol;//线控�?�?�?G支持标志
+unsigned char line_g25_flag;//线控�?.5G支持标志
 unsigned int  inroom_2g5_protocol;//各台室内机机2.5G支持标志
 unsigned int	inroom_2g_protocol;//各台室内机机2G支持标志
 unsigned int  inroom_3g_protocol;//各台室内机机3G支持标志
@@ -134,40 +134,40 @@ unsigned char	total_machine;//实际连接的室内机台数
 
 
 
-unsigned char tx_change_flag;//状态改变发码标志 1：表示有改变 发码后为0
-unsigned char tx_time_1s_cnt;//状态改变发码计数
+unsigned char tx_change_flag;//状态改变发码标�?1：表示有改变 发码后为0
+unsigned char tx_time_1s_cnt;//状态改变发码计�?
 
-unsigned char server_set_status;//服务设定状态 为1时表示正处于设定状态，不能开机
-unsigned char a3d_wind_use;//是否有3D出风口
-unsigned char a3d_wind_err;//3D出风口报警
+unsigned char server_set_status;//服务设定状�?�?时表示正处于设定状态，不能开�?
+unsigned char a3d_wind_use;//是否�?D出风�?
+unsigned char a3d_wind_err;//3D出风口报�?
 
 
-unsigned char compress_preheat_reset;//压缩机预热解除
+unsigned char compress_preheat_reset;//压缩机预热解�?
 unsigned char emergency_set_status;
-unsigned char emergency_flag;//应急运转标志
-unsigned char try_run_flag;//试运行标志
-unsigned char try_run_set;//试运行设定标志
-unsigned char try_run_fre;//试运行频率
+unsigned char emergency_flag;//应急运转标�?
+unsigned char try_run_flag;//试运行标�?
+unsigned char try_run_set;//试运行设定标�?
+unsigned char try_run_fre;//试运行频�?
 
 
 
-unsigned char hh_flag;//品牌 0：日立  1：海信  2：约克
+unsigned char hh_flag;//品牌 0：日�? 1：海�? 2：约�?
 
 
 
 
-unsigned char  center_control_all;//集控全禁止
+unsigned char  center_control_all;//集控全禁�?
 unsigned char center_control_onoff;//集控开关机禁止
-unsigned char 	center_onoff_flag;////集控开关机禁止下允许开机标志
+unsigned char 	center_onoff_flag;////集控开关机禁止下允许开机标�?
 unsigned char center_control_mode;//集控模式禁止
 unsigned char center_control_wind;//集控风量禁止
-unsigned char center_control_windboard;//集控导风板禁止
+unsigned char center_control_windboard;//集控导风板禁�?
 unsigned char center_control_tempset;//集控设定温度禁止
 
 
 
-unsigned char  machine_type;//室内机机型
-unsigned char  machine_type1;//室内机机型1
+unsigned char  machine_type;//室内机机�?
+unsigned char  machine_type1;//室内机机�?
 
 unsigned char err_now_flag;//正在报警标志
 unsigned char  err_reset_flag;//报警复位
@@ -934,12 +934,12 @@ void tx_deal(void)
             return;
        }
        
-        
+        /*
 		 for(i=0;i<50;i++)
 		 {
 		   tx_data[i]=0;
-		 }
-		 
+		 }*/ 
+		 memset(tx_data,50,0);
 		 
 		Index=get_index();
 		tx_clear_flag=0;
@@ -959,13 +959,16 @@ void tx_deal(void)
 		ret =homebus_senddata(&tx_data[0],tx_total);
 		if(ret >=10)
 		{
-			printf("homebus_senddata fail (NO ACK) \n");
+			printf("homebus_senddata fail\n");
+
+
 		}
 					
         
+	
+	next_tx_flag=tx_finish_flag; 
+	tx_finish_flag=0;
 
-		next_tx_flag=tx_finish_flag; 
-		tx_finish_flag=0;
 
 
 		
@@ -3658,7 +3661,7 @@ void system_tx_check(void)
   
   if(tx_short_flag.data||tx_data_flag[0].data||tx_data_flag[1].data||tx_data_flag[2].data||tx_data_flag[3].data) return;
   
-  //从别的线控器发来的命令，当本身为亲时，只给室内机发送基本格式，当为子时，先给亲线控器发送基本模式
+  //从别的线控器发来的命令，当本身为亲时，只给室内机发送基本格式，当为子时，先给亲线控器发送基本模�?
   if(line_change_flag)
   {
     line_change_flag=0;
@@ -3706,7 +3709,7 @@ void system_tx_check(void)
     {
       err_4s_cnt=0;
       /////////////////////////
-      //有错误发生的室内机每4秒发送一次基本格式
+      //有错误发生的室内机每4秒发送一次基本格�?
       i=0;
       
         do

@@ -191,7 +191,7 @@ bool PowerOffOnEnter(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 
@@ -201,11 +201,11 @@ bool PowerOffOnEnter(ITUWidget* widget, char* param)
 		current_tmp_float = NCP18_Detect();
 		if (current_tmp_float > 0)
 		{
-			curTempValueIndex = = (int)((current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((current_tmp_float + 0.5) - 20) / 0.5;
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 
@@ -255,7 +255,7 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 
 	dist = curContainerPosX - orgContainerPosX;
 
-	if (abs(dist) > 35)
+	if (abs(dist) > 80)
 	{
 		StopPowerOff();
 		ret = true;
@@ -281,7 +281,7 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 #else
@@ -289,11 +289,11 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 		current_tmp_float = NCP18_Detect();
 		if (current_tmp_float > 0)
 		{
-			curTempValueIndex = = (int)((current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((current_tmp_float + 0.5) - 20) / 0.5;
 		}
 		else
 		{
-			curTempValueIndex = = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
+			curTempValueIndex = (int)((-current_tmp_float + 0.5) - 20) / 0.5;
 			curTempValueIndex = -curTempValueIndex;
 		}
 #else
