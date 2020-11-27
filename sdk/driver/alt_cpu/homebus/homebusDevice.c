@@ -23,6 +23,7 @@ typedef struct
     uint32_t rxReadLen;
     uint32_t rxWriteIdx;
     uint32_t rxReadIdx;
+    uint32_t tickCnt;
     uint8_t txData[MAX_PORT_BUFFER_SIZE];
     uint8_t readData[MAX_PORT_BUFFER_SIZE];
     uint8_t uid[2];
@@ -39,14 +40,116 @@ static uint8_t gpHomebusImage[] =
 
 static pthread_mutex_t gHomebusReadMutex  = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t gHomebusStatusMutex  = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t gHomebusTickMutex  = PTHREAD_MUTEX_INITIALIZER;
 static HOMEBUS_DEV_HANDLE gHomebusDevHandle = {0};
 
 static void homebusProcessCommand(int cmdId);
 
+
+
+void homebus_logic_control()
+{
+printf("homebus_logic_control \n");
+
+
+	int counter=10;
+
+	while(1)
+	{
+		system_tx_check();
+	
+		init_tx_deal();
+
+		if(0==counter){  tx_deal();	counter=10; } // do until100ms 
+		rx_deal();		
+
+
+
+		usleep(10*1000);//10ms 
+		counter--;
+	}
+}
+
+int homebus_senddata(uint8_t* buf,unsigned char len)
+{
+	printf("Homebus Send(%d) :", len);
+int ret;
+	if(0) //len >64)
+	{
+		//printf("homebus_senddata %d \n", len);
+		return -1;
+	}
+	
+	int count;
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioClear(34);
+
+	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
+		
+	tHomebusWriteData.len = len;
+	tHomebusWriteData.pWriteDataBuffer =buf;
+
+	for(count = 0; count < len; count++) {
+		printf("0x%2x ", buf[count]);
+	}
+	printf("\r\n");
+
+
+
+	ret= ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
+	//printf("homebus_senddata end\n");	
+
+	
+	ithGpioSetOut(34);
+	ithGpioSetMode(34, ITH_GPIO_MODE0);
+	ithGpioSet(34);
+	
+	return ret;
+}
+
+
+void homebus_init()
+{
+
+    printf("Start homebus_init\n");
+    
+	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
+    tHomebusInitData.cpuClock = ithGetRiscCpuClock();
+	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
+    // tHomebusInitData.rxdGpio = CFG_GPIO_UART2_RX;//CFG_GPIO_HOMEBUS_RXD;
+    // tHomebusInitData.parity  = NONE;
+    tHomebusInitData.uid[0] = 0x01;
+    tHomebusInitData.uid[1] = 0x01;
+    
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
+    printf("homebus_initt finished\n");
+
+
+}
+
+
+static void homebusSetTickCnt()
+{
+    pthread_mutex_lock(&gHomebusTickMutex);
+    gHomebusDevHandle.tickCnt = itpGetTickCount();
+    pthread_mutex_unlock(&gHomebusTickMutex);
+}
+
+static uint32_t homebusGetTickCnt()
+{
+    uint32_t tick = 0;
+    pthread_mutex_lock(&gHomebusTickMutex);
+    tick = gHomebusDevHandle.tickCnt;
+    pthread_mutex_unlock(&gHomebusTickMutex);
+    return tick;
+}
+
 static void homebusSetStatus(uint8_t sta)
 {
     pthread_mutex_lock(&gHomebusStatusMutex);
-    printf_hb("[homebusSetStatus] current(%d) new(%d)\n", gHomebusDevHandle.status, sta);
+	if(gHomebusDevHandle.status != sta)
+	    printf_hb("[homebusSetStatus] current(%d) new(%d)\n", gHomebusDevHandle.status, sta);
     gHomebusDevHandle.status = sta;
     pthread_mutex_unlock(&gHomebusStatusMutex);
 }
@@ -68,7 +171,7 @@ static void homebus_send_ack(uint8_t resp_id, bool isAck)
     ithGpioSetMode(34, ITH_GPIO_MODE0);
     ithGpioClear(34);
 
-    usleep(1000*3); //3ms //ack delay
+    usleep(1000*2); //2ms //ack delay
     
     HOMEBUS_WRITE_DATA tHomebusWriteData = {2, {0, 0}};
     tHomebusWriteData.pWriteBuffer[0] = (resp_id == 0x41 ? 0x41 : (resp_id>>4) | (resp_id<<4));
@@ -81,7 +184,7 @@ static void homebus_send_ack(uint8_t resp_id, bool isAck)
     ithGpioSetMode(34, ITH_GPIO_MODE0);
     ithGpioSet(34);
 		
-	printf_hb("[HL ACK/NACK] 0x%x 0x%x\n",tHomebusWriteData.pWriteBuffer[0],tHomebusWriteData.pWriteBuffer[1]);
+	printf_hb("[HB SEND- ACK/NACK] 0x%x 0x%x\n",tHomebusWriteData.pWriteBuffer[0],tHomebusWriteData.pWriteBuffer[1]);
 
 }
 
@@ -91,7 +194,6 @@ static void *read_thread_func(void *arg)
     uint8_t rBuff[MAX_PORT_BUFFER_SIZE] = {0};
     uint32_t fLen = 0;
     uint8_t no_data_cnt = 0;
-    uint32_t rxTick = 0;
     HOMEBUS_READ_DATA tHomebusReadData = {0};
 
 	// int i;
@@ -103,8 +205,10 @@ static void *read_thread_func(void *arg)
         if(tHomebusReadData.len > 0)
         {
 
-		rx_homebus_receive_parser_bypass(tHomebusReadData.len,tHomebusReadData.pReadBuffer);
-            rxTick = itpGetTickCount();
+			rx_homebus_receive_parser_bypass(tHomebusReadData.len,tHomebusReadData.pReadBuffer);
+
+
+            homebusSetTickCnt();
             
             if(homebusGetStatus() == TX_ING)
             {
@@ -112,8 +216,8 @@ static void *read_thread_func(void *arg)
                 memcpy(rBuff+rIdx, tHomebusReadData.pReadBuffer, tHomebusReadData.len);
                 rIdx += tHomebusReadData.len;
                 if(gHomebusDevHandle.txColsChk == 1 && rIdx == 1 && rBuff[0] == 0xaa) {homebusSetStatus(TX_NO_COLLISION); goto dropData;}
-                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x06) {homebusSetStatus(TX_ACK); goto dropData;}
-                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x15) {homebusSetStatus(TX_NACK); goto dropData;}
+                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x06) {	printf_hb("[HB RECV- ACK] 0x%x \n",rBuff[gHomebusDevHandle.txLen+1]);  homebusSetStatus(TX_ACK); goto dropData;}
+                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x15) {printf_hb("[HB RECV- NACK] 0x%x \n",rBuff[gHomebusDevHandle.txLen+1]); homebusSetStatus(TX_NACK); goto dropData;}
                 else if (memcmp(gHomebusDevHandle.txData, rBuff, MIN(rIdx, gHomebusDevHandle.txLen)) != 0){			
 					//collision
                     for(int i = 0; i < rIdx; i++) printf("[%d]=%x\n", i, rBuff[i]);
@@ -156,9 +260,16 @@ static void *read_thread_func(void *arg)
 	                    bcc ^= rBuff[i];
 	                homebusSetStatus(RX_ACK);
 	                if(bcc == rBuff[fLen-1]) {
+
+					
+						printf("[HL GET]FULL FRAME %d\n",fLen);
 	                    //ack
 						homebus_send_ack(rBuff[0],1);
+					/*
 	                    pthread_mutex_lock(&gHomebusReadMutex);
+	
+
+						
 	                    //cpy to readData
 	                    for(i = 0; i < fLen; i++)
 	                    {
@@ -168,7 +279,11 @@ static void *read_thread_func(void *arg)
 	                            gHomebusDevHandle.rxWriteIdx = 0;
 	                        }
 	                    }
+
+
+						
 	                    pthread_mutex_unlock(&gHomebusReadMutex);						
+	                    */
 	                    goto dropData;
 	                }
 					else 
@@ -180,7 +295,7 @@ static void *read_thread_func(void *arg)
 	            }
         	}
         } else {
-            no_data_cnt = itpGetTickDuration(rxTick);
+            no_data_cnt = itpGetTickDuration(homebusGetTickCnt());
             // printf("[HB time out cnt] no_data_cnt(%d)(%d)\n",no_data_cnt,homebusGetStatus());
             if(no_data_cnt > 5) {
                 if(homebusGetStatus() == TX_ING) {
@@ -207,7 +322,7 @@ static void *read_thread_func(void *arg)
         continue;
 dropData:
         rIdx = fLen = no_data_cnt = 0;
-        rxTick = itpGetTickCount();
+        homebusSetTickCnt();
         memset(rBuff, 0x0, MAX_PORT_BUFFER_SIZE);
     }
 }
@@ -322,11 +437,23 @@ static int homebusIoctl(int file, unsigned long request, void *ptr, void *info)
             }
             memcpy(pWriteAddress, ptInitData, sizeof(HOMEBUS_INIT_DATA));
             homebusProcessCommand(INIT_CMD_ID);			
-            //read thread start
-            homebusReadThreadStart();
+
+
+			
             //uid
             memcpy(gHomebusDevHandle.uid, ptInitData->uid, sizeof(gHomebusDevHandle.uid));
             ithPrintf("[Homebus] ID : %x %x\n", gHomebusDevHandle.uid[0], gHomebusDevHandle.uid[1]);
+
+
+
+            //read thread start
+            homebusReadThreadStart();
+
+
+
+			pthread_t readThread;
+			pthread_create(&readThread, NULL, homebus_logic_control, NULL);
+
             break;
         }
         case ITP_IOCTL_HOMEBUS_READ_DATA:
@@ -363,9 +490,20 @@ static int homebusIoctl(int file, unsigned long request, void *ptr, void *info)
                     usleep(1000*6); //6ms
                 }                
 				
+                homebusSetTickCnt();
                 homebusSetStatus(TX_ING);
+				//add io pull low
+				ithGpioSetOut(34);
+				ithGpioSetMode(34, ITH_GPIO_MODE0);
+				ithGpioClear(34);
                 homebusProcessCommand(WRITE_DATA_CMD_ID);
-                
+				//add io pull high
+
+
+				ithGpioSetOut(34);
+				ithGpioSetMode(34, ITH_GPIO_MODE0);
+				ithGpioSet(34);
+				
                 while(homebusGetStatus() == TX_ING) {
                     //wait to ack
                     // ithPrintf("[Homebus] wait TX ack !\n");
@@ -389,6 +527,9 @@ static int homebusIoctl(int file, unsigned long request, void *ptr, void *info)
                     ithPrintf("[Homebus] write COLLISION re-send !\n");
                     homebusSetStatus(IDLE);
                     gHomebusDevHandle.txColsChk = 0;
+
+					    usleep(1000*12); //do not send too quick wait 10-17 ms
+					    
                     //collision
                     //0xaa ok re-send data
                     cnt = 0;

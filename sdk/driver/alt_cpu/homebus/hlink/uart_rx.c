@@ -6,6 +6,13 @@
 #define CONST_16 16
 #define nop() 
 
+
+#define printr_rxdeal printf
+//#define print_enter	 __func__,line)
+#define printr_trace printf("[TRACE]%s,%d\n",__func__,__LINE__);
+//#define printr_trace 
+
+
 #if 1
 extern unsigned char d1_d3_check;
 extern unsigned char initialize_10ms;
@@ -249,6 +256,9 @@ unsigned int mark_deal(unsigned int value,unsigned int nuber)
 ********************************************************************************/
 void dress_confirm(void)
 {
+	printr_trace;
+
+
 	unsigned char i,j,k,l,_already_on,_total;
 
         _total=total_machine+1;
@@ -391,7 +401,9 @@ void rx_deal(void)
   unsigned char i;
 	int count;
   check_data=0;
-      
+   if(rx_finish)
+  {
+      rx_finish=0;     
     
        for(i=1;i<rx_data_lenth-1;i++)
        {
@@ -400,12 +412,23 @@ void rx_deal(void)
 
        if(rx_data[rx_data_lenth-1]==check_data)
        {
+	        if(rx_data_lenth > 0) {
+	            printf("RX Recv(%d) :", rx_data_lenth);
+	            for(count = 0; count < rx_data_lenth; count++) {
+	                printf("0x%x ", rx_data[count]);
+	            }
+	            printf("\r\n");
+	        	}
+
+
+	   
         //接收数据     
         if(rx_data[0]==0x12)
         {
-          
+          printr_trace;
          if((rx_data[2]==0x2d)&&(rx_data[5]==0x01)&&(rx_data[6]==line_control_dress)&&(rx_data[9]==0x01)&&(initialize_flag==0))
          {
+
            dress_confirm();
          }
          
@@ -415,6 +438,8 @@ void rx_deal(void)
           ee_nuber=dress_assign();
           if(ee_nuber>=CONST_16)
           {
+			printr_trace;
+
             if((rx_data[9]!=0x0c)&&(rx_data[9]!=0xbc)&&(rx_data[9]!=0xac)&&(rx_data[1]!=0xe2)) 
             return;
           }
@@ -460,6 +485,8 @@ void rx_deal(void)
          //基本数据要求
          else if((rx_data[1]==0x00)&&(rx_data[2]==0x0b)&&((rx_data[9]==0x00)||(rx_data[9]==0xb0)||(rx_data[9]==0xa0)))
          {
+         
+				 printr_trace;
                  timing_tx_flag=1;
                  already_tx_nuber=total_machine;
                  tx_system_nuber1=rx_data[3];tx_dress_nuber1=rx_data[4];
@@ -468,6 +495,8 @@ void rx_deal(void)
          //地址变更成功后重启要求
          else if((rx_data[1]==0x00)&&(rx_data[2]==0x0b)&&((rx_data[9]==0x0c)||(rx_data[9]==0xbc)||(rx_data[9]==0xac)))
          {
+         
+				printr_trace;
                 restart_flag=1;restart_cnt=0;
          }
          //点检1
@@ -511,6 +540,8 @@ void rx_deal(void)
          //诊断结果
          else if((rx_data[2]==0x0d)&&(rx_data[1]==0x21)&&(rx_data[6]==line_control_dress))
          {   
+         
+		   printr_trace;
            if(boardcheck_status)boardcheck_status=3;
            boardcheck_data[0]=rx_data[9];
            boardcheck_data[1]=rx_data[10];
@@ -524,6 +555,7 @@ void rx_deal(void)
          //地址冷媒系统变更完成
          else if((rx_data[2]==0x0a)&&(rx_data[1]==0xe2)&&(rx_data[6]==line_control_dress))
          {
+		   printr_trace;
            
            dresschange_confirm_tx=1;
            tx_system_nuber1=temporary_system;tx_dress_nuber1=temporary_dress;
@@ -545,6 +577,8 @@ void rx_deal(void)
         //3d rx
         else if(rx_data[0]==0x17)
         {
+        
+			   printr_trace;
                if((rx_data[1]==0x00)&&(rx_data[2]==0x18)&&(rx_data[9]==0xb1))
               {
                  a3d_wind_rx_deal();
@@ -674,6 +708,8 @@ void rx_deal(void)
          }
           else if((rx_data[1]==0xf1)&&(rx_data[2]==0x0c))//遥控器地址变更要求
           { 
+          
+			printr_trace;
             line_dresschange_request_tx=0;//收到对方的地址变更要求后，自身要发的变更要求要清0
             line_dresschange_finish_tx=1;     
             if(rx_data[10]==0x01)
@@ -704,6 +740,7 @@ void rx_deal(void)
           else if((rx_data[1]==0xe2)&&(rx_data[2]==0x0a))//遥控器地址变更完成
           {
             
+			printr_trace;
             line_dresschange_confirm_tx=1;
             /*
             if(master_flag)
@@ -726,6 +763,7 @@ void rx_deal(void)
           }
           else if((rx_data[1]==0xf2)&&(rx_data[2]==0x0a))//遥控器地址变更确认
           {
+          printr_trace;
 
           }
          
@@ -733,13 +771,19 @@ void rx_deal(void)
         //接收自己的数据进行校验
         else if(rx_data[0]==0x21)
         {
+        
+		   printr_trace;
            if((rx_data[2]==tx_total)&&(check_data==xor_data)&&(rx_data[4]==line_control_dress))
            {
                 
+			  printr_trace;
               nop();
               if(initialize_flag==0)
               {
                 tt_nuber=tt_nuber_dress();
+				printf("tt_nuber=%d \n",tt_nuber);
+
+				
                 option_backup[tt_nuber][3]&=0x7f;
               }
            }
@@ -753,10 +797,10 @@ void rx_deal(void)
        }
        else  //数据CRC校验不对的处理
        {
-        
+        printf("rx_deal data checksum error\n");
        }
        
-
+   	}
     
 }
 
@@ -1609,6 +1653,7 @@ void rx_data_system_other(void)
 void base_data_rx_deal(void)
 {
   
+          printr_trace;
           unsigned char j;
 
          
@@ -1725,6 +1770,7 @@ void base_data_rx_new_deal(void)
 {
   
          
+          printr_trace;
 
                  
           
@@ -1799,6 +1845,7 @@ void base_data_rx_new_deal(void)
 void base_data_rx_new1_deal(void)
 {
   
+          printr_trace;
           deal_data[0]=rx_data[18];
           deal_data[1]=rx_data[19];
           deal_data[2]=rx_data[20];
@@ -1883,6 +1930,7 @@ void extend_tx_enable(void)
 void extendbase_data_rx_new_deal(void)
 {
   unsigned char j;
+  printr_trace;
 
 
   if((option_data[ee_nuber][3]&0x80)==0)   
@@ -1938,6 +1986,7 @@ void extendbase_data_rx_new_deal(void)
 void extendbase_data_rx_new1_deal(void)
 {
   unsigned char j;
+ printr_trace;
 
  if((option_data[ee_nuber][3]&0x80)==0)
   {
@@ -2002,6 +2051,7 @@ void g25_basedata_rx_deal(void)
  
   
   
+  printr_trace;
 
   
 
@@ -2064,6 +2114,8 @@ void g25_basedata_rx_deal(void)
 ********************************************************************************/
 void g25_extenddata_rx_deal(void)
 {
+   printr_trace;
+
    if((option_data[ee_nuber][3]&0x80)==0)
   {
     if(option_data_new[ee_nuber][10]!=rx_data[10])
@@ -2094,6 +2146,7 @@ void g25_extenddata_rx_deal(void)
 void point1_data_rx_deal(void)
 {
   
+  printr_trace;
   if(system_mode==0)pointcheck1_data[0]=0;
   else
     pointcheck1_data[0]= tempset;//设定温度 b 1
@@ -2139,6 +2192,8 @@ void point1_data_rx_deal(void)
 ********************************************************************************/
 void point2_data_rx_deal(void)
 {
+	printr_trace;
+
     pointcheck2_data[0]=rx_data[10];//回风空气温度 q1
     pointcheck2_data[1]=rx_data[11];//出风空气温度 q2
     pointcheck2_data[2]=rx_data[12];//冻结温度 q3
@@ -2163,6 +2218,7 @@ void machine_type_rx_deal(void)
 {
   
   
+	printr_trace;
   
 }
 /********************************************************************************
@@ -2171,6 +2227,7 @@ void a3d_wind_rx_deal(void)
 {
    
       
+	 printr_trace;
 
      a3d_wind_use=1;
      a3d_wind_cnt=0;
@@ -2553,6 +2610,7 @@ void line_base_data_rx_new_deal(void)
 void line_base_data_rx_new1_deal(void)
 {
   
+   printr_trace;
    unsigned char i,j;
    
   if(rx_data[16]&0x80)line_g25_flag=1;
@@ -2765,6 +2823,7 @@ void line_base_data_rx_new1_deal(void)
 void extendbase_line_data_rx_new_deal(void)
 {
    unsigned char i;
+			  printr_trace;
 
               if(option_f1!=(rx_data[16]))
               {
@@ -2816,6 +2875,7 @@ void extendbase_line_data_rx_new1_deal(void)
 {
   unsigned char i;
   
+			  printr_trace;
               if(option_f1!=(rx_data[16]))
               {
                 option_f1=rx_data[16];
@@ -3072,6 +3132,7 @@ void g25_line_control_rx_deal(void)
 {
   unsigned char i,j;
   
+  printr_trace;
   line_g25_flag=1;
 
   if(initialize_flag==0)return;
@@ -3248,6 +3309,7 @@ void g25_line_control_rx_deal(void)
 void g25_extenddata_line_rx_deal(void)
 {
   
+  printr_trace;
   if((option_data[ee_nuber][3]&0x80)==0)
   {
     if(option_data_new[ee_nuber][10]!=rx_data[10])
@@ -3288,29 +3350,12 @@ void g25_extenddata_line_rx_deal(void)
 void save_option_rx_deal(void)
 {
   
+	printr_trace;
 }
 /********************************************************************************
 ********************************************************************************/
 
 
-void rx_homebus_get_ack()
-{
-    tx_repeat_cnt=0;
-     next_tx_flag=tx_finish_flag;
-     tx_finish_flag=0;
-
-}
-
-
-void rx_homebus_frame_start()
-{
-    rx_start=1;
-    rx_data[0]=rx_check_data[2];
-    rx_data[1]=rx_check_data[1];
-    rx_cnt=2;
-    rx_data_lenth=rx_check_data[0];
-
-}
 
 //porting function from
 //__interrupt static void r_uart2_interrupt_receive(void) 
@@ -3331,6 +3376,8 @@ void rx_homebus_frame_start()
     tx_repeat_cnt=0;
      next_tx_flag=tx_finish_flag;
      tx_finish_flag=0;
+	 //printf("ok1_%d",next_tx_flag);
+	 tx_ack_next_deal();
    
   }
   else if(((rx_check_data[2]==0x12)||(rx_check_data[2]==0x21)||(rx_check_data[2]==0x41)||(rx_check_data[2]==0x17)||(rx_check_data[2]==0x71))&&
@@ -3339,11 +3386,11 @@ void rx_homebus_frame_start()
   {
     if((rx_check_data[0]<60)&&(rx_check_data[0]>5))
     {
-    rx_start=1;
-    rx_data[0]=rx_check_data[2];
-    rx_data[1]=rx_check_data[1];
-    rx_cnt=2;
-    rx_data_lenth=rx_check_data[0];
+		    rx_start=1;
+		    rx_data[0]=rx_check_data[2];
+		    rx_data[1]=rx_check_data[1];
+		    rx_cnt=2;
+		    rx_data_lenth=rx_check_data[0];
     }
 
   } 

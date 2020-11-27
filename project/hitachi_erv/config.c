@@ -74,6 +74,9 @@ void ConfigInit(void)
 	// AP mode Password
 	snprintf(theConfig.ap_password, 256, iniparser_getstring(cfgIni, "wifi:ap_password", ""));
 
+	//examaine password
+	theConfig.examine_pw = iniparser_getint(cfgIni, "examine:examine_pw", 0000);
+
     cfgSavingCount = 0;
 }
 
@@ -148,6 +151,10 @@ static void ConfigSavePublic(void)
 	// wifi switch on/off
 	sprintf(buf, "%d", theConfig.wifi_on_off);
 	iniparser_set(cfgIni, "wifi:wifi_on_off", buf);
+
+	//examine
+	sprintf(buf, "%d", theConfig.examine_pw);
+	iniparser_set(cfgIni, "examine:examine_pw", buf);
 
 
     // save to file

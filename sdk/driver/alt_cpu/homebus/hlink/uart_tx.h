@@ -174,4 +174,10 @@ void a3d_wind_tx_deal(void);
 void save_option_tx_deal(void);
 
 
+
+
+void system_option_check(void);
+
+
+
 #endif

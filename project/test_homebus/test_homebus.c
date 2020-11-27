@@ -36,57 +36,6 @@
 
 
 
-int homebus_senddata(uint8_t* buf,unsigned char len)
-{
-	printf("Homebus Send(%d) :\n", len);
-int ret;
-	if(0) //len >64)
-	{
-		//printf("homebus_senddata %d \n", len);
-		return -1;
-	}
-	
-	int count;
-	ithGpioSetOut(34);
-	ithGpioSetMode(34, ITH_GPIO_MODE0);
-	ithGpioClear(34);
-
-	HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
-		
-	tHomebusWriteData.len = len;
-	tHomebusWriteData.pWriteDataBuffer =buf;
-
-	for(count = 0; count < len; count++) {
-		printf("0x%2x ", buf[count]);
-	}
-	printf("\r\n");
-
-
-
-	ret= ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_WRITE_DATA, &tHomebusWriteData);
-	//printf("homebus_senddata end\n");	
-
-	
-	ithGpioSetOut(34);
-	ithGpioSetMode(34, ITH_GPIO_MODE0);
-	ithGpioSet(34);
-	
-	return ret;
-}
-
-
-void homebus_control()
-{
-
-	while(1)
-	{
-		tx_deal();
-		//rx_deal();
-		init_tx_deal();//10 ms
-		system_tx_check();//10 ms
-		usleep(5000);
-	}
-}
 
 
 
@@ -115,9 +64,6 @@ void homebus_test()
 
 
 
-    pthread_t readThread;
-	pthread_create(&readThread, NULL, homebus_control, NULL);
-
 	
 	usleep(1000*10);
 
@@ -135,7 +81,7 @@ void homebus_test()
         // printf("write data &&&&& (%d)\n", len);
         // usleep(1000*1000*3);
 #endif
-#if 1
+#if 0
         len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
         // printf("read data &&&&& (%d)\n", len);
         if(len > 0) {
@@ -144,13 +90,17 @@ void homebus_test()
                 printf("0x%x ", pReadData[count]);
             }
             printf("\r\n");
-//			rx_data_lenth =(unsigned char) len;
-//			memcpy(rx_data,pReadData,len);
+
+		//maybe there are many frames queue
+
+		
 			rx_data_update(pReadData,len);
 			rx_deal();
+
+
         }
 #endif   
-        usleep(1000*100);
+        usleep(1000*10);
         // usleep(1000*1);
         // usleep(1000*1000*1);
     }
@@ -223,7 +173,6 @@ void homebus_test_ABC()
 }
 
 
-
 void* TestFunc(void* arg)
 {
     int altCpuEngineType = ALT_CPU_HOMEBUS;
@@ -243,7 +192,8 @@ void* TestFunc(void* arg)
 
 //	homebus_test_ABC();
 
-    homebus_test();
+ //   homebus_test();
+	homebus_init();
 
 #ifdef CFG_DBG_TRACE
     vTraceStop();

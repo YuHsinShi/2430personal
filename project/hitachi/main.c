@@ -94,7 +94,7 @@ retry_backup:
     NCP18_Init();
 #endif
 
-#if 0 //ndef WIN32
+#if //ndef WIN32
 	Hlink_init();
 #endif
 

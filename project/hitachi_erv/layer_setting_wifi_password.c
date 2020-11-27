@@ -123,6 +123,8 @@ bool SettingWiFiPasswordEnUpperCheckBoxOnPress(ITUWidget *widget, char *param)
 		ituWidgetSetVisible(settingWiFiPasswordEnUpperBackground, false);
 		ituWidgetSetVisible(settingWiFiPasswordEnLowerBackground, true);
 	}
+
+	return true;
 }
 
 int SettingWiFiPasswordSetData(char *ssid,
@@ -138,9 +140,20 @@ int SettingWiFiPasswordSetData(char *ssid,
 #else
     strcpy(theConfig.ssid, ssid);
 #endif
+	char tmp[32];
+	if (!settingWiFiPasswordSsidNameText)
+	{
+		settingWiFiPasswordSsidNameText = ituSceneFindWidget(&theScene, "settingWiFiPasswordSsidNameText");
+		assert(settingWiFiPasswordSsidNameText);
+	}
 
     gAPSecurityMode = securityMode;
     printf("SettingWiFiPasswordSetData: %s(%d) \n", ssid, securityMode);
+
+	
+	sprintf(tmp, "%s", ssid);
+	ituTextSetString(settingWiFiPasswordSsidNameText, tmp);
+
     return 0;
 }
 
@@ -151,6 +164,7 @@ bool SettingWiFiPasswordOnEnter(ITUWidget *widget, char *param)
     {
 		settingLayer = ituSceneFindWidget(&theScene, "settingLayer");
 		assert(settingLayer);
+
 
         settingWiFiPasswordTextBox           = ituSceneFindWidget(&theScene, "settingWiFiPasswordTextBox");
         assert(settingWiFiPasswordTextBox);
@@ -203,10 +217,11 @@ bool SettingWiFiPasswordOnEnter(ITUWidget *widget, char *param)
 
     //settingWiFiPasswordTextBox->textboxFlags |= ITU_TEXTBOX_PASSWORD;
     ituTextBoxSetString(settingWiFiPasswordTextBox, NULL);
-	sprintf(tmp, "%s", theConfig.ssid);
-	ituTextSetString(settingWiFiPasswordSsidNameText, tmp);
+	//sprintf(tmp, "%s", theConfig.ssid);
+	//ituTextSetString(settingWiFiPasswordSsidNameText, tmp);
 
 	wifi_connected = false;
+	
 
     return true;
 }

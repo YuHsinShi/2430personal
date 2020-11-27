@@ -6,6 +6,7 @@
 #include "project.h"
 #include "ite/itp.h"
 #include "sys/ioctl.h"
+#include <math.h>
 
 #ifdef CFG_SHT20_ENABLE
     #include "sht20_sensor.h"
@@ -15,115 +16,145 @@
     #include "ncp18_sensor.h"
 #endif
 
-
 ITUCoverFlow* mainCoverFlow = 0;
 
-ITUButton* mainLDWChangeButton = 0;
-ITUSprite* mainLDWSprite = 0;
-ITURadioBox* mainLQualityRadioBox[4] = { 0 };
-ITUSprite* mainLQualitySprite = 0;
-ITUText* mainLInPMDayText[6] = { 0 };
-ITUText* mainLCO2DayText[6] = { 0 };
-ITUText* mainLTVOCDayText[6] = { 0 };
-ITUText* mainLOutPMDayText[6] = { 0 };
-ITUIcon* mainLQualityInPMDayIcon = 0;
-ITUSprite* mainLQualityInPMSprite[8] = { 0 };
-ITUButton* mainLQualityInPMButton[8] = { 0 };
-ITUSprite* mainLQualityInPMNumSprite = 0;
-ITUText* mainLQualityInPMNumText[3] = { 0 };
-ITUIcon* mainLQualityTVOCDayIcon = 0;
-ITUSprite* mainLQualityTVOCSprite[8] = { 0 };
-ITUButton* mainLQualityTVOCButton[8] = { 0 };
-ITUSprite* mainLQualityTVOCNumSprite = 0;
-ITUText* mainLQualityTVOCNumText[3] = { 0 };
-ITUIcon* mainLQualityCO2DayIcon = 0;
-ITUSprite* mainLQualityCO2Sprite[8] = { 0 };
-ITUButton* mainLQualityCO2Button[8] = { 0 };
-ITUSprite* mainLQualityCO2NumSprite = 0;
-ITUText* mainLQualityCO2NumText[3] = { 0 };
-ITUIcon* mainLQualityOutPMDayIcon = 0;
-ITUSprite* mainLQualityOutPMSprite[8] = { 0 };
-ITUButton* mainLQualityOutPMButton[8] = { 0 };
-ITUSprite* mainLQualityOutPMNumSprite = 0;
-ITUText* mainLQualityOutPMNumText[3] = { 0 };
-ITUIcon* mainLQualityInPMWeekIcon = 0;
-ITUSprite* mainLQualityInPMWSprite[7] = { 0 };
-ITUButton* mainLQualityInPMWButton[7] = { 0 };
-ITUSprite* mainLQualityInPMWNumSprite = 0;
-ITUText* mainLQualityInPMWNumText[3] = { 0 };
-ITUIcon* mainLQualityTVOCWeekIcon = 0;
-ITUSprite* mainLQualityTVOCWSprite[7] = { 0 };
-ITUButton* mainLQualityTVOCWButton[7] = { 0 };
-ITUSprite* mainLQualityTVOCWNumSprite = 0;
-ITUText* mainLQualityTVOCWNumText[3] = { 0 };
-ITUIcon* mainLQualityCO2WeekIcon = 0;
-ITUSprite* mainLQualityCO2WSprite[7] = { 0 };
-ITUButton* mainLQualityCO2WButton[7] = { 0 };
-ITUSprite* mainLQualityCO2WNumSprite = 0;
-ITUText* mainLQualityCO2WNumText[3] = { 0 };
-ITUIcon* mainLQualityOutPMWeekIcon = 0;
-ITUSprite* mainLQualityOutPMWSprite[7] = { 0 };
-ITUButton* mainLQualityOutPMWButton[7] = { 0 };
-ITUSprite* mainLQualityOutPMWNumSprite = 0;
-ITUText* mainLQualityOutPMWNumText[3] = { 0 };
+static ITUButton* mainLDWChangeButton = 0;
+static ITUSprite* mainLDWSprite = 0;
+static ITURadioBox* mainLQualityRadioBox[4] = { 0 };
+static ITUSprite* mainLQualitySprite = 0;
+static ITUText* mainLInPMDayText[6] = { 0 };
+static ITUText* mainLCO2DayText[6] = { 0 };
+static ITUText* mainLTVOCDayText[6] = { 0 };
+static ITUText* mainLOutPMDayText[6] = { 0 };
+static ITUIcon* mainLQualityInPMDayIcon = 0;
+static ITUIcon* mainLQualityInPMBarIcon = 0;
+//static ITUSprite* mainLQualityInPMSprite[8] = { 0 };
+static ITUIcon* mainLQualityInPMIcon[8] = { 0 };
+static ITUButton* mainLQualityInPMButton[8] = { 0 };
+static ITUSprite* mainLQualityInPMNumSprite = 0;
+static ITUText* mainLQualityInPMNumText[3] = { 0 };
+static ITUIcon* mainLQualityTVOCDayIcon = 0;
+static ITUIcon* mainLQualityTVOCBarIcon = 0;
+//static ITUSprite* mainLQualityTVOCSprite[8] = { 0 };
+static ITUIcon* mainLQualityTVOCIcon[8] = { 0 };
+static ITUButton* mainLQualityTVOCButton[8] = { 0 };
+static ITUSprite* mainLQualityTVOCNumSprite = 0;
+static ITUText* mainLQualityTVOCNumText[3] = { 0 };
+static ITUIcon* mainLQualityCO2DayIcon = 0;
+static ITUIcon* mainLQualityCO2BarIcon = 0;
+//static ITUSprite* mainLQualityCO2Sprite[8] = { 0 };
+static ITUIcon* mainLQualityCO2Icon[8] = { 0 };
+static ITUButton* mainLQualityCO2Button[8] = { 0 };
+static ITUSprite* mainLQualityCO2NumSprite = 0;
+static ITUText* mainLQualityCO2NumText[3] = { 0 };
+static ITUIcon* mainLQualityOutPMDayIcon = 0;
+static ITUIcon* mainLQualityOutPMBarIcon = 0;
+//static ITUSprite* mainLQualityOutPMSprite[8] = { 0 };
+static ITUIcon* mainLQualityOutPMIcon[8] = { 0 };
+static ITUButton* mainLQualityOutPMButton[8] = { 0 };
+static ITUSprite* mainLQualityOutPMNumSprite = 0;
+static ITUText* mainLQualityOutPMNumText[3] = { 0 };
+static ITUIcon* mainLQualityInPMWeekIcon = 0;
+static ITUIcon* mainLQualityInPMWBarIcon = 0;
+//static ITUSprite* mainLQualityInPMWSprite[7] = { 0 };
+static ITUIcon* mainLQualityInPMWIcon[7] = { 0 };
+static ITUButton* mainLQualityInPMWButton[7] = { 0 };
+static ITUSprite* mainLQualityInPMWNumSprite = 0;
+static ITUText* mainLQualityInPMWNumText[3] = { 0 };
+static ITUIcon* mainLQualityTVOCWeekIcon = 0;
+static ITUIcon* mainLQualityTVOCWBarIcon = 0;
+//static ITUSprite* mainLQualityTVOCWSprite[7] = { 0 };
+static ITUIcon* mainLQualityTVOCWIcon[7] = { 0 };
+static ITUButton* mainLQualityTVOCWButton[7] = { 0 };
+static ITUSprite* mainLQualityTVOCWNumSprite = 0;
+static ITUText* mainLQualityTVOCWNumText[3] = { 0 };
+static ITUIcon* mainLQualityCO2WeekIcon = 0;
+static ITUIcon* mainLQualityCO2WBarIcon = 0;
+//static ITUSprite* mainLQualityCO2WSprite[7] = { 0 };
+static ITUIcon* mainLQualityCO2WIcon[7] = { 0 };
+static ITUButton* mainLQualityCO2WButton[7] = { 0 };
+static ITUSprite* mainLQualityCO2WNumSprite = 0;
+static ITUText* mainLQualityCO2WNumText[3] = { 0 };
+static ITUIcon* mainLQualityOutPMWeekIcon = 0;
+static ITUIcon* mainLQualityOutPMWBarIcon = 0;
+//static ITUSprite* mainLQualityOutPMWSprite[7] = { 0 };
+static ITUIcon* mainLQualityOutPMWIcon[7] = { 0 };
+static ITUButton* mainLQualityOutPMWButton[7] = { 0 };
+static ITUSprite* mainLQualityOutPMWNumSprite = 0;
+static ITUText* mainLQualityOutPMWNumText[3] = { 0 };
+static ITUIcon* mainLQualityIcon[3] = { 0 };
+static ITUIcon* mainLQualityBIcon[3] = { 0 };
 
-ITUText* mainCInHumidityText = 0;
-ITUText* mainCInTempText = 0;
-ITUText* mainCInPM25Text = 0;
-ITUText* mainCInCO2Text = 0;
-ITUText* mainCInTVOCText = 0;
-ITUText* mainCInHCHOText = 0;
-ITUText* mainCOutHumidityText = 0;
-ITUText* mainCOutTempText = 0;
-ITUText* mainCOutPM25Text = 0;
-ITUBackgroundButton* mainCFilterBackgroundButton = 0;
-ITUBackgroundButton* mainCWarningBackgroundButton = 0;
-//ITUIcon* mainCModeIcon = 0;
-ITUButton* mainCModeButton = 0;
-ITUSprite* mainModeTextSprite = 0;
-ITUIcon* mainCModeIconSet[MODE_NUM] = { 0 };
-//ITUIcon* mainCAttachIcon[ATTACH_NUM] = { 0 };
+static ITUBackground* mainLeftBackground = 0;
+static ITUIcon* mainLQualityInPMDayBgIcon = 0;
+static ITUIcon* mainLQualityCO2DayBgIcon = 0;
+static ITUIcon* mainLQualityOutPMDayBgIcon = 0;
+static ITUIcon* mainLQualityInPMWeekBgIcon = 0;
+static ITUIcon* mainLQualityCO2WeekBgIcon = 0;
+static ITUIcon* mainLQualityOutPMWeekBgIcon = 0;
 
-ITUButton* mainCAirForceButton = 0;
-ITUSprite* mainAirForceTextSprite = 0;
-ITUTrackBar* mainAirForceTrackBar = 0;
-ITUText* mainAirForceValueText = 0;
-ITUProgressBar* mainAirForceProgressBar = 0;
-ITUCheckBox* mainAirForceAutoCheckBox = 0;
-ITUSprite* mainAirForceSprite = 0;
-ITUSprite* mainAirForceLineSprite = 0;
-ITUIcon* mainAirForceTrackBarIcon = 0;
-ITUIcon* mainBarIcon[2] = { 0 };
-ITUBackground* mainAirForceTipShowBackground = 0;
-ITUText* mainAirForceTipShowText = 0;
 
-ITUCheckBox* mainRTimingCheckBox = 0;
-ITUBackgroundButton* mainRAttachBackgroundButton = 0;
-ITUIcon* mainRAttachIcon = 0;
-ITUSprite* mainRAttachTextSprite = 0;
-ITUIcon* mainRAttachBgBtnBg[2] = { 0 };
-ITUIcon* mainRAttachIconSet[ATTACH_NUM + 2] = { 0 };
+static ITUText* mainCInHumidityText = 0;
+static ITUText* mainCInTempText = 0;
+static ITUText* mainCInPM25Text = 0;
+static ITUText* mainCInCO2Text = 0;
+static ITUText* mainCInTVOCText = 0;
+static ITUText* mainCOutHumidityText = 0;
+static ITUText* mainCOutTempText = 0;
+static ITUText* mainCOutPM25Text = 0;
+static ITUBackgroundButton* mainCFilterBackgroundButton = 0;
+static ITUBackgroundButton* mainCWarningBackgroundButton = 0;
+static ITUButton* mainCModeButton = 0;
+static ITUIcon* mainCModeButtonIcon = 0;
+static ITUSprite* mainModeTextSprite = 0;
+static ITUIcon* mainCModeIconSet[MODE_NUM] = { 0 };
 
-ITUSprite* mainSprite = 0;
+static ITUButton* mainCAirForceButton = 0;
+static ITUSprite* mainAirForceTextSprite = 0;
+static ITUTrackBar* mainAirForceTrackBar = 0;
+//static ITUText* mainAirForceValueText = 0;
+static ITUProgressBar* mainAirForceProgressBar = 0;
+//static ITUCheckBox* mainAirForceAutoCheckBox = 0;
+//static ITUSprite* mainAirForceSprite = 0;
+//static ITUSprite* mainAirForceLineSprite = 0;
+static ITUIcon* mainAirForceTrackBarIcon = 0;
+static ITUIcon* mainBarIcon[2] = { 0 };
+static ITUBackground* mainAirForceTipShowBackground = 0;
+//static ITUText* mainAirForceTipShowText = 0;
+static ITUSprite* mainAirForceValueSprite = 0;
 
-ITUIcon* mainModeShowIcon[MODESHOW_NUM] = { 0 };
-ITUButton* mainCModeShowButton = 0;
-ITUIcon* mainModeShowSubIcon[MODESHOW_NUM] = { 0 };
-ITUIcon* mainModeShowLineIcon[MODESHOW_NUM] = { 0 };
-ITUIcon* mainModeShowLineIconSet[MODESHOW_NUM] = { 0 };
-ITUText* mainModeShowText[MODESHOW_NUM] = { 0 };
 
-ITUTrackBar*	mainTopIndLightTrackBar = 0;
-ITUProgressBar*	mainTopIndLightProgressBar = 0;
-ITUTrackBar*	mainTopScreenLightTrackBar = 0;
-ITUProgressBar*	mainTopScreenLightProgressBar = 0;
-ITUCheckBox*	mainTopAutoCheckBox = 0;
-ITUIcon* mainTopBarBtnIcon[2] = { 0 };
 
+
+static ITUSprite* mainSprite = 0;
+
+static ITUIcon* mainModeShowIcon[MODESHOW_NUM] = { 0 };
+static ITUSprite* mainModeShowIconSprite = 0;
+static ITUButton* mainCModeShowButton = 0;
+static ITUIcon* mainModeShowSubIcon[MODESHOW_NUM] = { 0 };
+static ITUSprite* mainModeShowSubIconSprite = 0;
+static ITUIcon* mainModeShowLineIcon[MODESHOW_NUM] = { 0 };
+static ITUIcon* mainModeShowLineIconSet[MODESHOW_NUM] = { 0 };
+static ITUText* mainModeShowText[MODESHOW_NUM] = { 0 };
+static ITUSprite* mainModeShowTextSprite = 0;
+
+static ITUTrackBar*	mainTopIndLightTrackBar = 0;
+static ITUProgressBar*	mainTopIndLightProgressBar = 0;
+static ITUTrackBar*	mainTopScreenLightTrackBar = 0;
+static ITUProgressBar*	mainTopScreenLightProgressBar = 0;
+static ITUCheckBox*	mainTopAutoCheckBox = 0;
+static ITUIcon* mainTopBarBtnIcon[2] = { 0 };
+static ITUCheckBox* mainTopTimingCheckBox = 0;
+
+
+static ITUContainer* mainTimingTextContainer = 0;
+static ITUText* mainTimingText = 0;
+
+static ITULayer* powerOffLayer = 0;
 
 
 static int sprite_index = 1;
-extern int mode_show[MODESHOW_NUM] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+extern int mode_show[MODESHOW_NUM] = { 1, 0, 0, 0, 0, 0, 0, 0 };
 extern int attach_show[ATTACH_NUM] = { 0 };
 static int attachNum = 0;
 static int attachContainerLength = 0;
@@ -146,19 +177,47 @@ static int preTempOutIndex = 0;
 extern int PM25In = 12;
 extern int CO2In = 860;
 extern int TVOCIn = 32;
-extern double HCHOIn = 0.02;
 static int PM25Out = 32;
 static int DWSpriteIndex = 0;
 static int QualitySpriteIndex = 0;
 static int InPMDayValue[8] = { 25, 45, 36, 75, 50, 30, 42, 43 };
-static int TVOCDayValue[8] = { 10, 0, 20, 10, 30, 20, 5, 10 };
+static int TVOCDayValue[8] = { 10, 0, 20, 10, 30, 20, 0, 10 };
 static int CO2DayValue[8] = { 700, 690, 1150, 1863, 2500, 1120, 1000, 750 };
 static int OutPMDayValue[8] = { 25, 45, 75, 220, 240, 100, 85, 95 };
 static int InPMWeekValue[7] = { 25, 45, 75, 50, 30, 45, 50 };
 static int TVOCWeekValue[7] = { 10, 0, 20, 10, 30, 20, 10 };
 static int CO2WeekValue[7] = { 700, 658, 900, 1000, 850, 725, 750 };
 static int OutPMWeekValue[7] = { 25, 45, 75, 220, 85, 300, 368 };
+static int InPMDayColor[8] = { 0 };
+static int TVOCDayColor[8] = { 0 };
+static int CO2DayColor[8] = { 0 };
+static int OutPMDayColor[8] = { 0 };
+static int InPMWeekColor[7] = { 0 };
+static int TVOCWeekColor[7] = { 0 };
+static int CO2WeekColor[7] = { 0 };
+static int OutPMWeekColor[7] = { 0 };
+static int InPMDayH[8] = { 0 };
+static int TVOCDayH[8] = { 0 };
+static int CO2DayH[8] = { 0 };
+static int OutPMDayH[8] = { 0 };
+static int InPMWeekH[7] = { 0 };
+static int TVOCWeekH[7] = { 0 };
+static int CO2WeekH[7] = { 0 };
+static int OutPMWeekH[7] = { 0 };
 static int airForceIndex = 0;
+
+extern bool lightAuto = false;
+extern int screenLight = 50;
+extern int indLight = 40;
+
+extern bool indicatorLightEnable = true;
+extern int wifi_status = 0;
+
+static int TimeSec = 0;
+extern int powerOffTimeIndex = -1;
+double lastTime;
+extern int powerOffTmHr = 0;
+extern int powerOffTmMin = 0;
 
 static uint32_t gtTick = 0, gtLastTick = 0, gtRefreshTime = 3000;
 static bool gtTickFirst = true;
@@ -167,15 +226,17 @@ static bool gtTickFirst = true;
     static float current_tmp_float = 0;
 #endif
 
-bool DayQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7);
-bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6);
+bool DayQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7, ITUIcon* bgIcon);
+bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6, ITUIcon* bgIcon);
+void drawTriangle(ITUWidget* widget, int x0, int y0, int x1, int y1, int x2, int y2, bool up);
 
+void GotoPowerOff(void);
 void MainReset(void)
 {
 }
 bool MainOnEnter(ITUWidget* widget, char* param)
 {
-	int wifi_established = -1;
+	int wifi_established = 0;
 	int i,x,y;
 	char tmp[32];
 
@@ -213,9 +274,6 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainCInTVOCText = ituSceneFindWidget(&theScene, "mainCInTVOCText");
 		assert(mainCInTVOCText);
 
-		mainCInHCHOText = ituSceneFindWidget(&theScene, "mainCInHCHOText");
-		assert(mainCInHCHOText);
-
 		mainCOutHumidityText = ituSceneFindWidget(&theScene, "mainCOutHumidityText");
 		assert(mainCOutHumidityText);
 
@@ -234,17 +292,11 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainCModeButton = ituSceneFindWidget(&theScene, "mainCModeButton");
 		assert(mainCModeButton);
 		
-		mainRTimingCheckBox = ituSceneFindWidget(&theScene, "mainRTimingCheckBox");
-		assert(mainRTimingCheckBox);
+		mainCModeButtonIcon = ituSceneFindWidget(&theScene, "mainCModeButtonIcon");
+		assert(mainCModeButtonIcon);
 
-		mainRAttachBackgroundButton = ituSceneFindWidget(&theScene, "mainRAttachBackgroundButton");
-		assert(mainRAttachBackgroundButton);
-
-		mainRAttachIcon = ituSceneFindWidget(&theScene, "mainRAttachIcon");
-		assert(mainRAttachIcon);
-
-		mainRAttachTextSprite = ituSceneFindWidget(&theScene, "mainRAttachTextSprite");
-		assert(mainRAttachTextSprite);
+		mainTopTimingCheckBox = ituSceneFindWidget(&theScene, "mainTopTimingCheckBox");
+		assert(mainTopTimingCheckBox);
 
 		mainSprite = ituSceneFindWidget(&theScene, "mainSprite");
 		assert(mainSprite);
@@ -276,20 +328,20 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainAirForceTrackBar = ituSceneFindWidget(&theScene, "mainAirForceTrackBar");
 		assert(mainAirForceTrackBar);
 
-		mainAirForceValueText = ituSceneFindWidget(&theScene, "mainAirForceValueText");
-		assert(mainAirForceValueText);
+		//mainAirForceValueText = ituSceneFindWidget(&theScene, "mainAirForceValueText");
+		//assert(mainAirForceValueText);
 
 		mainAirForceProgressBar = ituSceneFindWidget(&theScene, "mainAirForceProgressBar");
 		assert(mainAirForceProgressBar);
 
-		mainAirForceAutoCheckBox = ituSceneFindWidget(&theScene, "mainAirForceAutoCheckBox");
-		assert(mainAirForceAutoCheckBox);
+		//mainAirForceAutoCheckBox = ituSceneFindWidget(&theScene, "mainAirForceAutoCheckBox");
+		//assert(mainAirForceAutoCheckBox);
 
-		mainAirForceSprite = ituSceneFindWidget(&theScene, "mainAirForceSprite");
-		assert(mainAirForceSprite);
+		//mainAirForceSprite = ituSceneFindWidget(&theScene, "mainAirForceSprite");
+		//assert(mainAirForceSprite);
 
-		mainAirForceLineSprite = ituSceneFindWidget(&theScene, "mainAirForceLineSprite");
-		assert(mainAirForceLineSprite);
+		//mainAirForceLineSprite = ituSceneFindWidget(&theScene, "mainAirForceLineSprite");
+		//assert(mainAirForceLineSprite);
 
 		mainAirForceTrackBarIcon = ituSceneFindWidget(&theScene, "mainAirForceTrackBarIcon");
 		assert(mainAirForceTrackBarIcon);
@@ -297,8 +349,11 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainAirForceTipShowBackground = ituSceneFindWidget(&theScene, "mainAirForceTipShowBackground");
 		assert(mainAirForceTipShowBackground);
 
-		mainAirForceTipShowText = ituSceneFindWidget(&theScene, "mainAirForceTipShowText");
-		assert(mainAirForceTipShowText);
+		//mainAirForceTipShowText = ituSceneFindWidget(&theScene, "mainAirForceTipShowText");
+		//assert(mainAirForceTipShowText);
+
+		mainAirForceValueSprite = ituSceneFindWidget(&theScene, "mainAirForceValueSprite");
+		assert(mainAirForceValueSprite);
 
 		mainAirForceTextSprite = ituSceneFindWidget(&theScene, "mainAirForceTextSprite");
 		assert(mainAirForceTextSprite);
@@ -327,6 +382,30 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainLQualityOutPMWeekIcon = ituSceneFindWidget(&theScene, "mainLQualityOutPMWeekIcon");
 		assert(mainLQualityOutPMWeekIcon);
 
+		mainLQualityInPMBarIcon = ituSceneFindWidget(&theScene, "mainLQualityInPMBarIcon");
+		assert(mainLQualityInPMBarIcon);
+
+		mainLQualityTVOCBarIcon = ituSceneFindWidget(&theScene, "mainLQualityTVOCBarIcon");
+		assert(mainLQualityTVOCBarIcon);
+
+		mainLQualityCO2BarIcon = ituSceneFindWidget(&theScene, "mainLQualityCO2BarIcon");
+		assert(mainLQualityCO2BarIcon);
+
+		mainLQualityOutPMBarIcon = ituSceneFindWidget(&theScene, "mainLQualityOutPMBarIcon");
+		assert(mainLQualityOutPMBarIcon);
+
+		mainLQualityInPMWBarIcon = ituSceneFindWidget(&theScene, "mainLQualityInPMWBarIcon");
+		assert(mainLQualityInPMWBarIcon);
+
+		mainLQualityTVOCWBarIcon = ituSceneFindWidget(&theScene, "mainLQualityTVOCWBarIcon");
+		assert(mainLQualityTVOCWBarIcon);
+
+		mainLQualityCO2WBarIcon = ituSceneFindWidget(&theScene, "mainLQualityCO2WBarIcon");
+		assert(mainLQualityCO2WBarIcon);
+
+		mainLQualityOutPMWBarIcon = ituSceneFindWidget(&theScene, "mainLQualityOutPMWBarIcon");
+		assert(mainLQualityOutPMWBarIcon);
+
 		mainLQualityInPMNumSprite = ituSceneFindWidget(&theScene, "mainLQualityInPMNumSprite");
 		assert(mainLQualityInPMNumSprite);
 
@@ -351,13 +430,42 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainLQualityOutPMWNumSprite = ituSceneFindWidget(&theScene, "mainLQualityOutPMWNumSprite");
 		assert(mainLQualityOutPMWNumSprite);
 
+		mainLeftBackground = ituSceneFindWidget(&theScene, "mainLeftBackground");
+		assert(mainLeftBackground);
 
-		//for (i = 0; i < (ATTACH_NUM ); i++)
-		//{
-		//	sprintf(tmp, "mainCAttachIcon%d", i);
-		//	mainCAttachIcon[i] = ituSceneFindWidget(&theScene, tmp);
-		//	assert(mainCAttachIcon[i]);
-		//}
+		mainLQualityInPMDayBgIcon = ituSceneFindWidget(&theScene, "mainLQualityInPMDayBgIcon");
+		assert(mainLQualityInPMDayBgIcon);
+
+		mainLQualityCO2DayBgIcon = ituSceneFindWidget(&theScene, "mainLQualityCO2DayBgIcon");
+		assert(mainLQualityCO2DayBgIcon);
+
+		mainLQualityOutPMDayBgIcon = ituSceneFindWidget(&theScene, "mainLQualityOutPMDayBgIcon");
+		assert(mainLQualityOutPMDayBgIcon);
+
+		mainLQualityInPMWeekBgIcon = ituSceneFindWidget(&theScene, "mainLQualityInPMWeekBgIcon");
+		assert(mainLQualityInPMWeekBgIcon);
+
+		mainLQualityCO2WeekBgIcon = ituSceneFindWidget(&theScene, "mainLQualityCO2WeekBgIcon");
+		assert(mainLQualityCO2WeekBgIcon);
+
+		mainLQualityOutPMWeekBgIcon = ituSceneFindWidget(&theScene, "mainLQualityOutPMWeekBgIcon");
+		assert(mainLQualityOutPMWeekBgIcon);
+
+		mainModeShowIconSprite = ituSceneFindWidget(&theScene, "mainModeShowIconSprite");
+		assert(mainModeShowIconSprite);
+
+		mainModeShowSubIconSprite = ituSceneFindWidget(&theScene, "mainModeShowSubIconSprite");
+		assert(mainModeShowSubIconSprite);
+
+		mainModeShowTextSprite = ituSceneFindWidget(&theScene, "mainModeShowTextSprite");
+		assert(mainModeShowTextSprite);
+
+		mainTimingTextContainer = ituSceneFindWidget(&theScene, "mainTimingTextContainer");
+		assert(mainTimingTextContainer);
+
+		mainTimingText = ituSceneFindWidget(&theScene, "mainTimingText");
+		assert(mainTimingText);
+
 
 		for (i = 0; i < (MODE_NUM); i++)
 		{
@@ -366,13 +474,6 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			assert(mainCModeIconSet[i]);
 		}
 
-		for (i = 0; i < (ATTACH_NUM + 2); i++)
-		{
-			sprintf(tmp, "mainRAttachIcon%d", i);
-			mainRAttachIconSet[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainRAttachIconSet[i]);
-		}
-		
 
 		for (i = 0; i < MODESHOW_NUM; i++)
 		{
@@ -403,14 +504,9 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			mainTopBarBtnIcon[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(mainTopBarBtnIcon[i]);
 
-			sprintf(tmp, "mainRAttachBgBtnBg%d", i);
-			mainRAttachBgBtnBg[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainRAttachBgBtnBg[i]);
-
 			sprintf(tmp, "mainBarIcon%d", i);
 			mainBarIcon[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainBarIcon[i]);
-
+			assert(mainBarIcon[i]);	
 		}
 
 		for (i = 0; i < 4; i++)
@@ -441,21 +537,21 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 		for (i = 0; i < 8; i++)
 		{
-			sprintf(tmp, "mainLQualityInPMSprite%d", i);
-			mainLQualityInPMSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityInPMSprite[i]);
+			sprintf(tmp, "mainLQualityInPMIcon%d", i);
+			mainLQualityInPMIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityInPMIcon[i]);
 
-			sprintf(tmp, "mainLQualityTVOCSprite%d", i);
-			mainLQualityTVOCSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityTVOCSprite[i]);
+			sprintf(tmp, "mainLQualityTVOCIcon%d", i);
+			mainLQualityTVOCIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityTVOCIcon[i]);
 
-			sprintf(tmp, "mainLQualityCO2Sprite%d", i);
-			mainLQualityCO2Sprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityCO2Sprite[i]);
+			sprintf(tmp, "mainLQualityCO2Icon%d", i);
+			mainLQualityCO2Icon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityCO2Icon[i]);
 
-			sprintf(tmp, "mainLQualityOutPMSprite%d", i);
-			mainLQualityOutPMSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityOutPMSprite[i]);
+			sprintf(tmp, "mainLQualityOutPMIcon%d", i);
+			mainLQualityOutPMIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityOutPMIcon[i]);
 
 			sprintf(tmp, "mainLQualityInPMButton%d", i);
 			mainLQualityInPMButton[i] = ituSceneFindWidget(&theScene, tmp);
@@ -477,21 +573,21 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 		for (i = 0; i < 7; i++)
 		{
-			sprintf(tmp, "mainLQualityInPMWSprite%d", i);
-			mainLQualityInPMWSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityInPMWSprite[i]);
+			sprintf(tmp, "mainLQualityInPMWIcon%d", i);
+			mainLQualityInPMWIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityInPMWIcon[i]);
 
-			sprintf(tmp, "mainLQualityTVOCWSprite%d", i);
-			mainLQualityTVOCWSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityTVOCWSprite[i]);
+			sprintf(tmp, "mainLQualityTVOCWIcon%d", i);
+			mainLQualityTVOCWIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityTVOCWIcon[i]);
 
-			sprintf(tmp, "mainLQualityCO2WSprite%d", i);
-			mainLQualityCO2WSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityCO2WSprite[i]);
+			sprintf(tmp, "mainLQualityCO2WIcon%d", i);
+			mainLQualityCO2WIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityCO2WIcon[i]);
 
-			sprintf(tmp, "mainLQualityOutPMWSprite%d", i);
-			mainLQualityOutPMWSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainLQualityOutPMWSprite[i]);
+			sprintf(tmp, "mainLQualityOutPMWIcon%d", i);
+			mainLQualityOutPMWIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityOutPMWIcon[i]);
 
 			sprintf(tmp, "mainLQualityInPMWButton%d", i);
 			mainLQualityInPMWButton[i] = ituSceneFindWidget(&theScene, tmp);
@@ -544,6 +640,16 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			sprintf(tmp, "mainLQualityOutPMWNumText%d", i);
 			mainLQualityOutPMWNumText[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(mainLQualityOutPMWNumText[i]);
+
+			sprintf(tmp, "mainLQualityBIcon%d", i);
+			mainLQualityBIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityBIcon[i]);
+
+			sprintf(tmp, "mainLQualityIcon%d", i);
+			mainLQualityIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLQualityIcon[i]);
+
+			
 
 
 		}
@@ -601,9 +707,6 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	sprintf(tmp, "%d", TVOCIn);
 	ituTextSetString(mainCInTVOCText, tmp);
 
-	sprintf(tmp, "%2.2f", HCHOIn);
-	ituTextSetString(mainCInHCHOText, tmp);
-
 	sprintf(tmp, "%d", PM25Out);
 	ituTextSetString(mainCOutPM25Text, tmp);
 
@@ -617,53 +720,49 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	ituWidgetSetVisible(mainCWarningBackgroundButton, warning_btn_show);
 	ituWidgetSetVisible(mainCFilterBackgroundButton, filter_btn_show);
 
-	attachPosX = 60;
-	attachNum = 0;
-	for (i = 0; i < ATTACH_NUM; i++)
-	{
-		if (attach_show[i])
-		{
-			//ituWidgetSetPosition(mainCAttachIcon[i], attachPosX, 0);
-			//attachNum++;
-			//attachPosX = attachPosX + 60;
-
-			ituIconLinkSurface(mainRAttachIcon, mainRAttachIconSet[i]);
-			ituIconLinkSurface(&mainRAttachBackgroundButton->bg.icon, mainRAttachBgBtnBg[1]);
-			ituSpriteGoto(mainRAttachTextSprite, i);
-		}
-		else
-		{
-			//ituWidgetSetPosition(mainCAttachIcon[i], 0, 100);
-		}
-
-	}
-
-	if (attachNum == 0)
-	{
-		ituIconLinkSurface(mainRAttachIcon, mainRAttachIconSet[5]);
-		ituIconLinkSurface(&mainRAttachBackgroundButton->bg.icon, mainRAttachBgBtnBg[0]);
-		ituSpriteGoto(mainRAttachTextSprite, 4);
-	}
 
 	ituSpriteGoto(mainModeTextSprite, modeIndex);
-	ituIconLinkSurface(&mainCModeButton->bg.icon, mainCModeIconSet[modeIndex]);
-	ituCheckBoxSetChecked(mainRTimingCheckBox, timingSet);
-
+	ituIconLinkSurface(mainCModeButtonIcon, mainCModeIconSet[modeIndex]);
+	ituCheckBoxSetChecked(mainTopTimingCheckBox, timingSet);
+	
+	
+	
 	modeshowPosX = 0;
 	modeshowNum = 0;
 	for (i = 0; i < MODESHOW_NUM; i++)
 	{
 		if (mode_show[i])
 		{
-			ituWidgetSetPosition(mainModeShowIcon[i], modeshowPosX, 0);
-			ituWidgetSetPosition(mainModeShowSubIcon[i], modeshowPosX, 0);
+			if (i == 0)
+			{
+				ituWidgetSetPosition(mainModeShowIconSprite, modeshowPosX, 0);
+				ituWidgetSetPosition(mainModeShowSubIconSprite, modeshowPosX, 0);
+			}
+			else
+			{
+				ituWidgetSetPosition(mainModeShowIcon[i], modeshowPosX, 0);
+				ituWidgetSetPosition(mainModeShowSubIcon[i], modeshowPosX, 0);
+			}
+			
 			modeshowNum++;
-			modeshowPosX = modeshowPosX + 46;
+			if (i != 7)
+				modeshowPosX = modeshowPosX + 46;
+			else
+				modeshowPosX = modeshowPosX + 88;
 		}
 		else
 		{
-			ituWidgetSetPosition(mainModeShowIcon[i], 0, 100);
-			ituWidgetSetPosition(mainModeShowSubIcon[i], 0, 100);
+			if (i == 0)
+			{
+				ituWidgetSetPosition(mainModeShowIconSprite, 0, 100);
+				ituWidgetSetPosition(mainModeShowSubIconSprite, 0, 100);
+			}
+			else
+			{
+				ituWidgetSetPosition(mainModeShowIcon[i], 0, 100);
+				ituWidgetSetPosition(mainModeShowSubIcon[i], 0, 100);
+			}
+			
 		}
 
 	}
@@ -678,6 +777,14 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	ituWidgetSetVisible(mainLQualityTVOCWNumSprite, false);
 	ituWidgetSetVisible(mainLQualityCO2WNumSprite, false);
 	ituWidgetSetVisible(mainLQualityOutPMWNumSprite, false);
+	ituWidgetSetVisible(mainLQualityInPMBarIcon, false);
+	ituWidgetSetVisible(mainLQualityTVOCBarIcon, false);
+	ituWidgetSetVisible(mainLQualityCO2BarIcon, false);
+	ituWidgetSetVisible(mainLQualityOutPMBarIcon, false);
+	ituWidgetSetVisible(mainLQualityInPMWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityTVOCWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityCO2WBarIcon, false);
+	ituWidgetSetVisible(mainLQualityOutPMWBarIcon, false);
 
 	sprintf(tmp, "%d", humidityInIndex);
 	ituTextSetString(mainCInHumidityText, tmp);
@@ -688,9 +795,71 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	ituWidgetSetVisible(mainAirForceTipShowBackground, false);
 	ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
 	ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-	sprintf(tmp, "%d", mainAirForceTrackBar->value);
-	ituTextSetString(mainAirForceTipShowText, tmp);
+	//sprintf(tmp, "%d", mainAirForceTrackBar->value);
+	//ituTextSetString(mainAirForceTipShowText, tmp);
+	ituSpriteGoto(mainAirForceValueSprite, mainAirForceTrackBar->value);
 	ituWidgetSetVisible(mainAirForceTipShowBackground, true);
+
+	ituWidgetSetPosition(mainLQualityInPMDayBgIcon, 720, 720);
+	ituWidgetSetPosition(mainLQualityCO2DayBgIcon, 720, 720);
+	ituWidgetSetPosition(mainLQualityOutPMDayBgIcon, 720, 720);
+	ituWidgetSetPosition(mainLQualityInPMWeekBgIcon, 720, 720);
+	ituWidgetSetPosition(mainLQualityCO2WeekBgIcon, 720, 720);
+	ituWidgetSetPosition(mainLQualityOutPMWeekBgIcon, 720, 720);
+
+	powerOnTimeIndex = -1;
+	powerOnTmHr = 0;
+	powerOnTmMin = 0;
+
+	if (powerOffTimeIndex > -1)
+		ituWidgetSetVisible(mainTimingTextContainer, true);
+	else
+		ituWidgetSetVisible(mainTimingTextContainer, false);
+
+	ituProgressBarSetValue(mainTopScreenLightProgressBar, screenLight);
+	ituTrackBarSetValue(mainTopScreenLightTrackBar, screenLight);
+	ituProgressBarSetValue(mainTopIndLightProgressBar, indLight);
+	ituTrackBarSetValue(mainTopIndLightTrackBar, indLight);
+
+	if (!indicatorLightEnable)
+	{
+		ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+
+		ituWidgetDisable(mainTopIndLightTrackBar);
+		ituWidgetSetVisible(mainTopIndLightProgressBar, false);
+	}
+
+	if (lightAuto)
+	{
+		ituCheckBoxSetChecked(mainTopAutoCheckBox, true);
+		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+
+
+		ituWidgetDisable(mainTopScreenLightTrackBar);
+		ituWidgetSetVisible(mainTopScreenLightProgressBar, false);
+
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+			ituWidgetDisable(mainTopIndLightTrackBar);
+			ituWidgetSetVisible(mainTopIndLightProgressBar, false);
+		}
+	}
+	else
+	{
+		ituCheckBoxSetChecked(mainTopAutoCheckBox, false);
+		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
+		ituWidgetEnable(mainTopScreenLightTrackBar);
+		ituWidgetSetVisible(mainTopScreenLightProgressBar, true);
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
+			ituWidgetEnable(mainTopIndLightTrackBar);
+			ituWidgetSetVisible(mainTopIndLightProgressBar, true);
+		}
+	}
 
 	if (gtTickFirst)
 	{
@@ -757,22 +926,36 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	    wifi_established = ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL);
 #endif
 
-	 //   if (wifi_established)
-	 //       ituSpriteGoto(topWiFiSprite, 2); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
-		//else
-  //          ituSpriteGoto(topWiFiSprite, 1);
+	    if (wifi_established)
+	        //ituSpriteGoto(topWiFiSprite, 2); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
+			wifi_status = 0;
+		else
+            //ituSpriteGoto(topWiFiSprite, 1);
+			wifi_status = 1;
+
 	}
 	else
 	{
 		//ituSpriteGoto(topWiFiSprite, 0); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
-	}
+		wifi_status = 2;
 
+	}
+	ituSpriteGoto(mainModeShowIconSprite, wifi_status);
+	ituSpriteGoto(mainModeShowSubIconSprite, wifi_status);
+	ituSpriteGoto(mainModeShowTextSprite, wifi_status);
 	return true;
 }
 bool MainOnTimer(ITUWidget* widget, char* param)
 {
 	bool ret = false;
 	char tmp[32];
+
+	struct timeval tv;
+	struct tm *tm;
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	int curSec = 59 - tm->tm_sec;
 
 	uint32_t tick = 0;
 
@@ -839,37 +1022,66 @@ bool MainOnTimer(ITUWidget* widget, char* param)
 		ret = true;
 	}
 
+	if (powerOffTimeIndex != -1)
+	{
+		if (powerOffTmHr == tm->tm_hour && powerOffTmMin == tm->tm_min)
+		{
+			ituWidgetSetVisible(mainTimingTextContainer, false);
+			GotoPowerOff();
+
+		}
+
+		if (curSec != TimeSec)
+		{
+			TimeSec = curSec;
+
+			if (powerOffTmMin >= tm->tm_min)
+			{
+				lastTime = (double)(powerOffTmMin - tm->tm_min) / 60;
+
+				if (powerOffTmHr >= tm->tm_hour)
+				{
+					lastTime = lastTime + (powerOffTmHr - tm->tm_hour);
+				}
+				else
+				{
+					lastTime = lastTime + (powerOffTmHr + 24 - tm->tm_hour);
+				}
+			}
+			else
+			{
+				lastTime = (double)(powerOffTmMin + 60 - tm->tm_min) / 60;
+
+				if ((powerOffTmHr - 1) >= tm->tm_hour)
+				{
+					lastTime = lastTime + (powerOffTmHr - 1 - tm->tm_hour);
+				}
+				else
+				{
+					lastTime = lastTime + (powerOffTmHr + 23 - tm->tm_hour);
+				}
+
+			}
+
+
+			sprintf(tmp, "%2.1f", lastTime);
+			ituTextSetString(mainTimingText, tmp);
+
+			ret = true;
+		}
+	}
+
 
 	return ret;
 }
 bool MainCoverFlowOnChanged(ITUWidget* widget, char* param)
 {
-	int i;
+	//int i;
 
 	sprite_index = mainCoverFlow->focusIndex;
 	ituSpriteGoto(mainSprite, sprite_index);
 
-	if (sprite_index == 1)
-	{
-
-		//attachPosX = 60;
-		//attachNum = 0;
-		//for (i = 0; i < ATTACH_NUM; i++)
-		//{
-		//	if (attach_show[i])
-		//	{
-		//		ituWidgetSetPosition(mainCAttachIcon[i], attachPosX, 0);
-		//		attachNum++;
-		//		attachPosX = attachPosX + 60;
-		//	}
-		//	else
-		//	{
-		//		ituWidgetSetPosition(mainCAttachIcon[i], 0, 100);
-		//	}
-
-		//}
-	}
-	else if (sprite_index == 0)
+	if (sprite_index == 0)
 	{
 		ituWidgetSetVisible(mainLQualityInPMNumSprite, false);
 		ituWidgetSetVisible(mainLQualityTVOCNumSprite, false);
@@ -879,12 +1091,21 @@ bool MainCoverFlowOnChanged(ITUWidget* widget, char* param)
 		ituWidgetSetVisible(mainLQualityTVOCWNumSprite, false);
 		ituWidgetSetVisible(mainLQualityCO2WNumSprite, false);
 		ituWidgetSetVisible(mainLQualityOutPMWNumSprite, false);
+		ituWidgetSetVisible(mainLQualityInPMBarIcon, false);
+		ituWidgetSetVisible(mainLQualityTVOCBarIcon, false);
+		ituWidgetSetVisible(mainLQualityCO2BarIcon, false);
+		ituWidgetSetVisible(mainLQualityOutPMBarIcon, false);
+		ituWidgetSetVisible(mainLQualityInPMWBarIcon, false);
+		ituWidgetSetVisible(mainLQualityTVOCWBarIcon, false);
+		ituWidgetSetVisible(mainLQualityCO2WBarIcon, false);
+		ituWidgetSetVisible(mainLQualityOutPMWBarIcon, false);
+		
 
 		ituSpriteGoto(mainLQualitySprite, 0);
 		ituSpriteGoto(mainLDWSprite, 0);
 		ituRadioBoxSetChecked(mainLQualityRadioBox[0], true);
-		DayQualitySet(mainLQualityInPMDayIcon, 0, InPMDayValue[0], InPMDayValue[1], InPMDayValue[2], InPMDayValue[3], InPMDayValue[4], InPMDayValue[5], InPMDayValue[6], InPMDayValue[7]);
-		
+		DayQualitySet((ITUWidget*) mainLQualityInPMDayIcon, 0, InPMDayValue[0], InPMDayValue[1], InPMDayValue[2], InPMDayValue[3], InPMDayValue[4], InPMDayValue[5], InPMDayValue[6], InPMDayValue[7], mainLQualityInPMDayBgIcon);
+
 	}
 	return true;
 }
@@ -893,29 +1114,24 @@ bool MainCModeRadBoxOnMouseUp(ITUWidget* widget, char* param)
 {
 	modeIndex = atoi(param);
 	ituSpriteGoto(mainModeTextSprite, modeIndex);
-	ituIconLinkSurface(&mainCModeButton->bg.icon, mainCModeIconSet[modeIndex]);
+	ituIconLinkSurface(mainCModeButtonIcon, mainCModeIconSet[modeIndex]);
 
 
 	return true;
 }
-
-bool MainRAttachBackgroundBtnOnMouseUp(ITUWidget* widget, char* param)
-{
-	ituIconLinkSurface(mainRAttachIcon, mainRAttachIconSet[4]);
-	ituIconLinkSurface(&mainRAttachBackgroundButton->bg.icon, mainRAttachBgBtnBg[1]);
-
-	return true;
-}
-
-
 
 bool MainTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
+	indLight = mainTopIndLightTrackBar->value;
 	return true;
 }
 
 bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
+	screenLight = mainTopScreenLightTrackBar->value;
+	printf("mainTopScreenLightTrackBar %d \n", mainTopScreenLightTrackBar->value);
+	ScreenSetBrightness(mainTopScreenLightTrackBar->value);
+
 	return true;
 }
 
@@ -923,25 +1139,34 @@ bool MainTopAutoChkBoxOnPress(ITUWidget* widget, char* param)
 {
 	if (ituCheckBoxIsChecked(mainTopAutoCheckBox))
 	{
-
+		lightAuto = true;
 		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
-		ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+		
 
 		ituWidgetDisable(mainTopScreenLightTrackBar);
 		ituWidgetSetVisible(mainTopScreenLightProgressBar, false);
-		ituWidgetDisable(mainTopIndLightTrackBar);
-		ituWidgetSetVisible(mainTopIndLightProgressBar, false);
+		
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+			ituWidgetDisable(mainTopIndLightTrackBar);
+			ituWidgetSetVisible(mainTopIndLightProgressBar, false);
+		}
 	}
 	else
 	{
-
+		lightAuto = false;
 		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
-		ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
-
 		ituWidgetEnable(mainTopScreenLightTrackBar);
 		ituWidgetSetVisible(mainTopScreenLightProgressBar, true);
-		ituWidgetEnable(mainTopIndLightTrackBar);
-		ituWidgetSetVisible(mainTopIndLightProgressBar, true);
+		
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
+			ituWidgetEnable(mainTopIndLightTrackBar);
+			ituWidgetSetVisible(mainTopIndLightProgressBar, true);
+		}
 	}
 	return true;
 }
@@ -958,15 +1183,30 @@ bool MainCModeShowButtonOnPress(ITUWidget* widget, char* param)
 		if (mode_show[i])
 		{
 			ituIconLinkSurface(mainModeShowLineIcon[i], mainModeShowLineIconSet[modeshowNumTmp - 1]);
-			ituWidgetSetPosition(mainModeShowLineIcon[i], ituWidgetGetX(mainModeShowSubIcon[i]), 0);
-			ituWidgetSetPosition(mainModeShowText[i], ituWidgetGetX(mainModeShowSubIcon[i]), (modeshowNumTmp - 1) * 60);
+			
+			if (i == 0)
+			{
+				ituWidgetSetPosition(mainModeShowLineIcon[i], ituWidgetGetX(mainModeShowSubIconSprite), 0);
+				ituWidgetSetPosition(mainModeShowTextSprite, ituWidgetGetX(mainModeShowSubIconSprite), (modeshowNumTmp - 1) * 60);
+			}
+				
+			else
+			{
+				ituWidgetSetPosition(mainModeShowLineIcon[i], ituWidgetGetX(mainModeShowSubIcon[i]), 0);
+				ituWidgetSetPosition(mainModeShowText[i], ituWidgetGetX(mainModeShowSubIcon[i]), (modeshowNumTmp - 1) * 60);
+			}
+				
 			modeshowNumTmp--;
 
 		}
 		else
 		{
 			ituWidgetSetPosition(mainModeShowLineIcon[i], 0, 501);
-			ituWidgetSetPosition(mainModeShowText[i], 0, 500);
+			if (i == 0)
+				ituWidgetSetPosition(mainModeShowTextSprite, 0, 500);
+			else				
+				ituWidgetSetPosition(mainModeShowText[i], 0, 500);
+			
 		}
 	}
 
@@ -984,6 +1224,14 @@ bool MainLQualityRadioBoxOnPress(ITUWidget* widget, char* param)
 	ituWidgetSetVisible(mainLQualityTVOCWNumSprite, false);
 	ituWidgetSetVisible(mainLQualityCO2WNumSprite, false);
 	ituWidgetSetVisible(mainLQualityOutPMWNumSprite, false);
+	ituWidgetSetVisible(mainLQualityInPMBarIcon, false);
+	ituWidgetSetVisible(mainLQualityTVOCBarIcon, false);
+	ituWidgetSetVisible(mainLQualityCO2BarIcon, false);
+	ituWidgetSetVisible(mainLQualityOutPMBarIcon, false);
+	ituWidgetSetVisible(mainLQualityInPMWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityTVOCWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityCO2WBarIcon, false);
+	ituWidgetSetVisible(mainLQualityOutPMWBarIcon, false);
 
 	QualitySpriteIndex = DWSpriteIndex * 4 + atoi(param);
 
@@ -995,19 +1243,19 @@ bool MainLQualityRadioBoxOnPress(ITUWidget* widget, char* param)
 		{
 		case 0:
 			//DayQualitySet(mainLQualityInPMDayIcon, 0, 280, 230, 250, 191, 220, 265, 230, 220);
-			DayQualitySet(mainLQualityInPMDayIcon, 0, InPMDayValue[0], InPMDayValue[1], InPMDayValue[2], InPMDayValue[3], InPMDayValue[4], InPMDayValue[5], InPMDayValue[6], InPMDayValue[7]);
+			DayQualitySet((ITUWidget*)mainLQualityInPMDayIcon, 0, InPMDayValue[0], InPMDayValue[1], InPMDayValue[2], InPMDayValue[3], InPMDayValue[4], InPMDayValue[5], InPMDayValue[6], InPMDayValue[7], mainLQualityInPMDayBgIcon);
 			break;
 		case 1:
 			//DayQualitySet(mainLQualityTVOCDayIcon, 1, 165, 240, 90, 165, 10, 90, 200, 165);
-			DayQualitySet(mainLQualityTVOCDayIcon, 1, TVOCDayValue[0], TVOCDayValue[1], TVOCDayValue[2], TVOCDayValue[3], TVOCDayValue[4], TVOCDayValue[5], TVOCDayValue[6], TVOCDayValue[7]);
+			DayQualitySet((ITUWidget*)mainLQualityTVOCDayIcon, 1, TVOCDayValue[0], TVOCDayValue[1], TVOCDayValue[2], TVOCDayValue[3], TVOCDayValue[4], TVOCDayValue[5], TVOCDayValue[6], TVOCDayValue[7], NULL);
 			break;
 		case 2:
 			//DayQualitySet(mainLQualityCO2DayIcon, 2, 280, 280, 200, 165, 155, 200, 230, 260);
-			DayQualitySet(mainLQualityCO2DayIcon, 2, CO2DayValue[0], CO2DayValue[1], CO2DayValue[2], CO2DayValue[3], CO2DayValue[4], CO2DayValue[5], CO2DayValue[6], CO2DayValue[7]);
+			DayQualitySet((ITUWidget*)mainLQualityCO2DayIcon, 2, CO2DayValue[0], CO2DayValue[1], CO2DayValue[2], CO2DayValue[3], CO2DayValue[4], CO2DayValue[5], CO2DayValue[6], CO2DayValue[7], mainLQualityCO2DayBgIcon);
 			break;
 		case 3:
 			//DayQualitySet(mainLQualityOutPMDayIcon, 3, 280, 230, 191, 100, 100, 180, 185, 180);
-			DayQualitySet(mainLQualityOutPMDayIcon, 3, OutPMDayValue[0], OutPMDayValue[1], OutPMDayValue[2], OutPMDayValue[3], OutPMDayValue[4], OutPMDayValue[5], OutPMDayValue[6], OutPMDayValue[7]);
+			DayQualitySet((ITUWidget*)mainLQualityOutPMDayIcon, 3, OutPMDayValue[0], OutPMDayValue[1], OutPMDayValue[2], OutPMDayValue[3], OutPMDayValue[4], OutPMDayValue[5], OutPMDayValue[6], OutPMDayValue[7], mainLQualityOutPMDayBgIcon);
 			break;
 
 		}
@@ -1018,19 +1266,19 @@ bool MainLQualityRadioBoxOnPress(ITUWidget* widget, char* param)
 		{
 		case 0:
 			//WeekQualitySet(mainLQualityInPMWeekIcon, 0, 280, 220, 191, 215, 270, 240, 235);
-			WeekQualitySet(mainLQualityInPMWeekIcon, 0, InPMWeekValue[0], InPMWeekValue[1], InPMWeekValue[2], InPMWeekValue[3], InPMWeekValue[4], InPMWeekValue[5], InPMWeekValue[6]);
+			WeekQualitySet((ITUWidget*)mainLQualityInPMWeekIcon, 0, InPMWeekValue[0], InPMWeekValue[1], InPMWeekValue[2], InPMWeekValue[3], InPMWeekValue[4], InPMWeekValue[5], InPMWeekValue[6], mainLQualityInPMWeekBgIcon);
 			break;
 		case 1:
 			//WeekQualitySet(mainLQualityTVOCWeekIcon, 1, 165, 240, 90, 165, 10, 90, 165);
-			WeekQualitySet(mainLQualityTVOCWeekIcon, 1, TVOCWeekValue[0], TVOCWeekValue[1], TVOCWeekValue[2], TVOCWeekValue[3], TVOCWeekValue[4], TVOCWeekValue[5], TVOCWeekValue[6]);
+			WeekQualitySet((ITUWidget*)mainLQualityTVOCWeekIcon, 1, TVOCWeekValue[0], TVOCWeekValue[1], TVOCWeekValue[2], TVOCWeekValue[3], TVOCWeekValue[4], TVOCWeekValue[5], TVOCWeekValue[6], NULL);
 			break;
 		case 2:
 			//WeekQualitySet(mainLQualityCO2WeekIcon, 2, 280, 285, 220, 215, 225, 270, 260);
-			WeekQualitySet(mainLQualityCO2WeekIcon, 2, CO2WeekValue[0], CO2WeekValue[1], CO2WeekValue[2], CO2WeekValue[3], CO2WeekValue[4], CO2WeekValue[5], CO2WeekValue[6]);
+			WeekQualitySet((ITUWidget*)mainLQualityCO2WeekIcon, 2, CO2WeekValue[0], CO2WeekValue[1], CO2WeekValue[2], CO2WeekValue[3], CO2WeekValue[4], CO2WeekValue[5], CO2WeekValue[6], mainLQualityCO2WeekBgIcon);
 			break;
 		case 3:
 			//WeekQualitySet(mainLQualityOutPMWeekIcon, 3, 280, 220, 191, 150, 185, 100, 95);
-			WeekQualitySet(mainLQualityOutPMWeekIcon, 3, OutPMWeekValue[0], OutPMWeekValue[1], OutPMWeekValue[2], OutPMWeekValue[3], OutPMWeekValue[4], OutPMWeekValue[5], OutPMWeekValue[6]);
+			WeekQualitySet((ITUWidget*)mainLQualityOutPMWeekIcon, 3, OutPMWeekValue[0], OutPMWeekValue[1], OutPMWeekValue[2], OutPMWeekValue[3], OutPMWeekValue[4], OutPMWeekValue[5], OutPMWeekValue[6], mainLQualityOutPMWeekBgIcon);
 			break;
 
 		}
@@ -1052,7 +1300,16 @@ bool MainLDWChangeBtnOnPress(ITUWidget* widget, char* param)
 	ituWidgetSetVisible(mainLQualityInPMWNumSprite, false);
 	ituWidgetSetVisible(mainLQualityTVOCWNumSprite, false);
 	ituWidgetSetVisible(mainLQualityCO2WNumSprite, false);
-	ituWidgetSetVisible(mainLQualityOutPMWNumSprite, false);
+	ituWidgetSetVisible(mainLQualityOutPMWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityInPMBarIcon, false);
+	ituWidgetSetVisible(mainLQualityTVOCBarIcon, false);
+	ituWidgetSetVisible(mainLQualityCO2BarIcon, false);
+	ituWidgetSetVisible(mainLQualityOutPMBarIcon, false);
+	ituWidgetSetVisible(mainLQualityInPMWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityTVOCWBarIcon, false);
+	ituWidgetSetVisible(mainLQualityCO2WBarIcon, false);
+	ituWidgetSetVisible(mainLQualityOutPMWBarIcon, false);
+	
 
 	DWSpriteIndex++;
 	DWSpriteIndex = DWSpriteIndex % 2;
@@ -1074,35 +1331,35 @@ bool MainLDWChangeBtnOnPress(ITUWidget* widget, char* param)
 	{
 	case 0:
 		//DayQualitySet(mainLQualityInPMDayIcon, 0, 280, 230, 250, 191, 220, 265, 230, 220);
-		DayQualitySet(mainLQualityInPMDayIcon, 0, InPMDayValue[0], InPMDayValue[1], InPMDayValue[2], InPMDayValue[3], InPMDayValue[4], InPMDayValue[5], InPMDayValue[6], InPMDayValue[7]);
+		DayQualitySet((ITUWidget*)mainLQualityInPMDayIcon, 0, InPMDayValue[0], InPMDayValue[1], InPMDayValue[2], InPMDayValue[3], InPMDayValue[4], InPMDayValue[5], InPMDayValue[6], InPMDayValue[7], mainLQualityInPMDayBgIcon);
 		break;
 	case 1:
 		//DayQualitySet(mainLQualityTVOCDayIcon, 1, 165, 240, 90, 165, 10, 90, 200, 165);
-		DayQualitySet(mainLQualityTVOCDayIcon, 1, TVOCDayValue[0], TVOCDayValue[1], TVOCDayValue[2], TVOCDayValue[3], TVOCDayValue[4], TVOCDayValue[5], TVOCDayValue[6], TVOCDayValue[7]);
+		DayQualitySet((ITUWidget*)mainLQualityTVOCDayIcon, 1, TVOCDayValue[0], TVOCDayValue[1], TVOCDayValue[2], TVOCDayValue[3], TVOCDayValue[4], TVOCDayValue[5], TVOCDayValue[6], TVOCDayValue[7], NULL);
 		break;
 	case 2:
 		//DayQualitySet(mainLQualityCO2DayIcon, 2, 280, 280, 200, 165, 155, 200, 230, 260);
-		DayQualitySet(mainLQualityCO2DayIcon, 2, CO2DayValue[0], CO2DayValue[1], CO2DayValue[2], CO2DayValue[3], CO2DayValue[4], CO2DayValue[5], CO2DayValue[6], CO2DayValue[7]);
+		DayQualitySet((ITUWidget*)mainLQualityCO2DayIcon, 2, CO2DayValue[0], CO2DayValue[1], CO2DayValue[2], CO2DayValue[3], CO2DayValue[4], CO2DayValue[5], CO2DayValue[6], CO2DayValue[7], mainLQualityCO2DayBgIcon);
 		break;
 	case 3:
 		//DayQualitySet(mainLQualityOutPMDayIcon, 3, 280, 230, 191, 100, 100, 180, 185, 180);
-		DayQualitySet(mainLQualityOutPMDayIcon, 3, OutPMDayValue[0], OutPMDayValue[1], OutPMDayValue[2], OutPMDayValue[3], OutPMDayValue[4], OutPMDayValue[5], OutPMDayValue[6], OutPMDayValue[7]);
+		DayQualitySet((ITUWidget*)mainLQualityOutPMDayIcon, 3, OutPMDayValue[0], OutPMDayValue[1], OutPMDayValue[2], OutPMDayValue[3], OutPMDayValue[4], OutPMDayValue[5], OutPMDayValue[6], OutPMDayValue[7], mainLQualityOutPMDayBgIcon);
 		break;
 	case 4:
 		//WeekQualitySet(mainLQualityInPMWeekIcon, 0, 280, 220, 191, 215, 270, 240, 235);
-		WeekQualitySet(mainLQualityInPMWeekIcon, 0, InPMWeekValue[0], InPMWeekValue[1], InPMWeekValue[2], InPMWeekValue[3], InPMWeekValue[4], InPMWeekValue[5], InPMWeekValue[6]);
+		WeekQualitySet((ITUWidget*)mainLQualityInPMWeekIcon, 0, InPMWeekValue[0], InPMWeekValue[1], InPMWeekValue[2], InPMWeekValue[3], InPMWeekValue[4], InPMWeekValue[5], InPMWeekValue[6], mainLQualityInPMWeekBgIcon);
 		break;
 	case 5:
 		//WeekQualitySet(mainLQualityTVOCWeekIcon, 1, 165, 240, 90, 165, 10, 90, 165);
-		WeekQualitySet(mainLQualityTVOCWeekIcon, 1, TVOCWeekValue[0], TVOCWeekValue[1], TVOCWeekValue[2], TVOCWeekValue[3], TVOCWeekValue[4], TVOCWeekValue[5], TVOCWeekValue[6]);
+		WeekQualitySet((ITUWidget*)mainLQualityTVOCWeekIcon, 1, TVOCWeekValue[0], TVOCWeekValue[1], TVOCWeekValue[2], TVOCWeekValue[3], TVOCWeekValue[4], TVOCWeekValue[5], TVOCWeekValue[6], NULL);
 		break;
 	case 6:
 		//WeekQualitySet(mainLQualityCO2WeekIcon, 2, 280, 280, 200, 165, 155, 200, 230);
-		WeekQualitySet(mainLQualityCO2WeekIcon, 2, CO2WeekValue[0], CO2WeekValue[1], CO2WeekValue[2], CO2WeekValue[3], CO2WeekValue[4], CO2WeekValue[5], CO2WeekValue[6]);
+		WeekQualitySet((ITUWidget*)mainLQualityCO2WeekIcon, 2, CO2WeekValue[0], CO2WeekValue[1], CO2WeekValue[2], CO2WeekValue[3], CO2WeekValue[4], CO2WeekValue[5], CO2WeekValue[6], mainLQualityCO2WeekBgIcon);
 		break;
 	case 7:
 		//WeekQualitySet(mainLQualityOutPMWeekIcon, 3, 280, 220, 191, 150, 185, 100, 95);
-		WeekQualitySet(mainLQualityOutPMWeekIcon, 3, OutPMWeekValue[0], OutPMWeekValue[1], OutPMWeekValue[2], OutPMWeekValue[3], OutPMWeekValue[4], OutPMWeekValue[5], OutPMWeekValue[6]);
+		WeekQualitySet((ITUWidget*)mainLQualityOutPMWeekIcon, 3, OutPMWeekValue[0], OutPMWeekValue[1], OutPMWeekValue[2], OutPMWeekValue[3], OutPMWeekValue[4], OutPMWeekValue[5], OutPMWeekValue[6], mainLQualityOutPMWeekBgIcon);
 		break;
 
 	}
@@ -1117,11 +1374,14 @@ bool MainLQualityInPMBtnOnPress(ITUWidget* widget, char* param)
 	int index = atoi(param);
 	char tmp[32];
 
-	ituWidgetSetPosition(mainLQualityInPMNumSprite, ituWidgetGetX(mainLQualityInPMSprite[index]) - 35, ituWidgetGetY(mainLQualityInPMSprite[index]) - 70);
+	ituWidgetSetHeight(mainLQualityInPMBarIcon, InPMDayH[index]);
+	ituWidgetSetPosition(mainLQualityInPMBarIcon, ituWidgetGetX(mainLQualityInPMIcon[index]), ituWidgetGetY(mainLQualityInPMIcon[index]) + (ituWidgetGetHeight(mainLQualityInPMIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityInPMNumSprite, ituWidgetGetX(mainLQualityInPMIcon[index]) - 28, ituWidgetGetY(mainLQualityInPMIcon[index]) - 70);
 	sprintf(tmp, "%d", InPMDayValue[index]);
-	ituTextSetString(mainLQualityInPMNumText[mainLQualityInPMSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityInPMNumSprite, mainLQualityInPMSprite[index]->frame);
+	ituTextSetString(mainLQualityInPMNumText[InPMDayColor[index]], tmp);
+	ituSpriteGoto(mainLQualityInPMNumSprite, InPMDayColor[index]);
 	ituWidgetSetVisible(mainLQualityInPMNumSprite, true);
+	ituWidgetSetVisible(mainLQualityInPMBarIcon, true);
 
 
 	return true;
@@ -1134,17 +1394,16 @@ bool MainLQualityTVOCBtnOnPress(ITUWidget* widget, char* param)
 
 	
 	
-	if (TVOCDayValue[index] % 10 == 0)
-		sprintf(tmp, "%d", TVOCDayValue[index] / 10);
-	else
-		sprintf(tmp, "%1.1f", (float)TVOCDayValue[index]/10);
-	ituTextSetString(mainLQualityTVOCNumText[mainLQualityTVOCSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityTVOCNumSprite, mainLQualityTVOCSprite[index]->frame);
 
-	ituWidgetSetHeight(mainLQualityTVOCNumSprite, ituWidgetGetHeight(mainLQualityTVOCButton[index]) + 35);
-	ituWidgetSetPosition(mainLQualityTVOCNumSprite, ituWidgetGetX(mainLQualityTVOCSprite[index]) - 21, ituWidgetGetY(mainLQualityTVOCSprite[index]) - 21);
+	sprintf(tmp, "%d", TVOCDayValue[index] / 10);
+	ituTextSetString(mainLQualityTVOCNumText[TVOCDayColor[index]], tmp);
+	ituSpriteGoto(mainLQualityTVOCNumSprite, TVOCDayColor[index]);
+
+	ituWidgetSetHeight(mainLQualityTVOCBarIcon, TVOCDayH[index]);
+	ituWidgetSetPosition(mainLQualityTVOCBarIcon, ituWidgetGetX(mainLQualityTVOCIcon[index]), ituWidgetGetY(mainLQualityTVOCIcon[index]) + (ituWidgetGetHeight(mainLQualityTVOCIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityTVOCNumSprite, ituWidgetGetX(mainLQualityTVOCIcon[index]), ituWidgetGetY(mainLQualityTVOCIcon[index]));
 	ituWidgetSetVisible(mainLQualityTVOCNumSprite, true);
-
+	ituWidgetSetVisible(mainLQualityTVOCBarIcon, true);
 
 	return true;
 }
@@ -1154,11 +1413,14 @@ bool MainLQualityCO2BtnOnPress(ITUWidget* widget, char* param)
 	int index = atoi(param);
 	char tmp[32];
 
-	ituWidgetSetPosition(mainLQualityCO2NumSprite, ituWidgetGetX(mainLQualityCO2Sprite[index]) - 35, ituWidgetGetY(mainLQualityCO2Sprite[index]) - 70);
+	ituWidgetSetHeight(mainLQualityCO2BarIcon, CO2DayH[index]);
+	ituWidgetSetPosition(mainLQualityCO2BarIcon, ituWidgetGetX(mainLQualityCO2Icon[index]), ituWidgetGetY(mainLQualityCO2Icon[index]) + (ituWidgetGetHeight(mainLQualityCO2Icon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityCO2NumSprite, ituWidgetGetX(mainLQualityCO2Icon[index]) - 28, ituWidgetGetY(mainLQualityCO2Icon[index]) - 70);
 	sprintf(tmp, "%d", CO2DayValue[index]);
-	ituTextSetString(mainLQualityCO2NumText[mainLQualityCO2Sprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityCO2NumSprite, mainLQualityCO2Sprite[index]->frame);
+	ituTextSetString(mainLQualityCO2NumText[CO2DayColor[index]], tmp);
+	ituSpriteGoto(mainLQualityCO2NumSprite, CO2DayColor[index]);
 	ituWidgetSetVisible(mainLQualityCO2NumSprite, true);
+	ituWidgetSetVisible(mainLQualityCO2BarIcon, true);
 
 
 	return true;
@@ -1169,12 +1431,14 @@ bool MainLQualityOutPMBtnOnPress(ITUWidget* widget, char* param)
 	int index = atoi(param);
 	char tmp[32];
 
-	ituWidgetSetPosition(mainLQualityOutPMNumSprite, ituWidgetGetX(mainLQualityOutPMSprite[index]) - 35, ituWidgetGetY(mainLQualityOutPMSprite[index]) - 70);
+	ituWidgetSetHeight(mainLQualityOutPMBarIcon, OutPMDayH[index]);
+	ituWidgetSetPosition(mainLQualityOutPMBarIcon, ituWidgetGetX(mainLQualityOutPMIcon[index]), ituWidgetGetY(mainLQualityOutPMIcon[index]) + (ituWidgetGetHeight(mainLQualityOutPMIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityOutPMNumSprite, ituWidgetGetX(mainLQualityOutPMIcon[index]) - 28, ituWidgetGetY(mainLQualityOutPMIcon[index]) - 70);
 	sprintf(tmp, "%d", OutPMDayValue[index]);
-	ituTextSetString(mainLQualityOutPMNumText[mainLQualityOutPMSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityOutPMNumSprite, mainLQualityOutPMSprite[index]->frame);
+	ituTextSetString(mainLQualityOutPMNumText[OutPMDayColor[index]], tmp);
+	ituSpriteGoto(mainLQualityOutPMNumSprite, OutPMDayColor[index]);
 	ituWidgetSetVisible(mainLQualityOutPMNumSprite, true);
-
+	ituWidgetSetVisible(mainLQualityOutPMBarIcon, true);
 
 	return true;
 }
@@ -1184,11 +1448,14 @@ bool MainLQualityInPMWBtnOnPress(ITUWidget* widget, char* param)
 	int index = atoi(param);
 	char tmp[32];
 
-	ituWidgetSetPosition(mainLQualityInPMWNumSprite, ituWidgetGetX(mainLQualityInPMWSprite[index]) - 35, ituWidgetGetY(mainLQualityInPMWSprite[index]) - 70);
+	ituWidgetSetHeight(mainLQualityInPMWBarIcon, InPMWeekH[index]);
+	ituWidgetSetPosition(mainLQualityInPMWBarIcon, ituWidgetGetX(mainLQualityInPMWIcon[index]), ituWidgetGetY(mainLQualityInPMWIcon[index]) + (ituWidgetGetHeight(mainLQualityInPMWIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityInPMWNumSprite, ituWidgetGetX(mainLQualityInPMWIcon[index]) - 28, ituWidgetGetY(mainLQualityInPMWIcon[index]) - 70);
 	sprintf(tmp, "%d", InPMWeekValue[index]);
-	ituTextSetString(mainLQualityInPMWNumText[mainLQualityInPMWSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityInPMWNumSprite, mainLQualityInPMWSprite[index]->frame);
+	ituTextSetString(mainLQualityInPMWNumText[InPMWeekColor[index]], tmp);
+	ituSpriteGoto(mainLQualityInPMWNumSprite, InPMWeekColor[index]);
 	ituWidgetSetVisible(mainLQualityInPMWNumSprite, true);
+	ituWidgetSetVisible(mainLQualityInPMWBarIcon, true);
 
 
 	return true;
@@ -1201,16 +1468,16 @@ bool MainLQualityTVOCWBtnOnPress(ITUWidget* widget, char* param)
 
 
 
-	if (TVOCWeekValue[index] % 10 == 0)
-		sprintf(tmp, "%d", TVOCWeekValue[index] / 10);
-	else
-		sprintf(tmp, "%1.1f", (float)TVOCWeekValue[index] / 10);
-	ituTextSetString(mainLQualityTVOCWNumText[mainLQualityTVOCWSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityTVOCWNumSprite, mainLQualityTVOCWSprite[index]->frame);
 
-	ituWidgetSetHeight(mainLQualityTVOCWNumSprite, ituWidgetGetHeight(mainLQualityTVOCWButton[index]) + 35);
-	ituWidgetSetPosition(mainLQualityTVOCWNumSprite, ituWidgetGetX(mainLQualityTVOCWSprite[index]) - 21, ituWidgetGetY(mainLQualityTVOCWSprite[index]) - 21);
+	sprintf(tmp, "%d", TVOCWeekValue[index] / 10);
+	ituTextSetString(mainLQualityTVOCWNumText[TVOCWeekColor[index]], tmp);
+	ituSpriteGoto(mainLQualityTVOCWNumSprite, TVOCWeekColor[index]);
+
+	ituWidgetSetHeight(mainLQualityTVOCWBarIcon, TVOCWeekH[index]);
+	ituWidgetSetPosition(mainLQualityTVOCWBarIcon, ituWidgetGetX(mainLQualityTVOCWIcon[index]), ituWidgetGetY(mainLQualityTVOCWIcon[index]) + (ituWidgetGetHeight(mainLQualityTVOCWIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityTVOCWNumSprite, ituWidgetGetX(mainLQualityTVOCWIcon[index]), ituWidgetGetY(mainLQualityTVOCWIcon[index]));
 	ituWidgetSetVisible(mainLQualityTVOCWNumSprite, true);
+	ituWidgetSetVisible(mainLQualityTVOCWBarIcon, true);
 
 
 	return true;
@@ -1221,11 +1488,14 @@ bool MainLQualityCO2WBtnOnPress(ITUWidget* widget, char* param)
 	int index = atoi(param);
 	char tmp[32];
 
-	ituWidgetSetPosition(mainLQualityCO2WNumSprite, ituWidgetGetX(mainLQualityCO2WSprite[index]) - 35, ituWidgetGetY(mainLQualityCO2WSprite[index]) - 70);
+	ituWidgetSetHeight(mainLQualityCO2WBarIcon, CO2WeekH[index]);
+	ituWidgetSetPosition(mainLQualityCO2WBarIcon, ituWidgetGetX(mainLQualityCO2WIcon[index]), ituWidgetGetY(mainLQualityCO2WIcon[index]) + (ituWidgetGetHeight(mainLQualityCO2WIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityCO2WNumSprite, ituWidgetGetX(mainLQualityCO2WIcon[index]) - 28, ituWidgetGetY(mainLQualityCO2WIcon[index]) - 70);
 	sprintf(tmp, "%d", CO2WeekValue[index]);
-	ituTextSetString(mainLQualityCO2WNumText[mainLQualityCO2WSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityCO2WNumSprite, mainLQualityCO2WSprite[index]->frame);
+	ituTextSetString(mainLQualityCO2WNumText[CO2WeekColor[index]], tmp);
+	ituSpriteGoto(mainLQualityCO2WNumSprite, CO2WeekColor[index]);
 	ituWidgetSetVisible(mainLQualityCO2WNumSprite, true);
+	ituWidgetSetVisible(mainLQualityCO2WBarIcon, true);
 
 
 	return true;
@@ -1235,12 +1505,15 @@ bool MainLQualityOutPMWBtnOnPress(ITUWidget* widget, char* param)
 {
 	int index = atoi(param);
 	char tmp[32];
-
-	ituWidgetSetPosition(mainLQualityOutPMWNumSprite, ituWidgetGetX(mainLQualityOutPMWSprite[index]) - 35, ituWidgetGetY(mainLQualityOutPMWSprite[index]) - 70);
+	
+	ituWidgetSetHeight(mainLQualityOutPMWBarIcon, OutPMWeekH[index]);
+	ituWidgetSetPosition(mainLQualityOutPMWBarIcon, ituWidgetGetX(mainLQualityOutPMWIcon[index]), ituWidgetGetY(mainLQualityOutPMWIcon[index]) + (ituWidgetGetHeight(mainLQualityOutPMWIcon[index]) / 2));
+	ituWidgetSetPosition(mainLQualityOutPMWNumSprite, ituWidgetGetX(mainLQualityOutPMWIcon[index]) - 28, ituWidgetGetY(mainLQualityOutPMWIcon[index]) - 70);
 	sprintf(tmp, "%d", OutPMWeekValue[index]);
-	ituTextSetString(mainLQualityOutPMWNumText[mainLQualityOutPMWSprite[index]->frame], tmp);
-	ituSpriteGoto(mainLQualityOutPMWNumSprite, mainLQualityOutPMWSprite[index]->frame);
+	ituTextSetString(mainLQualityOutPMWNumText[OutPMWeekColor[index]], tmp);
+	ituSpriteGoto(mainLQualityOutPMWNumSprite, OutPMWeekColor[index]);
 	ituWidgetSetVisible(mainLQualityOutPMWNumSprite, true);
+	ituWidgetSetVisible(mainLQualityOutPMWBarIcon, true);
 
 
 	return true;
@@ -1249,81 +1522,107 @@ bool MainLQualityOutPMWBtnOnPress(ITUWidget* widget, char* param)
 bool MainAirForceTrackBarOnChanged(ITUWidget* widget, char* param)
 {
 	int x, y;
-	char tmp[32];
-	airForceIndex = mainAirForceTrackBar->value - 1;
-	ituSpriteGoto(mainAirForceSprite, airForceIndex);
+	//char tmp[32];
+	airForceIndex = mainAirForceTrackBar->value;// -1;
+	//ituSpriteGoto(mainAirForceSprite, airForceIndex);
 	ituSpriteGoto(mainAirForceTextSprite, airForceIndex);
 	//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
-	ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
+	//ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
 
 
 	ituWidgetSetVisible(mainAirForceTipShowBackground, false);
 	ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
 	ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-	sprintf(tmp, "%d", mainAirForceTrackBar->value);
-	ituTextSetString(mainAirForceTipShowText, tmp);
+	//sprintf(tmp, "%d", mainAirForceTrackBar->value);
+	//ituTextSetString(mainAirForceTipShowText, tmp);
+	ituSpriteGoto(mainAirForceValueSprite, mainAirForceTrackBar->value);
 	ituWidgetSetVisible(mainAirForceTipShowBackground, true);
 
 	return true;
 }
 
-bool MainAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param)
+//bool MainAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param)
+//{
+//	int x, y;
+//	char tmp[32];
+//
+//	if (ituCheckBoxIsChecked(mainAirForceAutoCheckBox))
+//	{
+//
+//		ituTrackBarSetValue(mainAirForceTrackBar, 3);
+//		ituProgressBarSetValue(mainAirForceProgressBar, 3);
+//		//ituSpriteGoto(mainAirForceSprite, 6);
+//		ituSpriteGoto(mainAirForceTextSprite, 6);
+//		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[6]);
+//		//ituSpriteGoto(mainAirForceLineSprite, 2);
+//		ituWidgetDisable(mainAirForceTrackBar);
+//		ituWidgetSetVisible(mainAirForceProgressBar, false);
+//		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[1]);
+//
+//
+//		//ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
+//		//ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
+//		//ituTextSetString(mainAirForceTipShowText, "A");
+//
+//	}
+//	else
+//	{
+//
+//		ituTrackBarSetValue(mainAirForceTrackBar, airForceIndex + 1);
+//		ituProgressBarSetValue(mainAirForceProgressBar, airForceIndex + 1);
+//		//ituSpriteGoto(mainAirForceSprite, airForceIndex);
+//		ituSpriteGoto(mainAirForceTextSprite, airForceIndex);
+//		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
+//		//ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
+//		ituWidgetEnable(mainAirForceTrackBar);
+//		ituWidgetSetVisible(mainAirForceProgressBar, true);
+//		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[0]);
+//
+//		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
+//		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
+//		//sprintf(tmp, "%d", mainAirForceTrackBar->value);
+//		//ituTextSetString(mainAirForceTipShowText, tmp);
+//		ituSpriteGoto(mainAirForceValueSprite, mainAirForceTrackBar->value);
+//	}
+//
+//	return true;
+//}
+
+bool MainCAttachRadBoxOnMouseUp(ITUWidget* widget, char* param)
 {
-	int x, y;
-	char tmp[32];
-
-	if (ituCheckBoxIsChecked(mainAirForceAutoCheckBox))
-	{
-
-		ituTrackBarSetValue(mainAirForceTrackBar, 3);
-		ituProgressBarSetValue(mainAirForceProgressBar, 3);
-		ituSpriteGoto(mainAirForceSprite, 6);
-		ituSpriteGoto(mainAirForceTextSprite, 6);
-		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[6]);
-		ituSpriteGoto(mainAirForceLineSprite, 2);
-		ituWidgetDisable(mainAirForceTrackBar);
-		ituWidgetSetVisible(mainAirForceProgressBar, false);
-		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[1]);
-
-
-		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-		ituTextSetString(mainAirForceTipShowText, "A");
-
-	}
-	else
-	{
-
-		ituTrackBarSetValue(mainAirForceTrackBar, airForceIndex + 1);
-		ituProgressBarSetValue(mainAirForceProgressBar, airForceIndex + 1);
-		ituSpriteGoto(mainAirForceSprite, airForceIndex);
-		ituSpriteGoto(mainAirForceTextSprite, airForceIndex);
-		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
-		ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
-		ituWidgetEnable(mainAirForceTrackBar);
-		ituWidgetSetVisible(mainAirForceProgressBar, true);
-		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[0]);
-
-		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-		sprintf(tmp, "%d", mainAirForceTrackBar->value);
-		ituTextSetString(mainAirForceTipShowText, tmp);
-	}
+	int attachIndex = atoi(param);
 
 	return true;
 }
 
-bool DayQualitySet(ITUWidget* widget,int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7)
+bool DayQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7,ITUIcon* bgIcon)
+//bool DayQualitySet(ITUWidget* widget,int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7)
 {
+	
+
 	ITUIcon* pIcon = (ITUIcon*)widget;
+	ITUColor emptyColor = { 255, 157, 193, 242 };
+	ITUSurface* bgSurf = NULL;
+
+	
+
+	int pQtyValue[8] = { i0, i1, i2, i3, i4, i5, i6, i7 };
+	int i = 0;
+	int xQtyValue[8] = { 50, 120, 190, 260, 340, 410, 480, 550};
+	int x_offset = ituWidgetGetX(mainLQualityInPMDayIcon) - (ituWidgetGetWidth(mainLQualityIcon[0]) / 2);
+	int y_offset = ituWidgetGetY(mainLQualityInPMDayIcon) - (ituWidgetGetHeight(mainLQualityIcon[0]) / 2);
+	int x_offsetB = ituWidgetGetX(mainLQualityInPMDayIcon) - (ituWidgetGetWidth(mainLQualityBIcon[0]) / 2);
+	int y_offsetB = ituWidgetGetY(mainLQualityInPMDayIcon) - (ituWidgetGetHeight(mainLQualityBIcon[0]) / 2);
+
+	ITUColor color = { 200, 255, 255, 255 };
+
+	if (bgIcon)
+	{
+		ituWidgetSetPosition(bgIcon, ituWidgetGetX(pIcon),ituWidgetGetY(pIcon));
+	}
+
 	if (pIcon)
 	{
-		int pQtyValue[8] = { i0, i1, i2, i3, i4, i5, i6, i7 };
-		int i = 0;
-		int xQtyValue[8] = { 50, 120,190,260,340,425,495,575};
-
-		ITUColor color = { 255,160, 196, 255 };
-
 		switch (index)
 		{
 		case 0:
@@ -1397,114 +1696,274 @@ bool DayQualitySet(ITUWidget* widget,int index, int i0, int i1, int i2, int i3, 
 
 		}
 
+		if (bgIcon)
+		{
+			bgSurf = ituCreateSurface(xQtyValue[0], pQtyValue[0], xQtyValue[0] * 2, bgIcon->surf->format, NULL, 0);
+			ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);	
+			ituBitBlt(bgIcon->surf, 0, 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+			ituDestroySurface(bgSurf);
+
+			drawTriangle((ITUWidget*)bgIcon, 0, pQtyValue[0], xQtyValue[0], pQtyValue[0], 0, pQtyValue[0] + 10, true);
+			ituDrawLine(pIcon->surf, 0, pQtyValue[0] + 10, xQtyValue[0], pQtyValue[0], &color, 5);
+		}
+
+		
+
 		switch (index)
 		{
 		case 0:
 			for (i = 0; i < 7; i++)
 			{
-				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 2);
+				if (bgIcon)
+				{
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i + 1], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+					else
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+
+					ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+					ituBitBlt(bgIcon->surf, xQtyValue[i], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+					ituDestroySurface(bgSurf);
+
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i + 1], xQtyValue[i + 1], pQtyValue[i + 1], xQtyValue[i], pQtyValue[i], true);
+					else
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], false);
+				}
+
+				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 5);
 
 				if (pQtyValue[i] >= 254)
-					ituSpriteGoto(mainLQualityInPMSprite[i], 0);
+				{
+					ituIconLinkSurface(mainLQualityInPMIcon[i], mainLQualityIcon[0]);
+					InPMDayColor[i] = 0;
+				}
 				else if (pQtyValue[i] >= 194)
-					ituSpriteGoto(mainLQualityInPMSprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityInPMIcon[i], mainLQualityIcon[1]);
+					InPMDayColor[i] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityInPMSprite[i], 2);
-
-				ituWidgetSetPosition(mainLQualityInPMSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetPosition(mainLQualityInPMButton[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
+				{
+					ituIconLinkSurface(mainLQualityInPMIcon[i], mainLQualityIcon[2]);
+					InPMDayColor[i] = 2;
+				}
+					
+				InPMDayH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityInPMIcon[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
+				ituWidgetSetPosition(mainLQualityInPMButton[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
 
 				if (pQtyValue[i + 1] >= 254)
-					ituSpriteGoto(mainLQualityInPMSprite[i + 1], 0);
+				{
+					ituIconLinkSurface(mainLQualityInPMIcon[i + 1], mainLQualityIcon[0]);
+					InPMDayColor[i + 1] = 0;
+				}
 				else if (pQtyValue[i + 1] >= 194)
-					ituSpriteGoto(mainLQualityInPMSprite[i + 1], 1);
+				{
+					ituIconLinkSurface(mainLQualityInPMIcon[i + 1], mainLQualityIcon[1]);
+					InPMDayColor[i + 1] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityInPMSprite[i + 1], 2);
-				ituWidgetSetPosition(mainLQualityInPMSprite[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
-				ituWidgetSetPosition(mainLQualityInPMButton[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
+				{
+					ituIconLinkSurface(mainLQualityInPMIcon[i + 1], mainLQualityIcon[2]);
+					InPMDayColor[i + 1] = 2;
+				}
+				InPMDayH[i + 1] = 302 - pQtyValue[i + 1];
+				ituWidgetSetPosition(mainLQualityInPMIcon[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
+				ituWidgetSetPosition(mainLQualityInPMButton[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
 			}
 			break;
 		case 1:
 			for (i = 0; i < 8; i++)
 			{
 				if (pQtyValue[i] >= 165)
-					ituSpriteGoto(mainLQualityTVOCSprite[i], 0);
+				{
+					ituIconLinkSurface(mainLQualityTVOCIcon[i], mainLQualityBIcon[0]);
+					TVOCDayColor[i] = 0;
+				}				
 				else if (pQtyValue[i] >= 85)
-					ituSpriteGoto(mainLQualityTVOCSprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityTVOCIcon[i], mainLQualityBIcon[1]);
+					TVOCDayColor[i] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityTVOCSprite[i], 2);
-
-				ituWidgetSetPosition(mainLQualityTVOCSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetHeight(mainLQualityTVOCButton[i], 302 - pQtyValue[i]);
-				ituWidgetSetPosition(mainLQualityTVOCButton[i], xQtyValue[i] + 44, pQtyValue[i] + 48);
+				{
+					ituIconLinkSurface(mainLQualityTVOCIcon[i], mainLQualityBIcon[2]);
+					TVOCDayColor[i] = 2;
+				}
+					
+				TVOCDayH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityTVOCIcon[i], xQtyValue[i] + x_offsetB, pQtyValue[i] + y_offsetB);
+				ituWidgetSetPosition(mainLQualityTVOCButton[i], xQtyValue[i] + x_offsetB, pQtyValue[i] + y_offsetB);
 			}
 
 			break;
 		case 2:
 			for (i = 0; i < 7; i++)
 			{
-				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 2);
+				if (bgIcon)
+				{
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i + 1], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+					else
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+
+					ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+					ituBitBlt(bgIcon->surf, xQtyValue[i], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+					ituDestroySurface(bgSurf);
+
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i + 1], xQtyValue[i + 1], pQtyValue[i + 1], xQtyValue[i], pQtyValue[i], true);
+					else
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], false);
+				}
+
+				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 5);
 
 				if (pQtyValue[i] >= 254)
-					ituSpriteGoto(mainLQualityCO2Sprite[i], 0);
+				{
+					ituIconLinkSurface(mainLQualityCO2Icon[i], mainLQualityIcon[0]);
+					CO2DayColor[i] = 0;
+				}
 				else if (pQtyValue[i] >= 194)
-					ituSpriteGoto(mainLQualityCO2Sprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityCO2Icon[i], mainLQualityIcon[1]);
+					CO2DayColor[i] = 1;
+				}					
 				else
-					ituSpriteGoto(mainLQualityCO2Sprite[i], 2);
-				ituWidgetSetPosition(mainLQualityCO2Sprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetPosition(mainLQualityCO2Button[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
+				{
+					ituIconLinkSurface(mainLQualityCO2Icon[i], mainLQualityIcon[2]);
+					CO2DayColor[i] = 2;
+				}		
+				CO2DayH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityCO2Icon[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
+				ituWidgetSetPosition(mainLQualityCO2Button[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
 
 				if (pQtyValue[i + 1] >= 254)
-					ituSpriteGoto(mainLQualityCO2Sprite[i + 1], 0);
+				{
+					ituIconLinkSurface(mainLQualityCO2Icon[i + 1], mainLQualityIcon[0]);
+					CO2DayColor[i + 1] = 0;
+				}
 				else if (pQtyValue[i + 1] >= 194)
-					ituSpriteGoto(mainLQualityCO2Sprite[i + 1], 1);
+				{
+					ituIconLinkSurface(mainLQualityCO2Icon[i + 1], mainLQualityIcon[1]);
+					CO2DayColor[i + 1] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityCO2Sprite[i + 1], 2);
-				ituWidgetSetPosition(mainLQualityCO2Sprite[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
-				ituWidgetSetPosition(mainLQualityCO2Button[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
+				{
+					ituIconLinkSurface(mainLQualityCO2Icon[i + 1], mainLQualityIcon[2]);
+					CO2DayColor[i + 1] = 2;
+				}
+				CO2DayH[i + 1] = 302 - pQtyValue[i + 1];
+				ituWidgetSetPosition(mainLQualityCO2Icon[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
+				ituWidgetSetPosition(mainLQualityCO2Button[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
 			}
 			break;
 		case 3:
 			for (i = 0; i < 7; i++)
 			{
-				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 2);
+				if (bgIcon)
+				{
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i + 1], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+					else
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+
+					ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+					ituBitBlt(bgIcon->surf, xQtyValue[i], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+					ituDestroySurface(bgSurf);
+
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i + 1], xQtyValue[i + 1], pQtyValue[i + 1], xQtyValue[i], pQtyValue[i], true);
+					else
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], false);
+				}
+
+				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 5);
 
 				if (pQtyValue[i] >= 254)
-					ituSpriteGoto(mainLQualityOutPMSprite[i], 0);
+				{
+					ituIconLinkSurface(mainLQualityOutPMIcon[i], mainLQualityIcon[0]);
+					OutPMDayColor[i] = 0;
+				}
 				else if (pQtyValue[i] >= 194)
-					ituSpriteGoto(mainLQualityOutPMSprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityOutPMIcon[i], mainLQualityIcon[1]);
+					OutPMDayColor[i] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityOutPMSprite[i], 2);
-				ituWidgetSetPosition(mainLQualityOutPMSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetPosition(mainLQualityOutPMButton[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
+				{
+					ituIconLinkSurface(mainLQualityOutPMIcon[i], mainLQualityIcon[2]);
+					OutPMDayColor[i] = 2;
+				}
+				OutPMDayH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityOutPMIcon[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
+				ituWidgetSetPosition(mainLQualityOutPMButton[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
 
 				if (pQtyValue[i + 1] >= 254)
-					ituSpriteGoto(mainLQualityOutPMSprite[i + 1], 0);
+				{
+					ituIconLinkSurface(mainLQualityOutPMIcon[i + 1], mainLQualityIcon[0]);
+					OutPMDayColor[i + 1] = 0;
+				}
 				else if (pQtyValue[i + 1] >= 194)
-					ituSpriteGoto(mainLQualityOutPMSprite[i + 1], 1);
+				{
+					ituIconLinkSurface(mainLQualityOutPMIcon[i + 1], mainLQualityIcon[1]);
+					OutPMDayColor[i + 1] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityOutPMSprite[i + 1], 2);
-				ituWidgetSetPosition(mainLQualityOutPMSprite[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
-				ituWidgetSetPosition(mainLQualityOutPMButton[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
+				{
+					ituIconLinkSurface(mainLQualityOutPMIcon[i + 1], mainLQualityIcon[2]);
+					OutPMDayColor[i + 1] = 2;
+				}
+				OutPMDayH[i + 1] = 302 - pQtyValue[i + 1];
+				ituWidgetSetPosition(mainLQualityOutPMIcon[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
+				ituWidgetSetPosition(mainLQualityOutPMButton[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
 			}
 			break;
 		}
+
+		if (bgIcon)
+		{
+			bgSurf = ituCreateSurface(bgIcon->widget.rect.width - xQtyValue[7], pQtyValue[7], (bgIcon->widget.rect.width - xQtyValue[7]) * 2, bgIcon->surf->format, NULL, 0);
+			ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+			ituBitBlt(bgIcon->surf, xQtyValue[7], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+			ituDestroySurface(bgSurf);
+
+			drawTriangle((ITUWidget*)bgIcon, xQtyValue[7], pQtyValue[7], bgIcon->widget.rect.width, pQtyValue[7], bgIcon->widget.rect.width, pQtyValue[7] + 10, false);
+			ituDrawLine(pIcon->surf, xQtyValue[7], pQtyValue[7], pIcon->widget.rect.width, pQtyValue[7] + 10, &color, 5);
+		}
+
 		
+
+
 	}
 	return true;
 }
 
-bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6)
+bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6,ITUIcon* bgIcon)
+//bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3, int i4, int i5, int i6)
 {
 	ITUIcon* pIcon = (ITUIcon*)widget;
+	ITUColor emptyColor = { 255, 157, 193, 242 };
+	ITUSurface* bgSurf = NULL;
+
+	int pQtyValue[7] = { i0, i1, i2, i3, i4, i5, i6 };
+	int i = 0;
+	int xQtyValue[7] = { 80, 160, 240, 320, 400, 480, 560 };
+	int x_offset = ituWidgetGetX(mainLQualityInPMDayIcon) - (ituWidgetGetWidth(mainLQualityIcon[0]) / 2);
+	int y_offset = ituWidgetGetY(mainLQualityInPMDayIcon) - (ituWidgetGetHeight(mainLQualityIcon[0]) / 2);
+	int x_offsetB = ituWidgetGetX(mainLQualityInPMDayIcon) - (ituWidgetGetWidth(mainLQualityBIcon[0]) / 2);
+	int y_offsetB = ituWidgetGetY(mainLQualityInPMDayIcon) - (ituWidgetGetHeight(mainLQualityBIcon[0]) / 2);
+
+	ITUColor color = { 200, 255, 255, 255 };
+
+	if (bgIcon)
+	{
+		ituWidgetSetPosition(bgIcon, ituWidgetGetX(pIcon), ituWidgetGetY(pIcon));
+	}
+
 	if (pIcon)
 	{
-		int pQtyValue[7] = { i0, i1, i2, i3, i4, i5, i6};
-		int i = 0;
-		int xQtyValue[7] = { 80, 160, 235, 320, 400, 480, 570 };
-
-		ITUColor color = { 255, 160, 196, 255 };
-
 		switch (index)
 		{
 		case 0:
@@ -1578,97 +2037,284 @@ bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3
 
 		}
 
+		if (bgIcon)
+		{
+			bgSurf = ituCreateSurface(xQtyValue[0], pQtyValue[0], xQtyValue[0] * 2, bgIcon->surf->format, NULL, 0);
+			ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+			ituBitBlt(bgIcon->surf, 0, 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+			ituDestroySurface(bgSurf);
+
+			drawTriangle((ITUWidget*)bgIcon, 0, pQtyValue[0], xQtyValue[0], pQtyValue[0], 0, pQtyValue[0] + 10, true);
+			ituDrawLine(pIcon->surf, 0, pQtyValue[0] + 10, xQtyValue[0], pQtyValue[0], &color, 5);
+
+		}
+
+		
+
 		switch (index)
 		{
 		case 0:
 			for (i = 0; i < 6; i++)
 			{
-				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 2);
+				if (bgIcon)
+				{
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i + 1], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+					else
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+
+					ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+					ituBitBlt(bgIcon->surf, xQtyValue[i], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+					ituDestroySurface(bgSurf);
+
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i + 1], xQtyValue[i + 1], pQtyValue[i + 1], xQtyValue[i], pQtyValue[i], true);
+					else
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], false);
+				}
+
+				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 5);
 
 				if (pQtyValue[i]>250)
-					ituSpriteGoto(mainLQualityInPMWSprite[i], 0);
-				else if (pQtyValue[i]>190)
-					ituSpriteGoto(mainLQualityInPMWSprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityInPMWIcon[i], mainLQualityIcon[0]);
+					InPMWeekColor[i] = 0;
+				}
+				else if (pQtyValue[i] > 190)
+				{
+					ituIconLinkSurface(mainLQualityInPMWIcon[i], mainLQualityIcon[1]);
+					InPMWeekColor[i] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityInPMWSprite[i], 2);
-				ituWidgetSetPosition(mainLQualityInPMWSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetPosition(mainLQualityInPMWButton[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
+				{
+					ituIconLinkSurface(mainLQualityInPMWIcon[i], mainLQualityIcon[2]);
+					InPMWeekColor[i] = 2;
+				}
+				InPMWeekH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityInPMWIcon[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
+				ituWidgetSetPosition(mainLQualityInPMWButton[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
 
 				if (pQtyValue[i + 1]>250)
-					ituSpriteGoto(mainLQualityInPMWSprite[i + 1], 0);
-				else if (pQtyValue[i + 1]>190)
-					ituSpriteGoto(mainLQualityInPMWSprite[i + 1], 1);
+				{
+					ituIconLinkSurface(mainLQualityInPMWIcon[i + 1], mainLQualityIcon[0]);
+					InPMWeekColor[i + 1] = 0;
+				}
+				else if (pQtyValue[i + 1] > 190)
+				{
+					ituIconLinkSurface(mainLQualityInPMWIcon[i + 1], mainLQualityIcon[1]);
+					InPMWeekColor[i + 1] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityInPMWSprite[i + 1], 2);
-				ituWidgetSetPosition(mainLQualityInPMWSprite[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
-				ituWidgetSetPosition(mainLQualityInPMWButton[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
+				{
+					ituIconLinkSurface(mainLQualityInPMWIcon[i + 1], mainLQualityIcon[2]);
+					InPMWeekColor[i + 1] = 2;
+				}
+				InPMWeekH[i + 1] = 302 - pQtyValue[i + 1];
+				ituWidgetSetPosition(mainLQualityInPMWIcon[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
+				ituWidgetSetPosition(mainLQualityInPMWButton[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
 			}
 			break;
-			case 1:
+		case 1:
 				for (i = 0; i < 7; i++)
 				{
 					if (pQtyValue[i] >= 165)
-						ituSpriteGoto(mainLQualityTVOCWSprite[i], 0);
+					{
+						ituIconLinkSurface(mainLQualityTVOCWIcon[i], mainLQualityBIcon[0]);
+						TVOCWeekColor[i] = 0;
+					}						
 					else if (pQtyValue[i] >= 85)
-						ituSpriteGoto(mainLQualityTVOCWSprite[i], 1);
+					{
+						ituIconLinkSurface(mainLQualityTVOCWIcon[i], mainLQualityBIcon[1]);
+						TVOCWeekColor[i] = 1;
+					}						
 					else
-						ituSpriteGoto(mainLQualityTVOCWSprite[i], 2);
-
-					ituWidgetSetPosition(mainLQualityTVOCWSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-					ituWidgetSetHeight(mainLQualityTVOCWButton[i], 302 - pQtyValue[i]);
-					ituWidgetSetPosition(mainLQualityTVOCWButton[i], xQtyValue[i] + 44, pQtyValue[i] + 48);
+					{
+						ituIconLinkSurface(mainLQualityTVOCWIcon[i], mainLQualityBIcon[2]);
+						TVOCWeekColor[i] = 2;
+					}
+						
+					TVOCWeekH[i] = 302 - pQtyValue[i];
+					ituWidgetSetPosition(mainLQualityTVOCWIcon[i], xQtyValue[i] + x_offsetB, pQtyValue[i] + y_offsetB);
+					ituWidgetSetPosition(mainLQualityTVOCWButton[i], xQtyValue[i] + x_offsetB, pQtyValue[i] + y_offsetB);
 				}
 				break;
 		case 2:
 			for (i = 0; i < 6; i++)
 			{
-				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 2);
+				if (bgIcon)
+				{
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i + 1], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+					else
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+
+					ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+					ituBitBlt(bgIcon->surf, xQtyValue[i], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+					ituDestroySurface(bgSurf);
+
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i + 1], xQtyValue[i + 1], pQtyValue[i + 1], xQtyValue[i], pQtyValue[i], true);
+					else
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], false);
+				}
+
+				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 5);
 
 				if (pQtyValue[i]>250)
-					ituSpriteGoto(mainLQualityCO2WSprite[i], 0);
-				else if (pQtyValue[i]>190)
-					ituSpriteGoto(mainLQualityCO2WSprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityCO2WIcon[i], mainLQualityIcon[0]);
+					CO2WeekColor[i] = 0;
+				}
+				else if (pQtyValue[i] > 190)
+				{
+					ituIconLinkSurface(mainLQualityCO2WIcon[i], mainLQualityIcon[1]);
+					CO2WeekColor[i] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityCO2WSprite[i], 2);
-				ituWidgetSetPosition(mainLQualityCO2WSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetPosition(mainLQualityCO2WButton[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
+				{
+					ituIconLinkSurface(mainLQualityCO2WIcon[i], mainLQualityIcon[2]);
+					CO2WeekColor[i] = 2;
+				}
+				CO2WeekH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityCO2WIcon[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
+				ituWidgetSetPosition(mainLQualityCO2WButton[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
 
 				if (pQtyValue[i + 1]>250)
-					ituSpriteGoto(mainLQualityCO2WSprite[i + 1], 0);
-				else if (pQtyValue[i + 1]>190)
-					ituSpriteGoto(mainLQualityCO2WSprite[i + 1], 1);
+				{
+					ituIconLinkSurface(mainLQualityCO2WIcon[i + 1], mainLQualityIcon[0]);
+					CO2WeekColor[i + 1] = 0;
+				}
+				else if (pQtyValue[i + 1] > 190)
+				{
+					ituIconLinkSurface(mainLQualityCO2WIcon[i + 1], mainLQualityIcon[1]);
+					CO2WeekColor[i + 1] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityCO2WSprite[i + 1], 2);
-				ituWidgetSetPosition(mainLQualityCO2WSprite[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
-				ituWidgetSetPosition(mainLQualityCO2WButton[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
+				{
+					ituIconLinkSurface(mainLQualityCO2WIcon[i + 1], mainLQualityIcon[2]);
+					CO2WeekColor[i + 1] = 2;
+				}
+				CO2WeekH[i + 1] = 302 - pQtyValue[i + 1];
+				ituWidgetSetPosition(mainLQualityCO2WIcon[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
+				ituWidgetSetPosition(mainLQualityCO2WButton[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
 			}
 			break;
 		case 3:
 			for (i = 0; i < 6; i++)
 			{
-				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 2);
+				if (bgIcon)
+				{
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i + 1], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+					else
+						bgSurf = ituCreateSurface(xQtyValue[i + 1] - xQtyValue[i], pQtyValue[i], (xQtyValue[i + 1] - xQtyValue[i]) * 2, bgIcon->surf->format, NULL, 0);
+
+					ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+					ituBitBlt(bgIcon->surf, xQtyValue[i], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+					ituDestroySurface(bgSurf);
+
+					if (pQtyValue[i + 1] < pQtyValue[i])
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i + 1], xQtyValue[i + 1], pQtyValue[i + 1], xQtyValue[i], pQtyValue[i], true);
+					else
+						drawTriangle((ITUWidget*)bgIcon, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], false);
+				}
+
+				ituDrawLine(pIcon->surf, xQtyValue[i], pQtyValue[i], xQtyValue[i + 1], pQtyValue[i + 1], &color, 5);
 
 				if (pQtyValue[i]>250)
-					ituSpriteGoto(mainLQualityOutPMWSprite[i], 0);
-				else if (pQtyValue[i]>190)
-					ituSpriteGoto(mainLQualityOutPMWSprite[i], 1);
+				{
+					ituIconLinkSurface(mainLQualityOutPMWIcon[i], mainLQualityIcon[0]);
+					OutPMWeekColor[i] = 0;
+				}
+				else if (pQtyValue[i] > 190)
+				{
+					ituIconLinkSurface(mainLQualityOutPMWIcon[i], mainLQualityIcon[1]);
+					OutPMWeekColor[i] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityOutPMWSprite[i], 2);
-				ituWidgetSetPosition(mainLQualityOutPMWSprite[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
-				ituWidgetSetPosition(mainLQualityOutPMWButton[i], xQtyValue[i] + 44, pQtyValue[i] + 34);
+				{
+					ituIconLinkSurface(mainLQualityOutPMWIcon[i], mainLQualityIcon[2]);
+					OutPMWeekColor[i] = 2;
+				}
+				OutPMWeekH[i] = 302 - pQtyValue[i];
+				ituWidgetSetPosition(mainLQualityOutPMWIcon[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
+				ituWidgetSetPosition(mainLQualityOutPMWButton[i], xQtyValue[i] + x_offset, pQtyValue[i] + y_offset);
 
 				if (pQtyValue[i + 1]>250)
-					ituSpriteGoto(mainLQualityOutPMWSprite[i + 1], 0);
-				else if (pQtyValue[i + 1]>190)
-					ituSpriteGoto(mainLQualityOutPMWSprite[i + 1], 1);
+				{
+					ituIconLinkSurface(mainLQualityOutPMWIcon[i + 1], mainLQualityIcon[0]);
+					OutPMWeekColor[i + 1] = 0;
+				}
+				else if (pQtyValue[i + 1] > 190)
+				{
+					ituIconLinkSurface(mainLQualityOutPMWIcon[i + 1], mainLQualityIcon[1]);
+					OutPMWeekColor[i + 1] = 1;
+				}
 				else
-					ituSpriteGoto(mainLQualityOutPMWSprite[i + 1], 2);
-				ituWidgetSetPosition(mainLQualityOutPMWSprite[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
-				ituWidgetSetPosition(mainLQualityOutPMWButton[i + 1], xQtyValue[i + 1] + 44, pQtyValue[i + 1] + 34);
+				{
+					ituIconLinkSurface(mainLQualityOutPMWIcon[i + 1], mainLQualityIcon[2]);
+					OutPMWeekColor[i + 1] = 2;
+				}
+				OutPMWeekH[i + 1] = 302 - pQtyValue[i + 1];
+				ituWidgetSetPosition(mainLQualityOutPMWIcon[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
+				ituWidgetSetPosition(mainLQualityOutPMWButton[i + 1], xQtyValue[i + 1] + x_offset, pQtyValue[i + 1] + y_offset);
 			}
 			break;
 		}
 
+		if (bgIcon)
+		{
+			bgSurf = ituCreateSurface(bgIcon->widget.rect.width - xQtyValue[6], pQtyValue[6], (bgIcon->widget.rect.width - xQtyValue[6]) * 2, bgIcon->surf->format, NULL, 0);
+			ituColorFill(bgSurf, 0, 0, bgSurf->width, bgSurf->height, &emptyColor);
+			ituBitBlt(bgIcon->surf, xQtyValue[6], 0, bgIcon->widget.rect.width, bgIcon->widget.rect.height, bgSurf, 0, 0);
+			ituDestroySurface(bgSurf);
+
+			drawTriangle((ITUWidget*)bgIcon, xQtyValue[6], pQtyValue[6], bgIcon->widget.rect.width, pQtyValue[6], bgIcon->widget.rect.width, pQtyValue[6] + 10, false);
+			ituDrawLine(pIcon->surf, xQtyValue[6], pQtyValue[6], pIcon->widget.rect.width, pQtyValue[6] + 10, &color, 5);
+		}
+
+		
 	}
 	return true;
+}
+
+void drawTriangle(ITUWidget* widget, int x0, int y0, int x1, int y1, int x2, int y2, bool up)
+{
+	ITUIcon* pIcon = (ITUIcon*)widget;
+	ITUColor emptyColor = { 255, 157, 193, 242 };
+
+	int i;
+	float theta = atan((double)(x1 - x0) / (y2 - y0));
+	float d = sqrt(pow(x1 - x0, 2) + pow(y2 - y0, 2));
+	int x;
+	
+
+	if (pIcon)
+	{
+		for (i = 0; i < (y2 - y0 + 1); i++)
+		{
+			x = d*(y2 - y0 + 1 - i) / (y2 - y0 + 1)*sin(theta);
+
+			if (up)
+				ituDrawLine(pIcon->surf, x0, y0 + i, x0 + x, y0 + i, &emptyColor, 5);
+			else
+				ituDrawLine(pIcon->surf, x1 - x, y0 + i, x1, y0 + i, &emptyColor, 5);
+
+		}
+
+	}
+}
+void GotoPowerOff(void)
+{
+	if (!powerOffLayer)
+	{
+		powerOffLayer = ituSceneFindWidget(&theScene, "powerOffLayer");
+		assert(powerOffLayer);
+	}
+	powerOffTimeIndex = -1;
+	powerOffTmHr = 0;
+	powerOffTmMin = 0;
+
+	ituLayerGoto(powerOffLayer);
+
 }

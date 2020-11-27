@@ -7,143 +7,26 @@
 #include "ite/itp.h"
 #include "sys/ioctl.h"
 
-/* widgets:
-specialLayer
-specialAirForceBackground
-Background93
-RadioBox336
-Text102
-Background104
-RadioBox335
-Text109
-Background111
-specialAirForceRadioBox0
-Text272
-BackgroundButton274
-Text276
-specialStaticPressureDoneBackground
-BackgroundButton375
-Text164
-Icon163
-specialStaticPressureOperateBackground
-specialStaticPressureOperateProgressBar
-Text380
-Text378
-specialStaticPressureManualBackground
-Background390
-Text392
-specialStaticPressureManualText
-specialStaticPressureManualMinusButton
-specialStaticPressureManualPlusButton
-Background387
-specialStaticPressureManualEnterButton
-specialStaticPressureManualCancelButton
-Text386
-specialStaticPressureBackground
-Background242
-specialStaticPressureEnterButton
-specialStaticPressureCancelButton
-Background368
-Text374
-specialStaticPressureRadioBox1
-Text370
-Background371
-specialStaticPressureRadioBox0
-Text373
-Text367
-specialPositivePressureManualBackground
-Background481
-specialPositivePressureManualEnterButton
-specialPositivePressureManualCancelButton
-Background476
-Text477
-specialPositivePressureManualText
-specialPositivePressureManualMinusButton
-specialPositivePressureManualPlusButton
-Background485
-specialPositivePressureManualRadioBox1
-specialPositivePressureManualRadioBox0
-Text484
-specialMicroPositivePressureBackground
-BackgroundButton427
-Background428
-specialMicroPositivePressureRadioBox2
-Text435
-Background436
-specialMicroPositivePressureRadioBox1
-Text450
-Background451
-specialMicroPositivePressureRadioBox0
-Text453
-Text454
-specialPositivePressureBackground
-BackgroundButton410
-Background405
-specialPositivePressureFanText
-Text415
-specialPositivePressureExhaustText
-Text425
-specialPositivePressureRadioBox2
-Text409
-Background397
-specialMicroPositivePressureSprite
-Text412
-Text411
-Text398
-specialPositivePressureRadioBox1
-Text400
-Background401
-specialPositivePressureRadioBox0
-Text403
-Text404
-specialBackground
-Background72
-specialAirForceSprite
-Text18
-Text17
-Text12
-specialAirForceButton
-Text76
-Button95
-Background68
-specialStaticPressureSprite
-specialStaticPressureText
-Text29
-specialStaticPressureButton
-Text70
-Button94
-Background7
-specialPostivePressureSprite
-Text90
-Text89
-Text33
-specialPositivePressureButton
-Text67
-Button93
-specialBackgroundButton
-Text108
-*/
+static ITUSprite* specialPostivePressureSprite = 0;
+static ITUSprite* specialStaticPressureSprite = 0;
+static ITUText* specialStaticPressureText = 0;
+static ITUSprite* specialAirForceSprite = 0;
 
-ITUSprite* specialPostivePressureSprite = 0;
-ITUSprite* specialStaticPressureSprite = 0;
-ITUText* specialStaticPressureText = 0;
-ITUSprite* specialAirForceSprite = 0;
+static ITURadioBox* specialPositivePressureRadioBox[3] = { 0 };
+static ITUSprite* specialMicroPositivePressureSprite = 0;
+static ITUText* specialPositivePressureExhaustText = 0;
+static ITUText* specialPositivePressureFanText = 0;
+static ITURadioBox* specialMicroPositivePressureRadioBox[3] = { 0 };
+static ITUText* specialPositivePressureManualText = 0;
 
-ITURadioBox* specialPositivePressureRadioBox[3] = { 0 };
-ITUSprite* specialMicroPositivePressureSprite = 0;
-ITUText* specialPositivePressureExhaustText = 0;
-ITUText* specialPositivePressureFanText = 0;
-ITURadioBox* specialMicroPositivePressureRadioBox[3] = { 0 };
-ITUText* specialPositivePressureManualText = 0;
+static ITURadioBox* specialStaticPressureRadioBox[2] = { 0 };
+static ITUText* specialStaticPressureManualValueText = 0;
+static ITUText* specialStaticPressureManualText = 0;
+static ITUProgressBar* specialStaticPressureOperateProgressBar = 0;
+static ITUBackground* specialStaticPressureOperateBackground = 0;
+static ITUBackground* specialStaticPressureDoneBackground = 0;
 
-ITURadioBox* specialStaticPressureRadioBox[2] = { 0 };
-ITUText* specialStaticPressureManualValueText = 0;
-ITUText* specialStaticPressureManualText = 0;
-ITUProgressBar* specialStaticPressureOperateProgressBar = 0;
-ITUBackground* specialStaticPressureOperateBackground = 0;
-ITUBackground* specialStaticPressureDoneBackground = 0;
-
-ITURadioBox* specialAirForceRadioBox[3] = { 0 };
+static ITURadioBox* specialAirForceRadioBox[3] = { 0 };
 
 static int positivePressureIndex = 0;
 static int staticPressureIndex = 1;
@@ -523,3 +406,12 @@ bool SpecialPositivePressureBtnOnMouseUp(ITUWidget* widget, char* param)
     return true;
 }
 
+bool SpecialBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(1);
+
+	ituLayerGoto(layer);
+	return true;
+}

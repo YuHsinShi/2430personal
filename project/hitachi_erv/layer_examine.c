@@ -10,21 +10,21 @@
 
 #define EXAM_REC_STOPANYWHERE_H 530
 
-ITUText* examineSubTitleText = 0;
-ITUText* examineValueTitleText = 0;
-ITUText* examineValueText[7] = { 0 };
-ITURadioBox* examineSubRadioBox[16] = { 0 };
+static ITUText* examineSubTitleText = 0;
+static ITUText* examineValueTitleText = 0;
+static ITUText* examineValueText[7] = { 0 };
+static ITURadioBox* examineSubRadioBox[16] = { 0 };
 
-ITUStopAnywhere* examineRecordStopAnywhere = 0;
-ITUContainer* examineRecordAllContainer = 0;
-ITUContainer* examineRecordTmpContainer = 0;
+static ITUStopAnywhere* examineRecordStopAnywhere = 0;
+static ITUContainer* examineRecordAllContainer = 0;
+static ITUContainer* examineRecordTmpContainer = 0;
 
-ITUText* examineShowModelText = 0;
+static ITUText* examineShowModelText = 0;
 
-ITUSprite* examineModelTestResultSprite[3] = { 0 };
-ITUText* examineModelTestResultText[3] = { 0 };
+static ITUSprite* examineModelTestResultSprite[3] = { 0 };
+static ITUText* examineModelTestResultText[3] = { 0 };
 
-ITUText* examineSelfTestText = 0;
+static ITUText* examineSelfTestText = 0;
 
 typedef struct
 {
@@ -35,7 +35,7 @@ typedef struct
 	ITUText* noText;
 
 }EXAMINERecordSet;
-EXAMINERecordSet examineRecordSet[EXAM_REC_MAX_ITEM];
+static EXAMINERecordSet examineRecordSet[EXAM_REC_MAX_ITEM];
 
 static int examineIndex = 0;
 static int examineSubAddrIndex = 0;
@@ -319,5 +319,14 @@ bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param)
 		ituTextSetString(examineModelTestResultText[i], tmp);
 	}
 
+	return true;
+}
+bool ExamineBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(1);
+
+	ituLayerGoto(layer);
 	return true;
 }

@@ -1,10 +1,8 @@
 add_executable(${CMAKE_PROJECT_NAME}
     layer_main.c
-    layer_attach.c
     layer_filter.c
     layer_emergency.c
     layer_warning.c
-	layer_common_tool.c
 	layer_screen_lock.c
 	layer_timing.c
 	layer_setting.c
@@ -13,4 +11,8 @@ add_executable(${CMAKE_PROJECT_NAME}
 	layer_trial_run.c
 	layer_special.c
 	layer_setting_wifi_password.c
+	layer_power_off_setting.c
+	layer_power_off_timing.c
+	layer_consult.c
+	layer_download.c
     )

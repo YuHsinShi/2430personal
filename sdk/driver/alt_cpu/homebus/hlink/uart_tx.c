@@ -326,7 +326,7 @@ void init_tx_deal(void)
     {
       initialize_cnt=0;
       initialize_step++;
-     
+     printf("initialize_step=%d\r\n",initialize_step);
       switch(initialize_step)
       {
       case 1:         
@@ -364,6 +364,8 @@ void init_tx_deal(void)
       case 5:
             //if((line_control_double)&&(master_flag==0))line_group_message_tx=1;
             //else group_message_tx=1;
+            //printf("total_machine=(%d)",total_machine);
+			
             group_message_tx=1;
             already_tx_nuber=0;
             tx_system_nuber1=basedata[already_tx_nuber][1];tx_dress_nuber1=basedata[already_tx_nuber][2];
@@ -418,6 +420,7 @@ void tx_ack_next_deal(void)
   
   if(next_tx_flag==0)return;
   
+  printf("ok3");
 
                 
   if(next_tx_flag==TIMEING_TX)
@@ -895,6 +898,53 @@ unsigned char get_index(void)
 }
 /********************************************************************************
 ********************************************************************************/
+void system_option_check(void)
+{
+  unsigned char i,j,k,l,i2,i3;
+  unsigned int  room2g,room3g,room2g5;
+  
+  /*
+    total_machine=1;
+    basedata[0][1]=0x01;
+    basedata[0][2]=0x01;
+   
+ 
+  basedata[0][30]|=0x04;//节能 
+  basedata[0][30]|=0x01;//睡眠 
+  //basedata[0][31]|=0x01;//人感
+  basedata[0][31]|=0x02;//静音
+  basedata[0][31]|=0x10;//辅电
+  basedata[0][31]|=0x20;//健康
+  basedata[0][37]|=0x08;//森林风
+  basedata[0][37]|=0x10;//自清洁
+  basedata[0][42]|=0x01;//强力
+  basedata[0][42]|=0x10;//高温杀菌
+   */
+
+
+  
+  //室内机世代判定
+  if(total_machine)
+  {
+    room2g=0;room3g=0;room2g5=0;
+    for(i=0;i<total_machine;i++)
+    {
+      if(basedata[i][28]&0x80)room2g|=(0x0001<<i);
+      if(basedata[i][28]&0x03)room3g|=(0x0001<<i);
+      if(basedata[i][28]&0x10)room2g5|=(0x0001<<i);
+    }
+    inroom_2g_protocol=room2g;
+    inroom_3g_protocol=room3g;
+    inroom_2g5_protocol=room2g5;
+  }
+
+}
+
+/********************************************************************************
+********************************************************************************/
+
+
+
 void tx_deal(void)
 {
 	unsigned char i;
@@ -909,7 +959,10 @@ void tx_deal(void)
 		tx_dress_nuber2=0x04;
 	}
   */       
-         tx_ack_next_deal();
+         //tx_ack_next_deal();
+         system_option_check();
+		 
+
          
          
          if((tx_data_flag[0].data==0)&&(tx_data_flag[1].data==0)&&(tx_data_flag[2].data==0)&&(tx_data_flag[3].data==0))return;
@@ -948,6 +1001,7 @@ void tx_deal(void)
 		TxFuncPtr=TXTab[Index].CurrentOperate;
 		(*TxFuncPtr)();//执行当前按键的操作
 		
+			printf("tx_deal index= %d\n",Index);
 
 			//TODO: send data
 			//tx_total: toatal data send
@@ -963,11 +1017,12 @@ void tx_deal(void)
 
 
 		}
-					
-        
-	
-	next_tx_flag=tx_finish_flag; 
-	tx_finish_flag=0;
+		next_tx_flag=tx_finish_flag; 
+		tx_finish_flag=0;
+
+
+
+
 
 
 
@@ -1026,13 +1081,13 @@ void tx_data_table(void)
 unsigned char tt_nuber_dress(void)
 {
   unsigned char i,j;
-  
+  printf("tt_nuber_dress total_machine =%d\n",total_machine);
      for(i=0;i<total_machine;i++)
       {
- 	if((basedata[i][1]==tx_data[5])&&(basedata[i][2]==tx_data[6]))
- 	{
- 	  j=i;
- 	}
+		 	if((basedata[i][1]==tx_data[5])&&(basedata[i][2]==tx_data[6]))
+		 	{
+		 	  j=i;
+		 	}
       }
      
      return j;
@@ -3659,7 +3714,7 @@ void system_tx_check(void)
   
   
   
-  if(tx_short_flag.data||tx_data_flag[0].data||tx_data_flag[1].data||tx_data_flag[2].data||tx_data_flag[3].data) return;
+  if(tx_data_flag[0].data||tx_data_flag[1].data||tx_data_flag[2].data||tx_data_flag[3].data) return;
   
   //浠庡埆鐨勭嚎鎺у櫒鍙戞潵鐨勫懡浠わ紝褰撴湰韬负浜叉椂锛屽彧缁欏鍐呮満鍙戦�佸熀鏈牸寮忥紝褰撲负瀛愭椂锛屽厛缁欎翰绾挎帶鍣ㄥ彂閫佸熀鏈ā寮?
   if(line_change_flag)
@@ -3693,6 +3748,7 @@ void system_tx_check(void)
       tx_system_nuber1=basedata[already_tx_nuber][1];tx_dress_nuber1=basedata[already_tx_nuber][2];
       tx_system_nuber2=basedata[already_tx_nuber][1];tx_dress_nuber2=basedata[already_tx_nuber][2];
     }
+	printf("ok8");
   }
   else if(tx_systemon_flag)
   {

@@ -758,8 +758,12 @@ int SceneRun(void)
                         lastx   = ev.tfinger.x;
                         lasty   = ev.tfinger.y;
                     }
-                    if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-                        AudioPlayKeySound();
+					if (keySound)
+					{
+						if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
+							AudioPlayKeySound();
+					}
+                    
 
     #ifdef CFG_SCREENSHOT_ENABLE
                     if (ev.tfinger.x < 50 && ev.tfinger.y > CFG_LCD_HEIGHT - 50)
@@ -830,7 +834,10 @@ int SceneRun(void)
             }
             result |= ituSceneUpdate(&theScene, ITU_EVENT_TIMER, 0, 0, 0);
             //printf("%d\n", result);
-            if (result)
+			//#ifndef _WIN32
+            //if (result)
+			if (1)
+			//#endif
             {
                 ituSceneDraw(&theScene, screenSurf);
                 ituFlip(screenSurf);

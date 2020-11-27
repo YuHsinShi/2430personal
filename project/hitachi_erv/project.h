@@ -34,6 +34,14 @@ int TVOCIn;
 double HCHOIn;
 int modeIndex;
 bool timingSet;
+bool powerOffTimingSet;
+int powerOnTimeIndex;
+int powerOnTmHr;
+int powerOnTmMin;
+
+int powerOffTimeIndex;
+int powerOffTmHr;
+int powerOffTmMin;
 
 int mode_show[MODESHOW_NUM];
 int attach_show[ATTACH_NUM];
@@ -42,10 +50,15 @@ int examineDayRecord[EXAM_REC_MAX_ITEM][3];
 int examineTimeRecord[EXAM_REC_MAX_ITEM][2];
 int examineAddrRecord[EXAM_REC_MAX_ITEM];
 int examineNoRecord[EXAM_REC_MAX_ITEM];
+bool keySound;
 
 bool wifi_connected;
+int	 wifi_status;//check wifi status 0-connect 1- warning 2-disconnect
 
-
+bool indicatorLightEnable;
+bool lightAuto;
+int screenLight;
+int indLight;
 /**
 * Initializes screen module.
 */
@@ -315,6 +328,9 @@ typedef struct
 	int def_brightness;
 	int def_screensaver_time;
 	int def_screensaver_type;
+
+	//examine
+	int examine_pw;
 
 } Config;
 

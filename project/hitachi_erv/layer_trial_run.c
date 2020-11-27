@@ -9,24 +9,24 @@
 
 
 
-ITUText* trialRunTrialNumText = 0;
-ITURadioBox* trialRunTrialAirForceRadioBox[3] = { 0 };
-ITUSprite* trialRunTrialAirForceTextSprite = 0;
-ITUWheel* trialRunTrialTimeWheel = 0;
-ITUText* trialRunTrialTimeText = 0;
-ITUWheel* trialRunTrialFreqWheel = 0;
-ITUText* trialRunTrialFreqText = 0;
-ITUSprite* trialRunModelSelectValueTitleSprite = 0;
-ITUText* trialRunModelSelectValueTitleText = 0;
-ITURadioBox* trialRunModelSelectItemRadioBox[7][2] = { 0 };
-ITUSprite* trialRunInputOutputValueTitleSprite = 0;
-ITUText* trialRunInputOutputValueTitleText = 0;
-ITURadioBox* trialRunInputOutputItemRadioBox[5][2] = { 0 };
-ITURadioBox* trialRunAddrUpdateRadioBox[16] = { 0 };
-ITUText* trialRunAddrUpdateSText = 0;
-ITUText* trialRunAddrUpdateAText = 0;
-ITURadioBox* trialRunAddrUpdateSRadioBox = 0;
-ITURadioBox* trialRunAddrUpdateARadioBox = 0;
+static ITUText* trialRunTrialNumText = 0;
+static ITURadioBox* trialRunTrialAirForceRadioBox[3] = { 0 };
+static ITUSprite* trialRunTrialAirForceTextSprite = 0;
+static ITUWheel* trialRunTrialTimeWheel = 0;
+static ITUText* trialRunTrialTimeText = 0;
+static ITUWheel* trialRunTrialFreqWheel = 0;
+static ITUText* trialRunTrialFreqText = 0;
+static ITUSprite* trialRunModelSelectValueTitleSprite = 0;
+static ITUText* trialRunModelSelectValueTitleText = 0;
+static ITURadioBox* trialRunModelSelectItemRadioBox[7][2] = { 0 };
+static ITUSprite* trialRunInputOutputValueTitleSprite = 0;
+static ITUText* trialRunInputOutputValueTitleText = 0;
+static ITURadioBox* trialRunInputOutputItemRadioBox[5][2] = { 0 };
+static ITURadioBox* trialRunAddrUpdateRadioBox[16] = { 0 };
+static ITUText* trialRunAddrUpdateSText = 0;
+static ITUText* trialRunAddrUpdateAText = 0;
+static ITURadioBox* trialRunAddrUpdateSRadioBox = 0;
+static ITURadioBox* trialRunAddrUpdateARadioBox = 0;
 
 static int trialAirForce = 0;
 static int trialTime = 43;
@@ -513,5 +513,15 @@ bool TrialRunAddrUpdateBtnOnMouseUp(ITUWidget* widget, char* param)
 		ituTextSetString(&trialRunAddrUpdateRadioBox[i]->checkbox.btn.text, tmp);
 	}
 
+	return true;
+}
+
+bool TrialRunBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(1);
+
+	ituLayerGoto(layer);
 	return true;
 }

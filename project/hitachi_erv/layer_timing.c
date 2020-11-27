@@ -40,48 +40,44 @@ typedef struct
 
 } RESTSet;
 
-WEEKSet weekSet[MAX_WEEK_COUNT];
-RESTSet restSet[MAX_REST_COUNT];
+static WEEKSet weekSet[MAX_WEEK_COUNT];
+static RESTSet restSet[MAX_REST_COUNT];
 
-ITUText* timingSingleTimeText0 = 0;
-ITUCheckBox* timingSingleCheckBox0 = 0;
-ITUWheel* timingSingleSettingHrWheel = 0;
-ITUSprite* timingSingleTimeSprite = 0;
-ITUSprite* timingSingleSettingSprite = 0;
+static ITUText* timingSingleTimeText0 = 0;
+static ITUCheckBox* timingSingleCheckBox0 = 0;
+static ITUWheel* timingSingleSettingHrWheel = 0;
+static ITUSprite* timingSingleTimeSprite = 0;
+static ITUSprite* timingSingleSettingSprite = 0;
 
-ITUStopAnywhere* timingWeekStopAnywhere = 0;
-ITUContainer* timingWeekAllContainer = 0;
-ITUContainer* timingWeekAddContainer = 0;
-ITUBackground* timingWeekSettingBackground = 0;
-ITUBackground* timingWeekSettingRadioBoxBackground[2] = { 0 };
-ITUIcon* timingWeekSettingRadBoxBgIcon[2] = { 0 };
-ITURadioBox* timingWeekSettingRadioBox[2] = { 0 };
-ITUText* timingWeekSettingTimeText = 0;
-ITUContainer* timingWeekSettingDayTextContainer = 0;
-ITUText* timingWeekSettingDayText[8] = { 0 };
-ITUText* timingWeekSettingTempText = 0;
-ITUWheel* timingWeekSettingTimeHrWheel = 0;
-ITUWheel* timingWeekSettingTimeMinWheel = 0;
-ITUCheckBox* timingWeekSettingDayCheckBox[7] = { 0 };
-ITUWheel* timingWeekSettingTempWheel = 0;
+static ITUStopAnywhere* timingWeekStopAnywhere = 0;
+static ITUContainer* timingWeekAllContainer = 0;
+static ITUContainer* timingWeekAddContainer = 0;
+static ITUBackground* timingWeekSettingBackground = 0;
+static ITUBackground* timingWeekSettingRadioBoxBackground[2] = { 0 };
+static ITUIcon* timingWeekSettingRadBoxBgIcon[2] = { 0 };
+static ITURadioBox* timingWeekSettingRadioBox[2] = { 0 };
+static ITUText* timingWeekSettingTimeText = 0;
+static ITUContainer* timingWeekSettingDayTextContainer = 0;
+static ITUText* timingWeekSettingDayText[8] = { 0 };
+static ITUWheel* timingWeekSettingTimeHrWheel = 0;
+static ITUWheel* timingWeekSettingTimeMinWheel = 0;
+static ITUCheckBox* timingWeekSettingDayCheckBox[7] = { 0 };
 
-ITUStopAnywhere* timingRestStopAnywhere = 0;
-ITUContainer* timingRestAllContainer = 0;
-ITUContainer* timingRestAddContainer = 0;
-ITUBackground* timingRestSetttingBackground = 0;
-ITUWheel* timingRestSettingYearWheel = 0;
-ITUWheel* timingRestSettingMonthWheel = 0;
-ITUWheel* timingRestSettingDayWheel = 0;
+static ITUStopAnywhere* timingRestStopAnywhere = 0;
+static ITUContainer* timingRestAllContainer = 0;
+static ITUContainer* timingRestAddContainer = 0;
+static ITUBackground* timingRestSetttingBackground = 0;
+//static ITUWheel* timingRestSettingYearWheel = 0;
+static ITUWheel* timingRestSettingMonthWheel = 0;
+static ITUWheel* timingRestSettingDayWheel = 0;
 
-ITUContainer* timingTmpWeekContainer = 0;
-ITUContainer* timingTmpRestContainer = 0;
+static ITUContainer* timingTmpWeekContainer = 0;
+static ITUContainer* timingTmpRestContainer = 0;
 
 static int SingleTimeHrIndex = 10;
 
 static int weekItemIndex = 0;
 static int weekTotalItem = 2;
-static int tmpWeekTempIndex = 0;
-static int WeekTempIndex[MAX_WEEK_COUNT] = { 21, 21 };
 static int tmpWeekTimeHrIndex = 0;
 static int WeekTimeHrIndex[MAX_WEEK_COUNT] = { 10, 14 };
 static int tmpWeekTimeMinIndex = 0;
@@ -90,7 +86,7 @@ static int tmpWeekDay[8] = {0};
 static int WeekDay[MAX_WEEK_COUNT][8] = { { 1, 1, 1, 1, 1, 1, 1, 1 }, { 1, 1, 1, 1, 1, 1, 0, 0 } };
 static bool tmpPowerOn = false;
 static bool PowerOn[MAX_WEEK_COUNT] = { false, true };
-int weekAllContainerHeight;
+static int weekAllContainerHeight;
 static bool addingWeek = false;
 
 static int restItemIndex = 0;
@@ -98,7 +94,7 @@ static int restTotalItem = 4;
 static int restYearIndex[MAX_REST_COUNT] = { 2020, 2020, 2020, 2020 };
 static int restMonthIndex[MAX_REST_COUNT] = { 3, 5, 5, 5 };
 static int restDayIndex[MAX_REST_COUNT] = { 8, 1, 2, 3 };
-int restAllContainerHeight;
+static int restAllContainerHeight;
 static bool addingRest = false;
 
 bool TimingOnEnter(ITUWidget* widget, char* param)
@@ -106,7 +102,7 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 	int i, j, dayItemCnt,W;
 	char tmp[64];
 
-	ITCTree* node;
+	//ITCTree* node;
 
 	if (!timingSingleTimeText0)
 	{
@@ -143,17 +139,12 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 		timingWeekSettingDayTextContainer = ituSceneFindWidget(&theScene, "timingWeekSettingDayTextContainer");
 		assert(timingWeekSettingDayTextContainer);
 
-		timingWeekSettingTempText = ituSceneFindWidget(&theScene, "timingWeekSettingTempText");
-		assert(timingWeekSettingTempText);
-
 		timingWeekSettingTimeHrWheel = ituSceneFindWidget(&theScene, "timingWeekSettingTimeHrWheel");
 		assert(timingWeekSettingTimeHrWheel);
 
 		timingWeekSettingTimeMinWheel = ituSceneFindWidget(&theScene, "timingWeekSettingTimeMinWheel");
 		assert(timingWeekSettingTimeMinWheel);
 
-		timingWeekSettingTempWheel = ituSceneFindWidget(&theScene, "timingWeekSettingTempWheel");
-		assert(timingWeekSettingTempWheel);
 
 		for (i = 0; i < 2; i++)
 		{
@@ -243,8 +234,8 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 		timingRestSetttingBackground = ituSceneFindWidget(&theScene, "timingRestSetttingBackground");
 		assert(timingRestSetttingBackground);
 
-		timingRestSettingYearWheel = ituSceneFindWidget(&theScene, "timingRestSettingYearWheel");
-		assert(timingRestSettingYearWheel);
+		//timingRestSettingYearWheel = ituSceneFindWidget(&theScene, "timingRestSettingYearWheel");
+		//assert(timingRestSettingYearWheel);
 
 		timingRestSettingMonthWheel = ituSceneFindWidget(&theScene, "timingRestSettingMonthWheel");
 		assert(timingRestSettingMonthWheel);
@@ -308,6 +299,10 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 		ituTextSetString(timingSingleTimeText0, tmp);
 	}
 	
+	if (powerOffTimeIndex == -1)
+		ituCheckBoxSetChecked(timingSingleCheckBox0, false);
+	else
+		ituCheckBoxSetChecked(timingSingleCheckBox0, true);
 
 	for (i = 0; i < weekTotalItem; i++)
 	{
@@ -423,12 +418,12 @@ bool TimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 		ituTextSetString(timingSingleTimeText0, tmp);
 	}
 
-	ituCheckBoxSetChecked(timingSingleCheckBox0, true);
+	ituCheckBoxSetChecked(timingSingleCheckBox0, false);
 
 	return true;
 }
 
-bool TimingSingleSettingBtnOnPress(ITUWidget* widget, char* param)
+bool TimingSingleSettingBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 
 	ituWheelGoto(timingSingleSettingHrWheel, SingleTimeHrIndex);
@@ -462,10 +457,57 @@ bool TimingSingleSettingHrWheelOnChanged(ITUWidget* widget, char* param)
 
 bool TimingSingleChkBoxOnPress(ITUWidget* widget, char* param)
 {
+	struct timeval tv;
+	struct tm *tm;
+
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	if (ituCheckBoxIsChecked(timingSingleCheckBox0))
+	{
+		powerOffTimeIndex = SingleTimeHrIndex;
+
+
+
+		if (powerOffTimeIndex > 0)
+			powerOffTmHr = powerOffTimeIndex / 2;
+		else
+			powerOffTmHr = 0;
+
+		if (powerOffTimeIndex % 2 == 0)
+			powerOffTmMin = 30;
+		else
+		{
+			powerOffTmMin = 0;
+			powerOffTmHr++;
+		}
+
+
+		powerOffTmHr = tm->tm_hour + powerOffTmHr;
+		powerOffTmMin = tm->tm_min + powerOffTmMin;
+
+		if (powerOffTmMin > 60)
+		{
+			powerOffTmMin = powerOffTmMin - 60;
+			powerOffTmHr++;
+		}
+		if (powerOffTmHr > 24)
+		{
+			powerOffTmHr = powerOffTmHr - 24;
+		}
+
+	}
+	else
+	{
+		powerOffTimeIndex = -1;
+		powerOffTmHr = 0;
+		powerOffTmMin = 0;
+	}
 
 	return true;
 }
-bool TimingWeekSettingBtnOnPress(ITUWidget* widget, char* param)
+bool TimingWeekSettingBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	int i;
 	char tmp[32];
@@ -513,25 +555,15 @@ bool TimingWeekSettingBtnOnPress(ITUWidget* widget, char* param)
 	}
 	
 	
-	sprintf(tmp, "%02.1f", 18 + (0.5 * WeekTempIndex[weekItemIndex]));
-	ituTextSetString(timingWeekSettingTempText, tmp);
-	tmpWeekTempIndex = WeekTempIndex[weekItemIndex];
+	//sprintf(tmp, "%02.1f", 18 + (0.5 * WeekTempIndex[weekItemIndex]));
+	//ituTextSetString(timingWeekSettingTempText, tmp);
+	//tmpWeekTempIndex = WeekTempIndex[weekItemIndex];
 
 	timingWeekStopAnywhere->widget.flags &= ~ITU_DRAGGABLE;
 
 	return true;
 }
 
-bool TimingWeekSettingTempSaveBtnOnPress(ITUWidget* widget, char* param)
-{
-	char tmp[32];
-	tmpWeekTempIndex = timingWeekSettingTempWheel->focusIndex;
-	
-	sprintf(tmp, "%02.1f", 18 + (0.5 * tmpWeekTempIndex));
-	ituTextSetString(timingWeekSettingTempText, tmp);
-
-    return true;
-}
 
 bool TimingWeekSettingDaySaveBtnOnPress(ITUWidget* widget, char* param)
 {
@@ -649,7 +681,7 @@ bool TimingWeekSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 			ituWidgetSetVisible(weekSet[weekItemIndex].dayText[7], false);
 		}
 
-		WeekTempIndex[weekItemIndex] = tmpWeekTempIndex;
+		//WeekTempIndex[weekItemIndex] = tmpWeekTempIndex;
 
 		ituCheckBoxSetChecked(weekSet[weekItemIndex].selectCheckbox, true);
 
@@ -712,15 +744,7 @@ bool TimingWeekSettingDayBtnOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool TimingWeekSettingTempBtnOnPress(ITUWidget* widget, char* param)
-{
-
-	ituWheelGoto(timingWeekSettingTempWheel, tmpWeekTempIndex);
-	
-	return true;
-}
-
-bool TimingWeekAddBtnOnPress(ITUWidget* widget, char* param)
+bool TimingWeekAddBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	bool ret = false;
 	int i;
@@ -784,13 +808,15 @@ bool TimingWeekAddBtnOnPress(ITUWidget* widget, char* param)
 		
 		sprintf(id, "%d", weekTotalItem);
 		strcpy(settingBtn->actions[1].param, id);
+		strcpy(settingBtn->actions[5].param, id);
+		strcpy(settingBtn->actions[6].param, id);
 		strcpy(checkbox->btn.actions[0].param, id);
 		strcpy(deleteButton->actions[0].param, id);
 		strcpy(slideButton->actions[0].param, id);
 		strcpy(slideButton->actions[1].param, id); 
 
 		ituWidgetSetVisible(timingWeekSettingBackground, true);
-		TimingWeekSettingBtnOnPress(NULL, settingBtn->actions[1].param);
+		TimingWeekSettingBtnOnMouseUp(NULL, settingBtn->actions[1].param);
 
 		ret = true;
 
@@ -836,6 +862,8 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 		
 		sprintf(tmp, "%d", i);
 		strcpy(weekSet[i + 1].setButton->actions[1].param, tmp);
+		strcpy(weekSet[i + 1].setButton->actions[5].param, tmp);
+		strcpy(weekSet[i + 1].setButton->actions[6].param, tmp);
 		strcpy(weekSet[i + 1].selectCheckbox->btn.actions[0].param, tmp);
 		strcpy(weekSet[i + 1].deleteButton->actions[0].param, tmp);
 		strcpy(weekSet[i + 1].slideButton->actions[0].param, tmp);
@@ -849,7 +877,7 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 		{
 			WeekDay[i][j] = WeekDay[i + 1][j];
 		}
-		WeekTempIndex[i] = WeekTempIndex[i + 1];
+		//WeekTempIndex[i] = WeekTempIndex[i + 1];
 		weekSet[i] = weekSet[i + 1];
 	}
 
@@ -862,7 +890,7 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 	{
 		WeekDay[weekTotalItem-1][j] = 0;
 	}
-	WeekTempIndex[weekTotalItem-1] = 0;
+	//WeekTempIndex[weekTotalItem-1] = 0;
 
 
 	weekTotalItem--;
@@ -886,10 +914,21 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 {
 	char tmp[32];
 	bool save = atoi(param);
+	struct timeval tv;
+	struct tm *tm;
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
 
 	if (save)
 	{
-		if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+		if (timingRestSettingMonthWheel->focusIndex < tm->tm_mon)
+			restYearIndex[restTotalItem] = 2020 + 1;
+		else
+			restYearIndex[restTotalItem] = 2020;
+
+		//if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+		if ((restYearIndex[restTotalItem] % 4) == 0)
 		{
 			if (timingRestSettingMonthWheel->focusIndex == 1)
 			{
@@ -915,7 +954,7 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 		}
 
 
-		restYearIndex[restTotalItem] = timingRestSettingYearWheel->focusIndex + 2020;
+		//restYearIndex[restTotalItem] = timingRestSettingYearWheel->focusIndex + 2020;
 		sprintf(tmp, "%04d", restYearIndex[restTotalItem]);
 		ituTextSetString(restSet[restTotalItem].yearText, tmp);
 
@@ -955,10 +994,10 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool TimingRestAddBtnOnPress(ITUWidget* widget, char* param)
+bool TimingRestAddBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	bool ret = false;
-	int i;
+	//int i;
 	struct timeval tv;
 	struct tm *tm;
 
@@ -1021,7 +1060,7 @@ bool TimingRestAddBtnOnPress(ITUWidget* widget, char* param)
 		gettimeofday(&tv, NULL);
 		tm = localtime(&tv.tv_sec);
 
-		ituWheelGoto(timingRestSettingYearWheel, tm->tm_year - 120);//2020-1900
+		//ituWheelGoto(timingRestSettingYearWheel, tm->tm_year - 120);//2020-1900
 		ituWheelGoto(timingRestSettingMonthWheel, tm->tm_mon);//0-11
 		ituWheelGoto(timingRestSettingDayWheel, tm->tm_mday - 1);//1-31
 
@@ -1042,23 +1081,23 @@ bool TimingRestChkBoxOnPress(ITUWidget* widget, char* param)
 
 bool TimingRestSettingWheelOnChanged(ITUWidget* widget, char* param)
 {
-	if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
-	{
+	//if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+	//{
 		if (timingRestSettingMonthWheel->focusIndex == 1)
 		{
 			if (timingRestSettingDayWheel->focusIndex > 28)
 				ituWheelGoto(timingRestSettingDayWheel, 28);
 		}				
-	}
+	//}
 		
-	else
-	{
-		if (timingRestSettingMonthWheel->focusIndex == 1)
-		{
-			if (timingRestSettingDayWheel->focusIndex > 27)
-				ituWheelGoto(timingRestSettingDayWheel, 27);
-		}	
-	}
+	//else
+	//{
+	//	if (timingRestSettingMonthWheel->focusIndex == 1)
+	//	{
+	//		if (timingRestSettingDayWheel->focusIndex > 27)
+	//			ituWheelGoto(timingRestSettingDayWheel, 27);
+	//	}	
+	//}
 		
 
 	if ((timingRestSettingMonthWheel->focusIndex == 3) || (timingRestSettingMonthWheel->focusIndex == 5) || (timingRestSettingMonthWheel->focusIndex == 8) || (timingRestSettingMonthWheel->focusIndex == 10))

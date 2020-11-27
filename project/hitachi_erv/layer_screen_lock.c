@@ -15,30 +15,38 @@
 #include "ncp18_sensor.h"
 #endif
 
-ITULayer* mainLayer ;
-ITUCoverFlow* mainCoverFlow ;
+static ITULayer* mainLayer;
+static ITUCoverFlow* mainCoverFlow;
 
-ITUSprite* screenLockBackgroundSprite = 0;
-ITUText* screenLockTempText = 0;
-ITUText* screenLockPM25Text = 0;
-ITUText* screenLockCO2Text = 0;
-ITUText* screenLockTVOCText = 0;
-ITUText* screenLockHCHOText = 0;
-ITUSprite* screenLockWeatherIconSprite = 0;
-ITUSprite* screenLockWeatherSprite = 0;
+static ITUSprite* screenLockBackgroundSprite = 0;
+static ITUText* screenLockTempText = 0;
+static ITUText* screenLockCO2Text = 0;
+static ITUText* screenLockTVOCText = 0;
+static ITUText* screenLockPM25Text = 0;
+static ITUSprite* screenLockWeatherIconSprite = 0;
+static ITUSprite* screenLockWeatherSprite = 0;
+static ITUSprite* screenLockWeatherStatusSprite = 0;
 
-ITUCoverFlow* screenLockCoverFlow = 0;
-ITUButton* screenLockButton = 0;
-ITUContainer* screenLockContainer[3] = { 0 };
+static ITUCoverFlow* screenLockCoverFlow = 0;
+static ITUButton* screenLockButton = 0;
+static ITUContainer* screenLockContainer[3] = { 0 };
 
-int orgPosX = 0;
-int curPosX = 0;
+static ITUContainer* screenLockTimingTextContainer = 0;
+static ITUText* screenLockTimingText = 0;
 
-static int weatherIndex = 0;
+static ITULayer* powerOffLayer = 0;
+
+static int orgPosX = 0;
+static int curPosX = 0;
+
+static int weatherIndex = 2;
 
 void StopScreenLock(void);
 
 static int preTempIndex = 0;
+
+static int TimeSec = 0;
+double lastTime;
 
 static uint32_t gtTick = 0, gtLastTick = 0, gtRefreshTime = 3000;
 static bool gtTickFirst = true;
@@ -46,6 +54,8 @@ static bool gtTickFirst = true;
 #if defined(CFG_SHT20_ENABLE) || defined(CFG_NCP18_ENABLE)
 static float current_tmp_float = 0;
 #endif
+
+void screenLockGotoPowerOff(void);
 
 bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 {
@@ -75,16 +85,21 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 
 		screenLockTVOCText = ituSceneFindWidget(&theScene, "screenLockTVOCText");
 		assert(screenLockTVOCText);
-
-		screenLockHCHOText = ituSceneFindWidget(&theScene, "screenLockHCHOText");
-		assert(screenLockHCHOText);
-
+		
 		screenLockWeatherIconSprite = ituSceneFindWidget(&theScene, "screenLockWeatherIconSprite");
 		assert(screenLockWeatherIconSprite);
 
 		screenLockWeatherSprite = ituSceneFindWidget(&theScene, "screenLockWeatherSprite");
 		assert(screenLockWeatherSprite);
 
+		screenLockWeatherStatusSprite = ituSceneFindWidget(&theScene, "screenLockWeatherStatusSprite");
+		assert(screenLockWeatherStatusSprite);
+
+		screenLockTimingTextContainer = ituSceneFindWidget(&theScene, "screenLockTimingTextContainer");
+		assert(screenLockTimingTextContainer);
+
+		screenLockTimingText = ituSceneFindWidget(&theScene, "screenLockTimingText");
+		assert(screenLockTimingText);
 
 		for (i = 0; i < 3; i++)
 		{
@@ -105,8 +120,10 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 	sprintf(tmp, "%d", TVOCIn);
 	ituTextSetString(screenLockTVOCText, tmp);
 
-	sprintf(tmp, "%2.2f", HCHOIn);
-	ituTextSetString(screenLockHCHOText, tmp);
+	if (powerOffTimeIndex > -1)
+		ituWidgetSetVisible(screenLockTimingTextContainer, true);
+	else
+		ituWidgetSetVisible(screenLockTimingTextContainer, false);
 
 
 	if (gtTickFirst)
@@ -165,6 +182,7 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 	ituSpriteGoto(screenLockBackgroundSprite, weatherIndex);
 	ituSpriteGoto(screenLockWeatherIconSprite, weatherIndex);
 	ituSpriteGoto(screenLockWeatherSprite, weatherIndex);
+	ituSpriteGoto(screenLockWeatherStatusSprite, 0);
 
 	orgPosX = ituWidgetGetX(screenLockContainer[1]);
 
@@ -179,6 +197,13 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 	bool ret = false;
 	int dist = 0;
 	char tmp[32];
+
+	struct timeval tv;
+	struct tm *tm;
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	int curSec = 59 - tm->tm_sec;
 
 	curPosX = ituWidgetGetX(screenLockContainer[1]);
 
@@ -244,7 +269,54 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 		ret = true;
 	}
 
+	if (powerOffTimeIndex != -1)
+	{
+		if (powerOffTmHr == tm->tm_hour && powerOffTmMin == tm->tm_min)
+		{
+			screenLockGotoPowerOff();
+		}
 
+
+		if (curSec != TimeSec)
+		{
+			TimeSec = curSec;
+
+			if (powerOffTmMin >= tm->tm_min)
+			{
+				lastTime = (double)(powerOffTmMin - tm->tm_min) / 60;
+
+				if (powerOffTmHr >= tm->tm_hour)
+				{
+					lastTime = lastTime + (powerOffTmHr - tm->tm_hour);
+				}
+				else
+				{
+					lastTime = lastTime + (powerOffTmHr + 24 - tm->tm_hour);
+				}
+			}
+			else
+			{
+				lastTime = (double)(powerOffTmMin + 60 - tm->tm_min) / 60;
+
+				if ((powerOffTmHr - 1) >= tm->tm_hour)
+				{
+					lastTime = lastTime + (powerOffTmHr - 1 - tm->tm_hour);
+				}
+				else
+				{
+					lastTime = lastTime + (powerOffTmHr + 23 - tm->tm_hour);
+				}
+
+			}
+
+
+			sprintf(tmp, "%2.1f", lastTime);
+			ituTextSetString(screenLockTimingText, tmp);
+
+			ret = true;
+		}
+
+	}
 	
 	return ret;
 }
@@ -262,3 +334,17 @@ void StopScreenLock(void)
 
 }
 
+void screenLockGotoPowerOff(void)
+{
+	if (!powerOffLayer)
+	{
+		powerOffLayer = ituSceneFindWidget(&theScene, "powerOffLayer");
+		assert(powerOffLayer);
+	}
+	powerOffTimeIndex = -1;
+	powerOffTmHr = 0;
+	powerOffTmMin = 0;
+
+	ituLayerGoto(powerOffLayer);
+
+}
