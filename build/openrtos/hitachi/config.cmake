@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Fri Nov 27 14:30:52 2020
+# Fri Nov 27 17:48:30 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -34,7 +34,7 @@ set(CFG_AUDIO_CODEC_MP3DEC y)
 set(CFG_AUDIO_CODEC_WMADEC y)
 set(CFG_AUDIO_CODEC_WAV y)
 set(CFG_COMPRESS_AUDIO_PLUGIN y)
-# CFG_VIDEO_ENABLE is not set
+set(CFG_VIDEO_ENABLE y)
 set(CFG_NOR_ENABLE y)
 set(CFG_NOR_USE_AXISPI y)
 set(CFG_NOR_ENABLE_QUADMODE y)
@@ -207,8 +207,8 @@ set(CFG_DEF_CFG_RELEASE y)
 #
 # Develop Environment
 #
-# CFG_DEV_DEVELOP is not set
-set(CFG_DEV_RELEASE y)
+set(CFG_DEV_DEVELOP y)
+# CFG_DEV_RELEASE is not set
 
 #
 # OpenRTOS
@@ -223,6 +223,8 @@ set(CFG_OPENRTOS_HEAP_SIZE "0")
 #
 set(CFG_CPU_FA626 y)
 # CFG_CPU_SM32 is not set
+# CFG_CHIP_REV_AW1 is not set
+set(CFG_CHIP_REV_AW2 y)
 set(CFG_CHIP_FAMILY_IT9860 y)
 # CFG_CHIP_PKG_IT9860 is not set
 # CFG_CHIP_PKG_888_66 is not set
@@ -308,7 +310,9 @@ set(CFG_AUDIO_SPECIAL_CASE_BUFFER_SIZE "64")
 # Video
 #
 # CFG_MPEGENCODER_ENABLE is not set
+# CFG_VIDEO_FRAME_FUN_ENABLE is not set
 # CFG_UVC_ENABLE is not set
+# CFG_MJPEG_DEC_ENABLE is not set
 
 #
 # Storage
@@ -544,8 +548,10 @@ set(CFG_BUILD_ITC y)
 set(CFG_BUILD_ZLIB y)
 
 #
-# ffmpeg (unvisible)
+# ffmpeg
 #
+# CFG_FFMPEG_ENC is not set
+# CFG_FFMPEG_H264_SW is not set
 
 #
 # (unvisible)
@@ -558,6 +564,7 @@ set(CFG_ITC_ERR y)
 set(CFG_ITC_WARN y)
 set(CFG_ITC_INFO y)
 # CFG_ITC_DBG is not set
+set(CFG_BUILD_FFMPEG y)
 
 #
 # (unvisible)

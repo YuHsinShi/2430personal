@@ -77,6 +77,7 @@ ITUIcon* mainAirForceTrackBarIcon = 0;
 ITUIcon* mainBarIcon[2] = { 0 };
 ITUBackground* mainAirForceTipShowBackground = 0;
 ITUText* mainAirForceTipShowText = 0;
+static ITUVideo* VideoBackGround;
 
 extern const int BgIndex[16] = {0,3,1,2,2,1,1,1,2,2,1,3,3,3,3,3};
 
@@ -375,6 +376,10 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			mainCAirFlowIcon[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(mainCAirFlowIcon[i]);
 		}
+
+
+
+
 
 	}
 
