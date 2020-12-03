@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Fri Nov 27 17:48:30 2020
+# Thu Dec 03 14:49:41 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -127,7 +127,7 @@ set(CFG_DBG_STATS_HEAP y)
 set(CFG_DEF_BUILD_MINSIZEREL y)
 set(CFG_SYSTEM_NAME "ITE Display Control Board")
 set(CFG_ITU_FT_CACHE_ENABLE y)
-set(CFG_ITU_FT_CACHE_SIZE "0xFA000")
+set(CFG_ITU_FT_CACHE_SIZE "0x3E8000")
 set(CFG_GCC_LTO y)
 set(CFG_BUILD_AUDIO_MGR y)
 set(CFG_BUILD_INIPARSER y)
