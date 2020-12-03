@@ -83,11 +83,17 @@ extern bool SettingTimeWheelOnChanged(ITUWidget* widget, char* param);
 extern bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingLightBtnOnSlideUp(ITUWidget* widget, char* param);
+extern bool SettingScreenLightTrackBarOnChanged(ITUWidget* widget, char* param);
+extern bool SettingIndLightTrackBarOnChanged(ITUWidget* widget, char* param);
+extern bool SettingLightAutoCheckBoxOnPress(ITUWidget* widget, char* param);
 extern bool SettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingScreenLockSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool SettingScreenLockRadBoxOnPress(ITUWidget* widget, char* param);
+extern bool SettingWarningLightCheckBoxOnPress(ITUWidget* widget, char* param);
 extern bool SettingWiFiBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool SettingWiFiSubBtnOnPress(ITUWidget* widget, char* param);
+extern bool SettingWiFiOpenCheckBoxOnPress(ITUWidget* widget, char* param);
+extern bool SettingKeySoundCheckBoxOnPress(ITUWidget* widget, char* param);
 
 extern bool ExamineOnEnter(ITUWidget* widget, char* param);
 extern bool ExamineSubEnterBtnOnPress(ITUWidget* widget, char* param);
@@ -232,11 +238,17 @@ ITUActionFunction actionFunctions[] =
 	"SettingTimeBtnOnMouseUp", SettingTimeBtnOnMouseUp,
 	"SettingLightBtnOnMouseUp", SettingLightBtnOnMouseUp,
 	"SettingLightBtnOnSlideUp", SettingLightBtnOnSlideUp,
+	"SettingScreenLightTrackBarOnChanged", SettingScreenLightTrackBarOnChanged,
+	"SettingIndLightTrackBarOnChanged", SettingIndLightTrackBarOnChanged,
+	"SettingLightAutoCheckBoxOnPress", SettingLightAutoCheckBoxOnPress,
 	"SettingScreenLockBtnOnMouseUp", SettingScreenLockBtnOnMouseUp,
 	"SettingScreenLockSaveBtnOnPress", SettingScreenLockSaveBtnOnPress,
 	"SettingScreenLockRadBoxOnPress", SettingScreenLockRadBoxOnPress,
+	"SettingWarningLightCheckBoxOnPress", SettingWarningLightCheckBoxOnPress,
 	"SettingWiFiBtnOnMouseUp", SettingWiFiBtnOnMouseUp,
 	"SettingWiFiSubBtnOnPress", SettingWiFiSubBtnOnPress,
+	"SettingWiFiOpenCheckBoxOnPress", SettingWiFiOpenCheckBoxOnPress,
+	"SettingKeySoundCheckBoxOnPress", SettingKeySoundCheckBoxOnPress,
 
 	"ExamineOnEnter", ExamineOnEnter,
 	"ExamineSubEnterBtnOnPress", ExamineSubEnterBtnOnPress,

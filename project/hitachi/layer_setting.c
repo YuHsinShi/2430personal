@@ -12,6 +12,7 @@
 
 
 ITUStopAnywhere* settingStopAnywhere = 0;
+ITUCheckBox* settingWarningLightCheckBox = 0;
 
 ITUText* settingWiFiSsidNameText = 0;
 ITUStopAnywhere* settingWiFiStopAnywhere = 0;
@@ -21,6 +22,7 @@ ITUBackground* settingWiFiAllBackground = 0;
 //ITUText* settingWiFiSsidNameSubText0 = 0;
 //ITUSprite* settingWiFiConnectSprite0 = 0;
 //ITUSprite* settingWiFiSignalSprite0 = 0;
+ITUCheckBox* settingWiFiOpenCheckBox = 0;
 
 ITUBackground* settingWiFiTmpBackground = 0;
 
@@ -33,6 +35,10 @@ ITUText* settingTimeText = 0;
 
 ITUCheckBox* settingLightAutoCheckBox = 0;
 
+ITUButton* settingLightButton = 0;
+ITUButton* settingLightButton1 = 0;
+ITUIcon* settingLightDisableIcon = 0;
+ITUIcon* settingLightEnableIcon = 0;
 ITUProgressBar* settingScreenLightProgressBar = 0;
 ITUTrackBar* settingScreenLightTrackBar = 0;
 ITUProgressBar* settingIndLightProgressBar = 0;
@@ -41,6 +47,8 @@ ITUIcon* settingLightTopBarBtnIcon[2] = { 0 };
 
 ITUSprite* settingScreenLockTimeSprite = 0;
 ITURadioBox* settingScreenLockRadioBox[3] = { 0 };
+ITUCheckBox* settingKeySoundCheckBox = 0;
+extern bool keySound = true;
 
 //wifi
 static bool settingWiFiReturnLayer = false;
@@ -225,6 +233,27 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		wifiSet[0].signalSprite = ituSceneFindWidget(&theScene, "settingWiFiSignalSprite0");
 		assert(wifiSet[0].signalSprite);
 
+		settingWiFiOpenCheckBox = ituSceneFindWidget(&theScene, "settingWiFiOpenCheckBox");
+		assert(settingWiFiOpenCheckBox);
+
+		settingWarningLightCheckBox = ituSceneFindWidget(&theScene, "settingWarningLightCheckBox");
+		assert(settingWarningLightCheckBox);
+		
+		settingKeySoundCheckBox = ituSceneFindWidget(&theScene, "settingKeySoundCheckBox");
+		assert(settingKeySoundCheckBox);
+
+		settingLightButton = ituSceneFindWidget(&theScene, "settingLightButton");
+		assert(settingLightButton);
+
+		settingLightButton1 = ituSceneFindWidget(&theScene, "settingLightButton1");
+		assert(settingLightButton1);
+
+		settingLightDisableIcon = ituSceneFindWidget(&theScene, "settingLightDisableIcon");
+		assert(settingLightDisableIcon);
+
+		settingLightEnableIcon = ituSceneFindWidget(&theScene, "settingLightEnableIcon");
+		assert(settingLightEnableIcon);
+		
 		for (i = 0; i < 2; i++)
 		{
 			sprintf(tmp, "settingLightTopBarBtnIcon%d", i);
@@ -266,9 +295,14 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		ituSpriteGoto(settingScreenLockTimeSprite, 2);
 	}
 
+	ituCheckBoxSetChecked(settingKeySoundCheckBox, keySound);
+	ituCheckBoxSetChecked(settingWarningLightCheckBox, indicatorLightEnable);
+	ituCheckBoxSetChecked(settingLightAutoCheckBox, lightAuto);
 //wifi
 	/* Auto reconnection after system reboot, check IP/MAC first time */
 	if (theConfig.wifi_on_off == WIFIMGR_SWITCH_ON) {
+		ituCheckBoxSetChecked(settingWiFiOpenCheckBox, true);
+		ituWidgetSetVisible(settingWiFiAllBackground, true);
 		//ituRadioBoxSetChecked(settingCloseWiFiRadioBox, false);
 		//ituRadioBoxSetChecked(settingOpenWiFiRadioBox, true);
 		//ituWidgetSetVisible(settingWiFiSsidContainer, true);
@@ -297,6 +331,8 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 #endif
 	}
 	else {
+		ituCheckBoxSetChecked(settingWiFiOpenCheckBox, false);
+		ituWidgetSetVisible(settingWiFiAllBackground, false);
 		//ituRadioBoxSetChecked(settingOpenWiFiRadioBox, false);
 		//ituRadioBoxSetChecked(settingCloseWiFiRadioBox, true);
 		//ituWidgetSetVisible(settingWiFiSsidContainer, false);
@@ -337,15 +373,18 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 
 #ifdef CFG_NET_WIFI_SDIO_NGPL
 	if (ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL)){
-		//if (ip[0] != 0)
+		if (ip[0] != 0)
 		//	ituSpriteGoto(topWiFiSprite, 2);
-		//else
+			wifi_status = 0;
+		else
 		//	ituSpriteGoto(topWiFiSprite, 1);
+			wifi_status = 1;
 	}
 	else
 #endif
 	{
 		//ituSpriteGoto(topWiFiSprite, 0);
+		wifi_status = 2;
 	}
 
 
@@ -520,28 +559,50 @@ bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param)
 
 bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param)
 {
+	ituProgressBarSetValue(settingScreenLightProgressBar, screenLight);
+	ituTrackBarSetValue(settingScreenLightTrackBar, screenLight);
+	ituProgressBarSetValue(settingIndLightProgressBar, indLight);
+	ituTrackBarSetValue(settingIndLightTrackBar, indLight);
+
+	if (!indicatorLightEnable)
+	{
+		ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[0]);
+
+		ituWidgetDisable(settingIndLightTrackBar);
+		ituWidgetSetVisible(settingIndLightProgressBar, false);
+	}
 
 	if (ituCheckBoxIsChecked(settingLightAutoCheckBox))
 	{
 		ituIconLinkSurface(&settingScreenLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[0]);
-		ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[0]);
+		//ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[0]);
 
 		ituWidgetDisable(settingScreenLightTrackBar);
 		ituWidgetSetVisible(settingScreenLightProgressBar, false);
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[0]);
 		ituWidgetDisable(settingIndLightTrackBar);
 		ituWidgetSetVisible(settingIndLightProgressBar, false);
+	}
 	}
 	else
 	{
 		ituIconLinkSurface(&settingScreenLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[1]);
-		ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[1]);
+		//ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[1]);
 
 		ituWidgetEnable(settingScreenLightTrackBar);
 		ituWidgetSetVisible(settingScreenLightProgressBar, true);
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&settingIndLightTrackBar->tracker->bg.icon, settingLightTopBarBtnIcon[1]);
 		ituWidgetEnable(settingIndLightTrackBar);
 		ituWidgetSetVisible(settingIndLightProgressBar, true);
 	}
 
+	}
 
 	settingStopAnywhere->widget.flags &= ~ITU_DRAGGABLE;
 
@@ -567,6 +628,40 @@ bool SettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param)
 	return true;
 }
 
+bool SettingIndLightTrackBarOnChanged(ITUWidget* widget, char* param)
+{
+	indLight = settingIndLightTrackBar->value;
+	return true;
+}
+
+bool SettingScreenLightTrackBarOnChanged(ITUWidget* widget, char* param)
+{
+	screenLight = settingScreenLightTrackBar->value;
+
+	printf("settingScreenLightTrackBar %d \n", settingScreenLightTrackBar->value);
+	ScreenSetBrightness(settingScreenLightTrackBar->value);
+
+	return true;
+}
+bool SettingLightAutoCheckBoxOnPress(ITUWidget* widget, char* param)
+{
+	if (ituCheckBoxIsChecked(settingLightAutoCheckBox))
+	{
+		lightAuto = true;
+		ituWidgetDisable(settingLightButton);
+		ituWidgetDisable(settingLightButton1);
+		ituIconLinkSurface(&settingLightButton1->bg.icon, settingLightDisableIcon);
+		
+	}
+	else
+	{
+		lightAuto = false;
+		ituWidgetEnable(settingLightButton);
+		ituWidgetEnable(settingLightButton1);
+		ituIconLinkSurface(&settingLightButton1->bg.icon, settingLightEnableIcon);
+	}
+	return true;
+}
 bool SettingScreenLockSaveBtnOnPress(ITUWidget* widget, char* param)
 {
 	bool save = atoi(param);
@@ -622,9 +717,22 @@ bool SettingScreenLockRadBoxOnPress(ITUWidget* widget, char* param)
 
 	return true;
 }
-
+bool SettingWarningLightCheckBoxOnPress(ITUWidget* widget, char* param)
+{
+	if (ituCheckBoxIsChecked(settingWarningLightCheckBox))
+	{
+		indicatorLightEnable = true;
+	}
+	else
+	{
+		indicatorLightEnable = false;
+	}
+	return true;
+}
 bool SettingWiFiBtnOnMouseUp(ITUWidget* widget, char* param)
 {
+	if (theConfig.wifi_on_off == WIFIMGR_SWITCH_ON)
+	{
 	//open WiFi
 	//get wifi AP data....
 	/*Eason*/
@@ -637,6 +745,7 @@ bool SettingWiFiBtnOnMouseUp(ITUWidget* widget, char* param)
 	/***************************************************/
 
 	showWiFiItem();
+	}
 
 //	int	i;
 //	int nRet;
@@ -699,8 +808,64 @@ bool SettingWiFiSubBtnOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
+bool SettingWiFiOpenCheckBoxOnPress(ITUWidget* widget, char* param)
+{
+	if (ituCheckBoxIsChecked(settingWiFiOpenCheckBox))
+	{
+		ituWidgetSetVisible(settingWiFiAllBackground, true);
+
+		//open WiFi
+		//get wifi AP data....
+		/*Eason*/
+		theConfig.wifi_mode = WIFIMGR_MODE_MAX;
+		theConfig.wifi_on_off = WIFIMGR_SWITCH_ON;
+
+#ifdef CFG_NET_WIFI
+		WifiMgr_clientMode_switch(theConfig.wifi_on_off);
+		gnApCount = wifiMgr_get_scan_ap_info(pList);
+#endif
+		/***************************************************/
+
+		showWiFiItem();
 
 
+	}
+	else
+	{
+		ituWidgetSetVisible(settingWiFiAllBackground, false);
+
+		//close WiFi
+		theConfig.wifi_on_off = WIFIMGR_SWITCH_OFF;
+		//ituSpriteGoto(topWiFiSprite, 0);
+		wifi_status = 2;
+#ifdef CFG_NET_WIFI
+		wifiMgr_clientMode_disconnect();
+		WifiMgr_clientMode_switch(theConfig.wifi_on_off);
+#ifdef CFG_NET_WIFI_SDIO_NGPL
+		ip_addr_set_zero(&xnetif[0].ip_addr);
+#endif
+#endif
+
+		memset(theConfig.ssid, 0, sizeof(theConfig.ssid));
+		memset(theConfig.password, 0, sizeof(theConfig.password));
+	}
+	ConfigSave();
+	return true;
+}
+
+
+bool SettingKeySoundCheckBoxOnPress(ITUWidget* widget, char* param)
+{
+	if (ituCheckBoxIsChecked(settingKeySoundCheckBox))
+	{
+		keySound = true;
+	}
+	else
+	{
+		keySound = false;
+	}
+	return true;
+}
 void showWiFiItem(void)
 {
 	int i;

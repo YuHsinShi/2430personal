@@ -40,7 +40,11 @@ ITUText*	airFlowHTipShowText = 0;
 ITUText*	airFlowVTipShowText = 0;
 ITUCheckBox*	airFlowAutoCheckBox = 0;
 ITUTrackBar*	airFlowHTrackBar = 0;
+ITUTrackBar*	airFlowHTrackBar1 = 0;
+ITUSprite*	airFlowHSprite = 0;
 ITUTrackBar*	airFlowVTrackBar = 0;
+ITUTrackBar*	airFlowVTrackBar1 = 0;
+ITUSprite*	airFlowVSprite = 0;
 ITURadioBox* airFlowRadioBox[2] = { 0 };
 ITUBackground* airFlowRadioBoxBackground[2] = { 0 };
 ITUIcon* airFlowRadioBoxBgIcon[2] = { 0 };
@@ -65,8 +69,20 @@ bool AirFlowOnEnter(ITUWidget* widget, char* param)
 		airFlowHTrackBar = ituSceneFindWidget(&theScene, "airFlowHTrackBar");
 		assert(airFlowHTrackBar);
 
+		airFlowHTrackBar1 = ituSceneFindWidget(&theScene, "airFlowHTrackBar1");
+		assert(airFlowHTrackBar1);
+
+		airFlowHSprite = ituSceneFindWidget(&theScene, "airFlowHSprite");
+		assert(airFlowHSprite);
+
 		airFlowVTrackBar = ituSceneFindWidget(&theScene, "airFlowVTrackBar");
 		assert(airFlowVTrackBar);
+		
+		airFlowVTrackBar1 = ituSceneFindWidget(&theScene, "airFlowVTrackBar1");
+		assert(airFlowVTrackBar1);
+
+		airFlowVSprite = ituSceneFindWidget(&theScene, "airFlowVSprite");
+		assert(airFlowVSprite);
 		
 		airFlowHTipShowBackground = ituSceneFindWidget(&theScene, "airFlowHTipShowBackground");
 		assert(airFlowHTipShowBackground);
@@ -121,6 +137,8 @@ bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param)
 	{
 		ituWidgetDisable(airFlowHTrackBar);
 		ituWidgetDisable(airFlowVTrackBar);
+		ituWidgetDisable(airFlowHTrackBar1);
+		ituWidgetDisable(airFlowVTrackBar1);
 		ituWidgetSetVisible(airFlowHTrackBar->tracker, false);
 		ituWidgetSetVisible(airFlowVTrackBar->tracker, false);
 
@@ -129,8 +147,12 @@ bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param)
 		ituTextSetString(airFlowHTipShowText, "A");
 		ituTextSetString(airFlowVTipShowText, "A");
 
-		ituTrackBarSetValue(airFlowHTrackBar, 3);
-		ituTrackBarSetValue(airFlowVTrackBar, 3);
+		ituTrackBarSetValue(airFlowHTrackBar, 4);
+		ituTrackBarSetValue(airFlowVTrackBar, 4);
+		ituTrackBarSetValue(airFlowHTrackBar1, 4);
+		ituTrackBarSetValue(airFlowVTrackBar1, 4);
+		ituSpriteGoto(airFlowHSprite, 4);
+		ituSpriteGoto(airFlowVSprite, 4);
 		ituWidgetGetGlobalPosition(airFlowHTrackBar->tip, &x, &y);
 		ituWidgetSetPosition(airFlowHTipShowBackground, x - 28, y - 505);
 		ituWidgetGetGlobalPosition(airFlowVTrackBar->tip, &x, &y);
@@ -141,6 +163,8 @@ bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param)
 	{
 		ituWidgetEnable(airFlowHTrackBar);
 		ituWidgetEnable(airFlowVTrackBar);
+		ituWidgetEnable(airFlowHTrackBar1);
+		ituWidgetEnable(airFlowVTrackBar1);
 		ituWidgetSetVisible(airFlowHTrackBar->tracker, true);
 		ituWidgetSetVisible(airFlowVTrackBar->tracker, true);
 
@@ -154,6 +178,10 @@ bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param)
 
 		ituTrackBarSetValue(airFlowHTrackBar, hAirFlow);
 		ituTrackBarSetValue(airFlowVTrackBar, vAirFlow);
+		ituTrackBarSetValue(airFlowHTrackBar1, hAirFlow);
+		ituTrackBarSetValue(airFlowVTrackBar1, vAirFlow);
+		ituSpriteGoto(airFlowHSprite, hAirFlow);
+		ituSpriteGoto(airFlowVSprite, vAirFlow);
 
 		ituWidgetGetGlobalPosition(airFlowHTrackBar->tip, &x, &y);
 		ituWidgetSetPosition(airFlowHTipShowBackground, x - 28, y - 505);

@@ -20,7 +20,7 @@ extern "C" {
 #define STATUS_NUM 12
 #define MOREMODE_NUM 16
 #define AIRFORCE_NUM 7
-#define MODESHOW_NUM 7
+#define MODESHOW_NUM 8
 #define EXAM_REC_MAX_ITEM 99
 
 bool temp_big_show[16];
@@ -47,9 +47,16 @@ int examineTimeRecord[EXAM_REC_MAX_ITEM][2];
 int examineAddrRecord[EXAM_REC_MAX_ITEM];
 int examineNoRecord[EXAM_REC_MAX_ITEM];
 int aiMode;
+
+bool keySound;
+
 bool wifi_connected;
+int	 wifi_status;//check wifi status 0-connect 1- warning 2-disconnect
 
-
+bool indicatorLightEnable;
+bool lightAuto;
+int screenLight;
+int indLight;
 /**
 * Initializes screen module.
 */

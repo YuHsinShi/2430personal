@@ -26,6 +26,7 @@ ITUContainer* screenLockTempBigContainer = 0;
 ITUText* screenLockTempValueText = 0;
 ITUText* screenLockTempPointText = 0;
 ITUIcon* screenLockModeShowIcon[MODESHOW_NUM] = { 0 };
+ITUSprite* screenLockModeShowIconSprite = 0;
 ITUContainer* screenLockHumidityContainer = 0;
 ITUText* screenLockHumidityText = 0;
 ITUContainer* screenLockContainer[3] = { 0 };
@@ -88,6 +89,9 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 		screenLockHumidityText = ituSceneFindWidget(&theScene, "screenLockHumidityText");
 		assert(screenLockHumidityText);
 		
+		screenLockModeShowIconSprite = ituSceneFindWidget(&theScene, "screenLockModeShowIconSprite");
+		assert(screenLockModeShowIconSprite);
+
 
 		for (i = 0; i < MODESHOW_NUM; i++)
 		{
@@ -207,16 +211,36 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 	{
 		if (mode_show[i])
 		{
+			if (i == 0)
+			{
+				ituWidgetSetPosition(screenLockModeShowIconSprite, modeshowPosX, 0);
+			}
+			else
+			{
 			ituWidgetSetPosition(screenLockModeShowIcon[i], modeshowPosX, 0);
+			}
+
 			modeshowNum++;
+			if (i != 7)
 			modeshowPosX = modeshowPosX + 46;
+			else
+				modeshowPosX = modeshowPosX + 88;
+		}
+		else
+		{
+			if (i == 0)
+			{
+				ituWidgetSetPosition(screenLockModeShowIconSprite, 0, 100);
 		}
 		else
 		{
 			ituWidgetSetPosition(screenLockModeShowIcon[i], 0, 100);
 		}
+		}
 
 	}
+
+	ituSpriteGoto(screenLockModeShowIconSprite, wifi_status);
 
 	return true;
 }

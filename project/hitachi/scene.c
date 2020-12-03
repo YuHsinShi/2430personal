@@ -758,9 +758,12 @@ int SceneRun(void)
                         lastx   = ev.tfinger.x;
                         lasty   = ev.tfinger.y;
                     }
-					//debug
+					if (keySound)
+					{
                     if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
                         AudioPlayKeySound();
+					}
+                    
 
     #ifdef CFG_SCREENSHOT_ENABLE
                     if (ev.tfinger.x < 50 && ev.tfinger.y > CFG_LCD_HEIGHT - 50)

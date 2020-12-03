@@ -102,7 +102,7 @@ bool AiAutoCheckBoxOnPress(ITUWidget* widget, char* param)
 		ituRadioBoxSetChecked(aiGoHomeRadioBox, false);
 		ituRadioBoxSetChecked(aiSleepRadioBox, false);
 		ituRadioBoxSetChecked(aiDefrostRadioBox, false);
-		mode_show[5] = 1;
+		mode_show[6] = 1;
 	}
 	else
 	{
@@ -115,7 +115,7 @@ bool AiAutoCheckBoxOnPress(ITUWidget* widget, char* param)
 		ituRadioBoxSetChecked(aiGoHomeRadioBox, false);
 		ituRadioBoxSetChecked(aiSleepRadioBox, false);
 		ituRadioBoxSetChecked(aiDefrostRadioBox, false);
-		mode_show[5] = 0;
+		mode_show[6] = 0;
 	}
     return true;
 }

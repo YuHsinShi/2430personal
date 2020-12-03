@@ -49,11 +49,14 @@ ITUBackgroundButton* mainCFilterBackgroundButton = 0;
 ITUBackgroundButton* mainCEmergencyBackgroundButton = 0;
 ITUBackgroundButton* mainCWarningBackgroundButton = 0;
 ITUIcon* mainModeShowIcon[MODESHOW_NUM] = { 0 };
+ITUSprite* mainModeShowIconSprite = 0;
 ITUIcon* mainModeShowSubIcon[MODESHOW_NUM] = { 0 };
+ITUSprite* mainModeShowSubIconSprite = 0;
 ITUIcon* mainModeShowLineIcon[MODESHOW_NUM] = { 0 };
 ITUIcon* mainModeShowLineIconSet[MODESHOW_NUM] = { 0 };
 ITUText* mainModeShowText[MODESHOW_NUM] = { 0 };
-ITUCheckBox* mainTopTimingCheckBox = 0;
+ITUSprite* mainModeShowTextSprite = 0;
+//ITUCheckBox* mainTopTimingCheckBox = 0;
 ITUButton* mainCModeShowButton = 0;
 ITUSprite* mainModeTextSprite = 0;
 ITUSprite* mainAirForceTextSprite = 0;
@@ -90,7 +93,7 @@ static int sprite_index = 1;
 
 static int status_show[STATUS_NUM] = { 0 };
 //static int status_disable_show[STATUS_NUM] = { 0 ,1,0,0,1,0,0,0};
-extern int mode_show[MODESHOW_NUM] = { 1, 0, 0, 1, 0, 0, 0 };
+extern int mode_show[MODESHOW_NUM] = { 1, 0, 0, 0, 0, 0, 0, 0 };
 extern bool temp_big_show[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 };
 extern bool humidity_container_show[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 };
 static int statusNum = 0;
@@ -108,6 +111,12 @@ static int airForceIndex = 0;
 
 extern int modeIndex = 0;
 extern bool timingSet = false;
+extern bool lightAuto = false;
+extern int screenLight = 50;
+extern int indLight = 40;
+
+extern bool indicatorLightEnable = true;
+extern int wifi_status = 0;
 
 extern bool airFlow3D = true;
 
@@ -149,6 +158,57 @@ static bool gtTickFirst = true;
 #endif
 
 
+
+void LoadVideoBackGround()
+{
+	if(!VideoBackGround)
+	{
+			VideoBackGround = ituSceneFindWidget(&theScene, "VideoBackGround");
+			assert(VideoBackGround);
+	}
+	ituVideoStop(VideoBackGround);
+
+	printf("path=%s modeIndex=%d\n",VideoBackGround->filePath,modeIndex);
+		switch(modeIndex)
+		{
+			case 0:
+			snprintf(VideoBackGround->filePath,32,"%s","B:/media/cooler.mkv");
+
+			break;
+
+			case 1:
+			snprintf(VideoBackGround->filePath,32,"%s","B:/media/dehumid.mkv");
+
+			break;
+
+			case 2:
+			snprintf(VideoBackGround->filePath,32,"%s","B:/media/fans.mkv");
+			break;
+
+			case 3:
+			snprintf(VideoBackGround->filePath,32,"%s","B:/media/heater.mkv");
+			break;
+
+			case 4:
+			snprintf(VideoBackGround->filePath,32,"%s","B:/media/humidify.mkv");
+			break;
+
+			default:
+				
+			printf(" mode error ?(%d)",modeIndex);
+			snprintf(VideoBackGround->filePath,32,"%s","B:/media/cooler.mkv");
+
+			break;
+		}
+	printf("path change=%s \n",VideoBackGround->filePath);
+
+	ituVideoPlay(VideoBackGround,1);
+	VideoBackGround->repeat=1;
+
+
+
+}
+
 void MainReset(void)
 {
 }
@@ -158,6 +218,10 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	int wifi_established = -1;
 	int i,x,y;
 	char tmp[32];
+
+
+	LoadVideoBackGround();
+
 	
 	if (!mainCoverFlow)
 	{
@@ -290,11 +354,20 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainCAirFlowButton = ituSceneFindWidget(&theScene, "mainCAirFlowButton");
 		assert(mainCAirFlowButton);
 
-		mainTopTimingCheckBox = ituSceneFindWidget(&theScene, "mainTopTimingCheckBox");
-		assert(mainTopTimingCheckBox);
+		//mainTopTimingCheckBox = ituSceneFindWidget(&theScene, "mainTopTimingCheckBox");
+		//assert(mainTopTimingCheckBox);
 
 		mainCModeShowButton = ituSceneFindWidget(&theScene, "mainCModeShowButton");
 		assert(mainCModeShowButton);
+
+		mainModeShowIconSprite = ituSceneFindWidget(&theScene, "mainModeShowIconSprite");
+		assert(mainModeShowIconSprite);
+
+		mainModeShowSubIconSprite = ituSceneFindWidget(&theScene, "mainModeShowSubIconSprite");
+		assert(mainModeShowSubIconSprite);
+
+		mainModeShowTextSprite = ituSceneFindWidget(&theScene, "mainModeShowTextSprite");
+		assert(mainModeShowTextSprite);
 
 		mainModeTextSprite = ituSceneFindWidget(&theScene, "mainModeTextSprite");
 		assert(mainModeTextSprite);
@@ -304,6 +377,7 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 		mainAirFlowTextSprite = ituSceneFindWidget(&theScene, "mainAirFlowTextSprite");
 		assert(mainAirFlowTextSprite);
+
 
 
 		for (i = 0; i < STATUS_NUM; i++)
@@ -433,8 +507,8 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		status_show[5] = 0;
 
 
-	ituCheckBoxSetChecked(mainTopTimingCheckBox, timingSet);
-	mode_show[4] = timingSet;
+	//ituCheckBoxSetChecked(mainTopTimingCheckBox, timingSet);
+	mode_show[5] = timingSet;
 
 	modeshowPosX = 0;
 	modeshowNum = 0;
@@ -442,15 +516,35 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	{
 		if (mode_show[i])
 		{
+			if (i == 0)
+			{
+				ituWidgetSetPosition(mainModeShowIconSprite, modeshowPosX, 0);
+				ituWidgetSetPosition(mainModeShowSubIconSprite, modeshowPosX, 0);
+			}
+			else
+			{
 			ituWidgetSetPosition(mainModeShowIcon[i], modeshowPosX, 0);
 			ituWidgetSetPosition(mainModeShowSubIcon[i], modeshowPosX, 0);
+			}
+			
 			modeshowNum++;
+			if (i != 7)
 			modeshowPosX = modeshowPosX + 46;
+			else
+				modeshowPosX = modeshowPosX + 88;
+		}
+		else
+		{
+			if (i == 0)
+			{
+				ituWidgetSetPosition(mainModeShowIconSprite, 0, 100);
+				ituWidgetSetPosition(mainModeShowSubIconSprite, 0, 100);
 		}
 		else
 		{
 			ituWidgetSetPosition(mainModeShowIcon[i], 0, 100);
 			ituWidgetSetPosition(mainModeShowSubIcon[i], 0, 100);
+		}
 		}
 
 	}
@@ -478,6 +572,49 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 	ituSpriteGoto(mainAirFlowTextSprite, !airFlow3D);
 	ituIconLinkSurface(&mainCAirFlowButton->bg.icon, mainCAirFlowIcon[!airFlow3D]);
+	ituProgressBarSetValue(mainTopScreenLightProgressBar, screenLight);
+	ituTrackBarSetValue(mainTopScreenLightTrackBar, screenLight);
+	ituProgressBarSetValue(mainTopIndLightProgressBar, indLight);
+	ituTrackBarSetValue(mainTopIndLightTrackBar, indLight);
+	if (!indicatorLightEnable)
+	{
+		ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+
+		ituWidgetDisable(mainTopIndLightTrackBar);
+		ituWidgetSetVisible(mainTopIndLightProgressBar, false);
+	}
+
+	if (lightAuto)
+	{
+		ituCheckBoxSetChecked(mainTopAutoCheckBox, true);
+		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+
+
+		ituWidgetDisable(mainTopScreenLightTrackBar);
+		ituWidgetSetVisible(mainTopScreenLightProgressBar, false);
+
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+			ituWidgetDisable(mainTopIndLightTrackBar);
+			ituWidgetSetVisible(mainTopIndLightProgressBar, false);
+		}
+	}
+	else
+	{
+		ituCheckBoxSetChecked(mainTopAutoCheckBox, false);
+		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
+		ituWidgetEnable(mainTopScreenLightTrackBar);
+		ituWidgetSetVisible(mainTopScreenLightProgressBar, true);
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
+			ituWidgetEnable(mainTopIndLightTrackBar);
+			ituWidgetSetVisible(mainTopIndLightProgressBar, true);
+		}
+	}
 
 	if (gtTickFirst)
 	{
@@ -566,16 +703,23 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	    wifi_established = ioctl(ITP_DEVICE_WIFI_NGPL, ITP_IOCTL_IS_AVAIL, NULL);
 #endif
 
-//	    if (wifi_established)
+	    if (wifi_established)
 //	        ituSpriteGoto(topWiFiSprite, 2); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
-//		else
+			wifi_status = 0;
+		else
 //            ituSpriteGoto(topWiFiSprite, 1);
+			wifi_status = 1;
+
 	}
 	else
 	{
 //		ituSpriteGoto(topWiFiSprite, 0); //0: wifi is off, 1: wifi is on but no connection, 2: connection is established
-	}
+		wifi_status = 2;
 
+	}
+	ituSpriteGoto(mainModeShowIconSprite, wifi_status);
+	ituSpriteGoto(mainModeShowSubIconSprite, wifi_status);
+	ituSpriteGoto(mainModeShowTextSprite, wifi_status);
 	return true;
 }
 bool MainOnTimer(ITUWidget* widget, char* param)
@@ -845,11 +989,13 @@ bool MainLStatusChkBoxOnMouseUp(ITUWidget* widget, char* param)
 
 bool MainTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
+	indLight = mainTopIndLightTrackBar->value;
 	return true;
 }
 
 bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
+	screenLight = mainTopScreenLightTrackBar->value;
 	
 	printf("mainTopScreenLightTrackBar %d \n", mainTopScreenLightTrackBar->value);
 	ScreenSetBrightness(mainTopScreenLightTrackBar->value);
@@ -861,25 +1007,34 @@ bool MainTopAutoChkBoxOnPress(ITUWidget* widget, char* param)
 {
 	if (ituCheckBoxIsChecked(mainTopAutoCheckBox))
 	{
-
+		lightAuto = true;
 		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
-		ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
+
 
 		ituWidgetDisable(mainTopScreenLightTrackBar);
 		ituWidgetSetVisible(mainTopScreenLightProgressBar, false);
+		
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[0]);
 		ituWidgetDisable(mainTopIndLightTrackBar);
 		ituWidgetSetVisible(mainTopIndLightProgressBar, false);
 	}
+	}
 	else
 	{
-
+		lightAuto = false;
 		ituIconLinkSurface(&mainTopScreenLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
-		ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
-
 		ituWidgetEnable(mainTopScreenLightTrackBar);
 		ituWidgetSetVisible(mainTopScreenLightProgressBar, true);
+		
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&mainTopIndLightTrackBar->tracker->bg.icon, mainTopBarBtnIcon[1]);
 		ituWidgetEnable(mainTopIndLightTrackBar);
 		ituWidgetSetVisible(mainTopIndLightProgressBar, true);
+	}
 	}
 	return true;
 }
@@ -955,14 +1110,14 @@ bool MainAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param)
 //{
 //	if (ituCheckBoxIsChecked(mainRAICheckBox))
 //	{
-//		mode_show[5] = 1;
+//		mode_show[6] = 1;
 //		ituWidgetSetPosition(mainModeShowIcon[5], modeshowPosX, 0);
 //		modeshowNum++;
 //		modeshowPosX = modeshowPosX + 46;
 //	}
 //	else
 //	{
-//		mode_show[5] = 0;
+//		mode_show[6] = 0;
 //		ituWidgetSetPosition(mainModeShowIcon[5], 0, 100);
 //		modeshowNum--;
 //		modeshowPosX = modeshowPosX - 46;
@@ -981,15 +1136,30 @@ bool MainCModeShowButtonOnPress(ITUWidget* widget, char* param)
 		if (mode_show[i])
 		{
 			ituIconLinkSurface(mainModeShowLineIcon[i], mainModeShowLineIconSet[modeshowNumTmp - 1]);
+			
+			if (i == 0)
+			{
+				ituWidgetSetPosition(mainModeShowLineIcon[i], ituWidgetGetX(mainModeShowSubIconSprite), 0);
+				ituWidgetSetPosition(mainModeShowTextSprite, ituWidgetGetX(mainModeShowSubIconSprite), (modeshowNumTmp - 1) * 60);
+			}
+				
+			else
+			{
 			ituWidgetSetPosition(mainModeShowLineIcon[i], ituWidgetGetX(mainModeShowSubIcon[i]), 0);
 			ituWidgetSetPosition(mainModeShowText[i], ituWidgetGetX(mainModeShowSubIcon[i]), (modeshowNumTmp - 1) * 60);
+			}
+				
 			modeshowNumTmp--;
 
 		}
 		else
 		{
-			ituWidgetSetPosition(mainModeShowLineIcon[i], 0, 441);
-			ituWidgetSetPosition(mainModeShowText[i], 0, 400);
+			ituWidgetSetPosition(mainModeShowLineIcon[i], 0, 501);
+			if (i == 0)
+				ituWidgetSetPosition(mainModeShowTextSprite, 0, 500);
+			else				
+				ituWidgetSetPosition(mainModeShowText[i], 0, 500);
+			
 		}
 	}
 
