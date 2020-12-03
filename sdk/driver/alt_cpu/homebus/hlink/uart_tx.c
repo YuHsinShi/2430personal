@@ -40,147 +40,145 @@
 #if 1 // porting modified
 
 
+unsigned char  system_status;//ÏµÍ³¿ª¹Ø»ú
+unsigned char system_mode;//ÏµÍ³Ä£Ê½  ¹²20¸öÄ£Ê½
+unsigned char system_wind;//ÏµÍ³·çÁ¿
+unsigned char tempset;//Éè¶¨ÎÂ¶È
+unsigned char tempset_auto;//×Ô¶¯Ä£Ê½Éè¶¨ÎÂ¶È
+unsigned char tempset_cool;//ÖÆÀäÄ£Ê½Éè¶¨ÎÂ¶È
+unsigned char tempset_heat;//ÖÆÈÈÄ£Ê½Éè¶¨ÎÂ¶È
+unsigned char half_set;//0.5¶ÈÉè¶¨
+unsigned char dry_set;//ÏµÍ³Éè¶¨Êª¶È
 
-unsigned char  system_status;//ç³»ç»Ÿå¼€å…³æœº
-unsigned char system_mode;//ç³»ç»Ÿæ¨¡å¼  å…?0ä¸ªæ¨¡å¼?
-unsigned char system_wind;//ç³»ç»Ÿé£Žé‡
-unsigned char tempset;//è®¾å®šæ¸©åº¦
-unsigned char tempset_auto;//è‡ªåŠ¨æ¨¡å¼è®¾å®šæ¸©åº¦
-unsigned char tempset_cool;//åˆ¶å†·æ¨¡å¼è®¾å®šæ¸©åº¦
-unsigned char tempset_heat;//åˆ¶çƒ­æ¨¡å¼è®¾å®šæ¸©åº¦
-unsigned char half_set;//0.5åº¦è®¾å®?
-unsigned char dry_set;//ç³»ç»Ÿè®¾å®šæ¹¿åº¦
-
-unsigned char 	mode_enable;//æ¨¡å¼ç±»åž‹  å¤§äºŽ40ç§ç»„å?
-unsigned char 	wind_enable;//é£Žé‡ç±»åž‹ 0ï¼?æ¡?  1ï¼?æ¡?è‡ªåŠ¨   2ï¼?æ¡?   3ï¼?æ¡?è‡ªåŠ¨  4ï¼?æ¡?   5ï¼?æ¡?è‡ªåŠ¨
-
-
-unsigned char temp_ad_value;//æ¸©åº¦ä¼ æ„Ÿå™¨adå€?
-unsigned char temp_value;//æ¸©åº¦ä¼ æ„Ÿå™¨æ¸©åº¦å€?
+unsigned char 	mode_enable;//Ä£Ê½ÀàÐÍ  ´óÓÚ40ÖÖ×éºÏ
+unsigned char 	wind_enable;//·çÁ¿ÀàÐÍ 0£º3µµ   1£º3µµ+×Ô¶¯   2£º4µµ    3£º4µµ+×Ô¶¯  4£º6µµ    5£º6µµ+×Ô¶¯
 
 
-unsigned char wind_mode;//é£Žå‘æ¨¡å¼  0ï¼šæ™®é€šé£Žå? 1ï¼?Dé£? 2ï¼šè¶…è¿œé£Ž
-unsigned char  wind_board_enable;//æ˜¯å¦æœ‰å¯¼é£Žæ¿
-unsigned char  winddir_enable;//å¯¼é£Žæ¿ç±»åž?0ï¼šæ— å¯¼é£Žæ?1ï¼šæœ‰ä¸€ä¸ªå¯¼é£Žæ¿  2ï¼šå››æ–¹å‘å¯¼é£Žæ?3ï¼šä¸€æ–¹å‘å¯¼é£Žæ? 4ï¼?Då‡ºé£Žå?5ï¼šäºŒæ–¹å‘å¯¼é£Žæ?
-unsigned char  wind_board_status;//å¯¼é£Žæ?æ˜¯å¦æ‘†åŠ¨ 1ï¼šæ‘†åŠ?  0ï¼šåœæ­?
-unsigned char  wind_board_angle;//å¯¼é£Žæ?æ‘†åŠ¨è§’åº¦ èŒƒå›´1~7
-unsigned char  wind_horizontal_status;//å¯¼é£Žæ?æ˜¯å¦æ‘†åŠ¨ 1ï¼šæ‘†åŠ?  0ï¼šåœæ­?
-unsigned char  wind_horizontal_angle;//å¯¼é£Žæ?æ‘†åŠ¨è§’åº¦ èŒƒå›´1~7
-unsigned char  wind_board2_status;//å¯¼é£Žæ?æ˜¯å¦æ‘†åŠ¨ 1ï¼šæ‘†åŠ?  0ï¼šåœæ­?
-unsigned char  wind_board2_angle;//å¯¼é£Žæ?æ‘†åŠ¨è§’åº¦ èŒƒå›´1~7
-unsigned char  wind_horizontal2_status;//å¯¼é£Žæ?æ˜¯å¦æ‘†åŠ¨ 1ï¼šæ‘†åŠ?  0ï¼šåœæ­?
-unsigned char  wind_horizontal2_angle;//å¯¼é£Žæ?æ‘†åŠ¨è§’åº¦ èŒƒå›´1~7
-unsigned char  wind_board_set;//å¯¼é£Žæ¿ç»Ÿä¸€è®¾å®š 1ï¼šä¸ºç»Ÿä¸€è®¾å®š 0ï¼šä¸ºå•ç‹¬è®¾å®š
+unsigned char temp_ad_value;//ÎÂ¶È´«¸ÐÆ÷adÖµ 
+unsigned char temp_value;//ÎÂ¶È´«¸ÐÆ÷ÎÂ¶ÈÖµ
 
 
-unsigned char save_flag,save_used,save_set_enable;//èŠ‚èƒ½æ ‡å¿—,èŠ‚èƒ½æ˜¯å¦æœ‰æ•ˆã€èŠ‚èƒ½æ˜¯å¦å¯ä»¥æ“ä½?
-unsigned char sleep_flag,sleep_used,sleep_set_enable;//ç¡çœ æ ‡å¿—,ç¡çœ æ˜¯å¦æœ‰æ•ˆã€ç¡çœ æ˜¯å¦å¯ä»¥æ“ä½?
-unsigned char mute_flag,mute_used,mute_set_enable;//é™éŸ³æ ‡å¿—,é™éŸ³æ˜¯å¦æœ‰æ•ˆã€é™éŸ³æ˜¯å¦å¯ä»¥æ“ä½?
-unsigned char health_flag,health_used,health_set_enable;//å¥åº·æ ‡å¿—,å¥åº·æ˜¯å¦æœ‰æ•ˆã€å¥åº·æ˜¯å¦å¯ä»¥æ“ä½?
-unsigned char heat_flag,heat_used,heat_set_enable;//è¾…çƒ­æ ‡å¿—,è¾…çƒ­æ˜¯å¦æœ‰æ•ˆã€è¾…çƒ­æ˜¯å¦å¯ä»¥æ“ä½?
-unsigned char forest_wind_flag,forest_wind_used,forest_wind_set_enable;//æ£®æž—é£Žæ ‡å¿?æ£®æž—é£Žæ˜¯å¦æœ‰æ•ˆã€æ£®æž—é£Žæ˜¯å¦å¯ä»¥æ“ä½œ
+unsigned char wind_mode;//·çÏòÄ£Ê½  0£ºÆÕÍ¨·çÏò  1£º3D·ç  2£º³¬Ô¶·ç
+unsigned char  wind_board_enable;//ÊÇ·ñÓÐµ¼·ç°å
+unsigned char  winddir_enable;//µ¼·ç°åÀàÐÍ 0£ºÎÞµ¼·ç°å 1£ºÓÐÒ»¸öµ¼·ç°å  2£ºËÄ·½Ïòµ¼·ç°å 3£ºÒ»·½Ïòµ¼·ç°å  4£º3D³ö·ç¿Ú 5£º¶þ·½Ïòµ¼·ç°å
+unsigned char  wind_board_status;//µ¼·ç°å1ÊÇ·ñ°Ú¶¯ 1£º°Ú¶¯   0£ºÍ£Ö¹
+unsigned char  wind_board_angle;//µ¼·ç°å1°Ú¶¯½Ç¶È ·¶Î§1~7
+unsigned char  wind_horizontal_status;//µ¼·ç°å2ÊÇ·ñ°Ú¶¯ 1£º°Ú¶¯   0£ºÍ£Ö¹
+unsigned char  wind_horizontal_angle;//µ¼·ç°å2°Ú¶¯½Ç¶È ·¶Î§1~7
+unsigned char  wind_board2_status;//µ¼·ç°å3ÊÇ·ñ°Ú¶¯ 1£º°Ú¶¯   0£ºÍ£Ö¹
+unsigned char  wind_board2_angle;//µ¼·ç°å3°Ú¶¯½Ç¶È ·¶Î§1~7
+unsigned char  wind_horizontal2_status;//µ¼·ç°å4ÊÇ·ñ°Ú¶¯ 1£º°Ú¶¯   0£ºÍ£Ö¹
+unsigned char  wind_horizontal2_angle;//µ¼·ç°å4°Ú¶¯½Ç¶È ·¶Î§1~7
+unsigned char  wind_board_set;//µ¼·ç°åÍ³Ò»Éè¶¨ 1£ºÎªÍ³Ò»Éè¶¨ 0£ºÎªµ¥¶ÀÉè¶¨
 
-unsigned char human_flag,human_used,human_set_enable;//äººæ„Ÿæ ‡å¿—,äººæ„Ÿæ˜¯å¦æœ‰æ•ˆã€äººæ„Ÿæ˜¯å¦å¯ä»¥æ“ä½?
-unsigned char human_sensor,human_sensor_used;//äººæ„Ÿ2æ ‡å¿—,äººæ„Ÿ2æœ‰æ•ˆ
 
-unsigned char 	self_clean_flag,self_clean_used,self_clean_enable;//è‡ªæ¸…æ´æ ‡å¿?è‡ªæ¸…æ´æ˜¯å¦æœ‰æ•ˆã€è‡ªæ¸…æ´æ˜¯å¦å¯ä»¥æ“ä½œ
-unsigned int 	  self_clean_flag_b;//å„å®¤å†…æœºè‡ªæ¸…æ´æ ‡å¿?
-unsigned char 	high_temp_disinfect_flag,high_temp_disinfect_used,high_temp_disinfect_set_enable;//é«˜æ¸©æ€æ ‡å¿—,é«˜æ¸©æ€æ˜¯å¦æœ‰æ•ˆã€é«˜æ¸©æ€æ˜¯å¦å¯ä»¥æ“ä½œ
-unsigned int 	  high_temp_disinfect_flag_b;//å„å®¤å†…æœºé«˜æ¸©æ€æ ‡å¿—
-unsigned char 	power_wind_check_flag,power_wind_flag_used,power_wind_set_enable;//å¼ºåŠ›æ ‡å¿—,å¼ºåŠ›æ˜¯å¦æœ‰æ•ˆã€å¼ºåŠ›æ˜¯å¦å¯ä»¥æ“ä½?
-unsigned int 	  power_wind_check_flag_b;//å„å®¤å†…æœºå¼ºåŠ›æ ‡å¿—
+unsigned char save_flag,save_used,save_set_enable;//½ÚÄÜ±êÖ¾,½ÚÄÜÊÇ·ñÓÐÐ§¡¢½ÚÄÜÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned char sleep_flag,sleep_used,sleep_set_enable;//Ë¯Ãß±êÖ¾,Ë¯ÃßÊÇ·ñÓÐÐ§¡¢Ë¯ÃßÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned char mute_flag,mute_used,mute_set_enable;//¾²Òô±êÖ¾,¾²ÒôÊÇ·ñÓÐÐ§¡¢¾²ÒôÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned char health_flag,health_used,health_set_enable;//½¡¿µ±êÖ¾,½¡¿µÊÇ·ñÓÐÐ§¡¢½¡¿µÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned char heat_flag,heat_used,heat_set_enable;//¸¨ÈÈ±êÖ¾,¸¨ÈÈÊÇ·ñÓÐÐ§¡¢¸¨ÈÈÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned char forest_wind_flag,forest_wind_used,forest_wind_set_enable;//É­ÁÖ·ç±êÖ¾,É­ÁÖ·çÊÇ·ñÓÐÐ§¡¢É­ÁÖ·çÊÇ·ñ¿ÉÒÔ²Ù×÷
+
+unsigned char human_flag,human_used,human_set_enable;//ÈË¸Ð±êÖ¾,ÈË¸ÐÊÇ·ñÓÐÐ§¡¢ÈË¸ÐÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned char human_sensor,human_sensor_used;//ÈË¸Ð2±êÖ¾,ÈË¸Ð2ÓÐÐ§
+
+unsigned char 	self_clean_flag,self_clean_used,self_clean_enable;//×ÔÇå½à±êÖ¾,×ÔÇå½àÊÇ·ñÓÐÐ§¡¢×ÔÇå½àÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned int 	  self_clean_flag_b;//¸÷ÊÒÄÚ»ú×ÔÇå½à±êÖ¾
+unsigned char 	high_temp_disinfect_flag,high_temp_disinfect_used,high_temp_disinfect_set_enable;//¸ßÎÂÉ±±êÖ¾,¸ßÎÂÉ±ÊÇ·ñÓÐÐ§¡¢¸ßÎÂÉ±ÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned int 	  high_temp_disinfect_flag_b;//¸÷ÊÒÄÚ»ú¸ßÎÂÉ±±êÖ¾
+unsigned char 	power_wind_check_flag,power_wind_flag_used,power_wind_set_enable;//Ç¿Á¦±êÖ¾,Ç¿Á¦ÊÇ·ñÓÐÐ§¡¢Ç¿Á¦ÊÇ·ñ¿ÉÒÔ²Ù×÷
+unsigned int 	  power_wind_check_flag_b;//¸÷ÊÒÄÚ»úÇ¿Á¦±êÖ¾
 
 
 unsigned char d1_d3_check;
 unsigned char initialize_10ms;
-unsigned char initialize_flag;  //ç³»ç»Ÿåˆå§‹åŒ–æ ‡å¿?   1ï¼šè¡¨ç¤ºåˆå§‹åŒ–ç»“æŸ
-unsigned char initialize_cnt;  //ç³»ç»Ÿåˆå§‹åŒ–è®¡æ•?
-unsigned char initialize_step; //ç³»ç»Ÿåˆå§‹åŒ–æ­¥éª?
+unsigned char initialize_flag;  //ÏµÍ³³õÊ¼»¯±êÖ¾    1£º±íÊ¾³õÊ¼»¯½áÊø
+unsigned char initialize_cnt;  //ÏµÍ³³õÊ¼»¯¼ÆÊý
+unsigned char initialize_step; //ÏµÍ³³õÊ¼»¯²½Öè
 unsigned char line_init_flag;
-unsigned char tx_system_nuber1;//é€šä¿¡å¯¹è±¡å†·åª’ç³»ç»Ÿ
-unsigned char tx_dress_nuber1;//é€šä¿¡å¯¹è±¡å†·åª’åœ°å€
-unsigned char tx_system_nuber2;//é€šä¿¡å¯¹è±¡å†·åª’ç³»ç»Ÿ
-unsigned char tx_dress_nuber2;//é€šä¿¡å¯¹è±¡å†·åª’åœ°å€
-unsigned char line_control_double;//æœ‰äº²å­çº¿æŽ§å™¨
-unsigned char master_flag;//äº²å­æ ‡å¿— 0ï¼šäº²çº¿æŽ§å™?1ï¼šå­çº¿æŽ§å™?
+unsigned char tx_system_nuber1;//Í¨ÐÅ¶ÔÏóÀäÃ½ÏµÍ³
+unsigned char tx_dress_nuber1;//Í¨ÐÅ¶ÔÏóÀäÃ½µØÖ·
+unsigned char tx_system_nuber2;//Í¨ÐÅ¶ÔÏóÀäÃ½ÏµÍ³
+unsigned char tx_dress_nuber2;//Í¨ÐÅ¶ÔÏóÀäÃ½µØÖ·
+unsigned char line_control_double;//ÓÐÇ××ÓÏß¿ØÆ÷
+unsigned char master_flag;//Ç××Ó±êÖ¾ 0£ºÇ×Ïß¿ØÆ÷ 1£º×ÓÏß¿ØÆ÷
 
 
 
-unsigned char already_tx_nuber;//æ­£åœ¨å‘ç çš„å®¤å†…æœºåºå· ä»?è‡³ï¼ˆtotal_machine-1ï¼?
-unsigned char basedata[16][50];//ç”¨äºŽä¿å­˜å®¤å†…æœºæ•°æ? basedata[i][1]è¡¨ç¤ºå®¤å†…æœºç³»ç»? basedata[i][2]è¡¨ç¤ºå®¤å†…æœºåœ°å€
+unsigned char already_tx_nuber;//ÕýÔÚ·¢ÂëµÄÊÒÄÚ»úÐòºÅ ´Ó0ÖÁ£¨total_machine-1£©
+unsigned char basedata[16][50];//ÓÃÓÚ±£´æÊÒÄÚ»úÊý¾Ý  basedata[i][1]±íÊ¾ÊÒÄÚ»úÏµÍ³  basedata[i][2]±íÊ¾ÊÒÄÚ»úµØÖ·
 
-unsigned char option_data[16][50];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?G
-unsigned char option_data_new[16][50];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?G
-unsigned char option_data_new1[16][50];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?G
+unsigned char option_data[16][50];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý1G
+unsigned char option_data_new[16][50];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý2G
+unsigned char option_data_new1[16][50];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý3G
 
-unsigned char option_backup[16][50];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?Gä¸´æ—¶æ•°ç»„
-unsigned char option_new_backup[16][50];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?Gä¸´æ—¶æ•°ç»„
-unsigned char option_new1_backup[16][50];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?Gä¸´æ—¶æ•°ç»„
+unsigned char option_backup[16][50];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý1GÁÙÊ±Êý×é
+unsigned char option_new_backup[16][50];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý2GÁÙÊ±Êý×é
+unsigned char option_new1_backup[16][50];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý3GÁÙÊ±Êý×é
 
-unsigned char option_all_set[16];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?Gå…±åŒè®¾å®š
-unsigned char option_all_set_new[16];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?Gå…±åŒè®¾å®š
-unsigned char option_all_set_new1[16];//å„å°å®¤å†…æœºæœºèƒ½è®¾å®šæ•°æ?Gå…±åŒè®¾å®š
-
-
-
-unsigned char line_protocol;//çº¿æŽ§å™?ã€?ã€?Gæ”¯æŒæ ‡å¿—
-unsigned char line_g25_flag;//çº¿æŽ§å™?.5Gæ”¯æŒæ ‡å¿—
-unsigned int  inroom_2g5_protocol;//å„å°å®¤å†…æœºæœº2.5Gæ”¯æŒæ ‡å¿—
-unsigned int	inroom_2g_protocol;//å„å°å®¤å†…æœºæœº2Gæ”¯æŒæ ‡å¿—
-unsigned int  inroom_3g_protocol;//å„å°å®¤å†…æœºæœº3Gæ”¯æŒæ ‡å¿—
-unsigned char	total_machine;//å®žé™…è¿žæŽ¥çš„å®¤å†…æœºå°æ•°
+unsigned char option_all_set[16];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý1G¹²Í¬Éè¶¨
+unsigned char option_all_set_new[16];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý2G¹²Í¬Éè¶¨
+unsigned char option_all_set_new1[16];//¸÷Ì¨ÊÒÄÚ»ú»úÄÜÉè¶¨Êý¾Ý3G¹²Í¬Éè¶¨
 
 
 
+unsigned char line_protocol;//Ïß¿ØÆ÷1¡¢2¡¢3GÖ§³Ö±êÖ¾
+unsigned char line_g25_flag;//Ïß¿ØÆ÷2.5GÖ§³Ö±êÖ¾
+unsigned int  inroom_2g5_protocol;//¸÷Ì¨ÊÒÄÚ»ú»ú2.5GÖ§³Ö±êÖ¾
+unsigned int	inroom_2g_protocol;//¸÷Ì¨ÊÒÄÚ»ú»ú2GÖ§³Ö±êÖ¾
+unsigned int  inroom_3g_protocol;//¸÷Ì¨ÊÒÄÚ»ú»ú3GÖ§³Ö±êÖ¾
+unsigned char	total_machine;//Êµ¼ÊÁ¬½ÓµÄÊÒÄÚ»úÌ¨Êý
 
 
-unsigned char tx_change_flag;//çŠ¶æ€æ”¹å˜å‘ç æ ‡å¿?1ï¼šè¡¨ç¤ºæœ‰æ”¹å˜ å‘ç åŽä¸º0
-unsigned char tx_time_1s_cnt;//çŠ¶æ€æ”¹å˜å‘ç è®¡æ•?
-
-unsigned char server_set_status;//æœåŠ¡è®¾å®šçŠ¶æ€?ä¸?æ—¶è¡¨ç¤ºæ­£å¤„äºŽè®¾å®šçŠ¶æ€ï¼Œä¸èƒ½å¼€æœ?
-unsigned char a3d_wind_use;//æ˜¯å¦æœ?Då‡ºé£Žå?
-unsigned char a3d_wind_err;//3Då‡ºé£Žå£æŠ¥è­?
 
 
-unsigned char compress_preheat_reset;//åŽ‹ç¼©æœºé¢„çƒ­è§£é™?
+
+unsigned char tx_change_flag;//×´Ì¬¸Ä±ä·¢Âë±êÖ¾ 1£º±íÊ¾ÓÐ¸Ä±ä ·¢ÂëºóÎª0
+unsigned char tx_time_1s_cnt;//×´Ì¬¸Ä±ä·¢Âë¼ÆÊý
+
+unsigned char server_set_status;//·þÎñÉè¶¨×´Ì¬ Îª1Ê±±íÊ¾Õý´¦ÓÚÉè¶¨×´Ì¬£¬²»ÄÜ¿ª»ú
+unsigned char a3d_wind_use;//ÊÇ·ñÓÐ3D³ö·ç¿Ú
+unsigned char a3d_wind_err;//3D³ö·ç¿Ú±¨¾¯
+
+
+unsigned char compress_preheat_reset;//Ñ¹Ëõ»úÔ¤ÈÈ½â³ý
 unsigned char emergency_set_status;
-unsigned char emergency_flag;//åº”æ€¥è¿è½¬æ ‡å¿?
-unsigned char try_run_flag;//è¯•è¿è¡Œæ ‡å¿?
-unsigned char try_run_set;//è¯•è¿è¡Œè®¾å®šæ ‡å¿?
-unsigned char try_run_fre;//è¯•è¿è¡Œé¢‘çŽ?
+unsigned char emergency_flag;//Ó¦¼±ÔË×ª±êÖ¾
+unsigned char try_run_flag;//ÊÔÔËÐÐ±êÖ¾
+unsigned char try_run_set;//ÊÔÔËÐÐÉè¶¨±êÖ¾
+unsigned char try_run_fre;//ÊÔÔËÐÐÆµÂÊ
 
 
 
-unsigned char hh_flag;//å“ç‰Œ 0ï¼šæ—¥ç«? 1ï¼šæµ·ä¿? 2ï¼šçº¦å…?
+unsigned char hh_flag;//Æ·ÅÆ 0£ºÈÕÁ¢  1£ºº£ÐÅ  2£ºÔ¼¿Ë
 
 
 
 
-unsigned char  center_control_all;//é›†æŽ§å…¨ç¦æ­?
-unsigned char center_control_onoff;//é›†æŽ§å¼€å…³æœºç¦æ­¢
-unsigned char 	center_onoff_flag;////é›†æŽ§å¼€å…³æœºç¦æ­¢ä¸‹å…è®¸å¼€æœºæ ‡å¿?
-unsigned char center_control_mode;//é›†æŽ§æ¨¡å¼ç¦æ­¢
-unsigned char center_control_wind;//é›†æŽ§é£Žé‡ç¦æ­¢
-unsigned char center_control_windboard;//é›†æŽ§å¯¼é£Žæ¿ç¦æ­?
-unsigned char center_control_tempset;//é›†æŽ§è®¾å®šæ¸©åº¦ç¦æ­¢
+unsigned char  center_control_all;//¼¯¿ØÈ«½ûÖ¹
+unsigned char center_control_onoff;//¼¯¿Ø¿ª¹Ø»ú½ûÖ¹
+unsigned char 	center_onoff_flag;////¼¯¿Ø¿ª¹Ø»ú½ûÖ¹ÏÂÔÊÐí¿ª»ú±êÖ¾
+unsigned char center_control_mode;//¼¯¿ØÄ£Ê½½ûÖ¹
+unsigned char center_control_wind;//¼¯¿Ø·çÁ¿½ûÖ¹
+unsigned char center_control_windboard;//¼¯¿Øµ¼·ç°å½ûÖ¹
+unsigned char center_control_tempset;//¼¯¿ØÉè¶¨ÎÂ¶È½ûÖ¹
 
 
 
-unsigned char  machine_type;//å®¤å†…æœºæœºåž?
-unsigned char  machine_type1;//å®¤å†…æœºæœºåž?
+unsigned char  machine_type;//ÊÒÄÚ»ú»úÐÍ
+unsigned char  machine_type1;//ÊÒÄÚ»ú»úÐÍ1
 
-unsigned char err_now_flag;//æ­£åœ¨æŠ¥è­¦æ ‡å¿—
-unsigned char  err_reset_flag;//æŠ¥è­¦å¤ä½
-unsigned char  filter_reset;//æ»¤ç½‘å¤ä½
+unsigned char err_now_flag;//ÕýÔÚ±¨¾¯±êÖ¾
+unsigned char  err_reset_flag;//±¨¾¯¸´Î»
+unsigned char  filter_reset;//ÂËÍø¸´Î»
 
 
-unsigned char tempset_min_warm_rx;//åˆ¶çƒ­è®¾å®šæ¸©åº¦ä¸‹é™
-unsigned char tempset_max_warm_rx;//åˆ¶çƒ­è®¾å®šæ¸©åº¦ä¸Šé™
-unsigned char tempset_min_cool_rx;//åˆ¶å†·è®¾å®šæ¸©åº¦ä¸‹é™
-unsigned char tempset_max_cool_rx;//åˆ¶å†·è®¾å®šæ¸©åº¦ä¸Šé™
-unsigned char pointcheck1_data[50];//ç‚¹æ£€1æŽ¥æ”¶æ•°æ®
-unsigned char pointcheck2_data[16];//ç‚¹æ£€2æŽ¥æ”¶æ•°æ®
-
+unsigned char tempset_min_warm_rx;//ÖÆÈÈÉè¶¨ÎÂ¶ÈÏÂÏÞ
+unsigned char tempset_max_warm_rx;//ÖÆÈÈÉè¶¨ÎÂ¶ÈÉÏÏÞ
+unsigned char tempset_min_cool_rx;//ÖÆÀäÉè¶¨ÎÂ¶ÈÏÂÏÞ
+unsigned char tempset_max_cool_rx;//ÖÆÀäÉè¶¨ÎÂ¶ÈÉÏÏÞ
+unsigned char pointcheck1_data[50];//µã¼ì1½ÓÊÕÊý¾Ý
+unsigned char pointcheck2_data[16];//µã¼ì2½ÓÊÕÊý¾Ý
 
 
 
@@ -226,7 +224,7 @@ unsigned char a3d_wind_led_flag;
 unsigned char system_tx_10ms;
 unsigned char self_check_flag;
 unsigned char tx_change_tx_flag;
-unsigned char tx_time_systemon_cnt;
+unsigned int tx_time_systemon_cnt;
 unsigned char tx_systemon_flag;
 unsigned char wifi_connect_ok;
 unsigned char cloud_servers_cmd;
@@ -299,7 +297,7 @@ const KbdTabStruct TXTab[]={
 ********************************************************************************/
 void init_tx_deal(void)
 {
-  unsigned char step_time;
+  unsigned char i=0,j=0,step_time=0;
 
  // if(d1_d3_check==0)return;
   initialize_10ms++;
@@ -329,7 +327,22 @@ void init_tx_deal(void)
      printf("initialize_step=%d\r\n",initialize_step);
       switch(initialize_step)
       {
-      case 1:         
+      case 1:     
+
+	
+	for(i=0;i<16;i++)
+	{
+	  basedata[i][1]=0xff;
+	  basedata[i][2]=0xff;
+	
+		  for(j=3;j<40;j++)
+		  {
+			basedata[i][j]=0;
+		  } 	
+		  
+	
+		  
+	}
             line_control_tx=1;line_init_flag=1;
             tx_system_nuber1=0xff;tx_dress_nuber1=0xff;
             tx_system_nuber2=0xff;tx_dress_nuber2=0xff;        
@@ -355,7 +368,8 @@ void init_tx_deal(void)
             tx_system_nuber1=0xff;tx_dress_nuber1=0xff;
             tx_system_nuber2=0xff;tx_dress_nuber2=0xff;
              break;
-      case 4:          
+      case 4:     
+	  	printf("total_machine=%d\r\n",total_machine);
             connect_information_tx=1;
             already_tx_nuber=0;
             tx_system_nuber1=basedata[already_tx_nuber][1];tx_dress_nuber1=basedata[already_tx_nuber][2];
@@ -370,6 +384,7 @@ void init_tx_deal(void)
             already_tx_nuber=0;
             tx_system_nuber1=basedata[already_tx_nuber][1];tx_dress_nuber1=basedata[already_tx_nuber][2];
             tx_system_nuber2=basedata[already_tx_nuber][1];tx_dress_nuber2=basedata[already_tx_nuber][2];
+			 
 
              break;
      case 6:
@@ -416,11 +431,11 @@ void init_tx_deal(void)
 ********************************************************************************/
 void tx_ack_next_deal(void)
 {
-  unsigned char nuber;
+  unsigned char nuber=0;
   
   if(next_tx_flag==0)return;
   
-  printf("ok3");
+  printf("ok3 \n");
 
                 
   if(next_tx_flag==TIMEING_TX)
@@ -865,7 +880,7 @@ void tx_ack_next_deal(void)
 unsigned char get_nuber(void)
 {
   
-  unsigned char i,_nuber;
+  unsigned char i=0,_nuber=0;
 
   _nuber=0;
   for(i=0;i<total_machine;i++)
@@ -881,7 +896,7 @@ unsigned char get_nuber(void)
 ********************************************************************************/
 unsigned char get_index(void)
 {
-	unsigned char i,j,_Index;
+	unsigned char i=0,j=0,_Index=0;
 	
 	for(i=0;i<4;i++)
 	{
@@ -900,8 +915,8 @@ unsigned char get_index(void)
 ********************************************************************************/
 void system_option_check(void)
 {
-  unsigned char i,j,k,l,i2,i3;
-  unsigned int  room2g,room3g,room2g5;
+  unsigned char i=0,j=0,k=0,l=0,i2=0,i3=0;
+  unsigned int  room2g=0,room3g=0,room2g5=0;
   
   /*
     total_machine=1;
@@ -942,12 +957,9 @@ void system_option_check(void)
 
 /********************************************************************************
 ********************************************************************************/
-
-
-
 void tx_deal(void)
 {
-	unsigned char i;
+	unsigned char i=0;
 
 	line_control_dress=master_flag+1;
 /*
@@ -1001,7 +1013,6 @@ void tx_deal(void)
 		TxFuncPtr=TXTab[Index].CurrentOperate;
 		(*TxFuncPtr)();//Ö´ÐÐµ±Ç°°´¼üµÄ²Ù×÷
 		
-			printf("tx_deal index= %d\n",Index);
 
 			//TODO: send data
 			//tx_total: toatal data send
@@ -1017,12 +1028,11 @@ void tx_deal(void)
 
 
 		}
-		next_tx_flag=tx_finish_flag; 
-		tx_finish_flag=0;
-
-
-
-
+					
+        
+	
+	next_tx_flag=tx_finish_flag; 
+	tx_finish_flag=0;
 
 
 
@@ -1044,7 +1054,7 @@ void set_data_deal(void)
 ********************************************************************************/
 void tx_data_table(void)
 {
- unsigned char i,k,l;
+ unsigned char i=0,k=0,l=0;
 
 
   for(i=0;i<tx_total;i++)
@@ -1080,14 +1090,14 @@ void tx_data_table(void)
 ********************************************************************************/
 unsigned char tt_nuber_dress(void)
 {
-  unsigned char i,j;
-  printf("tt_nuber_dress total_machine =%d\n",total_machine);
+  unsigned char i=0,j=0;
+  
      for(i=0;i<total_machine;i++)
       {
-		 	if((basedata[i][1]==tx_data[5])&&(basedata[i][2]==tx_data[6]))
-		 	{
-		 	  j=i;
-		 	}
+ 	if((basedata[i][1]==tx_data[5])&&(basedata[i][2]==tx_data[6]))
+ 	{
+ 	  j=i;
+ 	}
       }
      
      return j;
@@ -1097,7 +1107,7 @@ unsigned char tt_nuber_dress(void)
 ********************************************************************************/
 unsigned char tx_data_10(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
   
       tt_data=0;
       tt_data=(system_mode&0x1f)<<2;
@@ -1112,7 +1122,7 @@ unsigned char tx_data_10(void)
 ********************************************************************************/
 unsigned char tx_data_11(void)
 {
-  unsigned char tt_data,i;
+  unsigned char tt_data=0,i=0;
   
       tt_data=0;
       
@@ -1193,7 +1203,7 @@ unsigned char tx_data_11(void)
 ********************************************************************************/
 unsigned char tx_data_12(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
   
       tt_data=0;
       
@@ -1216,7 +1226,7 @@ unsigned char tx_data_12(void)
 ********************************************************************************/
 unsigned char tx_data_13(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
   
       tt_data=0;
 
@@ -1239,7 +1249,7 @@ unsigned char tx_data_13(void)
 ********************************************************************************/
 unsigned char tx_data_14(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
      tt_data=temp_ad_value;//temp_value;
   
@@ -1250,7 +1260,7 @@ unsigned char tx_data_14(void)
 ********************************************************************************/
 unsigned char tx_data_15(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        tt_data=0;
       if(machine_type1==4)
@@ -1272,7 +1282,7 @@ unsigned char tx_data_15(void)
 ********************************************************************************/
 unsigned char tx_data_16(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        tt_data=0;
    
@@ -1299,7 +1309,7 @@ unsigned char tx_data_16(void)
 ********************************************************************************/
 unsigned char tx_data_17(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        
    
@@ -1338,7 +1348,7 @@ unsigned char tx_data_17(void)
 ********************************************************************************/
 unsigned char tx_data_18(void)
 {
-  unsigned char tt_data,i,j,i1,j1;
+  unsigned char tt_data=0,i=0,j=0,i1=0,j1=0;
 
   
        tt_data=0;
@@ -1379,7 +1389,7 @@ unsigned char tx_data_18(void)
 ********************************************************************************/
 unsigned char tx_line_18(void)
 {
-  unsigned char tt_data,i,j,i1,j1;
+  unsigned char tt_data=0,i=0,j=0,i1=0,j1=0;
 
   
        tt_data=0;
@@ -1416,7 +1426,7 @@ unsigned char tx_line_18(void)
 ********************************************************************************/
 unsigned char tx_data_19(void)
 {
-  unsigned char tt_data,i,j,i1,j1;
+  unsigned char tt_data=0,i=0,j=0,i1=0,j1=0;
 
        tt_data=0;
        
@@ -1448,7 +1458,7 @@ unsigned char tx_data_19(void)
 ********************************************************************************/
 unsigned char tx_line_19(void)
 {
-  unsigned char tt_data,i,j,i1,j1;
+  unsigned char tt_data=0,i=0,j=0,i1=0,j1=0;
 
        tt_data=0;
        
@@ -1476,7 +1486,7 @@ unsigned char tx_line_19(void)
 ********************************************************************************/
 unsigned char tx_data_21(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        tt_data=0;
        
@@ -1500,7 +1510,7 @@ void line_control_tx_deal2(void)
 ********************************************************************************/
 void timing_tx_deal2(void)
 {
-    unsigned char nuber;
+    unsigned char nuber=0;
 
     nuber=get_nuber();
   
@@ -1512,7 +1522,7 @@ void timing_tx_deal2(void)
 ********************************************************************************/
 void baseextend_tx_deal2(void)
 {
-    unsigned char nuber;
+    unsigned char nuber=0;
 
     nuber=get_nuber();
   
@@ -1532,7 +1542,7 @@ void baseextend_line_tx_deal2(void)
 ********************************************************************************/
 void base_data_tx_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1584,7 +1594,7 @@ void base_data_tx_deal(void)
 ********************************************************************************/
 void base_data_tx_new_deal(void)
 {
-     unsigned char i;
+     unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1624,7 +1634,7 @@ void base_data_tx_new_deal(void)
 ********************************************************************************/
 void base_data_tx_new1_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1676,7 +1686,7 @@ void base_data_tx_new1_deal(void)
 ********************************************************************************/
 void extendbase_data_tx_new_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
   tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1753,7 +1763,7 @@ void extendbase_data_tx_new_deal(void)
 ********************************************************************************/
 void extendbase_data_tx_new1_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1849,7 +1859,7 @@ void extendbase_data_tx_new1_deal(void)
 ********************************************************************************/
 void g25_basedata_tx_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1936,7 +1946,7 @@ void g25_basedata_tx_deal(void)
 ********************************************************************************/
 void g25_extenddata_tx_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -1977,7 +1987,7 @@ void g25_extenddata_tx_deal(void)
 ********************************************************************************/
 void dresschange_request_tx_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0xf1;
@@ -2006,7 +2016,7 @@ void dresschange_request_tx_deal(void)
 ********************************************************************************/
 void dresschange_confirm_tx_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
      tx_data[0]=0x21;
       tx_data[1]=0xf2;
@@ -2031,7 +2041,7 @@ void dresschange_confirm_tx_deal(void)
 ********************************************************************************/
 void point_check_tx1_deal(void)
 {
-      unsigned char i;
+      unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -2060,7 +2070,7 @@ void point_check_tx1_deal(void)
 ********************************************************************************/
 void point_check_tx2_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -2089,7 +2099,7 @@ void point_check_tx2_deal(void)
 ********************************************************************************/
 void connect_information_tx_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -2118,7 +2128,7 @@ void connect_information_tx_deal(void)
 ********************************************************************************/
 void group_message_tx_deal(void)
 {
-   unsigned char i,j;
+   unsigned char i=0,j=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -2173,7 +2183,7 @@ void group_message_tx_deal(void)
 ********************************************************************************/
 void group_message_extend_tx_deal(void)
 {
-    unsigned char i,j;
+    unsigned char i=0,j=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -2214,7 +2224,7 @@ void group_message_extend_tx_deal(void)
 ********************************************************************************/
 void machine_type_tx_deal(void)
 {
-    unsigned char i;
+    unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -2242,7 +2252,7 @@ void machine_type_tx_deal(void)
 ********************************************************************************/
 void auto_clear_address(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0xf3;
@@ -2269,7 +2279,7 @@ void auto_clear_address(void)
 ********************************************************************************/
 void boardcheck_start_tx_deal(void)
 {
-    unsigned char i;
+    unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x10;
@@ -2294,7 +2304,7 @@ void boardcheck_start_tx_deal(void)
 ********************************************************************************/
 void boardcheck_end_tx_deal(void)
 {
-    unsigned char i;
+    unsigned char i=0;
 
   tx_data[0]=0x21;
       tx_data[1]=0x11;
@@ -2319,7 +2329,7 @@ void boardcheck_end_tx_deal(void)
 ********************************************************************************/
 unsigned char tx_line_10(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
   
       tt_data=0;
       tt_data=(system_mode&0x1f)<<2;
@@ -2332,7 +2342,7 @@ unsigned char tx_line_10(void)
 ********************************************************************************/
 unsigned char tx_line_11(void)
 {
-   unsigned char tt_data;
+   unsigned char tt_data=0;
   
       tt_data=0;
       
@@ -2414,7 +2424,7 @@ unsigned char tx_line_11(void)
 ********************************************************************************/
 unsigned char tx_line_12(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
   
       tt_data=0;
       
@@ -2439,7 +2449,7 @@ unsigned char tx_line_12(void)
 ********************************************************************************/
 unsigned char tx_line_13(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
   
       tt_data=0;
         
@@ -2462,7 +2472,7 @@ unsigned char tx_line_13(void)
 ********************************************************************************/
 unsigned char tx_line_14(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
      tt_data=temp_ad_value;//temp_value;
       
@@ -2472,7 +2482,7 @@ unsigned char tx_line_14(void)
 ********************************************************************************/
 unsigned char tx_line_15(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        tt_data=0;
    
@@ -2496,7 +2506,7 @@ unsigned char tx_line_15(void)
 ********************************************************************************/
 unsigned char tx_line_16(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        tt_data=0;
    
@@ -2522,7 +2532,7 @@ unsigned char tx_line_16(void)
 ********************************************************************************/
 unsigned char tx_line_17(void)
 {
-  unsigned char tt_data;
+  unsigned char tt_data=0;
 
        tt_data=0;
    
@@ -2542,7 +2552,7 @@ unsigned char tx_line_17(void)
 ********************************************************************************/
 unsigned char tx_line_23(void)
 {
- unsigned char tt_data;
+ unsigned char tt_data=0;
 
    tt_data=0;
     
@@ -2576,7 +2586,7 @@ unsigned char tx_line_23(void)
 ********************************************************************************/
 unsigned char tx_line_24(void)
 {
- unsigned char tt_data,i,j,i1,j1;
+ unsigned char tt_data=0,i=0,j=0,i1=0,j1=0;
 
   
        tt_data=0;
@@ -2634,7 +2644,7 @@ unsigned char tx_line_24(void)
 ********************************************************************************/
 unsigned char tx_line_25(void)
 {
- unsigned char tt_data,i,j,i1,j1;
+ unsigned char tt_data=0,i=0,j=0,i1=0,j1=0;
 
        tt_data=0;
        
@@ -2683,7 +2693,7 @@ unsigned char tx_line_25(void)
 ********************************************************************************/
 void line_control_tx_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
   
                
       tx_data[0]=0x41;
@@ -2781,7 +2791,7 @@ void line_control_tx_deal(void)
 ********************************************************************************/
 void line_control_tx_new_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x41;
       tx_data[1]=0x00;
@@ -2860,7 +2870,7 @@ void line_control_tx_new_deal(void)
 ********************************************************************************/
 void line_control_tx_new1_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
    
       tx_data[0]=0x41;
       tx_data[1]=0x00;
@@ -2953,7 +2963,7 @@ void line_control_tx_new1_deal(void)
 ********************************************************************************/
 void extendbase_line_control_tx_new_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
       tx_data[0]=0x41;
       tx_data[1]=0x00;
@@ -3016,7 +3026,7 @@ void extendbase_line_control_tx_new_deal(void)
 ********************************************************************************/
 void extendbase_line_control_tx_new1_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x41;
       tx_data[1]=0x00;
@@ -3097,7 +3107,7 @@ void extendbase_line_control_tx_new1_deal(void)
 ********************************************************************************/
 void g25_line_control_tx_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
 
       tx_data[0]=0x41;
@@ -3194,7 +3204,7 @@ void g25_line_control_tx_deal(void)
 ********************************************************************************/
 void g25_extenddata_line_tx_deal(void)
 {
-   unsigned char i;
+   unsigned char i=0;
 
 	tx_data[0]=0x41;
       tx_data[1]=0x00;
@@ -3252,7 +3262,7 @@ void g25_extenddata_line_tx_deal(void)
 ********************************************************************************/
 void line_dresschange_request_tx_deal(void)
 {
-    unsigned char i;
+    unsigned char i=0;
  
 
       tx_data[0]=0x41;
@@ -3298,7 +3308,7 @@ void line_dresschange_request_tx_deal(void)
 ********************************************************************************/
 void line_dresschange_finish_tx_deal(void)
 {
-    unsigned char i;
+    unsigned char i=0;
 
       tx_data[0]=0x41;
       tx_data[1]=0xe2;
@@ -3336,7 +3346,7 @@ void line_dresschange_finish_tx_deal(void)
 ********************************************************************************/
 void line_dresschange_confirm_tx_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x41;
       tx_data[1]=0xf2;
@@ -3373,7 +3383,7 @@ void line_dresschange_confirm_tx_deal(void)
 ********************************************************************************/
 void line_group_message_tx_deal(void)
 {
-    unsigned char i,j;
+    unsigned char i=0,j=0;
 
       tx_data[0]=0x41;
       tx_data[1]=0x00;
@@ -3417,7 +3427,7 @@ void line_group_message_tx_deal(void)
 ********************************************************************************/
 void line_group_message_extend_tx_deal(void)
 {
-   unsigned char i,j;
+   unsigned char i=0,j=0;
 
 
       tx_data[0]=0x41;
@@ -3459,7 +3469,7 @@ void line_group_message_extend_tx_deal(void)
 ********************************************************************************/
 void a3d_wind_tx_deal(void)
 {
-   unsigned char i,j,k,i1,j1,k1;
+   unsigned char i=0,j=0,k=0,i1=0,j1=0,k1=0;
 
       tx_data[0]=0x71;
       tx_data[1]=0x00;
@@ -3626,7 +3636,7 @@ void a3d_wind_tx_deal(void)
 ********************************************************************************/
 void save_option_tx_deal(void)
 {
-  unsigned char i;
+  unsigned char i=0;
 
       tx_data[0]=0x21;
       tx_data[1]=0x00;
@@ -3664,7 +3674,7 @@ void save_option_tx_deal(void)
 void system_tx_check(void)
 {
 
-  unsigned char i;
+  unsigned char i=0;
   
 //  if(system_tx_10ms==0)return;
 //  system_tx_10ms=0;
@@ -3676,9 +3686,12 @@ void system_tx_check(void)
   
   
   if((initialize_flag==0)||(self_check_flag))return;
+
+  
   
   if(tx_change_flag)
   {
+  
     tx_time_1s_cnt++;
     if(tx_time_1s_cnt>=100)    
     {
@@ -3689,7 +3702,7 @@ void system_tx_check(void)
         tx_time_systemon_cnt=0;
         tx_systemon_flag=0;
         
-        
+       
    
         if((wifi_tx_flag==0)&&(wifi_connect_ok))
         {
@@ -3710,9 +3723,11 @@ void system_tx_check(void)
     tx_time_systemon_cnt=0;
     tx_systemon_flag=1;
     err_4s_cnt=0;
+	printf("ok9");
   } 
+
   
-  
+
   
   if(tx_data_flag[0].data||tx_data_flag[1].data||tx_data_flag[2].data||tx_data_flag[3].data) return;
   

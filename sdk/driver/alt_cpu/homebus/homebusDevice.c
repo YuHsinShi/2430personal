@@ -43,6 +43,10 @@ static pthread_mutex_t gHomebusStatusMutex  = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t gHomebusTickMutex  = PTHREAD_MUTEX_INITIALIZER;
 static HOMEBUS_DEV_HANDLE gHomebusDevHandle = {0};
 
+
+static pthread_mutex_t gThreadMutex  = PTHREAD_MUTEX_INITIALIZER;
+
+
 static void homebusProcessCommand(int cmdId);
 
 
@@ -56,23 +60,28 @@ printf("homebus_logic_control \n");
 
 	while(1)
 	{
+	
+	   // pthread_mutex_lock(&gThreadMutex);
+
 		system_tx_check();
 	
 		init_tx_deal();
 
-		if(0==counter){  tx_deal();	counter=10; } // do until100ms 
-		rx_deal();		
+		if(0==counter){  tx_deal();	counter=10; } // do until 100ms 
+		//rx_deal();		
 
 
+		//pthread_mutex_unlock(&gThreadMutex);
 
 		usleep(10*1000);//10ms 
 		counter--;
+		
 	}
 }
 
 int homebus_senddata(uint8_t* buf,unsigned char len)
 {
-	printf("Homebus Send(%d) :", len);
+	printf("[HL SEND](%d) :", len);
 int ret;
 	if(0) //len >64)
 	{
@@ -148,8 +157,8 @@ static uint32_t homebusGetTickCnt()
 static void homebusSetStatus(uint8_t sta)
 {
     pthread_mutex_lock(&gHomebusStatusMutex);
-	if(gHomebusDevHandle.status != sta)
-	    printf_hb("[homebusSetStatus] current(%d) new(%d)\n", gHomebusDevHandle.status, sta);
+//	if(gHomebusDevHandle.status != sta)
+//	    printf_hb("[homebusSetStatus] current(%d) new(%d)\n", gHomebusDevHandle.status, sta);
     gHomebusDevHandle.status = sta;
     pthread_mutex_unlock(&gHomebusStatusMutex);
 }
@@ -205,7 +214,9 @@ static void *read_thread_func(void *arg)
         if(tHomebusReadData.len > 0)
         {
 
+			//pthread_mutex_lock(&gThreadMutex);
 			rx_homebus_receive_parser_bypass(tHomebusReadData.len,tHomebusReadData.pReadBuffer);
+			///pthread_mutex_unlock(&gThreadMutex);
 
 
             homebusSetTickCnt();
@@ -216,8 +227,8 @@ static void *read_thread_func(void *arg)
                 memcpy(rBuff+rIdx, tHomebusReadData.pReadBuffer, tHomebusReadData.len);
                 rIdx += tHomebusReadData.len;
                 if(gHomebusDevHandle.txColsChk == 1 && rIdx == 1 && rBuff[0] == 0xaa) {homebusSetStatus(TX_NO_COLLISION); goto dropData;}
-                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x06) {	printf_hb("[HB RECV- ACK] 0x%x \n",rBuff[gHomebusDevHandle.txLen+1]);  homebusSetStatus(TX_ACK); goto dropData;}
-                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x15) {printf_hb("[HB RECV- NACK] 0x%x \n",rBuff[gHomebusDevHandle.txLen+1]); homebusSetStatus(TX_NACK); goto dropData;}
+                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x06) {	printf_hb("[HB RECV- ACK] 0x%x 0x%x \n",rBuff[gHomebusDevHandle.txLen],rBuff[gHomebusDevHandle.txLen+1]);  homebusSetStatus(TX_ACK); goto dropData;}
+                else if (rIdx == gHomebusDevHandle.txLen + 2 && rBuff[gHomebusDevHandle.txLen+1] == 0x15) {printf_hb("[HB RECV- NACK] 0x%x 0x%x \n",rBuff[gHomebusDevHandle.txLen],rBuff[gHomebusDevHandle.txLen+1]); homebusSetStatus(TX_NACK); goto dropData;}
                 else if (memcmp(gHomebusDevHandle.txData, rBuff, MIN(rIdx, gHomebusDevHandle.txLen)) != 0){			
 					//collision
                     for(int i = 0; i < rIdx; i++) printf("[%d]=%x\n", i, rBuff[i]);
@@ -263,6 +274,7 @@ static void *read_thread_func(void *arg)
 
 					
 						printf("[HL GET]FULL FRAME %d\n",fLen);
+				
 	                    //ack
 						homebus_send_ack(rBuff[0],1);
 					/*
@@ -437,15 +449,12 @@ static int homebusIoctl(int file, unsigned long request, void *ptr, void *info)
             }
             memcpy(pWriteAddress, ptInitData, sizeof(HOMEBUS_INIT_DATA));
             homebusProcessCommand(INIT_CMD_ID);			
-
-
 			
             //uid
             memcpy(gHomebusDevHandle.uid, ptInitData->uid, sizeof(gHomebusDevHandle.uid));
             ithPrintf("[Homebus] ID : %x %x\n", gHomebusDevHandle.uid[0], gHomebusDevHandle.uid[1]);
 
-
-
+			//pthread_mutex_init(&gThreadMutex, NULL);
             //read thread start
             homebusReadThreadStart();
 
@@ -546,7 +555,7 @@ static int homebusIoctl(int file, unsigned long request, void *ptr, void *info)
                         memcpy(pWriteAddress, ptWriteData, sizeof(HOMEBUS_WRITE_DATA));
                         continue;
                     } else if(homebusGetStatus() == TX_ACK) {
-                        ithPrintf("[Homebus] write success !(%d)(%d)\n", ((HOMEBUS_WRITE_DATA*) pWriteAddress)->len, homebusGetStatus());
+                       // printf_hb("[Homebus] write success !(%d)(%d)\n", ((HOMEBUS_WRITE_DATA*) pWriteAddress)->len, homebusGetStatus());
                         //TX_ACK
                         homebusSetStatus(IDLE);
                         cnt = 0;
