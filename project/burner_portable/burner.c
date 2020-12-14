@@ -468,7 +468,7 @@ uint8_t indata[16]={0};
 uint32_t group ;
 printf("law_test \n");
 int flag=0;
-#define PIN_GPIO 		26
+#define PIN_GPIO 		13
 //	ithGpioGet_GpioRegAddressPrint(PIN_GPIO);
 
 	SPI_CLK_LAB my_clk;
@@ -498,14 +498,16 @@ int flag=0;
 				//get_ite_chip_id();
 				
 				if(0==flag){
-					target_io_write(PIN_GPIO,1);
+				//	target_io_write(PIN_GPIO,1);
+					gpio_set(PIN_GPIO);
 					flag =1;}
 				else{
-					target_io_write(PIN_GPIO,0);	
+					//target_io_write(PIN_GPIO,0);	
+					gpio_clear(PIN_GPIO);
 					flag =0;}
 				
 				
-				usleep(1*1000*1000);
+				usleep(5*1000*1000);
 			}
 
 
