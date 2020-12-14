@@ -49,6 +49,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     upgrade.c
     #backup.c
 	burner.c
+	target_control.c
     )
 
 

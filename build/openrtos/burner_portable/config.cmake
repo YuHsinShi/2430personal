@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Thu Nov 19 16:47:53 2020
+# Mon Dec 07 19:22:49 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -252,7 +252,7 @@ set(CFG_UART_FORCE_FLUSH y)
 # CFG_USB1_ENABLE is not set
 set(CFG_USB_DEVICE y)
 set(CFG_USB_DEVICE_USB0 y)
-set(CFG_USBD_MASS_STORAGE y)
+# CFG_USBD_MASS_STORAGE is not set
 # CFG_USBD_NCM is not set
 # CFG_USBD_HID_DEVICE is not set
 # CFG_USBD_HID_MOUSE is not set
@@ -262,14 +262,7 @@ set(CFG_USBD_ACM y)
 set(CFG_USB_VENDOR_ID "0x1D6B")
 set(CFG_USB_PRODUCT_ID "0x0106")
 set(CFG_USBD_STR_MANUFACTURER "Toolman")
-set(CFG_USBD_STR_PRODUCT "TOOLDEBUG (Interface 0)")
-set(CFG_USBD_STR_SERIAL_NUMBER "907012344321")
-set(CFG_USB_DEVICE_DISKS "0, 1")
-set(CFG_USBD_LUN_VENDOR_ID "'G','e','n','e','r','i','c',' '")
-set(CFG_USBD_LUN0_PRODUCT_ID "'S','t','o','r','a','g','e',' ','I','N','T','E','R','N','A','L'")
-set(CFG_USBD_LUN1_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','1',' ',' '")
-set(CFG_USBD_LUN2_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','2',' ',' '")
-set(CFG_USBD_LUN3_PRODUCT_ID "'S','t','o','r','a','g','e',' ','C','A','R','D',' ','3',' ',' '")
+set(CFG_USBD_STR_PRODUCT "TOOLDEBUG")
 # CFG_IRDA_ENABLE is not set
 # CFG_KEYPAD_ENABLE is not set
 # CFG_TOUCH_ENABLE is not set

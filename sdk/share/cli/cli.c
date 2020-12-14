@@ -110,10 +110,10 @@ static void* CliTask(void* arg)
 
     while (ioctl(ITP_DEVICE_USBDACM, ITP_IOCTL_IS_CONNECTED, NULL) == 0)
     {
-        printf(".");
+		printf("USB ACM NOT CONNECTED ####\n");
         sleep(1);
     }
-    printf("\n");
+    printf("USB ACM CONNECTED ====n");
 
     ret = read(ITP_DEVICE_USBDACM, cInputString, cmdMAX_INPUT_SIZE);
     if (ret == 0)
@@ -121,7 +121,7 @@ static void* CliTask(void* arg)
       LOG_DBG "read null\n" LOG_END
       continue;
     }
-    LOG_DBG "read(%d) %s\n", ret, cInputString  LOG_END
+    printf( "read(%d) %s\n", ret, cInputString  LOG_END
 
   	do
   	{

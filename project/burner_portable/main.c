@@ -48,6 +48,7 @@ else
 }
 
 
+//law_test();
 
 burn_led_congtrol();
 int burn_task;

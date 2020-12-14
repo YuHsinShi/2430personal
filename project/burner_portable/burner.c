@@ -155,8 +155,9 @@ void switch_to_channel(int channel)
 
 void write_slave_register(uint32_t addr, uint32_t data)
 {
+	printf("write_slave_register addr 0x%x value=0x%x\n",addr,data);
+
 	uint8_t cmd[9] = { 0x0 };
-	uint8_t indata[9] = { 0 };
 	uint32_t *tmp_u32 = 0;
 	uint32_t addr_endian;
 	uint32_t data_endian;
@@ -181,12 +182,14 @@ void write_slave_register(uint32_t addr, uint32_t data)
 }
 
 
-void read_slave_register(uint32_t addr, uint8_t* indata)
+
+uint32_t read_slave_register(uint32_t addr, uint8_t* indata)
 {
 	uint8_t cmd[9] = { 0x0 };
 
 	uint32_t *cmd_reg_addr = 0;
 	uint32_t addr_endian;
+	uint32_t value;
 
 	cmd[0] = 0x45;
 	//addr_endian= BLEndianUint32(addr);
@@ -195,15 +198,69 @@ void read_slave_register(uint32_t addr, uint8_t* indata)
 	memcpy(cmd_reg_addr, &addr_endian, 4);
 
 	mmpSpiPioRead(SPI_BURNNIGN_PORT, cmd, 9, indata, 4, 4);
-	/*
-	printf("read_slave_register addr 0x%x\n",addr);
+	
+	memcpy(&value,indata,4);
+printf("read_slave_register addr 0x%x value=0x%x\n",addr,value);
+
+	for(int i=0;i<9;i++)
+	printf("0x%x ",indata[i]);
+	printf("\n");
+	
+
+return value;
+}
+uint32_t read_slave_register_value(uint32_t addr)
+{
+	uint8_t indata[16];
+
+	uint8_t cmd[9] = { 0x0 };
+
+	uint32_t *cmd_reg_addr = 0;
+	uint32_t addr_endian;
+	uint32_t value;
+
+	cmd[0] = 0x45;
+	//addr_endian= BLEndianUint32(addr);
+	addr_endian = addr;
+	cmd_reg_addr = (uint32_t*)&cmd[1];
+	memcpy(cmd_reg_addr, &addr_endian, 4);
+
+	mmpSpiPioRead(SPI_BURNNIGN_PORT, cmd, 9, indata, 4, 4);
+	
+	memcpy(&value,indata,4);
+/*
+printf("read_slave_register addr 0x%x value=0x%x\n",addr,value);
+
 	for(int i=0;i<9;i++)
 	printf("0x%x ",indata[i]);
 	printf("\n");
 	*/
 
+return value;
 }
 
+//bit value-
+void write_slave_register_by_mask(uint32_t addr, uint32_t mask, uint8_t isSet)
+{
+	uint8_t buf[16] = { 0x0 };
+	uint32_t value;
+
+	value=read_slave_register(addr,buf);
+	printf("old value = 0x%x ,mask=0x%x ",value,mask);
+	if(isSet)
+		value|=mask;
+	else
+		value&=~mask;
+	
+	printf("new value = 0x%x ",value);
+	write_slave_register(addr,value);
+	
+	value=read_slave_register(addr,buf);
+	printf("read back value = 0x%x \n",value);
+
+
+
+}
 
 int get_ite_chip_id()
 {
@@ -217,7 +274,7 @@ int get_ite_chip_id()
 
 	if( (indata[3]==0x9) && (indata[2]==0x60) )
 	{
-		printf("chip id is %x%x",indata[2],indata[3]);
+		printf("chip id is %x%x \n",indata[2],indata[3]);
 		return 1;
 	}
 	else if ( (indata[3]==0x9 && indata[2]==0x70))
@@ -248,6 +305,12 @@ int set_bypass_mode_960()
 
 	return 0;
 }
+
+
+
+
+
+
 
 
 
@@ -342,8 +405,120 @@ int writing_nor_progressing(FILE* fp)
 }
 
 
-#define MAX_SPI_CLK 		SPI_CLK_20M
+#define MAX_SPI_CLK 		SPI_CLK_5M
 #define MIN_SPI_CLK 		SPI_CLK_5M
+
+void target_io_write(unsigned int pin,int sethigh)
+{
+
+
+
+//DATASET_REG_ADDR[group], 0x1 << (pin & 0x1F)
+unsigned int value;
+unsigned int addr;// DATASET_REG_ADDR[group]
+unsigned int mask;
+
+
+//ithGpioSetOut(pin); //ithSetRegBitA(PINDIR_REG_ADDR[group], pin & 0x1F);
+
+addr = ithGpioGet_GpioPinDirAddress(pin);
+mask = pin & 0x1F;
+write_slave_register_by_mask(addr,mask,1);
+
+
+if(sethigh)
+	addr = ithGpioGet_GpioDataSetAddress(pin);
+else
+	addr = ithGpioGet_GpioDataClearAddress(pin);
+
+mask = 0x1 << (pin & 0x1F);
+write_slave_register_by_mask(addr,mask,1);
+
+//ithGpioSetMode(pin, ITH_GPIO_MODE0);
+
+
+//ithGpioClear(pin);
+//ithGpioSet(pin);
+
+
+
+}
+
+void target_io_read(unsigned int pin)
+{
+
+	uint8_t indata[16]={0};
+	uint32_t group;
+	uint32_t value ;
+
+	group = ithGpioGet_GpioInputAddress(pin);//
+
+	value = read_slave_register(group,indata);//packet3
+	if( value & (0x1 << (pin & 0x1F)) ){	
+		printf("tartget GPIO %d is HIGH \n",pin );}
+	else{
+		printf("tartget GPIO %d is LOW \n",pin );}
+	
+
+}
+
+void law_test()
+{
+uint8_t indata[16]={0};
+uint32_t group ;
+printf("law_test \n");
+int flag=0;
+#define PIN_GPIO 		26
+//	ithGpioGet_GpioRegAddressPrint(PIN_GPIO);
+
+	SPI_CLK_LAB my_clk;
+
+//	ithGpioSetMode(PIN_GPIO, ITH_GPIO_MODE0);
+//	ithGpioSetOut(PIN_GPIO);
+//	ithGpioClear(PIN_GPIO);
+
+	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+		
+
+
+		if(1==	get_ite_chip_id() )
+		{
+				 
+
+			//	write_slave_register(0xd100000c,0x12345678);	
+			//	read_slave_register(0xd100000c,indata); 
+			//	while(1);
+
+
+			while(1)
+			{
+				//target_io_read(PIN_GPIO);
+				//get_ite_chip_id();
+				
+				if(0==flag){
+					target_io_write(PIN_GPIO,1);
+					flag =1;}
+				else{
+					target_io_write(PIN_GPIO,0);	
+					flag =0;}
+				
+				
+				usleep(1*1000*1000);
+			}
+
+
+			mmpSpiTerminate(SPI_BURNNIGN_PORT);
+			return;
+		
+		}
+		mmpSpiTerminate(SPI_BURNNIGN_PORT);
+
+	}
+
+}
+
 
 //ret 1: nor init OK
 //ret -1: can not found slave device or not supported nor

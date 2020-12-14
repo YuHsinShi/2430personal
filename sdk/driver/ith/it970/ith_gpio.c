@@ -220,6 +220,7 @@ void ithGpioSetMode(unsigned int pin, ITHGpioMode mode)
     if (pin < 96)
     {
         ithWriteRegMaskA(MODESEL_REG_ADDR[pin >> 3], value, mask);
+	//	printf("MODESEL_REG_ADDR[pin >> 3]=0x%x \n ",MODESEL_REG_ADDR[pin >> 3]);
     }
     //else
     //{
@@ -448,6 +449,48 @@ inline uint32_t ithGpioGet(unsigned int pin)
     int group = pin >> 5;
     return ithReadRegA(DATAIN_REG_ADDR[group]) & (0x1 << (pin & 0x1F));
 }
+
+
+//===================================================================
+
+uint32_t ithGpioGet_GpioInputAddress(unsigned int pin)
+{
+    int group = pin >> 5;
+	printf("ithGpioGet_GpioInputAddress group=%x,reg_add=%x \n",group,DATAIN_REG_ADDR[group]);
+	return DATAIN_REG_ADDR[group];
+}
+
+uint32_t ithGpioGet_GpioDataSetAddress(unsigned int pin)
+{
+    int group = pin >> 5;
+	printf(" ithGpioGet_GpioDataSetAddress group=%x,reg_add=%x \n",group,DATASET_REG_ADDR[group]);
+	return DATASET_REG_ADDR[group];
+}
+
+
+uint32_t ithGpioGet_GpioDataClearAddress(unsigned int pin)
+{
+    int group = pin >> 5;
+	printf("ithGpioGet_GpioDataClearAddress group=%x,reg_add=%x \n",group,DATACLR_REG_ADDR[group]);
+	return DATACLR_REG_ADDR[group];
+}
+
+uint32_t ithGpioGet_GpioPinDirAddress(unsigned int pin)
+{
+    int group = pin >> 5;
+	printf("ithGpioGet_GpioPinDirAddress group=%x,reg_add=%x \n",group,PINDIR_REG_ADDR[group]);
+	return PINDIR_REG_ADDR[group];
+}
+void ithGpioGet_GpioRegAddressPrint(unsigned int pin)
+{
+	ithGpioGet_GpioInputAddress(pin);
+	ithGpioGet_GpioDataSetAddress(pin);
+	ithGpioGet_GpioDataClearAddress(pin);
+	ithGpioGet_GpioPinDirAddress(pin);
+	printf("MODESEL_REG_ADDR = 0x%x",MODESEL_REG_ADDR[pin >> 3]);
+
+}
+//===================================================================
 
 inline void ithGpioEnableIntr(unsigned int pin)
 {

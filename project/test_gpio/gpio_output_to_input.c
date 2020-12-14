@@ -25,17 +25,7 @@ void* TestFunc(void* arg)
 	int i = 0;
 
 	printf("GPIOv  test start~~~\n");
-	ithGpioSetOut(48);
-	ithGpioSetMode(48, ITH_GPIO_MODE0);
-	ithGpioClear(48);
-	ithGpioSetOut(49);
-	ithGpioSetMode(49, ITH_GPIO_MODE0);
-	ithGpioClear(49);
 
-	ithGpioSetOut(50);
-	ithGpioSetMode(50, ITH_GPIO_MODE0);
-	ithGpioClear(50);
-	//initial GPIO
 	ithGpioSetOut(gpioPinOut);
 	ithGpioSetMode(gpioPinOut, ITH_GPIO_MODE0);
 
