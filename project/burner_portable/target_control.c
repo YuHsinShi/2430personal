@@ -57,6 +57,7 @@ HOST_ReadRegister(
 	return MMP_RESULT_SUCCESS;
 }
 
+
 #else
 
 
@@ -526,5 +527,24 @@ void gpio_clear(unsigned int m_GPIOSEL)
 
 		}
 	}
+}
+
+void target_script_load()
+{
+	char FileName[1024];
+	char delayus = 0;
+	unsigned long value;
+	int result =0;
+
+
+
+//	HOST_ReadRegister(0x0002, &value,HOST_MODE);
+
+	//if((value == 0x0970) || (value == 0x9920) || (value == 0x9850))
+	{
+		//delayus = 1;
+	}
+	result = load_script(FileName,delayus);
+
 }
 

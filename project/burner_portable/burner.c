@@ -486,12 +486,9 @@ int flag=0;
 		if(1==	get_ite_chip_id() )
 		{
 				 
-
-			//	write_slave_register(0xd100000c,0x12345678);	
-			//	read_slave_register(0xd100000c,indata); 
-			//	while(1);
-
-
+#if 2
+			target_script_load();
+#else
 			while(1)
 			{
 				//target_io_read(PIN_GPIO);
@@ -510,7 +507,7 @@ int flag=0;
 				usleep(5*1000*1000);
 			}
 
-
+#endif
 			mmpSpiTerminate(SPI_BURNNIGN_PORT);
 			return;
 		

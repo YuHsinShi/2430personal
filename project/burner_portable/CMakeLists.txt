@@ -50,6 +50,9 @@ add_executable(${CMAKE_PROJECT_NAME}
     #backup.c
 	burner.c
 	target_control.c
+	load_script.c
+	script.lex.c
+	script.tab.c
     )
 
 
