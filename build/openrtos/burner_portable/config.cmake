@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Mon Dec 07 19:22:49 2020
+# Thu Dec 17 14:42:09 2020
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -418,7 +418,7 @@ set(CFG_ITP_INFO y)
 set(CFG_CLI_ERR y)
 set(CFG_CLI_WARN y)
 set(CFG_CLI_INFO y)
-# CFG_CLI_DBG is not set
+set(CFG_CLI_DBG y)
 set(CFG_CLI_USB_ACM y)
 set(CFG_CLI_BUF_SIZE "0x20000")
 
