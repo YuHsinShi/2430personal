@@ -15,4 +15,5 @@ add_executable(${CMAKE_PROJECT_NAME}
 	layer_power_off_timing.c
 	layer_consult.c
 	layer_download.c
+	layer_logo.c
     )

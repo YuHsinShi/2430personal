@@ -236,6 +236,9 @@ bool SpecialStaticPressureEnterBtnOnPress(ITUWidget* widget, char* param)
 	sprintf(tmp, "%dpa", staticPressureManualValue);
 	ituTextSetString(specialStaticPressureText, tmp);
 
+	staticPressureIndex = tmpStaticPressureIndex;
+	ituSpriteGoto(specialStaticPressureSprite, staticPressureIndex);
+
 	staticPressureProgressing = true;
 	progress = 0;
 
@@ -249,11 +252,11 @@ bool SpecialStaticPressureRadioBoxOnPress(ITUWidget* widget, char* param)
 	ituRadioBoxSetChecked(specialStaticPressureRadioBox[0], false);
 	ituRadioBoxSetChecked(specialStaticPressureRadioBox[1], false);
 
-	staticPressureIndex = atoi(param);
-	ituRadioBoxSetChecked(specialStaticPressureRadioBox[staticPressureIndex], true);
-	ituSpriteGoto(specialStaticPressureSprite, staticPressureIndex);
+	tmpStaticPressureIndex = atoi(param);
+	ituRadioBoxSetChecked(specialStaticPressureRadioBox[tmpStaticPressureIndex], true);
+	//ituSpriteGoto(specialStaticPressureSprite, staticPressureIndex);
 
-	if (staticPressureIndex)
+	if (tmpStaticPressureIndex)
 	{
 		tmpStaticPressureManualSubValue = tmpStaticPressureManualValue;
 		sprintf(tmp, "%d", tmpStaticPressureManualSubValue);
@@ -397,6 +400,11 @@ bool SpecialStaticPressureBtnOnMouseUp(ITUWidget* widget, char* param)
 	tmpStaticPressureManualValue = staticPressureManualValue;
 	sprintf(tmp, "%dpa", tmpStaticPressureManualValue);
 	ituTextSetString(specialStaticPressureManualValueText, tmp);
+
+	tmpStaticPressureIndex = staticPressureIndex;
+	ituRadioBoxSetChecked(specialStaticPressureRadioBox[0], false);
+	ituRadioBoxSetChecked(specialStaticPressureRadioBox[1], false);
+	ituRadioBoxSetChecked(specialStaticPressureRadioBox[tmpStaticPressureIndex], true);
 
     return true;
 }

@@ -97,6 +97,10 @@ static int restDayIndex[MAX_REST_COUNT] = { 8, 1, 2, 3 };
 static int restAllContainerHeight;
 static bool addingRest = false;
 
+static bool sliding = false;
+static bool slidingLeft = false;
+static ITUBackground* slidingBackground = 0;
+static uint32_t lastTick = 0;
 bool TimingOnEnter(ITUWidget* widget, char* param)
 {
 	int i, j, dayItemCnt,W;
@@ -377,7 +381,7 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 	
 
 	
-	
+	lastTick = SDL_GetTicks();
 	return true;
 }
 
@@ -399,6 +403,48 @@ bool TimingOnLeave(ITUWidget* widget, char* param)
 	}
 
 	return true;
+}
+
+bool TimingOnTimer(ITUWidget* widget, char* param)
+{
+	int i;
+	bool ret = false;
+
+	uint32_t diff, tick = SDL_GetTicks();
+	static uint32_t pre_diff = 0;
+
+	if (tick >= lastTick)
+		diff = tick - lastTick;
+	else
+		diff = 0xFFFFFFFF - lastTick + tick;
+
+	if (diff - pre_diff > 50)
+	{
+		pre_diff = diff;
+		if (sliding)
+		{
+			if (slidingLeft)
+			{
+				ituWidgetSetX(slidingBackground, ituWidgetGetX(slidingBackground) - 31);
+				if (ituWidgetGetX(slidingBackground) == -124)
+					sliding = false;
+			}
+			else
+			{
+				ituWidgetSetX(slidingBackground, ituWidgetGetX(slidingBackground) + 31);
+				if (ituWidgetGetX(slidingBackground) == 0)
+					sliding = false;
+			}
+			
+			ret = true;
+			
+		}
+		
+
+	}
+	
+
+	return ret;
 }
 bool TimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 {
@@ -832,8 +878,10 @@ bool TimingWeekChkBoxOnPress(ITUWidget* widget, char* param)
 bool TimingWeekSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(weekSet[slideIndex].background, -124);
+	sliding = true;
+	slidingLeft = true;
+	slidingBackground = (ITUBackground*)weekSet[slideIndex].background;
+//	ituWidgetSetX(weekSet[slideIndex].background, -124);
 
 	return true;
 }
@@ -842,8 +890,10 @@ bool TimingWeekSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 bool TimingWeekSlideBtnOnSlideRight(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(weekSet[slideIndex].background, 0);
+	sliding = true;
+	slidingLeft = false;
+	slidingBackground = (ITUBackground*)weekSet[slideIndex].background;
+	//ituWidgetSetX(weekSet[slideIndex].background, 0);
 
 	return true;
 }
@@ -873,7 +923,7 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 		WeekTimeHrIndex[i] = WeekTimeHrIndex[i + 1];
 		WeekTimeMinIndex[i] = WeekTimeMinIndex[i + 1];
 
-		for (j = 0; j < 7; j++)
+		for (j = 0; j < 8; j++)
 		{
 			WeekDay[i][j] = WeekDay[i + 1][j];
 		}
@@ -886,7 +936,7 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 	PowerOn[weekTotalItem-1] = false;
 	WeekTimeHrIndex[weekTotalItem-1] = 0;
 	WeekTimeMinIndex[weekTotalItem-1] = 0;
-	for (j = 0; j < 7; j++)
+	for (j = 0; j < 8; j++)
 	{
 		WeekDay[weekTotalItem-1][j] = 0;
 	}
@@ -923,9 +973,17 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 	if (save)
 	{
 		if (timingRestSettingMonthWheel->focusIndex < tm->tm_mon)
-			restYearIndex[restTotalItem] = 2020 + 1;
+			restYearIndex[restTotalItem] = tm->tm_year + 1900 + 1;
 		else
-			restYearIndex[restTotalItem] = 2020;
+		{
+			if (timingRestSettingDayWheel->focusIndex < (tm->tm_mday - 1))
+				restYearIndex[restTotalItem] = tm->tm_year + 1900 + 1;
+			else
+				restYearIndex[restTotalItem] = tm->tm_year + 1900;
+		}
+			//restYearIndex[restTotalItem] = tm->tm_year + 1900;
+
+		
 
 		//if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
 		if ((restYearIndex[restTotalItem] % 4) == 0)
@@ -1081,23 +1139,43 @@ bool TimingRestChkBoxOnPress(ITUWidget* widget, char* param)
 
 bool TimingRestSettingWheelOnChanged(ITUWidget* widget, char* param)
 {
+	struct timeval tv;
+	struct tm *tm;
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	if (timingRestSettingMonthWheel->focusIndex < tm->tm_mon)
+		restYearIndex[restTotalItem] = tm->tm_year +1900 + 1;
+	else
+	{
+		if (timingRestSettingDayWheel->focusIndex < (tm->tm_mday - 1))
+			restYearIndex[restTotalItem] = tm->tm_year + 1900 + 1;
+		else
+			restYearIndex[restTotalItem] = tm->tm_year + 1900;
+	}
+		//restYearIndex[restTotalItem] = tm->tm_year +1900;
+
+	
+
 	//if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
-	//{
+	if ((restYearIndex[restTotalItem] % 4) == 0)
+	{
 		if (timingRestSettingMonthWheel->focusIndex == 1)
 		{
 			if (timingRestSettingDayWheel->focusIndex > 28)
 				ituWheelGoto(timingRestSettingDayWheel, 28);
 		}				
-	//}
+	}
 		
-	//else
-	//{
-	//	if (timingRestSettingMonthWheel->focusIndex == 1)
-	//	{
-	//		if (timingRestSettingDayWheel->focusIndex > 27)
-	//			ituWheelGoto(timingRestSettingDayWheel, 27);
-	//	}	
-	//}
+	else
+	{
+		if (timingRestSettingMonthWheel->focusIndex == 1)
+		{
+			if (timingRestSettingDayWheel->focusIndex > 27)
+				ituWheelGoto(timingRestSettingDayWheel, 27);
+		}
+	}
 		
 
 	if ((timingRestSettingMonthWheel->focusIndex == 3) || (timingRestSettingMonthWheel->focusIndex == 5) || (timingRestSettingMonthWheel->focusIndex == 8) || (timingRestSettingMonthWheel->focusIndex == 10))
@@ -1112,8 +1190,10 @@ bool TimingRestSettingWheelOnChanged(ITUWidget* widget, char* param)
 bool TimingRestSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(restSet[slideIndex].background, -124);
+	sliding = true;
+	slidingLeft = true;
+	slidingBackground = (ITUBackground*)restSet[slideIndex].background;
+	//ituWidgetSetX(restSet[slideIndex].background, -124);
 
 	return true;
 }
@@ -1122,8 +1202,10 @@ bool TimingRestSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 bool TimingRestSlideBtnOnSlideRight(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(restSet[slideIndex].background, 0);
+	sliding = true;
+	slidingLeft = false;
+	slidingBackground = (ITUBackground*)restSet[slideIndex].background;
+	//ituWidgetSetX(restSet[slideIndex].background, 0);
 
 	return true;
 }

@@ -55,10 +55,15 @@ bool keySound;
 bool wifi_connected;
 int	 wifi_status;//check wifi status 0-connect 1- warning 2-disconnect
 
+bool memoryTimeAutoCheckbox;
 bool indicatorLightEnable;
 bool lightAuto;
 int screenLight;
 int indLight;
+
+int systemNo[16];
+int addr[16];
+
 /**
 * Initializes screen module.
 */

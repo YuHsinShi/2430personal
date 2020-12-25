@@ -1,5 +1,6 @@
 #include "ite/itu.h"
 
+extern bool LogoOnEnter(ITUWidget* widget, char* param);
 
 extern bool MainOnEnter(ITUWidget* widget, char* param);
 extern bool MainOnTimer(ITUWidget* widget, char* param);
@@ -34,6 +35,7 @@ extern bool ScreenLockOnTimer(ITUWidget* widget, char* param);
 
 extern bool TimingOnEnter(ITUWidget* widget, char* param);
 extern bool TimingOnLeave(ITUWidget* widget, char* param);
+extern bool TimingOnTimer(ITUWidget* widget, char* param);
 extern bool TimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool TimingSingleSettingBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool TimingSingleChkBoxOnPress(ITUWidget* widget, char* param);
@@ -62,6 +64,7 @@ extern bool SettingOnEnter(ITUWidget* widget, char* param);
 extern bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool SettingTimeWheelOnChanged(ITUWidget* widget, char* param);
 extern bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param);
+extern bool SettingTimeAutoChkBoxOnPress(ITUWidget* widget, char* param);
 //extern bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param);
 //extern bool SettingLightBtnOnSlideUp(ITUWidget* widget, char* param);
 extern bool SettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param);
@@ -81,9 +84,10 @@ extern bool ExamineOnEnter(ITUWidget* widget, char* param);
 extern bool ExamineSubEnterBtnOnPress(ITUWidget* widget, char* param);
 extern bool ExamineSubRadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool ExamineBtnOnMouseUp(ITUWidget* widget, char* param);
+extern bool ExamineShowBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool ExamineShowModelRadioBoxOnPress(ITUWidget* widget, char* param);
-extern bool ExamineModelTestRadioBoxOnPress(ITUWidget* widget, char* param);
-extern bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param);
+//extern bool ExamineModelTestRadioBoxOnPress(ITUWidget* widget, char* param);
+//extern bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param);
 extern bool ExamineBackgroundBtnOnPress(ITUWidget* widget, char* param);
 
 extern bool PowerOffOnEnter(ITUWidget* widget, char* param);
@@ -96,11 +100,11 @@ extern bool PowerOffTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* par
 extern bool PowerOffTopAutoChkBoxOnPress(ITUWidget* widget, char* param);
 
 extern bool TrialRunOnEnter(ITUWidget* widget, char* param);
-extern bool TrialRunTrialSaveBtnOnPress(ITUWidget* widget, char* param);
-extern bool TrialRunTrialAirForceEnterBtnOnPress(ITUWidget* widget, char* param);
-extern bool TrialRunTrialAirForceRadBoxOnPress(ITUWidget* widget, char* param);
-extern bool TrialRuntTrialTimeSaveBackgroundBtnOnPress(ITUWidget* widget, char* param);
-extern bool TrialRuntTrialFreqSaveBackgroundBtnOnPress(ITUWidget* widget, char* param);
+//extern bool TrialRunTrialSaveBtnOnPress(ITUWidget* widget, char* param);
+//extern bool TrialRunTrialAirForceEnterBtnOnPress(ITUWidget* widget, char* param);
+//extern bool TrialRunTrialAirForceRadBoxOnPress(ITUWidget* widget, char* param);
+//extern bool TrialRuntTrialTimeSaveBackgroundBtnOnPress(ITUWidget* widget, char* param);
+//extern bool TrialRuntTrialFreqSaveBackgroundBtnOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunModelSelectEnterBtnOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunModelSelectItemRadBoxOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunModelSelectPMBtnOnPress(ITUWidget* widget, char* param);
@@ -115,6 +119,10 @@ extern bool TrialRunAddrUpdatePMBtnOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunAddrUpdateValueEnterBtnOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunAddrUpdateRadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunAddrUpdateBtnOnMouseUp(ITUWidget* widget, char* param);
+extern bool TrialRunAddrInitEnterBtnOnPress(ITUWidget* widget, char* param);
+extern bool TrialRunAddrInitRadioBoxOnPress(ITUWidget* widget, char* param);
+extern bool TrialRunModelSelInitEnterBtnOnPress(ITUWidget* widget, char* param);
+extern bool TrialRunModelSelInitRadioBoxOnPress(ITUWidget* widget, char* param);
 extern bool TrialRunBackgroundBtnOnPress(ITUWidget* widget, char* param);
 
 
@@ -144,6 +152,7 @@ extern bool DownloadBackBackgroundBtnOnPress(ITUWidget* widget, char* param);
 
 extern bool PowerOffTimingOnEnter(ITUWidget* widget, char* param);
 extern bool PowerOffTimingOnLeave(ITUWidget* widget, char* param);
+extern bool PowerOffTimingOnTimer(ITUWidget* widget, char* param);
 extern bool PowerOffTimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool PowerOffTimingSingleSettingBtnOnMouseUp(ITUWidget* widget, char* param);
 extern bool PowerOffTimingSingleChkBoxOnPress(ITUWidget* widget, char* param);
@@ -172,6 +181,7 @@ extern bool PowerOffSettingOnEnter(ITUWidget* widget, char* param);
 extern bool PowerOffSettingTimeSaveBtnOnPress(ITUWidget* widget, char* param);
 extern bool PowerOffSettingTimeWheelOnChanged(ITUWidget* widget, char* param);
 extern bool PowerOffSettingTimeBtnOnMouseUp(ITUWidget* widget, char* param);
+extern bool PowerOffSettingTimeAutoChkBoxOnPress(ITUWidget* widget, char* param);
 //extern bool PowerOffSettingLightBtnOnMouseUp(ITUWidget* widget, char* param);
 //extern bool PowerOffSettingLightBtnOnSlideUp(ITUWidget* widget, char* param);
 //extern bool PowerOffSettingScreenLockBtnOnMouseUp(ITUWidget* widget, char* param);
@@ -189,6 +199,8 @@ extern bool PowerOffSettingKeySoundCheckBoxOnMouseUp(ITUWidget* widget, char* pa
 
 ITUActionFunction actionFunctions[] =
 {
+	"LogoOnEnter", LogoOnEnter,
+
 	"MainOnEnter", MainOnEnter,
 	"MainOnTimer", MainOnTimer,
 	"MainCoverFlowOnChanged", MainCoverFlowOnChanged,
@@ -222,6 +234,7 @@ ITUActionFunction actionFunctions[] =
 
 	"TimingOnEnter", TimingOnEnter,
 	"TimingOnLeave", TimingOnLeave,
+	"TimingOnTimer", TimingOnTimer,
 	"TimingSingleSettingSaveBtnOnPress", TimingSingleSettingSaveBtnOnPress,
 	"TimingSingleSettingBtnOnMouseUp", TimingSingleSettingBtnOnMouseUp,
 	"TimingSingleSettingHrWheelOnChanged", TimingSingleSettingHrWheelOnChanged,
@@ -250,6 +263,7 @@ ITUActionFunction actionFunctions[] =
 	"SettingTimeSaveBtnOnPress", SettingTimeSaveBtnOnPress,
 	"SettingTimeWheelOnChanged", SettingTimeWheelOnChanged,
 	"SettingTimeBtnOnMouseUp", SettingTimeBtnOnMouseUp,
+	"SettingTimeAutoChkBoxOnPress", SettingTimeAutoChkBoxOnPress,
 	//"SettingLightBtnOnMouseUp", SettingLightBtnOnMouseUp,
 	//"SettingLightBtnOnSlideUp", SettingLightBtnOnSlideUp,
 	"SettingScreenLockBtnOnMouseUp", SettingScreenLockBtnOnMouseUp,
@@ -269,9 +283,10 @@ ITUActionFunction actionFunctions[] =
 	"ExamineSubEnterBtnOnPress", ExamineSubEnterBtnOnPress,
 	"ExamineSubRadioBoxOnPress", ExamineSubRadioBoxOnPress,
 	"ExamineBtnOnMouseUp", ExamineBtnOnMouseUp,
+	"ExamineShowBtnOnMouseUp", ExamineShowBtnOnMouseUp,
 	"ExamineShowModelRadioBoxOnPress", ExamineShowModelRadioBoxOnPress,
-	"ExamineModelTestRadioBoxOnPress", ExamineModelTestRadioBoxOnPress,
-	"ExamineModelTestEnterBtnOnPress", ExamineModelTestEnterBtnOnPress,
+	//"ExamineModelTestRadioBoxOnPress", ExamineModelTestRadioBoxOnPress,
+	//"ExamineModelTestEnterBtnOnPress", ExamineModelTestEnterBtnOnPress,
 	"ExamineBackgroundBtnOnPress", ExamineBackgroundBtnOnPress,
 
 	"PowerOffOnEnter", PowerOffOnEnter,
@@ -284,11 +299,11 @@ ITUActionFunction actionFunctions[] =
 	"PowerOffTopAutoChkBoxOnPress", PowerOffTopAutoChkBoxOnPress,
 
 	"TrialRunOnEnter", TrialRunOnEnter,
-	"TrialRunTrialSaveBtnOnPress", TrialRunTrialSaveBtnOnPress,
-	"TrialRunTrialAirForceRadBoxOnPress", TrialRunTrialAirForceRadBoxOnPress,
-	"TrialRunTrialAirForceEnterBtnOnPress", TrialRunTrialAirForceEnterBtnOnPress,
-	"TrialRuntTrialTimeSaveBackgroundBtnOnPress", TrialRuntTrialTimeSaveBackgroundBtnOnPress,
-	"TrialRuntTrialFreqSaveBackgroundBtnOnPress", TrialRuntTrialFreqSaveBackgroundBtnOnPress,
+	//"TrialRunTrialSaveBtnOnPress", TrialRunTrialSaveBtnOnPress,
+	//"TrialRunTrialAirForceRadBoxOnPress", TrialRunTrialAirForceRadBoxOnPress,
+	//"TrialRunTrialAirForceEnterBtnOnPress", TrialRunTrialAirForceEnterBtnOnPress,
+	//"TrialRuntTrialTimeSaveBackgroundBtnOnPress", TrialRuntTrialTimeSaveBackgroundBtnOnPress,
+	//"TrialRuntTrialFreqSaveBackgroundBtnOnPress", TrialRuntTrialFreqSaveBackgroundBtnOnPress,
 	"TrialRunModelSelectRadioBoxOnPress", TrialRunModelSelectRadioBoxOnPress,
 	"TrialRunModelSelectEnterBtnOnPress", TrialRunModelSelectEnterBtnOnPress,
 	"TrialRunModelSelectItemRadBoxOnPress", TrialRunModelSelectItemRadBoxOnPress,
@@ -303,6 +318,10 @@ ITUActionFunction actionFunctions[] =
 	"TrialRunAddrUpdateValueEnterBtnOnPress", TrialRunAddrUpdateValueEnterBtnOnPress,
 	"TrialRunAddrUpdateRadioBoxOnPress", TrialRunAddrUpdateRadioBoxOnPress,
 	"TrialRunAddrUpdateBtnOnMouseUp", TrialRunAddrUpdateBtnOnMouseUp,
+	"TrialRunAddrInitRadioBoxOnPress", TrialRunAddrInitRadioBoxOnPress,
+	"TrialRunAddrInitEnterBtnOnPress", TrialRunAddrInitEnterBtnOnPress,
+	"TrialRunModelSelInitRadioBoxOnPress", TrialRunModelSelInitRadioBoxOnPress,
+	"TrialRunModelSelInitEnterBtnOnPress", TrialRunModelSelInitEnterBtnOnPress,
 	"TrialRunBackgroundBtnOnPress", TrialRunBackgroundBtnOnPress,
 
 	"SpecialOnEnter", SpecialOnEnter,
@@ -331,6 +350,7 @@ ITUActionFunction actionFunctions[] =
 
 	"PowerOffTimingOnEnter", PowerOffTimingOnEnter,
 	//"PowerOffTimingOnLeave", PowerOffTimingOnLeave,
+	"PowerOffTimingOnTimer", PowerOffTimingOnTimer,
 	"PowerOffTimingSingleSettingSaveBtnOnPress", PowerOffTimingSingleSettingSaveBtnOnPress,
 	"PowerOffTimingSingleSettingBtnOnMouseUp", PowerOffTimingSingleSettingBtnOnMouseUp,
 	"PowerOffTimingSingleSettingHrWheelOnChanged", PowerOffTimingSingleSettingHrWheelOnChanged,
@@ -359,6 +379,7 @@ ITUActionFunction actionFunctions[] =
 	"PowerOffSettingTimeSaveBtnOnPress", PowerOffSettingTimeSaveBtnOnPress,
 	"PowerOffSettingTimeWheelOnChanged", PowerOffSettingTimeWheelOnChanged,
 	"PowerOffSettingTimeBtnOnMouseUp", PowerOffSettingTimeBtnOnMouseUp,
+	"PowerOffSettingTimeAutoChkBoxOnPress", PowerOffSettingTimeAutoChkBoxOnPress,
 	//"PowerOffSettingLightBtnOnMouseUp", PowerOffSettingLightBtnOnMouseUp,
 	//"PowerOffSettingLightBtnOnSlideUp", PowerOffSettingLightBtnOnSlideUp,
 	//"PowerOffSettingScreenLockBtnOnMouseUp", PowerOffSettingScreenLockBtnOnMouseUp,

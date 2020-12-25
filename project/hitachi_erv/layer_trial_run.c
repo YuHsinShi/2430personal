@@ -9,31 +9,40 @@
 
 
 
-static ITUText* trialRunTrialNumText = 0;
-static ITURadioBox* trialRunTrialAirForceRadioBox[3] = { 0 };
-static ITUSprite* trialRunTrialAirForceTextSprite = 0;
-static ITUWheel* trialRunTrialTimeWheel = 0;
-static ITUText* trialRunTrialTimeText = 0;
-static ITUWheel* trialRunTrialFreqWheel = 0;
-static ITUText* trialRunTrialFreqText = 0;
+//static ITUText* trialRunTrialNumText = 0;
+//static ITURadioBox* trialRunTrialAirForceRadioBox[3] = { 0 };
+//static ITUSprite* trialRunTrialAirForceTextSprite = 0;
+//static ITUWheel* trialRunTrialTimeWheel = 0;
+//static ITUText* trialRunTrialTimeText = 0;
+//static ITUWheel* trialRunTrialFreqWheel = 0;
+//static ITUText* trialRunTrialFreqText = 0;
 static ITUSprite* trialRunModelSelectValueTitleSprite = 0;
 static ITUText* trialRunModelSelectValueTitleText = 0;
+static ITURadioBox* trialRunModelSelectRadioBox[16] = { 0 };
 static ITURadioBox* trialRunModelSelectItemRadioBox[7][2] = { 0 };
 static ITUSprite* trialRunInputOutputValueTitleSprite = 0;
 static ITUText* trialRunInputOutputValueTitleText = 0;
+static ITURadioBox* trialRunInputOutputRadioBox[16] = { 0 };
 static ITURadioBox* trialRunInputOutputItemRadioBox[5][2] = { 0 };
 static ITURadioBox* trialRunAddrUpdateRadioBox[16] = { 0 };
 static ITUText* trialRunAddrUpdateSText = 0;
 static ITUText* trialRunAddrUpdateAText = 0;
 static ITURadioBox* trialRunAddrUpdateSRadioBox = 0;
 static ITURadioBox* trialRunAddrUpdateARadioBox = 0;
+static ITUSprite* trialRunAddrInitTitleSprite = 0;
+static ITUText* trialRunAddrInitTitleText = 0;
+static ITURadioBox* trialRunAddrInitRadioBox[16] = { 0 };
+static ITUSprite* trialRunModelSelInitTitleSprite = 0;
+static ITUText* trialRunModelSelInitTitleText = 0;
+static ITURadioBox* trialRunModelSelInitRadioBox[16] = { 0 };
 
-static int trialAirForce = 0;
-static int trialTime = 43;
-static int trialFreq = 70;
-static int tmpAirForce = 0;
-static int tmpTime = 43;
-static int tmpFreq = 70;
+
+//static int trialAirForce = 0;
+//static int trialTime = 43;
+//static int trialFreq = 70;
+//static int tmpAirForce = 0;
+//static int tmpTime = 43;
+//static int tmpFreq = 70;
 
 static int modelselIndex = 0;
 static int modelselItemIndex = 0;
@@ -43,37 +52,39 @@ static int IOIndex = 0;
 static int IOItemIndex = 0;
 static int IOItemValue[17][5] = { { 0, 1, 0, 0, 2}, { 2, 1, 0, 0, 1 } };
 
-static int systemNo[16] = { 0 };
-static int addr[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+extern int systemNo[16] = { 0 };
+extern int addr[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 static int tmpAddr[16] = { 0 };
 static int tmpSystem[16] = { 0 };
 static int tmpAddrText = 1;
 static int tmpSystemText = 0;
 static bool addrChange = true;
 static int addrupdateItem = 0;
+static int addrInitIndex = 0;
+static int modelSelInitIndex = 0;
 bool TrialRunOnEnter(ITUWidget* widget, char* param)
 {
 	int i,j;
 	char tmp[64];
-	if (!trialRunTrialNumText)
+	if (!trialRunModelSelectValueTitleSprite)
 	{
-		trialRunTrialNumText = ituSceneFindWidget(&theScene, "trialRunTrialNumText");
-		assert(trialRunTrialNumText);
+		//trialRunTrialNumText = ituSceneFindWidget(&theScene, "trialRunTrialNumText");
+		//assert(trialRunTrialNumText);
+		//
+		//trialRunTrialAirForceTextSprite = ituSceneFindWidget(&theScene, "trialRunTrialAirForceTextSprite");
+		//assert(trialRunTrialAirForceTextSprite);
+
+		//trialRunTrialTimeWheel = ituSceneFindWidget(&theScene, "trialRunTrialTimeWheel");
+		//assert(trialRunTrialTimeWheel);
 		
-		trialRunTrialAirForceTextSprite = ituSceneFindWidget(&theScene, "trialRunTrialAirForceTextSprite");
-		assert(trialRunTrialAirForceTextSprite);
+		//trialRunTrialTimeText = ituSceneFindWidget(&theScene, "trialRunTrialTimeText");
+		//assert(trialRunTrialTimeText);
 
-		trialRunTrialTimeWheel = ituSceneFindWidget(&theScene, "trialRunTrialTimeWheel");
-		assert(trialRunTrialTimeWheel);
+		//trialRunTrialFreqWheel = ituSceneFindWidget(&theScene, "trialRunTrialFreqWheel");
+		//assert(trialRunTrialFreqWheel);
 
-		trialRunTrialTimeText = ituSceneFindWidget(&theScene, "trialRunTrialTimeText");
-		assert(trialRunTrialTimeText);
-
-		trialRunTrialFreqWheel = ituSceneFindWidget(&theScene, "trialRunTrialFreqWheel");
-		assert(trialRunTrialFreqWheel);
-
-		trialRunTrialFreqText = ituSceneFindWidget(&theScene, "trialRunTrialFreqText");
-		assert(trialRunTrialFreqText);
+		//trialRunTrialFreqText = ituSceneFindWidget(&theScene, "trialRunTrialFreqText");
+		//assert(trialRunTrialFreqText);
 
 		trialRunModelSelectValueTitleSprite = ituSceneFindWidget(&theScene, "trialRunModelSelectValueTitleSprite");
 		assert(trialRunModelSelectValueTitleSprite);
@@ -99,14 +110,25 @@ bool TrialRunOnEnter(ITUWidget* widget, char* param)
 		trialRunAddrUpdateARadioBox = ituSceneFindWidget(&theScene, "trialRunAddrUpdateARadioBox");
 		assert(trialRunInputOutputValueTitleText);
 
+		trialRunAddrInitTitleSprite = ituSceneFindWidget(&theScene, "trialRunAddrInitTitleSprite");
+		assert(trialRunAddrInitTitleSprite);
 
-		for (i = 0; i < 3; i++)
-		{
-			sprintf(tmp, "trialRunTrialAirForceRadioBox%d", i);
-			trialRunTrialAirForceRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(trialRunTrialAirForceRadioBox[i]);
+		trialRunAddrInitTitleText = ituSceneFindWidget(&theScene, "trialRunAddrInitTitleText");
+		assert(trialRunAddrInitTitleText);
 
-		}
+		trialRunModelSelInitTitleSprite = ituSceneFindWidget(&theScene, "trialRunModelSelInitTitleSprite");
+		assert(trialRunModelSelInitTitleSprite);
+
+		trialRunModelSelInitTitleText = ituSceneFindWidget(&theScene, "trialRunModelSelInitTitleText");
+		assert(trialRunModelSelInitTitleText);
+
+		//for (i = 0; i < 3; i++)
+		//{
+		//	sprintf(tmp, "trialRunTrialAirForceRadioBox%d", i);
+		//	trialRunTrialAirForceRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+		//	assert(trialRunTrialAirForceRadioBox[i]);
+
+		//}
 
 		for (i = 0; i < 7; i++)
 		{
@@ -134,14 +156,32 @@ bool TrialRunOnEnter(ITUWidget* widget, char* param)
 			trialRunAddrUpdateRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(trialRunAddrUpdateRadioBox[i]);
 
-		}
+			sprintf(tmp, "trialRunModelSelectRadioBox%d", i);
+			trialRunModelSelectRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunModelSelectRadioBox[i]);
+
+			sprintf(tmp, "trialRunInputOutputRadioBox%d", i);
+			trialRunInputOutputRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunInputOutputRadioBox[i]);
+
+			sprintf(tmp, "trialRunAddrInitRadioBox%d", i);
+			trialRunAddrInitRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunAddrInitRadioBox[i]);	
+
+			sprintf(tmp, "trialRunModelSelInitRadioBox%d", i);
+			trialRunModelSelInitRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunModelSelInitRadioBox[i]);
+
+	
 
 	}
 
-	ituSpriteGoto(trialRunTrialAirForceTextSprite, 0);
+	}
 
+	//ituSpriteGoto(trialRunTrialAirForceTextSprite, 0);
+	
 	for (i = 0; i < 16; i++)
-	{
+{
 		tmpAddr[i] = addr[i];
 		tmpSystem[i] = systemNo[i];
 	}
@@ -152,101 +192,101 @@ bool TrialRunOnEnter(ITUWidget* widget, char* param)
     return true;
 }
 
-bool TrialRunTrialSaveBtnOnPress(ITUWidget* widget, char* param)
-{
-	bool save = atoi(param);
-	char tmp[32];
-	int i;
-
-	
-
-	if (save)
-	{
-		trialAirForce = tmpAirForce;
-		trialTime = tmpTime;
-		trialFreq = tmpFreq;
-	}
-	else
-	{
-		for (i = 0; i < 3; i++)
-		{
-			ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[i], false);
-		}
-		ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[trialAirForce], true);
-		ituSpriteGoto(trialRunTrialAirForceTextSprite, trialAirForce);
-
-		trialRunTrialTimeWheel->focusIndex = trialTime;
-		sprintf(tmp, "%2.1f", 23.5 - trialTime*0.5);
-		ituTextSetString(trialRunTrialTimeText, tmp);
-
-		trialRunTrialFreqWheel->focusIndex = trialFreq;
-		sprintf(tmp, "%dHz", 100 - trialFreq);
-		ituTextSetString(trialRunTrialFreqText, tmp);
-
-	}
-
-	
-
-	return true;
-}
-
-bool TrialRunTrialAirForceEnterBtnOnPress(ITUWidget* widget, char* param)
-{
-	if (ituRadioBoxIsChecked(trialRunTrialAirForceRadioBox[0]))
-	{
-		ituSpriteGoto(trialRunTrialAirForceTextSprite, 0);
-		tmpAirForce = 0;
-	}
-	else if (ituRadioBoxIsChecked(trialRunTrialAirForceRadioBox[1]))
-	{
-		ituSpriteGoto(trialRunTrialAirForceTextSprite, 1);
-		tmpAirForce = 1;
-	}
-	else
-	{
-		ituSpriteGoto(trialRunTrialAirForceTextSprite, 2);
-		tmpAirForce = 2;
-	}
-
-    return true;
-}
-
-bool TrialRunTrialAirForceRadBoxOnPress(ITUWidget* widget, char* param)
-{
-	int index = atoi(param);
-	int i;
-
-	for (i = 0; i < 3; i++)
-	{
-		ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[i], false);
-	}
-
-	ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[index], true);
-
-    return true;
-}
-
-bool TrialRuntTrialTimeSaveBackgroundBtnOnPress(ITUWidget* widget, char* param)
-{
-	char tmp[32];
-	sprintf(tmp, "%2.1f", 23.5 - trialRunTrialTimeWheel->focusIndex*0.5);
-
-	ituTextSetString(trialRunTrialTimeText, tmp);
-	tmpTime = trialRunTrialTimeWheel->focusIndex;
-
-	return true;
-}
-
-bool TrialRuntTrialFreqSaveBackgroundBtnOnPress(ITUWidget* widget, char* param)
-{
-	char tmp[32];
-	sprintf(tmp, "%dHz", 100 - trialRunTrialFreqWheel->focusIndex);
-
-	ituTextSetString(trialRunTrialFreqText, tmp);
-	tmpFreq = trialRunTrialFreqWheel->focusIndex;
-
-	return true;
-}
+//bool TrialRunTrialSaveBtnOnPress(ITUWidget* widget, char* param)
+//{
+//	bool save = atoi(param);
+//	char tmp[32];
+//	int i;
+//
+//	
+//
+//	if (save)
+//	{
+//		trialAirForce = tmpAirForce;
+//		trialTime = tmpTime;
+//		trialFreq = tmpFreq;
+//	}
+//	else
+//	{
+//		for (i = 0; i < 3; i++)
+//		{
+//			ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[i], false);
+//		}
+//		ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[trialAirForce], true);
+//		ituSpriteGoto(trialRunTrialAirForceTextSprite, trialAirForce);
+//
+//		trialRunTrialTimeWheel->focusIndex = trialTime;
+//		sprintf(tmp, "%2.1f", 23.5 - trialTime*0.5);
+//		ituTextSetString(trialRunTrialTimeText, tmp);
+//
+//		trialRunTrialFreqWheel->focusIndex = trialFreq;
+//		sprintf(tmp, "%dHz", 100 - trialFreq);
+//		ituTextSetString(trialRunTrialFreqText, tmp);
+//
+//	}
+//
+//	
+//
+//	return true;
+//}
+//
+//bool TrialRunTrialAirForceEnterBtnOnPress(ITUWidget* widget, char* param)
+//{
+//	if (ituRadioBoxIsChecked(trialRunTrialAirForceRadioBox[0]))
+//	{
+//		ituSpriteGoto(trialRunTrialAirForceTextSprite, 0);
+//		tmpAirForce = 0;
+//	}
+//	else if (ituRadioBoxIsChecked(trialRunTrialAirForceRadioBox[1]))
+//	{
+//		ituSpriteGoto(trialRunTrialAirForceTextSprite, 1);
+//		tmpAirForce = 1;
+//	}
+//	else
+//	{
+//		ituSpriteGoto(trialRunTrialAirForceTextSprite, 2);
+//		tmpAirForce = 2;
+//	}
+//
+//    return true;
+//}
+//
+//bool TrialRunTrialAirForceRadBoxOnPress(ITUWidget* widget, char* param)
+//{
+//	int index = atoi(param);
+//	int i;
+//
+//	for (i = 0; i < 3; i++)
+//	{
+//		ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[i], false);
+//	}
+//
+//	ituRadioBoxSetChecked(trialRunTrialAirForceRadioBox[index], true);
+//
+//    return true;
+//}
+//
+//bool TrialRuntTrialTimeSaveBackgroundBtnOnPress(ITUWidget* widget, char* param)
+//{
+//	char tmp[32];
+//	sprintf(tmp, "%2.1f", 23.5 - trialRunTrialTimeWheel->focusIndex*0.5);
+//
+//	ituTextSetString(trialRunTrialTimeText, tmp);
+//	tmpTime = trialRunTrialTimeWheel->focusIndex;
+//
+//	return true;
+//}
+//
+//bool TrialRuntTrialFreqSaveBackgroundBtnOnPress(ITUWidget* widget, char* param)
+//{
+//	char tmp[32];
+//	sprintf(tmp, "%dHz", 100 - trialRunTrialFreqWheel->focusIndex);
+//
+//	ituTextSetString(trialRunTrialFreqText, tmp);
+//	tmpFreq = trialRunTrialFreqWheel->focusIndex;
+//
+//	return true;
+//}
 
 bool TrialRunModelSelectRadioBoxOnPress(ITUWidget* widget, char* param)
 {
@@ -266,7 +306,7 @@ bool TrialRunModelSelectEnterBtnOnPress(ITUWidget* widget, char* param)
 	}
 	else
 	{
-		sprintf(tmp, "00-%02d", modelselIndex + 1);
+		sprintf(tmp, "%s", ituTextGetString(&trialRunModelSelectRadioBox[modelselIndex]->checkbox.btn.text));
 		ituTextSetString(trialRunModelSelectValueTitleText, tmp);
 		ituSpriteGoto(trialRunModelSelectValueTitleSprite, 0);
 		
@@ -330,7 +370,7 @@ bool TrialRunInputOutputEnterBtnOnPress(ITUWidget* widget, char* param)
 	}
 	else
 	{
-		sprintf(tmp, "00-%02d", IOIndex + 1);
+		sprintf(tmp, "%s", ituTextGetString(&trialRunInputOutputRadioBox[IOIndex]->checkbox.btn.text));
 		ituTextSetString(trialRunInputOutputValueTitleText, tmp);
 		ituSpriteGoto(trialRunInputOutputValueTitleSprite, 0);
 
@@ -382,12 +422,19 @@ bool TrialRunAddrUpdateSaveBtnOnPress(ITUWidget* widget, char* param)
 {
 	int i;
 	bool save = atoi(param);
+	char tmp[32];
 	if (save)
 	{
 		for (i = 0; i < 16; i++)
 		{
 			addr[i] = tmpAddr[i];
 			systemNo[i] = tmpSystem[i];
+			sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+			ituTextSetString(&trialRunModelSelectRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunInputOutputRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunAddrInitRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunModelSelInitRadioBox[i]->checkbox.btn.text, tmp);
+
 		}
 	}
 	else
@@ -513,6 +560,59 @@ bool TrialRunAddrUpdateBtnOnMouseUp(ITUWidget* widget, char* param)
 		ituTextSetString(&trialRunAddrUpdateRadioBox[i]->checkbox.btn.text, tmp);
 	}
 
+	return true;
+}
+
+bool TrialRunAddrInitRadioBoxOnPress(ITUWidget* widget, char* param)
+{
+
+	addrInitIndex = atoi(param);
+
+	return true;
+}
+bool TrialRunAddrInitEnterBtnOnPress(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	if (addrInitIndex == 16)
+	{
+		ituSpriteGoto(trialRunAddrInitTitleSprite, 1);
+	}
+	else
+	{
+		sprintf(tmp, "%s", ituTextGetString(&trialRunAddrInitRadioBox[addrInitIndex]->checkbox.btn.text));
+		ituTextSetString(trialRunAddrInitTitleText, tmp);
+		ituSpriteGoto(trialRunAddrInitTitleSprite, 0);
+
+	}
+	return true;
+}
+
+bool TrialRunModelSelInitRadioBoxOnPress(ITUWidget* widget, char* param)
+{
+
+	modelSelInitIndex = atoi(param);
+
+	return true;
+}
+bool TrialRunModelSelInitEnterBtnOnPress(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	if (modelSelInitIndex == 16)
+	{
+		ituSpriteGoto(trialRunModelSelInitTitleSprite, 1);
+	}
+	else
+	{
+
+		sprintf(tmp, "%s", ituTextGetString(&trialRunModelSelInitRadioBox[modelSelInitIndex]->checkbox.btn.text));
+		ituTextSetString(trialRunModelSelInitTitleText, tmp);
+		ituSpriteGoto(trialRunModelSelInitTitleSprite, 0);
+
+	}
 	return true;
 }
 

@@ -33,6 +33,14 @@ static ITUWheel* settingTimeDayWheel = 0;
 static ITUWheel* settingTimeHrWheel = 0;
 static ITUWheel* settingTimeMinWheel = 0;
 static ITUText* settingTimeText = 0;
+static ITUCheckBox* settingTimeAutoCheckBox = 0;
+static ITUContainer* settingTimeManualContainer = 0;
+static ITUContainer* settingTimeSyncContainer = 0;
+static ITUText* settingTimeSyncYearText = 0;
+static ITUText* settingTimeSyncMonthText = 0;
+static ITUText* settingTimeSyncDayText = 0;
+static ITUText* settingTimeSyncHourText = 0;
+static ITUText* settingTimeSyncMinText = 0;
 
 //static ITUCheckBox* settingLightAutoCheckBox = 0;
 
@@ -55,6 +63,7 @@ static ITUIcon* settingExaminePasswordUncorrectIcon = 0;
 
 static ITUCheckBox* settingKeySoundCheckBox = 0;
 
+extern bool memoryTimeAutoCheckbox = false;
 extern bool keySound = true;
 
 static int passwordCnt = 0;
@@ -198,6 +207,29 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		settingTimeText = ituSceneFindWidget(&theScene, "settingTimeText");
 		assert(settingTimeText);
 
+		settingTimeAutoCheckBox = ituSceneFindWidget(&theScene, "settingTimeAutoCheckBox");
+		assert(settingTimeAutoCheckBox);
+
+		settingTimeManualContainer = ituSceneFindWidget(&theScene, "settingTimeManualContainer");
+		assert(settingTimeManualContainer);
+
+		settingTimeSyncContainer = ituSceneFindWidget(&theScene, "settingTimeSyncContainer");
+		assert(settingTimeSyncContainer);
+
+		settingTimeSyncYearText = ituSceneFindWidget(&theScene, "settingTimeSyncYearText");
+		assert(settingTimeSyncYearText);
+
+		settingTimeSyncMonthText = ituSceneFindWidget(&theScene, "settingTimeSyncMonthText");
+		assert(settingTimeSyncMonthText);
+
+		settingTimeSyncDayText = ituSceneFindWidget(&theScene, "settingTimeSyncDayText");
+		assert(settingTimeSyncDayText);
+
+		settingTimeSyncHourText = ituSceneFindWidget(&theScene, "settingTimeSyncHourText");
+		assert(settingTimeSyncHourText);
+
+		settingTimeSyncMinText = ituSceneFindWidget(&theScene, "settingTimeSyncMinText");
+		assert(settingTimeSyncMinText);
 		//settingLightAutoCheckBox = ituSceneFindWidget(&theScene, "settingLightAutoCheckBox");
 		//assert(settingLightAutoCheckBox);
 
@@ -295,11 +327,26 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		}
 	}
 
+	
+	if (memoryTimeAutoCheckbox)
+	//if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+	{
+		ituCheckBoxSetChecked(settingTimeAutoCheckBox, true);
+		sprintf(tmp, "%s-%s-%s %s:%s", ituTextGetString(settingTimeSyncYearText),
+			ituTextGetString(settingTimeSyncMonthText),
+			ituTextGetString(settingTimeSyncDayText),
+			ituTextGetString(settingTimeSyncHourText),
+			ituTextGetString(settingTimeSyncMinText));
+		ituTextSetString(settingTimeText, tmp);
+	}
+	else
+	{
+		ituCheckBoxSetChecked(settingTimeAutoCheckBox, false);
 	gettimeofday(&tv, NULL);
 	tm = localtime(&tv.tv_sec);
-
 	sprintf(tmp, "%04d-%02d-%02d %02d:%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 	ituTextSetString(settingTimeText, tmp);
+	}
 
 	for (i = 0; i < 3; i++)
 	{
@@ -469,7 +516,18 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 }
 bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param)
 {
-
+	if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+	{
+		//memoryTimeAutoCheckbox = true;
+		ituWidgetSetVisible(settingTimeManualContainer, false);
+		ituWidgetSetVisible(settingTimeSyncContainer, true);
+		//sync internet time
+	}
+	else
+	{
+		//memoryTimeAutoCheckbox = false;
+		ituWidgetSetVisible(settingTimeManualContainer, true);
+		ituWidgetSetVisible(settingTimeSyncContainer, false);
 
 	struct timeval tv;
 	struct tm *tm;
@@ -482,6 +540,9 @@ bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param)
 	ituWheelGoto(settingTimeDayWheel, tm->tm_mday-1);//1-31
 	ituWheelGoto(settingTimeHrWheel, tm->tm_hour);
 	ituWheelGoto(settingTimeMinWheel, tm->tm_min);
+	}
+
+	
 
 	settingStopAnywhere->widget.flags &= ~ITU_DRAGGABLE;
 
@@ -524,6 +585,19 @@ bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param)
 
 	if (save)
 	{
+		if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+		{
+			memoryTimeAutoCheckbox = true;
+			sprintf(tmp, "%s-%s-%s %s:%s", ituTextGetString(settingTimeSyncYearText),
+				ituTextGetString(settingTimeSyncMonthText),
+				ituTextGetString(settingTimeSyncDayText),
+				ituTextGetString(settingTimeSyncHourText),
+				ituTextGetString(settingTimeSyncMinText));
+			ituTextSetString(settingTimeText, tmp);
+		}
+		else
+		{
+			memoryTimeAutoCheckbox = false;
 		struct timeval tv;
 		struct tm *tm, mytime;
 
@@ -579,10 +653,44 @@ bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param)
 		settimeofday(&tv, NULL);
 	}
 
+	}
+	else
+	{
+		ituCheckBoxSetChecked(settingTimeAutoCheckBox, memoryTimeAutoCheckbox);
+	}
+
 	settingStopAnywhere->widget.flags |= ITU_DRAGGABLE;
 
     return true;
 }
+bool SettingTimeAutoChkBoxOnPress(ITUWidget* widget, char* param)
+{
+	if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+	{
+		ituWidgetSetVisible(settingTimeManualContainer, false);
+		ituWidgetSetVisible(settingTimeSyncContainer, true);
+		//sync internet time
+	}
+	else
+	{
+		ituWidgetSetVisible(settingTimeManualContainer, true);
+		ituWidgetSetVisible(settingTimeSyncContainer, false);
+
+		struct timeval tv;
+		struct tm *tm;
+
+		gettimeofday(&tv, NULL);
+		tm = localtime(&tv.tv_sec);
+
+		ituWheelGoto(settingTimeYearWheel, tm->tm_year - 120);//2020-1900
+		ituWheelGoto(settingTimeMonthWheel, tm->tm_mon);//0-11
+		ituWheelGoto(settingTimeDayWheel, tm->tm_mday - 1);//1-31
+		ituWheelGoto(settingTimeHrWheel, tm->tm_hour);
+		ituWheelGoto(settingTimeMinWheel, tm->tm_min);
+	}
+	return true;
+}
+
 //
 //bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param)
 //{
@@ -826,6 +934,9 @@ bool SettingWiFiOpenCheckBoxOnPress(ITUWidget* widget, char* param)
 bool SettingRestoreAllSettingBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	//restore all setting, clear customer's content
+	// Restore System Default
+	SceneQuit(QUIT_RESET_FACTORY);
+
 	return true;
 }
 

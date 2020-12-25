@@ -10,7 +10,7 @@
 
 #define EXAM_REC_STOPANYWHERE_H 530
 
-static ITUText* examineSubTitleText = 0;
+//static ITUText* examineSubTitleText = 0;
 static ITUText* examineValueTitleText = 0;
 static ITUText* examineValueText[7] = { 0 };
 static ITURadioBox* examineSubRadioBox[16] = { 0 };
@@ -20,9 +20,10 @@ static ITUContainer* examineRecordAllContainer = 0;
 static ITUContainer* examineRecordTmpContainer = 0;
 
 static ITUText* examineShowModelText = 0;
+static ITURadioBox* examineShowModelRadioBox[16] = { 0 };
 
-static ITUSprite* examineModelTestResultSprite[3] = { 0 };
-static ITUText* examineModelTestResultText[3] = { 0 };
+//static ITUSprite* examineModelTestResultSprite[3] = { 0 };
+//static ITUText* examineModelTestResultText[3] = { 0 };
 
 static ITUText* examineSelfTestText = 0;
 
@@ -37,9 +38,9 @@ typedef struct
 }EXAMINERecordSet;
 static EXAMINERecordSet examineRecordSet[EXAM_REC_MAX_ITEM];
 
-static int examineIndex = 0;
+//static int examineIndex = 0;
 static int examineSubAddrIndex = 0;
-static int examineValue[2][16][7] = { {32,25,38,43,0,0,0} };
+static int examineValue[16][7] = { {32,25,38,43,0,0,0} };
 
 
 static int examRecordAllContainerHeight = 0;
@@ -50,8 +51,8 @@ extern int examineTimeRecord[EXAM_REC_MAX_ITEM][2] = { { 12, 53 }, { 12, 42 }, {
 extern int examineAddrRecord[EXAM_REC_MAX_ITEM] = { 0, 0, 0, 0, 0, 0 };
 extern int examineNoRecord[EXAM_REC_MAX_ITEM] = { 32, 32, 32, 32, 32, 32 };
 
-static int examineModelTestIndex = 0;
-static int examineModelTestValue[16][3] = { { 3, 3, 2 }, { 2, 2, 3 }, };
+//static int examineModelTestIndex = 0;
+//static int examineModelTestValue[16][3] = { { 3, 3, 2 }, { 2, 2, 3 }, };
 
 void AddExamineRecordContainer(void);
 void DeleteExamineRecordContainer(void);
@@ -63,10 +64,10 @@ bool ExamineOnEnter(ITUWidget* widget, char* param)
 	int i;
 	char tmp[32];
 
-	if (!examineSubTitleText)
+	if (!examineValueTitleText)
 	{
-		examineSubTitleText = ituSceneFindWidget(&theScene, "examineSubTitleText");
-		assert(examineSubTitleText);
+		//examineSubTitleText = ituSceneFindWidget(&theScene, "examineSubTitleText");
+		//assert(examineSubTitleText);
 
 		examineValueTitleText = ituSceneFindWidget(&theScene, "examineValueTitleText");
 		assert(examineValueTitleText);
@@ -98,6 +99,12 @@ bool ExamineOnEnter(ITUWidget* widget, char* param)
 			sprintf(tmp, "examineSubRadioBox%d", i);
 			examineSubRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(examineSubRadioBox[i]);
+
+			sprintf(tmp, "examineShowModelRadioBox%d", i);
+			examineShowModelRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(examineShowModelRadioBox[i]);
+
+			
 		}
 
 		for (i = 0; i < 2; i++)
@@ -123,16 +130,16 @@ bool ExamineOnEnter(ITUWidget* widget, char* param)
 			assert(examineRecordSet[i].noText);
 		}
 
-		for (i = 0; i < 3; i++)
-		{
-			sprintf(tmp, "examineModelTestResultSprite%d", i);
-			examineModelTestResultSprite[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(examineModelTestResultSprite[i]);
+		//for (i = 0; i < 3; i++)
+		//{
+		//	sprintf(tmp, "examineModelTestResultSprite%d", i);
+		//	examineModelTestResultSprite[i] = ituSceneFindWidget(&theScene, tmp);
+		//	assert(examineModelTestResultSprite[i]);
 
-			sprintf(tmp, "examineModelTestResultText%d", i);
-			examineModelTestResultText[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(examineModelTestResultText[i]);
-		}
+		//	sprintf(tmp, "examineModelTestResultText%d", i);
+		//	examineModelTestResultText[i] = ituSceneFindWidget(&theScene, tmp);
+		//	assert(examineModelTestResultText[i]);
+		//}
 	}
 
 	if (examineRecordTotalItem > examineRecordShowTotalItem)
@@ -164,18 +171,19 @@ bool ExamineSubEnterBtnOnPress(ITUWidget* widget, char* param)
 	int i;
 	char tmp[32];
 
-	sprintf(tmp, "%d: 00-%02d", examineIndex + 1, examineSubAddrIndex + 1);
+	sprintf(tmp, "%s", ituTextGetString(&examineSubRadioBox[examineSubAddrIndex]->checkbox.btn.text));
+	//sprintf(tmp, "%d: 00-%02d", examineIndex + 1, examineSubAddrIndex + 1);
 	ituTextSetString(examineValueTitleText, tmp);
 
 	for (i = 0; i < 7; i++)
 	{
-		if (examineValue[examineIndex][examineSubAddrIndex][i] == 0)
+		if (examineValue[examineSubAddrIndex][i] == 0)
 		{
 			ituTextSetString(examineValueText[i], "--");
 		}
 		else
 		{
-			sprintf(tmp, "%02d", examineValue[examineIndex][examineSubAddrIndex][i]);
+			sprintf(tmp, "%02d", examineValue[examineSubAddrIndex][i]);
 			ituTextSetString(examineValueText[i], tmp);
 		}
 		
@@ -194,11 +202,18 @@ bool ExamineSubRadioBoxOnPress(ITUWidget* widget, char* param)
 bool ExamineBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	char tmp[32];
+	int i;
 
-	examineIndex = atoi(param);
-	sprintf(tmp, "%d", examineIndex + 1);
-	ituTextSetString(examineSubTitleText, tmp);
-	ituRadioBoxSetChecked(examineSubRadioBox[0], true);
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+		ituTextSetString(&examineSubRadioBox[i]->checkbox.btn.text, tmp);
+	}
+
+	//examineIndex = atoi(param);
+	//sprintf(tmp, "%d", examineIndex + 1);
+	//ituTextSetString(examineSubTitleText, tmp);
+	//ituRadioBoxSetChecked(examineSubRadioBox[0], true);
 	examineSubAddrIndex = 0;
 
     return true;
@@ -284,43 +299,55 @@ void DeleteExamineRecordContainer(void)
 	examineRecordTotalItem = 0;
 	
 }
+bool ExamineShowBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+		ituTextSetString(&examineShowModelRadioBox[i]->checkbox.btn.text, tmp);
+}
+	return true;
+}
 
 bool ExamineShowModelRadioBoxOnPress(ITUWidget* widget, char* param)
 {
 	int index = atoi(param);
 	char tmp[32];
 
-	sprintf(tmp, "F.%02d", index + 1);
+	sprintf(tmp, "F.%02d", addr[index]);
 	ituTextSetString(examineShowModelText, tmp);
 
 	return true;
-}
-
-bool ExamineModelTestRadioBoxOnPress(ITUWidget* widget, char* param)
-{
-	examineModelTestIndex = atoi(param);
-
-
-	return true;
-}
-
-bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param)
-{
-	int i;
-	char tmp[32];
-
-	ituSpriteGoto(examineModelTestResultSprite[0], 0);
-	ituSpriteGoto(examineModelTestResultSprite[1], 0);
-	ituSpriteGoto(examineModelTestResultSprite[2], 1);
-
-	for (i = 0; i < 3; i++)
-	{
-		sprintf(tmp, "%02d ", examineModelTestValue[examineModelTestIndex][i]);
-		ituTextSetString(examineModelTestResultText[i], tmp);
 	}
 
-	return true;
-}
+//bool ExamineModelTestRadioBoxOnPress(ITUWidget* widget, char* param)
+//{
+//	examineModelTestIndex = atoi(param);
+//
+//
+//	return true;
+//}
+//
+//bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param)
+//{
+//	int i;
+//	char tmp[32];
+//
+//	ituSpriteGoto(examineModelTestResultSprite[0], 0);
+//	ituSpriteGoto(examineModelTestResultSprite[1], 0);
+//	ituSpriteGoto(examineModelTestResultSprite[2], 1);
+//
+//	for (i = 0; i < 3; i++)
+//	{
+//		sprintf(tmp, "%02d ", examineModelTestValue[examineModelTestIndex][i]);
+//		ituTextSetString(examineModelTestResultText[i], tmp);
+//	}
+//
+//	return true;
+//}
 bool ExamineBackgroundBtnOnPress(ITUWidget* widget, char* param)
 {
 	ITULayer* layer;
