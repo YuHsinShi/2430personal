@@ -2,6 +2,12 @@
 #include "saradc/saradc.h"
 #include "ncp18_sensor.h"
 
+
+#define ADC_TEMPRATURE			0
+#define ADC_LIGHT				1
+#define ADC_PWR_CUT				2
+
+
 typedef struct TV_MAPPING_ENTRY_TAG
 {
     float    temperatureInput;
@@ -66,21 +72,55 @@ end:
     return result;
 }
 
-void NCP18_Init(void)
+void ADC_Init(void)
 {
     SARADC_RESULT result = SARADC_SUCCESS;
+
+    uint16_t      writeBuffer_len = 512;
+    uint16_t      calibrationOutput = 0;
+    float         NCP18calibrationOutput = 0;
 
     result = mmpSARInitialize(SARADC_MODE_AVG_ENABLE, SARADC_MODE_STORE_RAW_ENABLE, SARADC_AMPLIFY_1X, SARADC_CLK_DIV_9);
     if (result)
     {
         printf("mmpSARInitialize() error (0x%x) !!\n", result);
-        printf("NCP18_Init error\n");
+        printf("ADC_Init error\n");
     }
     else
     {
-        printf("NCP18_Init success\n");
+        printf("ADC_Init success\n");
     }
+
+
+
+    if (result = mmpSARConvert(ADC_PWR_CUT, writeBuffer_len, &calibrationOutput))
+    {
+        printf("mmpSARConvert() error (0x%x) !!\n", result);
+        while(1) sleep(1);
+    }
+    else
+    {
+			printf("ADC_PWR_CUT :Sudden Drop Voltage=%d,%f\n", calibrationOutput,result);
+
+    }
+
+
+	
 }
+
+
+
+const  unsigned char temp_rom[256]={
+200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,226,226,226,226,227,228,229,230,
+231,232,233,234,235,235,236,236,237,238,239,240,240,241,241,242,243,243,244,244,245,246,246,
+247,247,248,248,249,249,250,250,250,251,251,252,252,253,253,254,254,255,255,0,0,1,1,1,2,2,3,
+3,4,4,4,5,5,6,6,6,7,7,8,8,9,9,9,10,10,11,11,11,12,12,13,13,13,14,14,15,15,15,16,16,17,17,17,
+18,18,19,19,19,20,20,21,21,21,22,22,22,23,23,24,24,24,25,25,26,26,27,27,27,28,28,29,29,29,30,
+30,31,31,31,32,32,33,33,34,34,35,35,35,36,36,37,37,38,38,39,39,39,40,40,41,41,42,42,43,43,44,
+44,45,45,46,46,47,48,48,49,49,50,50,51,52,52,53,53,54,55,55,56,56,57,58,58,59,60,61,61,62,63,
+63,64,65,66,67,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,83,84,85,86,88,90,91,93,94,95,97,
+100,101,103,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,
+};
 
 float NCP18_Detect(void)
 {
@@ -90,6 +130,8 @@ float NCP18_Detect(void)
     uint16_t      writeBuffer_len = 512;
     uint16_t      calibrationOutput = 0;
     float         NCP18calibrationOutput = 0;
+	float calib;
+	unsigned char index;
 
     if (theConfig.ncp18_offset <= 0)
     {
@@ -107,14 +149,27 @@ float NCP18_Detect(void)
             return result;
         }
     }
-
-    if (result_s = mmpSARConvert(1, writeBuffer_len, &calibrationOutput))
+//SAR ADC 0 
+    if (result_s = mmpSARConvert(ADC_TEMPRATURE, writeBuffer_len, &calibrationOutput))
     {
         printf("mmpSARConvert() error (0x%x) !!\n", result_s);
         while(1) sleep(1);
     }
     else
     {
+
+
+		calib=(256.*(float)calibrationOutput/4096. );
+
+		index = (unsigned char )calib;
+		if(index==0xff)
+				index ==0xfe;
+		result=(float)temp_rom[index];
+        //printf("Calibration Output:%d,%f\n", calibrationOutput,result);
+
+		/*
+
+	
         //printf("Calibration Output:%d\n", calibrationOutput);
         temp_temp = (float)calibrationOutput;
         temp_temp = temp_temp / 4095 * 3.3;
@@ -127,6 +182,7 @@ float NCP18_Detect(void)
             if (result < 0) result = 0;
             else if (result > 99) result = 99;
         }
+        */
     }
 
     return result;

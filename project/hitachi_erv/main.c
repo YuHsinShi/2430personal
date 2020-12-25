@@ -35,6 +35,9 @@ int SDL_main(int argc, char *argv[])
     ioctl(ITP_DEVICE_SCREEN, ITP_IOCTL_RESET, (void*)0);
 #endif
 
+#if 1 //def CFG_NCP18_ENABLE
+		ADC_Init();
+#endif
 
 #ifdef CFG_CHECK_FILES_CRC_ON_BOOTING
     BackupInit();
@@ -90,9 +93,7 @@ retry_backup:
     SHT20_Init();
 #endif
 
-#ifdef CFG_NCP18_ENABLE
-    NCP18_Init();
-#endif
+
 
 #if 0//ndef WIN32
 	Hlink_init();

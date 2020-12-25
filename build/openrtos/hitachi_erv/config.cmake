@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Fri Dec 25 16:49:31 2020
+# Fri Dec 25 17:33:59 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -102,7 +102,8 @@ set(CFG_I2S_ENABLE y)
 #
 # (unvisible)
 #
-# CFG_SARADC_ENABLE is not set
+set(CFG_SARADC_ENABLE y)
+# CFG_SARADC_CALIBRATION_ENABLE is not set
 set(CFG_POWER_SAVING_ENABLE y)
 set(CFG_DEF_POWER_STANDBY y)
 set(CFG_POWER_STANDBY_CPU_FREQ_RATIO "15")
@@ -390,8 +391,7 @@ set(CFG_ALT_CPU_ENABLE y)
 # CFG_SW_UART is not set
 # CFG_SW_SERIAL_PORT is not set
 set(CFG_HOMEBUS y)
-# CFG_SARADC_CALIBRATION_EXTERNAL is not set
-# CFG_SARADC_CALIBRATION_INTERNAL is not set
+set(CFG_SARADC_VALID_XAIN "0x07")
 # CFG_CANBUS_ENABLE is not set
 
 #
@@ -410,6 +410,14 @@ set(CFG_GPIO_UART2_RX "37")
 set(CFG_GPIO_UART2_TX "-1")
 # CFG_GPIO_TOUCH_INT_ACTIVE_HIGH is not set
 set(CFG_GPIO_HOMEBUS_TXD "35")
+set(CFG_GPIO_XAIN_0_RX "19")
+set(CFG_GPIO_XAIN_1_RX "20")
+set(CFG_GPIO_XAIN_2_RX "21")
+set(CFG_GPIO_XAIN_3_RX "22")
+set(CFG_GPIO_XAIN_4_RX "23")
+set(CFG_GPIO_XAIN_5_RX "24")
+set(CFG_GPIO_XAIN_6_RX "25")
+set(CFG_GPIO_XAIN_7_RX "26")
 
 #
 # Network
@@ -631,4 +639,4 @@ set(CFG_UPGRADE_FTP_URL "ftp://192.168.1.1/ctrlboard/ITEPKG03.PKG")
 # CFG_UPGRADE_GUI is not set
 # CFG_DYNAMIC_LOAD_TP_MODULE is not set
 # CFG_SHT20_ENABLE is not set
-# CFG_NCP18_ENABLE is not set
+set(CFG_NCP18_ENABLE y)
