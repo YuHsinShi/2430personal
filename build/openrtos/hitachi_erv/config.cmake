@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Fri Dec 25 17:33:59 2020
+# Mon Dec 28 14:45:27 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -117,7 +117,7 @@ set(CFG_AXISPI_CLOCK_GPIO "10")
 set(CFG_AXISPI_CHIP_SEL_GPIO "5")
 set(CFG_AXISPI_WP_GPIO "8")
 set(CFG_AXISPI_HOLD_GPIO "9")
-set(CFG_GPIO_BACKLIGHT_PWM "53")
+set(CFG_GPIO_BACKLIGHT_PWM "54")
 set(CFG_GPIO_LCD_PWR_EN "55")
 # CFG_GPIO_LCD_PWR_EN_ACTIVE_LOW is not set
 # CFG_NET_ENABLE is not set
@@ -405,7 +405,7 @@ set(CFG_POWER_DOZE y)
 #
 # GPIO
 #
-set(CFG_GPIO_PWM_NUMBER "1")
+set(CFG_GPIO_PWM_NUMBER "3")
 set(CFG_GPIO_UART2_RX "37")
 set(CFG_GPIO_UART2_TX "-1")
 # CFG_GPIO_TOUCH_INT_ACTIVE_HIGH is not set
