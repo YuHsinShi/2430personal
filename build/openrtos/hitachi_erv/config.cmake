@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Dec 29 16:01:22 2020
+# Tue Dec 29 16:23:22 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -70,7 +70,7 @@ set(CFG_USB0_ENABLE y)
 set(CFG_MSC_ENABLE y)
 set(CFG_FS_FAT y)
 set(CFG_RTC_ENABLE y)
-set(CFG_RTC_MODULE "itp_rtc_sw.c")
+set(CFG_RTC_MODULE "itp_rtc_internal.c")
 # CFG_SPI_ENABLE is not set
 set(CFG_I2C0_ENABLE y)
 set(CFG_GPIO_IIC0_CLK "59")
