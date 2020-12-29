@@ -622,7 +622,7 @@ int SceneRun(void)
     #endif          // _WIN32
                 }
                 if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-                    AudioPlayKeySound();
+		                    beeper_once(); //AudioPlayKeySound();
 
                 break;
 
@@ -664,8 +664,8 @@ int SceneRun(void)
                         lasty   = ev.button.y;
                     }
                     if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-                        AudioPlayKeySound();
-
+		                    beeper_once(); //AudioPlayKeySound();
+		                    
     #ifdef CFG_SCREENSHOT_ENABLE
                     if (ev.button.x < 50 && ev.button.y > CFG_LCD_HEIGHT - 50)
                         Screenshot(screenSurf);
@@ -761,8 +761,8 @@ int SceneRun(void)
 					if (keySound)
 					{
 						if (result && !ScreenIsOff() && !StorageIsInUsbDeviceMode())
-							AudioPlayKeySound();
-					}
+		                    beeper_once(); //AudioPlayKeySound();					
+		             }
                     
 
     #ifdef CFG_SCREENSHOT_ENABLE

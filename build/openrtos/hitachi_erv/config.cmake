@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Mon Dec 28 14:45:27 2020
+# Tue Dec 29 16:01:22 2020
 #
 #
 set(CFG_CTRLBOARD y)
@@ -97,7 +97,9 @@ set(CFG_I2S_ENABLE y)
 #
 # (unvisible)
 #
-# CFG_I2C1_ENABLE is not set
+set(CFG_I2C1_ENABLE y)
+set(CFG_GPIO_IIC1_CLK "44")
+set(CFG_GPIO_IIC1_DATA "45")
 
 #
 # (unvisible)
@@ -343,6 +345,7 @@ set(CFG_BACKUP_DRIVE "D")
 set(CFG_RTC_DEFAULT_TIMESTAMP "1325376000")
 set(CFG_INTERNAL_RTC_TIMER "5")
 set(CFG_I2C0_CLOCKRATE "400000")
+set(CFG_I2C1_CLOCKRATE "400000")
 # CFG_I2C2_ENABLE is not set
 # CFG_I2C3_ENABLE is not set
 set(CFG_I2S_INTERNAL_CODEC y)
@@ -373,6 +376,7 @@ set(CFG_UART2_BAUDRATE "9600")
 # CFG_IRDA_ENABLE is not set
 # CFG_KEYPAD_ENABLE is not set
 set(CFG_TOUCH_I2C0 y)
+# CFG_TOUCH_I2C1 is not set
 set(CFG_TOUCH_CAPACITIVE y)
 # CFG_TOUCH_RESISTIVE is not set
 # CFG_TOUCH_MULTI_FINGER is not set

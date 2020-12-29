@@ -140,6 +140,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     storage.c
     upgrade.c
     backup.c
+	peipheral.c
     )
 
 if (DEFINED CFG_SHT20_ENABLE)
