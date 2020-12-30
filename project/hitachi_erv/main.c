@@ -103,6 +103,7 @@ retry_backup:
 	Hlink_init();
 #endif
 
+	peripheral_init();//beeper , led
 
     SceneInit();
     SceneLoad();

@@ -10,5 +10,7 @@ if (DEFINED CFG_HOMEBUS AND NOT $ENV{CFG_PLATFORM} STREQUAL win32)
         homebusDevice.c
 		hlink/uart_tx.c
 		hlink/uart_rx.c
+		hlink/uart_wifi.c
+
     )
 endif()

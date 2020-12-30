@@ -18,6 +18,16 @@ static int beeper_initial=0;
 #define BEEPER_PWM_MODE 	2
 
 
+
+#define RED_LED_PWM_GPIO 		43
+#define RED_LED_PWM_INDEX 		ITH_PWM1
+#define RED_LED_PWM_MODE 		2
+
+#define GREEN_LED_PWM_GPIO 		42
+#define GREEN_LED_PWM_INDEX 	ITH_PWM2
+#define GREEN_LED_PWM_MODE 		2
+
+
 void* beeper_task(void* arg)
 {
 
@@ -27,6 +37,7 @@ void* beeper_task(void* arg)
 
     return NULL;
 }
+
 
 
 
@@ -52,9 +63,41 @@ void beeper_once()
 	 pthread_create(&beep_tid, NULL, beeper_task, NULL);
 }
 
+void green_led_duty(unsigned int duty)
+{
+	ithPwmSetDutyCycle(GREEN_LED_PWM_INDEX,duty);
+	ithPwmEnable(GREEN_LED_PWM_INDEX, GREEN_LED_PWM_GPIO, GREEN_LED_PWM_MODE);
+
+}
+
+void red_led_duty(unsigned int duty)
+{
+	ithPwmSetDutyCycle(RED_LED_PWM_INDEX,duty);
+	ithPwmEnable(RED_LED_PWM_INDEX, RED_LED_PWM_GPIO, RED_LED_PWM_MODE);
+
+}
+
+void led_init()
+{
+
+		ithPwmInit(RED_LED_PWM_INDEX,5000,0);
+		ithPwmReset(RED_LED_PWM_INDEX,RED_LED_PWM_GPIO,RED_LED_PWM_MODE);
+
+		ithPwmInit(GREEN_LED_PWM_INDEX,5000,0);
+		ithPwmReset(GREEN_LED_PWM_INDEX,GREEN_LED_PWM_GPIO,GREEN_LED_PWM_MODE);		
+}
+
+void peripheral_init()
+{
+	led_init();
+	beeper_init();
+}
+
 #endif
 
+#if 1
 
+#endif
 
 #define AT24C16_WRITE_ADDR 0xA0
 #define AT24C16_READ_ADDR  0xA1
