@@ -141,6 +141,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     upgrade.c
     backup.c
 	peipheral.c
+	wifi_module.c
     )
 
 if (DEFINED CFG_SHT20_ENABLE)

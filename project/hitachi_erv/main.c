@@ -39,7 +39,7 @@ int SDL_main(int argc, char *argv[])
     ioctl(ITP_DEVICE_SCREEN, ITP_IOCTL_RESET, (void*)0);
 #endif
 
-#if 1 //def CFG_NCP18_ENABLE
+#ifndef WIN32
 		ADC_Init();
 #endif
 
@@ -102,9 +102,10 @@ retry_backup:
 #if 0//ndef WIN32
 	Hlink_init();
 #endif
-
+#ifndef WIN32
 	peripheral_init();//beeper , led
-
+	wifi_module_ini();
+#endif
     SceneInit();
     SceneLoad();
     ret = SceneRun();

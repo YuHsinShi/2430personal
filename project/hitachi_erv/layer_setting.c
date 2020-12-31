@@ -247,10 +247,10 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 
 		settingScreenLockTimeSprite = ituSceneFindWidget(&theScene, "settingScreenLockTimeSprite");
 		assert(settingScreenLockTimeSprite);
-
+		/*
 		settingWiFiSsidNameText = ituSceneFindWidget(&theScene, "settingWiFiSsidNameText");
 		assert(settingWiFiSsidNameText);
-
+		
 		settingWiFiStopAnywhere = ituSceneFindWidget(&theScene, "settingWiFiStopAnywhere");
 		assert(settingWiFiStopAnywhere);
 
@@ -259,7 +259,7 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 
 		settingWiFiTmpBackground = ituSceneFindWidget(&theScene, "settingWiFiTmpBackground");
 		assert(settingWiFiTmpBackground);
-
+		
 		wifiSet[0].background  = ituSceneFindWidget(&theScene, "settingWiFiSubBackground0");
 		assert(wifiSet[0].background);
 
@@ -277,7 +277,7 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 
 		settingWiFiOpenCheckBox = ituSceneFindWidget(&theScene, "settingWiFiOpenCheckBox");
 		assert(settingWiFiOpenCheckBox);
-
+		*/
 		settingWarningLightCheckBox = ituSceneFindWidget(&theScene, "settingWarningLightCheckBox");
 		assert(settingWarningLightCheckBox);
 
@@ -370,12 +370,12 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 
 	ituCheckBoxSetChecked(settingKeySoundCheckBox, keySound);
 	ituCheckBoxSetChecked(settingWarningLightCheckBox, indicatorLightEnable);
-
+#if 0
 //wifi
 	/* Auto reconnection after system reboot, check IP/MAC first time */
-	if (theConfig.wifi_on_off == WIFIMGR_SWITCH_ON) {
-		ituCheckBoxSetChecked(settingWiFiOpenCheckBox, true);
-		ituWidgetSetVisible(settingWiFiAllBackground, true);
+	//if (theConfig.wifi_on_off == WIFIMGR_SWITCH_ON) {
+	//	ituCheckBoxSetChecked(settingWiFiOpenCheckBox, true);
+	//	ituWidgetSetVisible(settingWiFiAllBackground, true);
 		//ituRadioBoxSetChecked(settingCloseWiFiRadioBox, false);
 		//ituRadioBoxSetChecked(settingOpenWiFiRadioBox, true);
 		//ituWidgetSetVisible(settingWiFiSsidContainer, true);
@@ -411,6 +411,10 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		//ituWidgetSetVisible(settingWiFiSsidContainer, false);
 		//ituTextSetString(settingIPText, "0.0.0.0");
 	}
+
+
+
+
 	if (theConfig.wifi_on_off == WIFIMGR_SWITCH_ON)
 	//if (ituRadioBoxIsChecked(settingOpenWiFiRadioBox))
 	{
@@ -511,7 +515,7 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		//wifiNum = 0;
 	}
 //
-
+#endif 
 	return true;
 }
 bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param)
@@ -880,55 +884,13 @@ extern int SettingWiFiPasswordSetData(char *ssid, int securityMode);
 #endif
 bool SettingWiFiSubBtnOnPress(ITUWidget* widget, char* param)
 {
-	int nIndex = atoi(param);
-
-	SettingWiFiPasswordSetData(pList[nIndex].ssidName, pList[nIndex].securityMode);
 
 	return true;
 }
 
 bool SettingWiFiOpenCheckBoxOnPress(ITUWidget* widget, char* param)
 {
-	if (ituCheckBoxIsChecked(settingWiFiOpenCheckBox))
-	{
-		ituWidgetSetVisible(settingWiFiAllBackground, true);
 
-		//open WiFi
-		//get wifi AP data....
-		/*Eason*/
-		theConfig.wifi_mode = WIFIMGR_MODE_MAX;
-		theConfig.wifi_on_off = WIFIMGR_SWITCH_ON;
-
-#ifdef CFG_NET_WIFI
-		WifiMgr_clientMode_switch(theConfig.wifi_on_off);
-		gnApCount = wifiMgr_get_scan_ap_info(pList);
-#endif
-		/***************************************************/
-
-		showWiFiItem();
-
-
-	}
-	else
-	{
-		ituWidgetSetVisible(settingWiFiAllBackground, false);
-
-		//close WiFi
-		theConfig.wifi_on_off = WIFIMGR_SWITCH_OFF;
-		//ituSpriteGoto(topWiFiSprite, 0);
-		wifi_status = 2;
-#ifdef CFG_NET_WIFI
-		wifiMgr_clientMode_disconnect();
-		WifiMgr_clientMode_switch(theConfig.wifi_on_off);
-#ifdef CFG_NET_WIFI_SDIO_NGPL
-		ip_addr_set_zero(&xnetif[0].ip_addr);
-#endif
-#endif
-
-		memset(theConfig.ssid, 0, sizeof(theConfig.ssid));
-		memset(theConfig.password, 0, sizeof(theConfig.password));
-	}
-	ConfigSave();
 	return true;
 }
 bool SettingRestoreAllSettingBtnOnMouseUp(ITUWidget* widget, char* param)
