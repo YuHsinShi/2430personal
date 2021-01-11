@@ -949,12 +949,12 @@ int iteIrRead(ITHIrPort port, char *ptr)
 int i;
 	if (xQueueReceive(ir_obj->RxQueue,irCodeArray, 0))
 	{
-	/*
+	
 		ithPrintf("(IR) iteIrRead %d\n",irCodeArray[0]);
 	  	for(i=1;i<=irCodeArray[0];i++)
 			  ithPrintf("0x%x ",tmp_obj->irCodeArray[i]);
 	  	ithPrintf("\n");
-	*/		
+			
 		memcpy((unsigned char*)ptr,&(tmp_obj->irCodeArray[1]),irCodeArray[0]);
 		return irCodeArray[0];
 	}

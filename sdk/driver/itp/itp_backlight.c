@@ -30,6 +30,8 @@ static int BacklightIoctl(int file, unsigned long request, void* ptr, void* info
     switch (request)
     {
     case ITP_IOCTL_INIT:
+			ithPrintf("BacklightIoctl ITP_IOCTL_INIT %d",BL_PWM);
+		
         ithPwmInit(BL_PWM, CFG_BACKLIGHT_FREQ, CFG_BACKLIGHT_DEFAULT_DUTY_CYCLE);
         break;
 
@@ -51,8 +53,11 @@ static int BacklightIoctl(int file, unsigned long request, void* ptr, void* info
 
     case ITP_IOCTL_SET_BRIGHTNESS:
     {
+    
         int value = (int) ptr;
-        if (value < ITH_COUNT_OF(blDutyCycleTable))
+		ithPrintf("BacklightIoctl ITP_IOCTL_SET_BRIGHTNESS %d %d",BL_PWM,value);
+
+		if (value < ITH_COUNT_OF(blDutyCycleTable))
         {
             blLastValue = blDutyCycleTable[value];
             ithPwmSetDutyCycle(BL_PWM, blLastValue);

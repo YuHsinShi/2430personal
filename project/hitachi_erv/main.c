@@ -86,7 +86,6 @@ retry_backup:
 #endif // CFG_NET_ENABLE
 
 	ScreenInit();
-    ExternalInit();
 #if defined(CFG_UPGRADE_FROM_UART_RUN_TIME)
 	UpgradeUartInit();
 #endif
@@ -99,12 +98,12 @@ retry_backup:
 
 
 
-#if 0//ndef WIN32
+
+#if 1 //ndef WIN32
 	Hlink_init();
-#endif
-#ifndef WIN32
 	peripheral_init();//beeper , led
 	wifi_module_ini();
+	ExternalInit(); //IR module
 #endif
     SceneInit();
     SceneLoad();

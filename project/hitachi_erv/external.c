@@ -16,7 +16,7 @@
 #endif
 
 static mqd_t extInQueue = -1;
-static mqd_t extOutQueue = -1;
+//static mqd_t extOutQueue = -1;
 static pthread_t extTask;
 static volatile bool extQuit;
 
@@ -72,18 +72,33 @@ bool Hlink_send(ITUWidget* widget, char* param)
 	return false;
 }
 
-
-static void* ExternalTask(void* arg)
+//to recv 
+static void* IR_Probe_Task(void* arg)
 {
+	unsigned char buff[64]={0};
+	int cmd_len=0;
+	int i;
     while (!extQuit)
     {
+		cmd_len = read(ITP_DEVICE_IR0, buff, 64);
+        if (cmd_len)
+        {
+		  ithPrintf("cmd_len=0x%x \n",cmd_len);
+		
+		for(i=0;i<cmd_len;i++)
+		  ithPrintf("0x%x ",buff[i]);
+		  
+		  ithPrintf("\n");
+
+		}
+
 
         usleep(10000);
     }
     mq_close(extInQueue);
-	mq_close(extOutQueue);
+	//mq_close(extOutQueue);
     extInQueue = -1;
-	extOutQueue = -1;
+	//extOutQueue = -1;
 
     return NULL;
 }
@@ -99,13 +114,13 @@ void ExternalInit(void)
     extInQueue = mq_open("external_in", O_CREAT | O_NONBLOCK, 0644, &qattr);
     assert(extInQueue != -1);
 
-    extOutQueue = mq_open("external_out", O_CREAT | O_NONBLOCK, 0644, &qattr);
-    assert(extOutQueue != -1);
+    //extOutQueue = mq_open("external_out", O_CREAT | O_NONBLOCK, 0644, &qattr);
+    //assert(extOutQueue != -1);
 
     extQuit = false;
 
 
-    pthread_create(&extTask, NULL, ExternalTask, NULL);
+    pthread_create(&extTask, NULL, IR_Probe_Task, NULL);
 }
 
 void ExternalExit(void)
@@ -134,5 +149,5 @@ int ExternalSend(ExternalEvent* ev)
     if (extQuit)
         return -1;
 
-    return mq_send(extOutQueue, (char*)ev, sizeof(ExternalEvent), 0);
+   // return mq_send(extOutQueue, (char*)ev, sizeof(ExternalEvent), 0);
 }

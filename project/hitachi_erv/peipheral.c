@@ -14,18 +14,18 @@ static int beeper_initial=0;
 #define BEEPER_FREQ 		4000
 
 #define BEEPER_GPIO 		15
-#define BEEPER_PWM_INDEX 	ITH_PWM3
-#define BEEPER_PWM_MODE 	2
+#define BEEPER_PWM_INDEX 	6  //TIMER7
+#define BEEPER_PWM_MODE 	0
 
 
 
 #define RED_LED_PWM_GPIO 		43
-#define RED_LED_PWM_INDEX 		ITH_PWM1
-#define RED_LED_PWM_MODE 		2
+#define RED_LED_PWM_INDEX 		0 //TIMER1
+#define RED_LED_PWM_MODE 		0
 
 #define GREEN_LED_PWM_GPIO 		42
-#define GREEN_LED_PWM_INDEX 	ITH_PWM2
-#define GREEN_LED_PWM_MODE 		2
+#define GREEN_LED_PWM_INDEX 	1 //TIMER2
+#define GREEN_LED_PWM_MODE 		0
 
 
 void* beeper_task(void* arg)
@@ -38,30 +38,6 @@ void* beeper_task(void* arg)
     return NULL;
 }
 
-
-
-
-void beeper_init()
-{
-
-//	Test_eeprom();
-
-
-    ithPwmInit(BEEPER_PWM_INDEX,BEEPER_FREQ,100);
-    ithPwmReset(BEEPER_PWM_INDEX,BEEPER_GPIO,BEEPER_PWM_MODE);
-	ithPwmSetDutyCycle(BEEPER_PWM_INDEX,50);
-	beeper_initial=1;
-
-}
-
-void beeper_once()
-{
-	if(0== beeper_initial)
-		beeper_init();
-
-	 pthread_t beep_tid;
-	 pthread_create(&beep_tid, NULL, beeper_task, NULL);
-}
 
 void green_led_duty(unsigned int duty)
 {
@@ -76,6 +52,37 @@ void red_led_duty(unsigned int duty)
 	ithPwmEnable(RED_LED_PWM_INDEX, RED_LED_PWM_GPIO, RED_LED_PWM_MODE);
 
 }
+
+
+void beeper_init()
+{
+
+//	Test_eeprom();
+	green_led_duty(50);
+	red_led_duty(50);
+
+
+    ithPwmInit(BEEPER_PWM_INDEX,BEEPER_FREQ,100);
+    ithPwmReset(BEEPER_PWM_INDEX,BEEPER_GPIO,BEEPER_PWM_MODE);
+	ithPwmSetDutyCycle(BEEPER_PWM_INDEX,50);
+	ithPwmDisable(BEEPER_PWM_INDEX,BEEPER_GPIO);
+
+
+	beeper_initial=1;
+
+}
+
+void beeper_once()
+{
+//return;
+	if(0== beeper_initial)
+		beeper_init();
+
+	 pthread_t beep_tid;
+	 pthread_create(&beep_tid, NULL, beeper_task, NULL);
+}
+
+
 
 void led_init()
 {

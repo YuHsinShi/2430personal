@@ -72,45 +72,16 @@ void ScreenOff(void)
     int nRet;
     int nWiFiConnState = 0, nWiFiConnEcode = 0;
     puts("Screen Off!");
-
+/*
 #ifdef CFG_POWER_STANDBY
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_STANDBY, NULL);
 #elif defined(CFG_POWER_SLEEP)
 
-#if defined(CFG_NET_WIFI) && !defined(CFG_NET_WIFI_SDIO_NGPL)
-    //while (ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_SLEEP_STATUS, NULL) != default_no_sleep_or_wakeup){
-    while (WifiMgr_Is_Wpa_Wifi_Terminating()){        
-        printf("[ScreenOff] wait wifi close process\n");
-        usleep(100*1000);
-		if (!ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_IS_DEVICE_READY, NULL))
-			break;
-    }
-
-    ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_SLEEP, (void *)wakeup_to_sleep);
-    usleep(400*1000);
-    if(theConfig.wifi_on_off){
-        do
-        {
-            nRet = wifiMgr_get_connect_state(&nWiFiConnState, &nWiFiConnEcode);
-            usleep(1000*1000);
-            printf("waiting for connection done\n");
-            wifiMgr_CancelConnect();
-        }  while(nWiFiConnState != WIFIMGR_CONNSTATE_STOP);
-    }
-    printf("connection is done\n");
-
-
-    ioctl(ITP_DEVICE_WIFI, ITP_IOCTL_WIFI_STOP_DHCP, NULL);
-    wifiMgr_clientMode_sleep_disconnect();
-    wifiMgr_terminate();
-#elif defined(CFG_NET_WIFI) && defined(CFG_NET_WIFI_SDIO_NGPL)
-    wifiMgr_clientMode_sleep_disconnect();
-    wifiMgr_terminate();
-#endif
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_SLEEP, NULL);
 #else
     ioctl(ITP_DEVICE_BACKLIGHT, ITP_IOCTL_OFF, NULL);
 #endif
+*/
     screenOff = true;
 }
 
@@ -130,7 +101,7 @@ int gScreenOnCounter = 0;
 void ScreenOn(void)
 {
     printf("----------------------------------------Screen On!: %d-----------------------------------\n", ++gScreenOnCounter);
-
+#if 0
 #ifdef CFG_POWER_STANDBY
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_RESUME, NULL);
 #elif defined(CFG_POWER_SLEEP)
@@ -147,6 +118,9 @@ void ScreenOn(void)
 #else
     ioctl(ITP_DEVICE_BACKLIGHT, ITP_IOCTL_ON, NULL);
 #endif
+#endif
+
+
 	screenOff = false;
 	doubleclick =false;
 

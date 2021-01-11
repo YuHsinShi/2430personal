@@ -44,7 +44,7 @@ Castor3_PumpEvents(_THIS)
     Castor3_PumpKeypadEvent();
 #endif
 
-#if defined(CFG_IR0_ENABLE) || defined(CFG_IR1_ENABLE) || defined(CFG_IR2_ENABLE) || defined(CFG_IR3_ENABLE)
+#if 0 //defined(CFG_IR0_ENABLE) || defined(CFG_IR1_ENABLE) || defined(CFG_IR2_ENABLE) || defined(CFG_IR3_ENABLE)
     Castor3_PumpIrEvent();
 #endif
 

@@ -123,6 +123,7 @@ void homebus_init()
 
     printf("Start homebus_init\n");
     
+    int altCpuEngineType = ALT_CPU_HOMEBUS;
 	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
     tHomebusInitData.cpuClock = ithGetRiscCpuClock();
 	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
@@ -130,7 +131,8 @@ void homebus_init()
     // tHomebusInitData.parity  = NONE;
     tHomebusInitData.uid[0] = 0x01;
     tHomebusInitData.uid[1] = 0x01;
-    
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_ALT_CPU_SWITCH_ENG, &altCpuEngineType);
+	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
 	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
     printf("homebus_initt finished\n");
 

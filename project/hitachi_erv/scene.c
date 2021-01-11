@@ -544,7 +544,7 @@ int SceneRun(void)
 #ifdef CFG_LCD_ENABLE
         ProcessCommand();
 #endif
-        CheckExternal();
+       // CheckExternal();
         CheckStorage();
 
 #if defined(CFG_USB_MOUSE) || defined(_WIN32)
