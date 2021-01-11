@@ -59,15 +59,97 @@ static IR_OBJ IrObj[4] =
 	INIT_IR_OBJECT(3),
 };
 
+
+static TickType_t start;
+IR_OBJ *tmp_obj;
+static int timout_counting=0;
+static void start_timeout_tick(void)
+{
+    /* Set first ticks value */
+    start = xTaskGetTickCount();
+	timout_counting=1;
+}
+
+static unsigned int get_elapsed_timeout_msec()
+{
+    TickType_t tick = xTaskGetTickCount();
+    if (tick >= start)
+        return ((tick - start) / portTICK_PERIOD_MS);
+    else
+        return ((0xFFFFFFFF - start + tick) / portTICK_PERIOD_MS);
+
+}
+
+
+void task_timeoutcheck()
+{
+		ithPrintf("task_timeoutcheck \n");
+int i;
+		while(1)
+		{
+			if(1== timout_counting ) 
+			{
+				{	
+					if(50 < get_elapsed_timeout_msec())
+					{
+						//force end
+						/*
+					  ithPrintf("(IR) RECV %d BYTES\n",(tmp_obj->index_irCodeArray-1));
+						for(i=1;i<tmp_obj->index_irCodeArray;i++)
+								ithPrintf("0x%x ",tmp_obj->irCodeArray[i]);
+						ithPrintf("\n");
+						*/
+					tmp_obj->irCodeArray[0] = (tmp_obj->index_irCodeArray-1);//take first byte as the cmd length
+
+
+						
+
+					 if( xQueueSend(tmp_obj->RxQueue,  (void *) &(tmp_obj->irCodeArray[0]), (TickType_t)100) != pdPASS )
+                    {
+                        /* 发送失败，即使等待了10个时钟节拍 */
+                    
+					ithPrintf("task_timeoutcheck QUEUE Send fail \n");
+                    }
+                    else
+                    {
+                        /* 发送成功 */
+                                           
+                    }
+	
+						//tmp_obj->irCurrState = WAIT_RISING;
+						timout_counting=0;
+
+						//send to cmd quee
+						tmp_obj->irCurrState=WAIT_RISING;
+						tmp_obj->irRecvBitCount = 0;
+						tmp_obj->irRecvCode = 0;
+						
+						tmp_obj->index_irCodeArray=1;
+							
+					//	ithPrintf("irRecvBitCount %d \n",tmp_obj->irRecvBitCount);
+						ithPrintf("Restart\n");
+
+					}
+				}
+			}
+		
+			usleep(10*1000);
+		}
+
+}
+
+
+
+
 static int _IrProbe(ITHIrPort port, int signal)
 {
 	int completeACode = 0, code;
-	unsigned long getBit;
+	unsigned char getBit;
 	IR_OBJ *ir_obj = &IrObj[IR_JUDGE_PORT(port)];
 
 	if (signal != -1)
 	{
-#ifdef DEBUG_MSG
+#if 0 //def DEBUG_MSG
 		ithPrintf("IrProbe(),signal=%d\n", signal);
 #endif
 
@@ -122,10 +204,12 @@ static int _IrProbe(ITHIrPort port, int signal)
 		case JUDGE_START_OR_REPEAT:
 			if ((signal >= irThresholds[ir_obj->port_num][START][0]) && (signal <= irThresholds[ir_obj->port_num][START][1]))
 			{
-#ifdef DEBUG_MSG
+#if 1 //def DEBUG_MSG
 				ithPrintf("START\n");
 #endif
 				ir_obj->irCurrState = WAIT_BIT_RISING;
+				ir_obj->index_irCodeArray=1;
+
 			}
 #ifdef CFG_IR_REPEAT
 			else if ((signal >= irThresholds[ir_obj->port_num][REPEAT][0]) && (signal <= irThresholds[ir_obj->port_num][REPEAT][1]))
@@ -136,9 +220,11 @@ static int _IrProbe(ITHIrPort port, int signal)
 #endif // CFG_IR_REPEAT
 			break;
 		case WAIT_BIT_RISING:
+			
+			//ithPrintf(" %d ",signal);
 			if ((signal >= irThresholds[ir_obj->port_num][BIT_RISING][0]) && (signal <= irThresholds[ir_obj->port_num][BIT_RISING][1]))
 			{
-#ifdef DEBUG_MSG
+#if 0// def DEBUG_MSG
 				ithPrintf("BIT_RISING get\n");
 #endif
 				ir_obj->irCurrState = JUDGE_BIT_ZERO_OR_ONE;
@@ -151,28 +237,43 @@ static int _IrProbe(ITHIrPort port, int signal)
 			}
 			break;
 		case JUDGE_BIT_ZERO_OR_ONE:
+			
+			//ithPrintf(" %d ",signal);
 			if ((signal >= irThresholds[ir_obj->port_num][BIT_ZERO][0]) && (signal <= irThresholds[ir_obj->port_num][BIT_ZERO][1]))
 			{
-				getBit = 0;
+				//getBit = 0;
+				ir_obj->irCodeArray[ir_obj->index_irCodeArray]&=~(0x01<<ir_obj->irRecvBitCount);
+				//ithPrintf("0");
 			}
 			else if ((signal >= irThresholds[ir_obj->port_num][BIT_ONE][0]) && (signal <= irThresholds[ir_obj->port_num][BIT_ONE][1]))
 			{
+
+			
+				ir_obj->irCodeArray[ir_obj->index_irCodeArray]|=0x01<<(ir_obj->irRecvBitCount);
+				/*
 				if (irProtocol[ir_obj->port_num][LSB]) //LSB or not
 					getBit = 0x80000000L;
 				else
 					getBit = 0x00000001L;
+				*/
+				//ithPrintf("1");
 			}
 			else
 			{
-#ifdef DEBUG_MSG
+#if 1//def DEBUG_MSG
 				ithPrintf("checking bit 0 or 1 error, signal at: %d\n", signal);
+				ithPrintf(" zero : [%d, %d] \n", irThresholds[ir_obj->port_num][BIT_ZERO][0], irThresholds[ir_obj->port_num][BIT_ZERO][1]);
+				ithPrintf(" one : [%d, %d] \n", irThresholds[ir_obj->port_num][BIT_ONE][0],  irThresholds[ir_obj->port_num][BIT_ONE][1]);
+
 #endif
+
+
 				ir_obj->irRecvBitCount = 0;
 				ir_obj->irRecvCode = 0;
 				ir_obj->irCurrState = WAIT_RISING;
 				break;
 			}
-
+/*
 			if (irProtocol[ir_obj->port_num][LSB])
 			{
 				ir_obj->irRecvCode = (ir_obj->irRecvCode >> 1) | getBit;
@@ -181,24 +282,41 @@ static int _IrProbe(ITHIrPort port, int signal)
 			{
 				ir_obj->irRecvCode = (ir_obj->irRecvCode << 1) | getBit;
 			}
-
+*/
 			ir_obj->irRecvBitCount++;
-			if (ir_obj->irRecvBitCount < irProtocol[ir_obj->port_num][BIT_PER_KEY]) // bits per key
-				ir_obj->irCurrState = WAIT_BIT_RISING;   // not yet complet a code
-			else
-				ir_obj->irCurrState = WAIT_END;
 
+			if(ir_obj->irRecvBitCount==8)
+			{
+				//ir_obj->irCodeArray[0]=(unsigned char) (ir_obj->irRecvCode);
+				//ithPrintf("=[B]%x=\n",ir_obj->irCodeArray[0]);
+				//ithPrintf("=%d [0x%x]=\n",ir_obj->index_irCodeArray,ir_obj->irCodeArray[ir_obj->index_irCodeArray]);
+				ir_obj->irRecvBitCount=0;
+				ir_obj->index_irCodeArray++;
+			}
+
+			
+			//LAW//if (ir_obj->irRecvBitCount < irProtocol[ir_obj->port_num][BIT_PER_KEY]) // bits per key
+				ir_obj->irCurrState = WAIT_BIT_RISING;   // not yet complet a code
+			//LAW//else
+			//LAW//	ir_obj->irCurrState = WAIT_END;
+			//LAW// RECORD the waiting state and use a thread to polling  
+			//wait timeout
+			start_timeout_tick();
+
+			
 			break;
 
 		case WAIT_END:
-			if ((signal >= irThresholds[ir_obj->port_num][WAIT_END][0]) && (signal <= irThresholds[ir_obj->port_num][WAIT_END][1]))
+			if (1) //((signal >= irThresholds[ir_obj->port_num][WAIT_END][0]) && (signal <= irThresholds[ir_obj->port_num][WAIT_END][1]))
 			{
 				completeACode = 1;
 				code = ir_obj->irRecvCode;
 				ir_obj->irRecvBitCount = 0;
 				ir_obj->irRecvCode = 0;
+				
+				ir_obj->index_irCodeArray=1;
 				ir_obj->irCurrState = WAIT_RISING;
-#ifdef DEBUG_MSG
+#if 1 //def DEBUG_MSG
 				ithPrintf("end\n");
 #endif
 			}
@@ -231,6 +349,8 @@ static void _IrTxSend(ITHIrPort port, int code)
 	code /= SAMP_RATE;
 	ithIrTxTransmit(port, code);
 }
+
+
 
 static void _IrRxIntrHandler(void* arg)
 {
@@ -479,7 +599,7 @@ static void _IrCalcThresholds(int port_num)
 	{
 		threshold = irProtocol[port_num][i] / SAMP_RATE;
 		// 0.85 & 1.15 is experienc value, duration range N is between 0.85*N and 1.15*N.
-		fifteenPercent = threshold * 15 / 100;
+		fifteenPercent = threshold * 30 / 100;
 
 		irThresholds[port_num][i][0] = threshold - fifteenPercent;
 		irThresholds[port_num][i][1] = threshold + fifteenPercent;
@@ -579,6 +699,13 @@ int iteIrInit(ITHIrPort port)
 {
 	IR_OBJ *ir_obj = &IrObj[IR_JUDGE_PORT(port)];
 
+//add for hitachi project mutiple bytes cmd
+	static pthread_t irTask;
+	tmp_obj=ir_obj;
+	pthread_create(&irTask, NULL, task_timeoutcheck, NULL);
+	ir_obj->RxQueue = xQueueCreate(QUEUE_LEN, IR_CODE_ARRAY_MAX_SIZE);
+
+	
 	//IR-RX init
 	ithIrRxInit(ir_obj->port, ir_obj->RxGpio, 0, SAMP_RATE, PRECISION);
 	//IR-TX init
@@ -594,10 +721,14 @@ int iteIrInit(ITHIrPort port)
 	ir_obj->irRepeatKeyFast = 0;
 	ir_obj->irRepeatKeyHold = 0;
 	ir_obj->irRepeatKeyPress = 0;
+
+	ir_obj->index_irCodeArray=1;
+
+	
 	ir_obj->irWidth = (ithReadRegA(ir_obj->port + ITH_IR_HWCFG_REG) & ITH_IR_WIDTH_MASK) >> ITH_IR_WIDTH_BIT;
 	ir_obj->irLastEvent.code = -1;
 
-	ir_obj->RxQueue = xQueueCreate(QUEUE_LEN, (unsigned portBASE_TYPE) sizeof(int));
+//	ir_obj->RxQueue = xQueueCreate(QUEUE_LEN, (unsigned portBASE_TYPE) sizeof(int));
 	ir_obj->TxQueue = xQueueCreate(QUEUE_LEN, (unsigned portBASE_TYPE) sizeof(int));
 
 #ifdef ENABLE_IR_INTR
@@ -813,6 +944,23 @@ int iteIrInit(ITHIrPort port)
 int iteIrRead(ITHIrPort port, char *ptr)
 {
 	IR_OBJ *ir_obj = &IrObj[IR_JUDGE_PORT(port)];
+
+	unsigned char irCodeArray[64];
+int i;
+	if (xQueueReceive(ir_obj->RxQueue,irCodeArray, 0))
+	{
+	/*
+		ithPrintf("(IR) iteIrRead %d\n",irCodeArray[0]);
+	  	for(i=1;i<=irCodeArray[0];i++)
+			  ithPrintf("0x%x ",tmp_obj->irCodeArray[i]);
+	  	ithPrintf("\n");
+	*/		
+		memcpy((unsigned char*)ptr,&(tmp_obj->irCodeArray[1]),irCodeArray[0]);
+		return irCodeArray[0];
+	}
+	return 0;
+
+	
 	ITPKeypadEvent* ev = (ITPKeypadEvent*)ptr;
 	ITPKeypadEvent *LastEvent = NULL;
 

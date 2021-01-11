@@ -890,9 +890,21 @@ bool SettingWiFiSubBtnOnPress(ITUWidget* widget, char* param)
 
 bool SettingWiFiOpenCheckBoxOnPress(ITUWidget* widget, char* param)
 {
+	if ('1' == param[0]){
+		//matched  //wifi enable or disable
+	}
+	else if ('2' == param[0]){
+		//wifi matched or not
+		//settingWiFiOpenCheckBox
+		//settingWiFiMatchedCheckBox
+	}
+	else{
 
+	}
+	 
 	return true;
 }
+
 bool SettingRestoreAllSettingBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	//restore all setting, clear customer's content

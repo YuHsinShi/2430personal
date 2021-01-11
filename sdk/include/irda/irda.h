@@ -297,6 +297,7 @@ typedef struct LLP_CONTEXT_TAG
 	uint32_t  TotalSize;
 }LLP_CONTEXT;
 
+#define IR_CODE_ARRAY_MAX_SIZE 	64
 typedef struct _IR_OBJ {
 	ITHIrPort port;
 	int port_num;
@@ -327,12 +328,14 @@ typedef struct _IR_OBJ {
 	QueueHandle_t TxQueue;
 	QueueHandle_t RxQueue;
 	unsigned long irRecvCode;        // LSB received code
+	unsigned char index_irCodeArray;
+	unsigned char irCodeArray[IR_CODE_ARRAY_MAX_SIZE];        // LSB received code
 	enum RCState irCurrState;
 	int irRepeatKeyPress;
 	int irRepeatKeyHold;
 	int irRepeatKeyFast;
 	int irRepeatKeyCnt;
-	int irRecvBitCount;
+	unsigned char irRecvBitCount;
 	int irWidth;
 	ITPKeypadEvent irLastEvent;
 } IR_OBJ;

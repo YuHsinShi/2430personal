@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include "ite/itp.h"
 
+
+
+
+
+#ifndef WIN32
 //#define printr_wifimodule	 printf
 #define printr_wifimodule	 
 
@@ -98,11 +103,11 @@ return 1;
 
 void WifiModulePowerOn()
 {
-#define WiFiGPIO_PWR	50
+	#define WiFiGPIO_PWR	50
 	ithGpioSetOut(WiFiGPIO_PWR);
 	ithGpioSetMode(WiFiGPIO_PWR, ITH_GPIO_MODE0);
 	ithGpioClear(WiFiGPIO_PWR); //POWER ON
-		usleep(2*1000*1000); //wait for response		
+	usleep(2*1000*1000); //wait for response		
 
 }
 
@@ -167,3 +172,5 @@ void wifi_module_ini()
 	pthread_create(&wifi_tid, NULL, WifiModuleHandle, NULL);
     return 0;
 }
+
+#endif

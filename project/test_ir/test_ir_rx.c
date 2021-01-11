@@ -25,24 +25,32 @@ void* TestFunc(void* arg)
 {
 	// initialize IrDA, the method below could be found in itpInit();
 	ITPKeypadEvent ev;
+	unsigned char buff[64]={0};
+	int i;
     // Register device Remote control
     itpRegisterDevice(TEST_PORT, &TEST_DEVICE);
 
     // Do initialization
     ioctl(TEST_PORT, ITP_IOCTL_INIT, (void *) 0);
 	// initialize IrDA end.
-
+unsigned cmd_len;
     for (;;)
     {
-        if (read(TEST_PORT, &ev, sizeof (ITPKeypadEvent)) == sizeof (ITPKeypadEvent))
-            printf("key: time=%lld.%ld,code=%d,down=%d,up=%d,repeat=%d,flags=0x%X\r\n", 
-            ev.time.tv_sec,
-            ev.time.tv_usec / 1000,
-            ev.code,
-            (ev.flags & ITP_KEYPAD_DOWN) ? 1 : 0,
-            (ev.flags & ITP_KEYPAD_UP) ? 1 : 0,
-            (ev.flags & ITP_KEYPAD_REPEAT) ? 1 : 0,
-            ev.flags);
+		cmd_len = read(TEST_PORT, buff, 64);
+        if (cmd_len)
+		{
+				ithPrintf("cmd_len=0x%x \n",cmd_len);
+
+			  for(i=0;i<cmd_len;i++)
+				ithPrintf("0x%x ",buff[i]);
+				
+				ithPrintf("\n");
+		}
+		else
+		{
+			
+			
+		}
 		usleep(33000);
     }
     return NULL;
