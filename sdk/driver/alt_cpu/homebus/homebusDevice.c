@@ -10,7 +10,7 @@
 #error "Need UART2 ENABLE !"
 #endif
 
-#define DBG_HOMEBUS  		1
+//#define DBG_HOMEBUS  		1
 #if DBG_HOMEBUS
 #define printf_hb	printf 
 #else
@@ -51,37 +51,10 @@ static void homebusProcessCommand(int cmdId);
 
 
 
-void homebus_logic_control()
-{
-printf("homebus_logic_control \n");
-
-
-	int counter=10;
-
-	while(1)
-	{
-	
-	   // pthread_mutex_lock(&gThreadMutex);
-
-		system_tx_check();
-	
-		init_tx_deal();
-
-		if(0==counter){  tx_deal();	counter=10; } // do until 100ms 
-		//rx_deal();		
-
-
-		//pthread_mutex_unlock(&gThreadMutex);
-
-		usleep(10*1000);//10ms 
-		counter--;
-		
-	}
-}
 
 int homebus_senddata(uint8_t* buf,unsigned char len)
 {
-	printf("[HL SEND](%d) :", len);
+	printf_hb("[HL SEND](%d) :", len);
 int ret;
 	if(0) //len >64)
 	{
@@ -100,9 +73,9 @@ int ret;
 	tHomebusWriteData.pWriteDataBuffer =buf;
 
 	for(count = 0; count < len; count++) {
-		printf("0x%2x ", buf[count]);
+		printf_hb("0x%2x ", buf[count]);
 	}
-	printf("\r\n");
+	printf_hb("\r\n");
 
 
 
@@ -135,6 +108,7 @@ void homebus_init()
 	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
 	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
     printf("homebus_initt finished\n");
+
 
 
 }
@@ -459,12 +433,6 @@ static int homebusIoctl(int file, unsigned long request, void *ptr, void *info)
 			//pthread_mutex_init(&gThreadMutex, NULL);
             //read thread start
             homebusReadThreadStart();
-
-
-
-			pthread_t readThread;
-			pthread_create(&readThread, NULL, homebus_logic_control, NULL);
-
             break;
         }
         case ITP_IOCTL_HOMEBUS_READ_DATA:

@@ -338,6 +338,36 @@ while(1)
 
 }
 
+
+void homebus_logic_control()
+{
+printf("homebus_logic_control \n");
+
+
+	int counter=10;
+
+	while(1)
+	{
+	
+	   // pthread_mutex_lock(&gThreadMutex);
+
+		system_tx_check();
+	
+		init_tx_deal();
+
+		if(0==counter){  tx_deal();	counter=10; } // do until 100ms 
+		//rx_deal();		
+
+		remote_deal_program();//for IR module
+
+		//pthread_mutex_unlock(&gThreadMutex);
+
+		usleep(10*1000);//10ms 
+		counter--;
+		
+	}
+}
+
 void* TestFunc_homebus(void* arg)
 {
     int altCpuEngineType = ALT_CPU_HOMEBUS;
@@ -354,7 +384,8 @@ void* TestFunc_homebus(void* arg)
     //Load Engine on ALT CPU
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_ALT_CPU_SWITCH_ENG, &altCpuEngineType);
     ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
-
+	pthread_t readThread;
+	pthread_create(&readThread, NULL, homebus_logic_control, NULL);
 //	homebus_test_ABC();
 
  //   homebus_test();

@@ -57,13 +57,17 @@ void ScreenOffContinue(void)
 
 void ScreenClockOff(void)
 {
-    puts("Screen Off!");
+    puts("ScreenClockOff Off!");
 #ifdef CFG_BUILD_ASR
     AsrStartOnBackGround(0);
 #endif
+	/*
+
 #ifdef CFG_POWER_STANDBY
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_STANDBY_CLOCK, NULL);
 #endif
+	*/
+
     screenClockOff = true;
 }
 
@@ -71,7 +75,7 @@ void ScreenOff(void)
 {
     int nRet;
     int nWiFiConnState = 0, nWiFiConnEcode = 0;
-    puts("Screen Off!");
+    puts("Screen Off ScreenOff!");
 /*
 #ifdef CFG_POWER_STANDBY
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_STANDBY, NULL);
@@ -87,7 +91,7 @@ void ScreenOff(void)
 
 void ScreenClockOn(void)
 {
-#ifdef CFG_POWER_STANDBY
+#if 0 //def CFG_POWER_STANDBY
     ioctl(ITP_DEVICE_POWER, ITP_IOCTL_RESUME_CLOCK, NULL);
 #endif
     screenClockOff = false;

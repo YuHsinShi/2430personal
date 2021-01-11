@@ -100,10 +100,10 @@ retry_backup:
 
 
 #if 1 //ndef WIN32
-	Hlink_init();
 	peripheral_init();//beeper , led
+	
+	Hlink_init();//hlink , IR module
 	wifi_module_ini();
-	ExternalInit(); //IR module
 #endif
     SceneInit();
     SceneLoad();

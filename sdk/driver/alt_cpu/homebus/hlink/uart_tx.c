@@ -324,7 +324,7 @@ void init_tx_deal(void)
     {
       initialize_cnt=0;
       initialize_step++;
-     printf("initialize_step=%d\r\n",initialize_step);
+     printf(" [Hlink] initialize_step=%d\r\n",initialize_step);
       switch(initialize_step)
       {
       case 1:     

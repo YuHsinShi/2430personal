@@ -27,12 +27,61 @@ static volatile bool extQuit;
 #include "alt_cpu/alt_cpu_device.h"
 #include "alt_cpu/homebus/homebus.h"
 
+void MCU_logic_control_IR()
+{
+	unsigned char buff[64]={0};
+	int cmd_len=0;
 
+	cmd_len = read(ITP_DEVICE_IR0, buff, 64);
+	if(cmd_len>0)
+	{
+		remote_cmd_buffer_in(buff,cmd_len);//cmd in 
+		remote_deal_program();
+	}
+
+}
+
+
+void MCU_logic_control()
+{
+printf("homebus_logic_control \n");
+
+
+	int i;
+
+	int counter=10;
+
+	while(1)
+	{
+	
+	   // pthread_mutex_lock(&gThreadMutex);
+
+		system_tx_check();
+	
+		init_tx_deal();
+
+		if(0==counter){  tx_deal();	counter=10; } // do until 100ms 
+		//rx_deal();		
+		//if(have_ir)
+		
+		MCU_logic_control_IR();//follow original IR module logic 
+
+
+		//pthread_mutex_unlock(&gThreadMutex);
+
+		usleep(10*1000);//10ms 
+		counter--;
+		
+	}
+}
 
 
 void Hlink_init()
 {
-	homebus_init();
+	homebus_init(); //h link engine
+	
+	pthread_t readThread;
+	pthread_create(&readThread, NULL, MCU_logic_control, NULL);
 
 }
 #endif
@@ -72,36 +121,7 @@ bool Hlink_send(ITUWidget* widget, char* param)
 	return false;
 }
 
-//to recv 
-static void* IR_Probe_Task(void* arg)
-{
-	unsigned char buff[64]={0};
-	int cmd_len=0;
-	int i;
-    while (!extQuit)
-    {
-		cmd_len = read(ITP_DEVICE_IR0, buff, 64);
-        if (cmd_len)
-        {
-		  ithPrintf("cmd_len=0x%x \n",cmd_len);
-		
-		for(i=0;i<cmd_len;i++)
-		  ithPrintf("0x%x ",buff[i]);
-		  
-		  ithPrintf("\n");
 
-		}
-
-
-        usleep(10000);
-    }
-    mq_close(extInQueue);
-	//mq_close(extOutQueue);
-    extInQueue = -1;
-	//extOutQueue = -1;
-
-    return NULL;
-}
 
 void ExternalInit(void)
 {
@@ -120,7 +140,7 @@ void ExternalInit(void)
     extQuit = false;
 
 
-    pthread_create(&extTask, NULL, IR_Probe_Task, NULL);
+ //   pthread_create(&extTask, NULL, IR_Probe_Task, NULL);
 }
 
 void ExternalExit(void)
