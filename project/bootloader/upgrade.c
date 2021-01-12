@@ -302,7 +302,7 @@ ITCStream* OpenUpgradePackage(void)
     for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
     {
         driveStatus = &driveStatusTable[i];
-        if (driveStatus->avail && driveStatus->removable)
+        if (driveStatus->avail) // && driveStatus->removable)
         {
             char buf[PATH_MAX], *ptr;
 

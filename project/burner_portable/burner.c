@@ -596,6 +596,7 @@ int burner_check_storage_type_nand()
 
 
 		SPI_CLK_LAB my_clk;
+	printf("burner_check_storage_type_nand  NAND check\n");
 
 	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
 	{

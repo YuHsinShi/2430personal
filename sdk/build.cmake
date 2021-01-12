@@ -505,12 +505,7 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
     # backup package
     if (DEFINED CFG_UPGRADE_BACKUP_PACKAGE)
         if (NOT (${CMAKE_PROJECT_NAME} STREQUAL "bootloader"))
-            if (DEFINED CFG_UPGRADE_IMAGE_NAND)
-                set(args ${args} --nand-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
-                #set(packargs ${packargs} --nand-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
-                #set(pkgdsk ${pkgdsk} --nand-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
-
-            elseif (DEFINED CFG_UPGRADE_IMAGE_NOR)
+			if (DEFINED CFG_UPGRADE_IMAGE_NOR)
                 set(args ${args} --nor-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
                 set(packargs ${packargs} --nor-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
 
@@ -538,11 +533,7 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
 
         set(pack_bootloader_path "./bootloader/kproc.sys")
 
-        if (DEFINED CFG_UPGRADE_BOOTLOADER_NAND)
-            set(bootloader_args --nand-unformatted-data1 ${bootloader_path})
-            set(packargs ${packargs} --nand-unformatted-data1 ${pack_bootloader_path})
-            set(pkgdsk ${pkgdsk} --nand-unformatted-data1 ${bootloader_path})
-        elseif (DEFINED CFG_UPGRADE_BOOTLOADER_NOR)
+		if (DEFINED CFG_UPGRADE_BOOTLOADER_NOR)
             set(bootloader_args --nor-unformatted-data1 ${bootloader_path})
             set(packargs ${packargs} --nor-unformatted-data1 ${pack_bootloader_path})
             #set(pkgdsk ${pkgdsk} --nor-unformatted-data1 ${pack_bootloader_path})
@@ -560,17 +551,7 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
     # image
     if (DEFINED CFG_UPGRADE_IMAGE)
         if (NOT (${CMAKE_PROJECT_NAME} STREQUAL "bootloader"))
-            if (DEFINED CFG_UPGRADE_IMAGE_NAND)
-                set(args ${args} --nand-unformatted-data2 ${CMAKE_BINARY_DIR}/project/${CMAKE_PROJECT_NAME}/kproc.sys)
-                set(args ${args} --nand-unformatted-data2-pos ${CFG_UPGRADE_IMAGE_POS})
-
-                set(packargs ${packargs} --nand-unformatted-data2 "./${CMAKE_PROJECT_NAME}/kproc.sys")
-                set(packargs ${packargs} --nand-unformatted-data2-pos ${CFG_UPGRADE_IMAGE_POS})
-
-                set(pkgdsk ${pkgdsk} --nand-unformatted-data2 ${CMAKE_BINARY_DIR}/project/${CMAKE_PROJECT_NAME}/kproc.sys)
-                set(pkgdsk ${pkgdsk} --nand-unformatted-data2-pos ${CFG_UPGRADE_IMAGE_POS})
-
-            elseif (DEFINED CFG_UPGRADE_IMAGE_NOR)
+			if (DEFINED CFG_UPGRADE_IMAGE_NOR)
                 set(args ${args} --nor-unformatted-data2 ${CMAKE_BINARY_DIR}/project/${CMAKE_PROJECT_NAME}/kproc.sys)
                 set(args ${args} --nor-unformatted-data2-pos ${CFG_UPGRADE_IMAGE_POS})
 
@@ -605,11 +586,7 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
     endif()
 
     # unformatted
-    if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_NAND_RESERVED_SIZE)
-        set(args ${args} --nand-unformatted-size ${CFG_NAND_RESERVED_SIZE})
-        set(packargs ${packargs} --nand-unformatted-size ${CFG_NAND_RESERVED_SIZE})
-        set(pkgdsk ${pkgdsk} --nand-unformatted-size ${CFG_NAND_RESERVED_SIZE})
-    endif()
+
     if (DEFINED CFG_NOR_ENABLE AND DEFINED CFG_NOR_RESERVED_SIZE)
         set(args ${args} --nor-unformatted-size ${CFG_NOR_RESERVED_SIZE})
         set(packargs ${packargs} --nor-unformatted-size ${CFG_NOR_RESERVED_SIZE})
@@ -683,40 +660,6 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
         endif()
 
         # partition
-        if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_NAND_PARTITION0)
-        	if (DEFINED CFG_UPGRADE_PRIVATE_NAND)
-	            set(args ${args} --nand-partiton0-size ${CFG_NAND_PARTITION0_SIZE})
-	            set(packargs ${packargs} --nand-partiton0-size ${CFG_NAND_PARTITION0_SIZE})
-	        else()
-	            set(args ${args} --nand-partiton0-size 0)
-	            set(packargs ${packargs} --nand-partiton0-size 0)
-			endif()
-        endif()
-
-        if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_NAND_PARTITION1)
-        	if (DEFINED CFG_UPGRADE_PUBLIC_NAND)
-	            set(args ${args} --nand-partiton1-size ${CFG_NAND_PARTITION1_SIZE})
-	            set(packargs ${packargs} --nand-partiton1-size ${CFG_NAND_PARTITION1_SIZE})
-	        else()
-	            set(args ${args} --nand-partiton1-size 0)
-	            set(packargs ${packargs} --nand-partiton1-size 0)
-			endif()
-        endif()
-
-        if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_NAND_PARTITION2)
-        	if (DEFINED CFG_UPGRADE_TEMP_NAND)
-	            set(args ${args} --nand-partiton2-size ${CFG_NAND_PARTITION2_SIZE})
-	            set(packargs ${packargs} --nand-partiton2-size ${CFG_NAND_PARTITION2_SIZE})
-	        else()
-	            set(args ${args} --nand-partiton2-size 0)
-	            set(packargs ${packargs} --nand-partiton2-size 0)
-			endif()
-        endif()
-
-        if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_NAND_PARTITION3)
-            set(args ${args} --nand-partiton3-size ${CFG_NAND_PARTITION3_SIZE})
-            set(packargs ${packargs} --nand-partiton3-size ${CFG_NAND_PARTITION3_SIZE})
-        endif()
 
         if (DEFINED CFG_NOR_ENABLE AND DEFINED CFG_NOR_PARTITION0)
         	if (DEFINED CFG_UPGRADE_PRIVATE_NOR)
@@ -834,11 +777,6 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
         endif()
     endif()
 
-    if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_UPGRADE_NAND_DATA_BY_DISK_IMAGE AND NOT (${CMAKE_PROJECT_NAME} STREQUAL bootloader))
-        set(pkgdsk ${pkgdsk} --nand-unformatted-data3 ${CFG_UPGRADE_NAND_DISK_IMAGE_FILENAME})
-        set(pkgdsk ${pkgdsk} --nand-unformatted-data3-pos ${CFG_NAND_RESERVED_SIZE})
-    endif()
-
     if (DEFINED CFG_UPGRADE_PACKAGE_VERSION)
         set(args ${args} --version ${CFG_UPGRADE_PACKAGE_VERSION})
         set(packargs ${packargs} --version ${CFG_UPGRADE_PACKAGE_VERSION})
@@ -883,60 +821,6 @@ elseif ($ENV{CFG_PLATFORM} STREQUAL openrtos)
 
         endif()
 
-        if (DEFINED CFG_NAND_ENABLE AND DEFINED CFG_UPGRADE_NAND_DATA_BY_DISK_IMAGE AND NOT (${CMAKE_PROJECT_NAME} STREQUAL bootloader))
-            if (DEFINED CFG_UPGRADE_BACKUP_PACKAGE AND NOT DEFINED CFG_UPGRADE_BACKUP_PACKAGE_EXT_FILE)
-                message("Gen backup PKG-file without bootloader")
-                #message("pkgtool ${args}")               
-                add_custom_command(
-                    TARGET ${CMAKE_PROJECT_NAME}
-                    POST_BUILD
-                    COMMAND pkgtool
-                    ARGS -o ${CFG_UPGRADE_FILENAME}_NO_BOOTLOADER ${args} --key ${CFG_UPGRADE_ENC_KEY}
-                    COMMAND pkgtool
-                    ARGS -l ${CFG_UPGRADE_FILENAME}_NO_BOOTLOADER
-                    COMMAND ${CMAKE_COMMAND} -E rename
-                    ARGS ${CFG_UPGRADE_FILENAME}_NO_BOOTLOADER ${CFG_UPGRADE_FILENAME}_ORG
-                )
-            endif()
-
-            # parse partitions as disk image
-            add_custom_command(
-                TARGET ${CMAKE_PROJECT_NAME}
-                POST_BUILD
-                COMMAND pkgtool
-                ARGS -t -o ${CFG_UPGRADE_NAND_DISK_IMAGE_FILENAME} -M ${CFG_UPGRADE_FILENAME} -e ${CFG_UPGRADE_NAND_DISK_SECTOR_SIZE} -s ${CFG_UPGRADE_NAND_DISK_IMAGE_SIZE}
-            )
-
-            if (DEFINED CFG_UPGRADE_BACKUP_PACKAGE)
-                if (DEFINED CFG_UPGRADE_BACKUP_PACKAGE_EXT_FILE)
-                    set(pkgdsk ${pkgdsk} --nand-unformatted-data0 ${CFG_UPGRADE_BACKUP_PKG_EXT_FILENAME}) 
-                    set(pkgdsk ${pkgdsk} --nand-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
-                else()
-                    set(pkgdsk ${pkgdsk} --nand-unformatted-data0 ${CFG_UPGRADE_FILENAME}_ORG) 
-                    set(pkgdsk ${pkgdsk} --nand-unformatted-data0-pos ${CFG_UPGRADE_BACKUP_PACKAGE_POS})
-                endif()
-            endif()
-
-            # build PKG file with disk image
-	        add_custom_command(
-	            TARGET ${CMAKE_PROJECT_NAME}
-	            POST_BUILD
-	            COMMAND pkgtool
-	            ARGS -o ${CFG_UPGRADE_FILENAME} ${pkgdsk} --key ${CFG_UPGRADE_ENC_KEY}
-	            COMMAND pkgtool
-	            ARGS -l ${CFG_UPGRADE_FILENAME}
-	        )
-
-            # convert PKG file to ROM format for NAND progermmer
-	        if (DEFINED CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER)
-    	        add_custom_command(
-    	            TARGET ${CMAKE_PROJECT_NAME}
-    	            POST_BUILD
-    	            COMMAND dataconv
-    	            ARGS -p ${CFG_UPGRADE_FILENAME} -o ${CFG_UPGRADE_NAND_PROGRAMMER_FILENAME}
-    	        )
-	        endif()
-        endif()
 
     endif()
 

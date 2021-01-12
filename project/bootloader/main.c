@@ -162,9 +162,11 @@ static void InitFileSystem(void)
 {
     // init card device
 #if  !defined(CFG_UPGRADE_USB_DEVICE) && !defined(_WIN32) && (defined(CFG_SD0_ENABLE) || defined(CFG_SD1_ENABLE) || defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST) || defined(CFG_RAMDISK_ENABLE))
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
     itpRegisterDevice(ITP_DEVICE_CARD, &itpDeviceCard);
     ioctl(ITP_DEVICE_CARD, ITP_IOCTL_INIT, NULL);
 #endif
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 
     // init usb
 #if defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST)
@@ -175,6 +177,14 @@ static void InitFileSystem(void)
             usbInited = true;
     }
 #endif
+#ifdef CFG_SD0_STATIC
+		itpRegisterDevice(ITP_DEVICE_SD0, &itpDeviceSd0);
+		ioctl(ITP_DEVICE_SD0, ITP_IOCTL_INIT, NULL);
+#endif
+
+
+
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 
     // init fat
 #ifdef CFG_FS_FAT
@@ -184,127 +194,15 @@ static void InitFileSystem(void)
 #endif
 
     // init drive table
-#if defined(CFG_FS_FAT) || defined(CFG_FS_NTFS)
-    itpRegisterDevice(ITP_DEVICE_DRIVE, &itpDeviceDrive);
-    ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_INIT, NULL);
-
-#if defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST)
-    ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_ENABLE, NULL);
-    ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_INIT_TASK, NULL);
-#endif // defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST)
-#endif // defined(CFG_FS_FAT)
-
-    // mount disks on booting
-#if 0 //def CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER
-    if(!ioctl(ITP_DEVICE_NAND, ITP_IOCTL_NAND_CHECK_REMAP, NULL))
-    {
-        ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, NULL);
-    }
+	itpRegisterDevice(ITP_DEVICE_DRIVE, &itpDeviceDrive);
+	ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_INIT, 	 NULL);
+	ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT,	 NULL);
+	ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_ENABLE,	 NULL);
+#ifdef CFG_TASK_DRIVE_PROBE
+	ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_INIT_TASK, NULL);
 #endif
 
-#if defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST)
-    // wait msc is inserted
-    if (usbInited)
-    {
-        ITPDriveStatus* driveStatusTable;
-        ITPDriveStatus* driveStatus = NULL;
-        int i, timeout = CFG_UPGRADE_USB_DETECT_TIMEOUT;
-        bool found = false;
-    #if (defined(CFG_SD0_ENABLE) && !defined(CFG_SD0_STATIC)) || (defined(CFG_SD1_ENABLE) && !defined(CFG_SD1_STATIC))
-        static const int diskTable[] = { ITP_DISK_SD0, ITP_DISK_SD1, -1 };
-    #else
-        static const int diskTable[] = { -1 };
-    #endif // (defined(CFG_SD0_ENABLE) && !defined(CFG_SD0_STATIC)) || (defined(CFG_SD1_ENABLE) && !defined(CFG_SD1_STATIC))
 
-    #ifdef CFG_NET_WIFI
-        ITPUsbInfo usbInfo;
-        usbInfo.host = true;
-    #endif // CFG_NET_WIFI
-
-        // mount usb disks on booting
-        ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, (void*)diskTable);
-
-        while (!found)
-        {
-            for (i = 0; i < 2; i++)
-            {
-                if (ioctl(ITP_DEVICE_USB, ITP_IOCTL_IS_CONNECTED, (void*)(USB0 + i)))
-                {
-                #ifdef CFG_NET_WIFI
-                    usbInfo.usbIndex = i;
-                    ioctl(ITP_DEVICE_USB, ITP_IOCTL_GET_INFO, (void*)&usbInfo);
-                    if (usbInfo.ctxt && usbInfo.type == USB_DEVICE_TYPE_MSC)
-                    {
-                #endif // CFG_NET_WIFI
-                        found = true;
-                        break;
-                #ifdef CFG_NET_WIFI
-                    }
-                #endif
-                }
-            }
-
-            if (found)
-            {
-                break;
-            }
-            else
-            {
-                timeout -= 1;
-                if (timeout <= 0)
-                {
-                    LOG_INFO "USB device not found.\n" LOG_END
-#ifdef CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER
-                    gDoReMapFlow = 0;
-#endif
-                    return;
-                }
-                usleep(1000);
-            }
-        }
-
-        found = false;
-        timeout = CFG_UPGRADE_USB_TIMEOUT;
-
-        ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
-
-        while (!found)
-        {
-            for (i = 0; i < ITP_MAX_DRIVE; i++)
-            {
-                driveStatus = &driveStatusTable[i];
-                if (driveStatus->disk >= ITP_DISK_MSC00 && driveStatus->disk <= ITP_DISK_MSC17 && driveStatus->avail)
-                {
-                    LOG_DBG "drive[%d]:usb disk=%d\n", i, driveStatus->disk LOG_END
-                    found = true;
-                    usleep(100*1000);
-                }
-            }
-            if (!found)
-            {
-                timeout -= 100;
-                if (timeout <= 0)
-                {
-                    LOG_INFO "USB disk not found.\n" LOG_END
-                    break;
-                }
-                usleep(100000);
-            }
-        }
-    }
-#if (defined(CFG_SD0_ENABLE) && !defined(CFG_SD0_STATIC)) || (defined(CFG_SD1_ENABLE) && !defined(CFG_SD1_STATIC))
-    else
-    {
-        static const int diskTable[] = { ITP_DISK_SD0, ITP_DISK_SD1, -1 };
-        // mount sd disks on booting
-        ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, (void*)diskTable);
-    }
-#endif // (defined(CFG_SD0_ENABLE) && !defined(CFG_SD0_STATIC)) || (defined(CFG_SD1_ENABLE) && !defined(CFG_SD1_STATIC))
-#else
-    // mount disks on booting
-    ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, NULL);
-
-#endif //  defined(CFG_MSC_ENABLE) || defined(CFG_USBH_CD_MST)
 }
 
 #if !defined(CFG_LCD_ENABLE) && (CFG_CHIP_FAMILY == 970)
@@ -337,113 +235,7 @@ static void* UgLedTask(void* arg)
 }
 #endif
 
-#if (CFG_CHIP_FAMILY == 970)
-static void DetectKey(void)
-{
-    int ret;
-    int phase = 0;
-    int time_counter = 0;
-    int key_counter = 0;
-    bool key_pressed;
-    bool key_released;
-    ITPKeypadEvent ev;
 
-    while (1)
-    {
-        key_pressed = key_released = false;
-        ioctl(ITP_DEVICE_KEYPAD, ITP_IOCTL_PROBE, NULL);
-        if (read(ITP_DEVICE_KEYPAD, &ev, sizeof (ITPKeypadEvent)) == sizeof (ITPKeypadEvent))
-        {
-            if (ev.code == 0)
-            {
-                if (ev.flags & ITP_KEYPAD_DOWN)
-                    key_pressed = true;
-                else if (ev.flags & ITP_KEYPAD_UP)
-                    key_released = true;
-            }
-        }
-
-        if (phase == 0)
-        {
-            if (key_pressed)
-            {
-                printf("key detected\n");
-                phase = 1;
-            }
-            else
-                break;
-        }
-        else if (phase == 1)
-        {
-            if (key_released)
-                break;
-            if (time_counter > 100)
-            {
-                phase = 2;
-                ithGpioSetOut(16);
-                ithGpioSetMode(16, ITH_GPIO_MODE0);
-                ithGpioSetOut(15);
-                ithGpioSetMode(15, ITH_GPIO_MODE0);
-            }
-        }
-        else if (phase == 2)
-        {
-            if (key_pressed)
-            {
-                ithGpioSet(15);
-                key_counter++;
-            }
-            if (key_released)
-                ithGpioClear(15);
-
-            if (time_counter > 200)
-            {
-                ithGpioSet(16);
-                ithGpioClear(15);
-                phase = 3;
-            }
-
-            // blink per 6*50000 us
-            if ((time_counter/6)%2)
-                ithGpioSet(16);
-            else
-                ithGpioClear(16);
-        }
-        else if (phase == 3)
-        {
-            printf("key_counter: %d\n", key_counter);
-            if (key_counter == 1)
-            {
-                // do reset
-                InitFileSystem();
-                ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, NULL);
-                ret = ugResetFactory();
-                #if defined(CFG_NOR_ENABLE) && CFG_NOR_CACHE_SIZE > 0
-                ioctl(ITP_DEVICE_NOR, ITP_IOCTL_FLUSH, NULL);
-                #endif
-
-				#ifdef CFG_NAND_ENABLE
-				ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
-				#endif
-
-                exit(ret);
-            }
-            if (key_counter == 2)
-            {
-                // dump addressbook.xml
-                InitFileSystem();
-                ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_MOUNT, NULL);
-                CopyUclFile();
-            }
-            ithGpioClear(16);
-            break;
-        }
-
-        usleep(50000);
-        time_counter++;
-    }
-}
-#endif
 
 static void InitLcdConsole(void)
 {
@@ -494,19 +286,14 @@ static void DoUpgrade(void)
     {
         int ret = 0;
 
-    #if !defined(CFG_LCD_ENABLE) && (CFG_CHIP_FAMILY == 970)
-        //---light on red/green led task
-        pthread_t task;
-        pthread_create(&task, NULL, UgLedTask, NULL);
-        //------
-    #endif
-        InitLcdConsole();
+
+        //InitLcdConsole();
         EndLoadImage(false);
 
         if (ugCheckCrc(upgradeFile, NULL))
         {
             LOG_ERR "Upgrade failed.\n" LOG_END
-            ShowUpgradeFail();
+            //ShowUpgradeFail();
             while (1)
                 sleep(10);
         }
@@ -522,9 +309,7 @@ static void DoUpgrade(void)
         ioctl(ITP_DEVICE_NOR, ITP_IOCTL_FLUSH, NULL);
     #endif
 
-		#ifdef CFG_NAND_ENABLE
-		    ioctl(ITP_DEVICE_NAND, ITP_IOCTL_FLUSH, (void*)ITP_NAND_FTL_MODE);
-		#endif
+
 
         if (ret)
         {
@@ -1017,6 +802,7 @@ static void DetectUartPattern(void)
 void* BootloaderMain(void* arg)
 {
     int ret = 0;
+	ithPrintf( "BootloaderMain\n");
 
 #if defined(CFG_UPGRADE_PRESSKEY) || defined(CFG_UPGRADE_RESET_FACTORY) || defined(CFG_UPGRADE_RECOVERY)
     ITPKeypadEvent ev;
@@ -1033,18 +819,8 @@ void* BootloaderMain(void* arg)
         upgradeCheckFail = true;
 
     BeginLoadImage();
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 
-#ifdef CFG_BL_SHOW_LOGO
-    ioctl(ITP_DEVICE_SCREEN, ITP_IOCTL_POST_RESET, NULL);
-    ShowLogo();
-#ifdef CFG_BACKLIGHT_ENABLE
-    {
-        pthread_t       task;
-        pthread_create(&task, NULL, backlightResetTask, NULL);
-    }
-#endif // CFG_BACKLIGHT_ENABLE
-    blLcdOn = true;
-#endif // CFG_BL_SHOW_LOGO
 
 #ifdef CFG_UPGRADE_USB_DEVICE
     if (DetectUsbDeviceMode())
@@ -1055,6 +831,7 @@ void* BootloaderMain(void* arg)
         DoUsbDeviceCommands();
     }
 #endif // CFG_UPGRADE_USB_DEVICE
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 
 #if defined(CFG_UPGRADE_PRESSKEY) || defined(CFG_UPGRADE_RESET_FACTORY) || defined(CFG_UPGRADE_RECOVERY)
     ioctl(ITP_DEVICE_KEYPAD, ITP_IOCTL_PROBE, NULL);
@@ -1255,15 +1032,18 @@ void* BootloaderMain(void* arg)
     }
 #endif
 
-#if (CFG_CHIP_FAMILY == 970)
-    DetectKey();
-#endif
+
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 
 #if !defined(CFG_UPGRADE_PRESSKEY) && defined(CFG_UPGRADE_OPEN_FILE)
+
     InitFileSystem();
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
+
     DoUpgrade();
 #endif
 
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 #ifdef CFG_ENABLE_UART_CLI
 	cliInit();
 	while (!cliQuit)
@@ -1313,6 +1093,9 @@ void* BootloaderMain(void* arg)
     DoBootTestBin();
 #endif
     LOG_INFO "Do Booting...\r\n" LOG_END
+while(1);// LAW to lock
+	ithPrintf( "=%s %d=\n",__func__,__LINE__);
+
     EndLoadImage(true);
     BootImage();
 

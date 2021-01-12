@@ -65,7 +65,7 @@ BootImageFunc(register uint32_t* src, register uint32_t len)
      );
 #elif defined __riscv
     // TODO: RISCV
-#else
+#elseb
     #error "Unsupport platform"
 #endif // 	__arm__
 
@@ -202,7 +202,7 @@ void* LoadImage(void* arg)
     }
 
     // mount disks on booting
-#ifdef CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER
+#if 0//def CFG_UPGRADE_FILE_FOR_NAND_PROGRAMMER
     if(!ioctl(ITP_DEVICE_NAND, ITP_IOCTL_NAND_CHECK_REMAP, NULL))
     {
         gDoReMapFlow = 1;
