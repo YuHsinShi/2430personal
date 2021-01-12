@@ -790,19 +790,19 @@ void burn_process(void* arg)
 	
 	burner_auto_set_bypass();//
 
+
+	if(burner_check_storage_type_nand() >= 0) //first NAND then NOR
+	{
+		printf("burn_process NAND END\n");
+		return;
+	}
+
 	if(burner_check_storage_type_nor() >= 0)
 	{
 		printf("burn_process NOR END\n");
 		return;
 
 	}
-
-	if(burner_check_storage_type_nand() >= 0)
-	{
-		printf("burn_process NAND END\n");
-		return;
-	}
-
 
 }
 

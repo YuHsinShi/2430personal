@@ -1926,12 +1926,14 @@ uint8_t check_spi_nand_id()
 
 	if(spiret==SPINF_OK)
 	{
-		printf("check_spi_nand_id id=%02x,%02x,%02x\n",nand_id[0],nand_id[1],nand_id[2]);
+		printf("check_spi_nand_id id=0x%02x,0x%02x,0x%02x\n",nand_id[0],nand_id[1],nand_id[2]);
 
 
 			for ( i = 0; i < (sizeof(g_SpiNfCfgArray) / sizeof(SPINF_CFG)); i++)
 			{
-				if( (nand_id[1]==g_SpiNfCfgArray[i].cfgMID) && (nand_id[2]==g_SpiNfCfgArray[i].cfgDID0) )
+			
+				printf("[%d] g_SpiNfCfgArray[i].cfgMID =0x%2x g_SpiNfCfgArray[i].cfgDID0 =0x%2x\n",i,g_SpiNfCfgArray[i].cfgMID,g_SpiNfCfgArray[i].cfgDID0);
+				if( (nand_id[0]==g_SpiNfCfgArray[i].cfgMID) && (nand_id[1]==g_SpiNfCfgArray[i].cfgDID0) && (nand_id[2]==g_SpiNfCfgArray[i].cfgDID1))
 				{
 					printf("check_spi_nand_id on support list\n");
 					nand_size = g_SpiNfCfgArray[i].cfgPageSize*g_SpiNfCfgArray[i].cfgPageInBlk*g_SpiNfCfgArray[i].cfgTotalBlk/ 1048567;

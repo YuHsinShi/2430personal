@@ -3859,9 +3859,13 @@ char* get_nor2nd_name()
 	norObject->port=port;
 
 	
+	printf( "\n======A========\n");
 	nor2ndReadDeviceID(norObject, &id);
+	
+	printf( "\n======B========\n");
 	nor2ndDisableWrite(norObject);
 	
+	printf( "\n======C========\n");
 	for ( i = 0; i < (sizeof(nor_support_vendor) / sizeof(nor_support_vendor[0])); i++)
 	{
 		if ((id.manufatureID == nor_support_vendor[i].id.manufatureID)
