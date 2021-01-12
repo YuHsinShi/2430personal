@@ -1093,7 +1093,7 @@ void* BootloaderMain(void* arg)
     DoBootTestBin();
 #endif
     LOG_INFO "Do Booting...\r\n" LOG_END
-while(1);// LAW to lock
+//while(1);// LAW to lock
 	ithPrintf( "=%s %d=\n",__func__,__LINE__);
 
     EndLoadImage(true);
