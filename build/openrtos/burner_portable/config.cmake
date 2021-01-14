@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Tue Jan 12 17:17:19 2021
+# Thu Jan 14 17:48:03 2021
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -34,8 +34,8 @@ set(CFG_MSC_ENABLE y)
 set(CFG_FS_FAT y)
 set(CFG_RTC_ENABLE y)
 set(CFG_RTC_MODULE "itp_rtc_sw.c")
-set(CFG_GPIO_UART0_TX "4")
-set(CFG_GPIO_UART0_RX "-1")
+set(CFG_GPIO_UART0_TX "15")
+set(CFG_GPIO_UART0_RX "14")
 set(CFG_AXISPI_ENABLE y)
 set(CFG_AXISPI_MOSI_GPIO "6")
 set(CFG_AXISPI_MISO_GPIO "7")
@@ -236,12 +236,17 @@ set(CFG_SPI0_ENABLE y)
 # CFG_WIEGAND_ENABLE is not set
 set(CFG_UART_ENABLE y)
 set(CFG_UART0_ENABLE y)
-set(CFG_UART0_INTR y)
+# CFG_UART0_INTR is not set
 # CFG_UART0_DMA is not set
-# CFG_UART0_FIFO is not set
+set(CFG_UART0_FIFO y)
 set(CFG_UART0_BAUDRATE "115200")
 # CFG_UART0_RS485 is not set
-# CFG_UART1_ENABLE is not set
+set(CFG_UART1_ENABLE y)
+# CFG_UART1_INTR is not set
+# CFG_UART1_DMA is not set
+set(CFG_UART1_FIFO y)
+set(CFG_UART1_BAUDRATE "115200")
+# CFG_UART1_RS485 is not set
 # CFG_UART2_ENABLE is not set
 # CFG_UART3_ENABLE is not set
 # CFG_UART4_ENABLE is not set
@@ -290,6 +295,8 @@ set(CFG_POWER_DOZE y)
 set(CFG_GPIO_SD0_POWER_ENABLE "-1")
 set(CFG_GPIO_SD0_WRITE_PROTECT "-1")
 set(CFG_GPIO_USB_ID_PIN "64")
+set(CFG_GPIO_UART1_RX "-1")
+set(CFG_GPIO_UART1_TX "4")
 set(CFG_SPI0_MISO_GPIO "22")
 set(CFG_SPI0_MOSI_GPIO "21")
 set(CFG_SPI0_CLOCK_GPIO "19")
@@ -322,7 +329,8 @@ set(CFG_SPI0_CHIP_SEL_GPIO "20")
 # CFG_DBG_NONE is not set
 # CFG_DBG_PRINTBUF is not set
 # CFG_DBG_SWUART_CODEC is not set
-set(CFG_DBG_UART0 y)
+# CFG_DBG_UART0 is not set
+set(CFG_DBG_UART1 y)
 set(CFG_DBG_ICE_SCRIPT "IT9070A1_Initial_DDR2_Mem_tiling_pitch2048_320MHZ.csf")
 set(CFG_DBG_STATS_PERIOD "10")
 # CFG_DBG_STATS_MEM_BANDWIDTH is not set

@@ -152,12 +152,19 @@ void switch_to_channel(int channel)
 }
 
 
-void burnport_write_data(uint8_t* buffer, uint32_t length)
+int burnport_write_data(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen, uint8_t* pDataBuf)
 {
-	printf("burnport_write_data  length=0x%x\n",length);
+	printf("burnport_write_data  length=0x%x\n",dataLen);
 
-	mmpSpiPioWrite(SPI_BURNNIGN_PORT, buffer, length, 0, 0, 0);
+	mmpSpiPioWrite(SPI_BURNNIGN_PORT, pCtrlBuf, ctrlLen, pDataBuf,dataLen , 0);
+
+
+	printf("burnport_write_data  END\n");
+
+	return 0;
+
 }
+
 
 void write_slave_register(uint32_t addr, uint32_t data)
 {
@@ -188,6 +195,49 @@ void write_slave_register(uint32_t addr, uint32_t data)
 }
 
 
+uint32_t dummy_fake()
+{
+	uint8_t cmd[9] = { 0x0 };
+	uint8_t indata[9] = { 0x0 };
+
+
+
+	cmd[0] = 0x0E;
+	cmd[1] = 0x04;
+	cmd[2] = 0x00;
+	cmd[3] = 0x00;
+	cmd[4] = 0xd8;
+	cmd[5] = 0x04;
+	cmd[6] = 0x00;
+	cmd[7] = 0x00;
+	cmd[8] = 0x00;
+
+
+	mmpSpiPioWrite(SPI_BURNNIGN_PORT, cmd, 9, NULL, 0, 0);
+
+	
+
+return 0;
+}
+
+uint32_t dummy_fake2()
+{
+	uint8_t cmd[9] = { 0x0 };
+	uint8_t indata[9] = { 0x0 };
+
+
+
+	cmd[0] = 0x0F;
+	cmd[1] = 0xFF;
+
+
+
+	mmpSpiPioRead(SPI_BURNNIGN_PORT, cmd, 1, indata, 1, 1);
+
+	
+
+return 0;
+}
 
 uint32_t read_slave_register(uint32_t addr, uint8_t* indata)
 {
@@ -274,7 +324,7 @@ int get_ite_chip_id()
 
 	uint8_t indata[16]={0};
 	read_slave_register(0xd8000004,indata);//packet3
-	for(int i=0;i<9;i++)
+	//for(int i=0;i<9;i++)
 	//printf("0x%x ",indata[i]);	
 	//	printf("\n");
 
@@ -963,5 +1013,41 @@ void burn_led_congtrol()
 	pthread_create(&burn_task, NULL, burn_led_congtrol_process, NULL);
 
 }
+
+
+//ret 1: nor init OK
+//ret -1: can not found slave device or not supported nor
+int test_my_code()
+{
+
+	//use fastest mode to check slave
+		SPI_CLK_LAB my_clk;
+	int ret;
+
+	char id[8];
+
+	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+		ret =	get_ite_chip_id();
+		//check if slave is iTE chip // change to nor mode if in iTE mode
+		if(ret >0)
+		{	
+			target_script_load();
+
+			
+			mmpSpiTerminate(SPI_BURNNIGN_PORT);
+			return ret;
+		}
+		else
+		{
+			mmpSpiTerminate(SPI_BURNNIGN_PORT);
+		}
+
+	}
+
+return ret;
+}
+
 
 #endif

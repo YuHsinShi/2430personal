@@ -539,7 +539,10 @@ glamomem -t glamomem.dat -R 0x00000001 -a 0xd8300000
 void target_script_load()
 {
 	char FileName[1024];
+	
+	HOST_WriteRegister(0xd8000004, 0x00000004);
 	glamomcu_load_init_script("E:/IT9860_360Mhz_DDR2_360Mhz.txt");
+	usleep(1000);
 	glamomcu_load_ram("E:/burner_portable.bin");
 	HOST_WriteRegister(0xd8300000, 0x00000001);
 

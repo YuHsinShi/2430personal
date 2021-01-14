@@ -181,7 +181,7 @@ int glamomcu_load_init_script(char *fname)
 
                             rval = ((unsigned int)data) & mask;
 
-                            if (VERBOSE) printf("READ_MASK(0x%04x, 0x%04x);\n", addr, mask);
+                            if (VERBOSE) printf("READ_MASK(0x%04x, 0x%04x) 0x%x;\n", addr, mask,rval);
 
                         }
                         idx+=3;
@@ -299,9 +299,10 @@ static int spi_write_burn(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen,
 		data_size = 0;
 		if (ctrlLen > 0 && pCtrlBuf != NULL)
 		{
-			memcpy(&data[data_size], pCtrlBuf, ctrlLen);
+			memcpy(&data[0], pCtrlBuf, ctrlLen);
 			data_size += ctrlLen;
 		}
+		
 		if (dataLen > 0 && pDataBuf != NULL)
 		{
 			memcpy(&data[data_size], pDataBuf, dataLen);
@@ -309,6 +310,7 @@ static int spi_write_burn(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen,
 		}
 		
 		burnport_write_data( data, data_size);
+
 		free(data);
 	}
 
@@ -319,7 +321,8 @@ static int spi_write_burn(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen,
 
 static void spi_write_vram(unsigned long dest, const void *src, unsigned long size)
 {
-#define SECTION_SIZE       (0x10000 - 1)
+//#define SECTION_SIZE       (0x10000 - 1)
+#define SECTION_SIZE       (0x4000 - 1)
 
 	unsigned char wrBuf[8];
 
@@ -341,10 +344,9 @@ static void spi_write_vram(unsigned long dest, const void *src, unsigned long si
             wrBuf[2] = (uint8_t)((dest & 0x0000FF00) >> 8);
             wrBuf[3] = (uint8_t)((dest & 0x00FF0000) >> 16);
             wrBuf[4] = (uint8_t)((dest & 0xFF000000) >> 24);
-            wrBuf[5] = 0;
-            wrBuf[6] = 0;
 
-            error    = spi_write_burn(wrLen, wrBuf, secSize, (uint8_t*)srcAddress);
+
+            error    = burnport_write_data(wrLen, wrBuf, secSize, (uint8_t*)srcAddress);
             if (error != 0)
             {
                 printf("\n%s:%s:Ack Error! Error: 0x%08x\n", __TIME__, __FUNCTION__, error);
@@ -417,8 +419,17 @@ int glamomcu_load_ram(const char *file)
     }
 */
 	len = (uint32_t)file_size;
+	/*
+	get_ite_chip_id();
 
+	dummy_fake();
+	usleep(1000);
+	dummy_fake2();
+	usleep(1000);
 
+	get_ite_chip_id();
+	usleep(1000);
+*/
 
     chunk = (GLAMO_RAM_LOAD_CHUNK > (32 * 1024)) ?  (32 * 1024) : GLAMO_RAM_LOAD_CHUNK;
   //  t     = progress_start("RAM load: data");

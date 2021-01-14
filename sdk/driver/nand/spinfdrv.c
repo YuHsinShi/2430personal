@@ -365,7 +365,7 @@ void _setTimeOutT(uint32_t tv)
 #ifdef	USE_MMP_DRIVER
 	#ifdef	EN_NO_RTC
 	gCurrTv = 0;
-	gTimeOutInterval = tv*100;
+	gTimeOutInterval = tv*3;
 	#else
 	gettimeofday(&startT, NULL);
 	gTimeOutInterval = tv;
