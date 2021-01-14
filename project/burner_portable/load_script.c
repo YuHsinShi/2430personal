@@ -32,7 +32,7 @@ enum {
     BLTE_CMD      = 0xffffffe5,
 };
 
-int load_script(char *fname,char delayus)
+int glamomcu_load_init_script(char *fname)
 {
     int idx = 0;
 	int result = 0;
@@ -280,7 +280,190 @@ int load_script(char *fname,char delayus)
     return 0;	
 }
 
+#define GLAMO_RAM_LOAD_CHUNK    (64 * 1024)
+#define GLAMO_RAM_SAVE_CHUNK    (64 * 1024)
 
+#define GLAMO_RAM_ADDR_986X    (0)
+
+
+
+static int spi_write_burn(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen, uint8_t* pDataBuf)
+{
+	uint32_t data_size = ctrlLen + dataLen;
+	uint8_t *data ;
+
+	if (data_size > 0)
+	{
+	
+		data = malloc(data_size*sizeof(uint8_t));
+		data_size = 0;
+		if (ctrlLen > 0 && pCtrlBuf != NULL)
+		{
+			memcpy(&data[data_size], pCtrlBuf, ctrlLen);
+			data_size += ctrlLen;
+		}
+		if (dataLen > 0 && pDataBuf != NULL)
+		{
+			memcpy(&data[data_size], pDataBuf, dataLen);
+			data_size += dataLen;
+		}
+		
+		burnport_write_data( data, data_size);
+		free(data);
+	}
+
+	
+	return 0;
+}
+
+
+static void spi_write_vram(unsigned long dest, const void *src, unsigned long size)
+{
+#define SECTION_SIZE       (0x10000 - 1)
+
+	unsigned char wrBuf[8];
+
+    {
+        unsigned int secSize    = 0;
+        uint32_t     error;
+        uint32_t     srcAddress = (uint32_t)src;
+
+        while (size)
+        {
+            uint32_t wrLen = 5;
+
+            secSize = (size > SECTION_SIZE)
+                      ? SECTION_SIZE
+                      : size;
+
+            wrBuf[0] = 4;
+            wrBuf[1] = (uint8_t)(dest & 0x000000FF);
+            wrBuf[2] = (uint8_t)((dest & 0x0000FF00) >> 8);
+            wrBuf[3] = (uint8_t)((dest & 0x00FF0000) >> 16);
+            wrBuf[4] = (uint8_t)((dest & 0xFF000000) >> 24);
+            wrBuf[5] = 0;
+            wrBuf[6] = 0;
+
+            error    = spi_write_burn(wrLen, wrBuf, secSize, (uint8_t*)srcAddress);
+            if (error != 0)
+            {
+                printf("\n%s:%s:Ack Error! Error: 0x%08x\n", __TIME__, __FUNCTION__, error);
+            }
+
+            size       -= secSize;
+            srcAddress += secSize;
+            dest       += secSize;
+        }
+    }
+}
+
+
+
+int glamomcu_load_ram(const char *file)
+{
+    int ret;
+    uint8_t buf[GLAMO_RAM_LOAD_CHUNK];
+    uint32_t len;
+    uint32_t i;
+    uint32_t chunk;
+    unsigned long t;
+    FILE *f;
+    size_t file_size;
+
+    
+    printf("load file <%s> to ram\n", file);
+
+
+    f = fopen(file, "rb");
+    if (f == NULL)
+    {
+        printf("cannot open %s for reading \n", (const char *)file);
+		return -1;
+    }
+
+    if (fseek(f, 0, SEEK_END))
+    {
+        printf("cannot seek file %s\n",  (const char *)file);
+		return -1;
+    }
+
+    file_size = ftell(f);
+
+    if (fseek(f, 0, SEEK_SET))
+    {
+        printf("cannot seek file %s\n", (const char *)file);
+		fclose(f);
+		return -1;
+    }
+/*
+    if (options.size_valid)
+    {
+        if (options.size > file_size)
+        {
+            error("specified size %d > file size %d\n", options.size, file_size);
+            fclose(f);
+            return -1;
+        }
+        len = options.size;
+    }
+    else 
+        len = (uint32_t)file_size;
+
+    if (len > glamomcu_target.ram_size - options.addr)
+    {
+        error("size %d > ram size %d\n", len, glamomcu_target.ram_size - options.addr);
+        fclose(f);
+        return EINVAL;
+    }
+*/
+	len = (uint32_t)file_size;
+
+
+
+    chunk = (GLAMO_RAM_LOAD_CHUNK > (32 * 1024)) ?  (32 * 1024) : GLAMO_RAM_LOAD_CHUNK;
+  //  t     = progress_start("RAM load: data");
+
+    for (i = 0; i < len; i += chunk)
+    {
+        if (i + chunk > len)
+            chunk = len - i;
+
+        if (fread(buf, 1, chunk, f) != chunk)
+        {
+            printf("cannot read file %s (%s)\n",
+                  (const char *)file);
+            fclose(f);
+            return -1;
+        }
+
+      spi_write_vram(GLAMO_RAM_ADDR_986X + i, buf, chunk);
+
+       // progress_report(i + chunk, len);
+    }
+    //progress_stop(t, "RAM load: data", len);
+
+    if (fclose(f) == -1)
+    {
+        printf("cannot close file %s (%s)\n",
+              (const char *)file);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+void showMessage(char* msg)
+{
+	printf("%s",msg);
+}
 //int main(void) {
 //    load_script("test.scr");
 //}

@@ -52,6 +52,9 @@ else
 
 burn_led_congtrol();
 int burn_task;
+
+	target_script_load();
+
 	while(1)
 	{
 		if(1== get_key_pressed())

@@ -152,6 +152,12 @@ void switch_to_channel(int channel)
 }
 
 
+void burnport_write_data(uint8_t* buffer, uint32_t length)
+{
+	printf("burnport_write_data  length=0x%x\n",length);
+
+	mmpSpiPioWrite(SPI_BURNNIGN_PORT, buffer, length, 0, 0, 0);
+}
 
 void write_slave_register(uint32_t addr, uint32_t data)
 {

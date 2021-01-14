@@ -529,22 +529,19 @@ void gpio_clear(unsigned int m_GPIOSEL)
 	}
 }
 
+/*
+glamomem -t glamomem.dat -i -q
+glamomem -t glamomem.dat -l my.bin
+glamomem -t glamomem.dat -R 0x00000001 -a 0xd8300000
+*/
+
+
 void target_script_load()
 {
 	char FileName[1024];
-	char delayus = 0;
-	unsigned long value;
-	int result =0;
-
-
-
-//	HOST_ReadRegister(0x0002, &value,HOST_MODE);
-
-	//if((value == 0x0970) || (value == 0x9920) || (value == 0x9850))
-	{
-		//delayus = 1;
-	}
-	result = load_script(FileName,delayus);
+	glamomcu_load_init_script("E:/IT9860_360Mhz_DDR2_360Mhz.txt");
+	glamomcu_load_ram("E:/burner_portable.bin");
+	HOST_WriteRegister(0xd8300000, 0x00000001);
 
 }
 
