@@ -137,7 +137,8 @@ void InitUartIntr(ITHUartPort port)
 
 void* target_log_capture(void* arg)
 {
-	printf("###target_log_capture start!\n");
+usleep(100*1000);
+	ithPrintf("\n###target_log_capture start!\n");
 
 	int len = 0, count = 0;
 	char getstr[256] = "", sendstr[256] = "";
@@ -189,7 +190,6 @@ int target_log_start()
 
 	static pthread_t target_log;
 
-	printf("target_log_start\n");
 	pthread_create(&target_log, NULL, target_log_capture, NULL);
 
 return target_log;
@@ -208,12 +208,18 @@ else
 	printf("###ENTER MSC MODE ###\n");
 }
 
-target_log_start();
+usleep(1000);
 
-//law_test();
-//test_my_code();
+target_auto_detect();
+usleep(1000);
 
 burn_led_congtrol();
+
+usleep(1000);
+target_log_start();
+usleep(1000);
+target_script_load();
+
 int burn_task;
 	while(1)
 	{

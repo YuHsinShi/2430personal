@@ -321,8 +321,7 @@ static int spi_write_burn(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen,
 
 static void spi_write_vram(unsigned long dest, const void *src, unsigned long size)
 {
-//#define SECTION_SIZE       (0x10000 - 1)
-#define SECTION_SIZE       (0x4000 - 1)
+#define SECTION_SIZE       (0x10000 - 1)
 
 	unsigned char wrBuf[8];
 

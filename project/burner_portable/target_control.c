@@ -535,6 +535,10 @@ glamomem -t glamomem.dat -l my.bin
 glamomem -t glamomem.dat -R 0x00000001 -a 0xd8300000
 */
 
+//first :check target chip id
+//second: check target is in coopreative mode
+//load init script
+//load ram
 
 void target_script_load()
 {

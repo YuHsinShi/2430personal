@@ -17,6 +17,11 @@
 #define KEYWORD_WRITE_REGISTER   "write-register"
 
 
+#define KEYWORD_RAM_SCRIPT	    "ram-script"
+#define KEYWORD_BOOT_BIN	    "boot-bin"
+#define KEYWORD_TARGET_TEST	    "target-test"
+
+
 static portBASE_TYPE prvTaskRebootTargetCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 
@@ -88,6 +93,74 @@ static portBASE_TYPE prvWriteRegisterCommand( char *pcWriteBuffer, size_t xWrite
     return pdTRUE;
 }
 
+
+
+
+
+
+
+static portBASE_TYPEprvTargetStatusGet( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+char tmp_str[128]={0}; 
+int ret;
+ret =target_auto_detect();
+if(ret>0)
+{
+	ret=get_ite_bootcfg();
+	snprintf( tmp_str, 128, "TARGET %x found ",ret );
+
+	if(0b11==ret)//11
+	{
+		snprintf( tmp_str, 128, "%s COOPERATIVE MODE",tmp_str);
+	}
+	else if(0b10==ret)//10
+	{
+		snprintf( tmp_str, 128, "%s NAND BOOT MODE",tmp_str);
+	}
+	else if(0b01==ret)//
+	{
+	
+	 snprintf( tmp_str, 128, "%s NOR BOOT MODE",tmp_str);
+	}
+	else if (0b00==ret)
+	{
+	
+		snprintf( tmp_str, 128, "%s SD BOOT MODE",tmp_str);
+	}
+	else
+	{
+	
+		snprintf( tmp_str, 128, "%s in ?? MODE",tmp_str);
+	}
+
+
+
+	snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", tmp_str );
+
+
+
+
+
+	
+}
+else
+{
+	snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "TARGET not Found! \r\n" );
+
+}
+
+
+
+    return pdTRUE;
+}
+
+
+
+
+
+
+
+
 static const xCommandLineInput xTaskRebootTargetCommand =
 {
 	( const char * const ) "reset",
@@ -113,6 +186,15 @@ static const xCommandLineInput xWriteRegisterCommand =
 	1
 };
 
+
+static const xCommandLineInput xTargetStatusGet =
+{
+	( const char * const ) KEYWORD_TARGET_TEST,
+	( const char * const ) "Test if Target is connected \r\n",
+	portBASE_TYPEprvTargetStatusGet,
+	1
+};
+
 void cliTargetSystemInit(void)
 {
     FreeRTOS_CLIRegisterCommand( &xTaskRebootTargetCommand );
@@ -120,5 +202,8 @@ void cliTargetSystemInit(void)
     FreeRTOS_CLIRegisterCommand( &xReadRegisterCommand );
 
     FreeRTOS_CLIRegisterCommand( &xWriteRegisterCommand );
+
+	
+    FreeRTOS_CLIRegisterCommand( &xTargetStatusGet );
 	
 }

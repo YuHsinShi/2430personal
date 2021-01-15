@@ -33,6 +33,15 @@ static portBASE_TYPE prvTaskRebootCommand( char *pcWriteBuffer, size_t xWriteBuf
 	return pdFALSE;
 }
 
+
+static portBASE_TYPE prvTaskHelloCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+
+	snprintf(pcWriteBuffer,xWriteBufferLen, "Hello\r\n");
+
+	return pdFALSE;//means end if the string
+}
+
 static const xCommandLineInput xTaskRebootCommand =
 {
 	( const char * const ) "reboot",
@@ -41,7 +50,19 @@ static const xCommandLineInput xTaskRebootCommand =
 	0
 };
 
+
+static const xCommandLineInput xTaskHelloCommand =
+{
+	( const char * const ) "hello",
+	( const char * const ) "hello: for response ACK\r\n",
+	prvTaskHelloCommand,
+	0
+};
+
+
 void cliSystemInit(void)
 {
     FreeRTOS_CLIRegisterCommand( &xTaskRebootCommand );
+    FreeRTOS_CLIRegisterCommand( &xTaskHelloCommand );
+
 }

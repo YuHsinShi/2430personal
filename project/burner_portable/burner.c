@@ -8,6 +8,7 @@
 #ifndef WIN32
 static pthread_t burnTask;
 static float percent_rom;
+static int target_detected=0;
 
 
 #define BURNER_STATUS_IDLE	0
@@ -156,7 +157,7 @@ int burnport_write_data(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen, u
 {
 	printf("burnport_write_data  length=0x%x\n",dataLen);
 
-	mmpSpiPioWrite(SPI_BURNNIGN_PORT, pCtrlBuf, ctrlLen, pDataBuf,dataLen , 0);
+	mmpSpiDmaWrite(SPI_BURNNIGN_PORT, pCtrlBuf, ctrlLen, pDataBuf,dataLen , 0);
 
 
 	printf("burnport_write_data  END\n");
@@ -256,11 +257,11 @@ uint32_t read_slave_register(uint32_t addr, uint8_t* indata)
 	mmpSpiPioRead(SPI_BURNNIGN_PORT, cmd, 9, indata, 4, 4);
 	
 	memcpy(&value,indata,4);
-printf("read_slave_register addr 0x%x value=0x%x\n",addr,value);
+   //printf("read_slave_register addr 0x%x value=0x%x\n",addr,value);
 
-	for(int i=0;i<9;i++)
-	printf("0x%x ",indata[i]);
-	printf("\n");
+	//for(int i=0;i<9;i++)
+	//printf("0x%x ",indata[i]);
+	//printf("\n");
 	
 
 return value;
@@ -330,7 +331,7 @@ int get_ite_chip_id()
 
 	if( (indata[3]==0x9) && (indata[2]==0x60) )
 	{
-		printf("chip id is %x%x \n",indata[2],indata[3]);
+		ithPrintf("chip id is %x%x \n",indata[2],indata[3]);
 		return 1;
 	}
 	else if ( (indata[3]==0x9 && indata[2]==0x70))
@@ -339,6 +340,57 @@ int get_ite_chip_id()
 		return -1;
 
 }
+
+int get_ite_bootcfg()
+{
+	uint32_t chip_id;
+	uint8_t indata[16]={0};
+	int i;
+	
+	//printf("get_ite_bootcfg \n");
+	read_slave_register(0xd8000000,indata);//packet3
+	//for(int i=0;i<9;i++)
+	//printf("0x%x ",indata[i]);	
+	//	printf("\n");
+	indata[0]&=0x03;
+	if(0b11==indata[0])//11
+	{
+	//COOPERATIVE MODE
+	
+	ithPrintf("chip in COOPERATIVE MODE\n");
+	return 3;
+	}
+	else if(0b10==indata[0])//10
+	{
+	
+		ithPrintf("chip in NAND BOOT MODE\n");
+		return 2;
+
+	}
+	else if(0b01==indata[0])//
+	{
+	
+	 ithPrintf("chip in NOR BOOT MODE\n");
+	 return 1;
+	}
+	else if (0b00==indata[0])
+	{
+	
+		ithPrintf("chip in SD BOOT MODE\n");
+		return 0;
+
+	}
+	else
+	{
+	
+		ithPrintf("ERROR:NOT POSSIBLE\n");
+		return -1;
+
+	}
+
+
+}
+
 
 int set_bypass_mode_970()
 {
@@ -621,6 +673,62 @@ int burner_auto_set_bypass()
 return ret;
 }
 
+
+//ret 1: nor init OK
+//ret -1: can not found slave device or not supported nor
+int target_auto_detect()
+{
+
+	//use fastest mode to check slave
+		SPI_CLK_LAB my_clk;
+	int ret;
+
+	char id[8];
+if(target_detected>0) //reset SPI to detect again
+{
+	mmpSpiTerminate(SPI_BURNNIGN_PORT);
+}
+	target_detected=0;
+
+	for(my_clk=MAX_SPI_CLK;my_clk>=MIN_SPI_CLK;my_clk-- )
+	{
+		mmpSpiInitialize(SPI_BURNNIGN_PORT, SPI_OP_MASTR, CPO_0_CPH_0, my_clk);
+		ret =	get_ite_chip_id();
+		//check if slave is iTE chip // change to nor mode if in iTE mode
+		if(ret >0)
+		{	
+
+			if(1== ret) //960 series
+			{
+			
+				ithPrintf("\n TARGET 960 chip found\n");
+				target_detected=0x960;
+
+				get_ite_bootcfg();
+			}
+			else if(2== ret) //970 series
+			{
+				ithPrintf("\n TARGET 970 chip found\n");
+				target_detected=0x970;
+			}
+			else
+			{
+				printf("\n unknown chip id\n");
+			}
+
+			return target_detected;
+		}
+		else
+		{
+			mmpSpiTerminate(SPI_BURNNIGN_PORT);
+		}
+
+	}
+
+return -1;
+}
+
+
 int burner_check_storage_type_nor()
 {
 
@@ -833,6 +941,29 @@ int nand_flash_update_process()
 
 }
 
+void burn_process_enter_bypassmode()
+{
+
+	if(target_detected<=0)
+	{
+		burner_auto_set_bypass();//do again
+
+	}
+	else
+	{
+
+		if(0x960== target_detected) //960 series
+		{
+			set_bypass_mode_960();
+		}
+		else if(0x970== target_detected) //970 series
+		{
+			set_bypass_mode_970();
+		}
+
+	}
+
+}
 
 
 void burn_process(void* arg)
@@ -840,25 +971,24 @@ void burn_process(void* arg)
 	int ret ;
 	printf("burn_process\n");
 
+	burn_process_enter_bypassmode();	
+
+
 	percent_rom=0;
 	ugSetProrgessPercentage(0);
 	flagmode=0;
-
-	
-	burner_auto_set_bypass();//
-
 
 	if(burner_check_storage_type_nand() >= 0) //first NAND then NOR
 	{
 		printf("burn_process NAND END\n");
 		return;
 	}
-
+	
 	if(burner_check_storage_type_nor() >= 0)
 	{
 		printf("burn_process NOR END\n");
 		return;
-
+	
 	}
 
 }
