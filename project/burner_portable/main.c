@@ -197,6 +197,8 @@ return target_log;
 
 int SDL_main(int argc, char *argv[])
 {
+
+
 if(	is_in_acm_mode())
 {
 	printf("###ENTER ACM MODE ###\n");
@@ -208,17 +210,18 @@ else
 	printf("###ENTER MSC MODE ###\n");
 }
 
-usleep(1000);
+
+usleep(5000*1000);
 
 target_auto_detect();
 usleep(1000);
 
 burn_led_congtrol();
 
-usleep(1000);
-target_log_start();
-usleep(1000);
-target_script_load();
+//usleep(1000);
+//target_log_start();
+//usleep(1000);
+//target_script_load();
 
 int burn_task;
 	while(1)

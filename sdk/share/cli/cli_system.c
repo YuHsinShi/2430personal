@@ -37,7 +37,7 @@ static portBASE_TYPE prvTaskRebootCommand( char *pcWriteBuffer, size_t xWriteBuf
 static portBASE_TYPE prvTaskHelloCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 
-	snprintf(pcWriteBuffer,xWriteBufferLen, "Hello\r\n");
+	snprintf(pcWriteBuffer,xWriteBufferLen, "hello\r\n");
 
 	return pdFALSE;//means end if the string
 }

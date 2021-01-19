@@ -21,6 +21,10 @@
 #define KEYWORD_BOOT_BIN	    "boot-bin"
 #define KEYWORD_TARGET_TEST	    "target-test"
 
+#define KEYWORD_GPIO_SET	    "gpio-set"
+#define KEYWORD_GPIO_CLEAR	    "gpio-clear"
+#define KEYWORD_GPIO_GET	    "gpio-get"
+
 
 static portBASE_TYPE prvTaskRebootTargetCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
@@ -97,6 +101,91 @@ static portBASE_TYPE prvWriteRegisterCommand( char *pcWriteBuffer, size_t xWrite
 
 
 
+static portBASE_TYPE prvGpioSetCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	char *pcParameter1;
+	portBASE_TYPE xParameter1StringLength;
+	int gpio_num;
+	
+	pcParameter1 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 1, &xParameter1StringLength );
+	pcParameter1[ xParameter1StringLength ] = 0x00;
+
+    if (strncmp(pcParameter1, "0x", 2) == 0 || strncmp(pcParameter1, "0X", 2) == 0)
+    {
+      gpio_num = strtol(&pcParameter1[2], NULL, 16);
+    }
+    else
+    {
+      gpio_num = strtol(pcParameter1, NULL, 10);
+    }
+
+ithPrintf("TAGET GPIO %d output High \n",gpio_num);
+
+	target_io_write(gpio_num,1);
+    snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "OK\r\n");
+
+    return pdFALSE;
+}
+
+static portBASE_TYPE prvGpioClearCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	char *pcParameter1;
+	portBASE_TYPE xParameter1StringLength;
+	int gpio_num;
+	
+	pcParameter1 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 1, &xParameter1StringLength );
+	pcParameter1[ xParameter1StringLength ] = 0x00;
+
+    if (strncmp(pcParameter1, "0x", 2) == 0 || strncmp(pcParameter1, "0X", 2) == 0)
+    {
+      gpio_num = strtol(&pcParameter1[2], NULL, 16);
+    }
+    else
+    {
+      gpio_num = strtol(pcParameter1, NULL, 10);
+    }
+
+ithPrintf("TAGET GPIO %d output LOW \n",gpio_num);
+
+	target_io_write(gpio_num,0);
+    snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "OK\r\n");
+
+    return pdFALSE;
+}
+
+static portBASE_TYPE prvGpioGetCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	char *pcParameter1;
+	portBASE_TYPE xParameter1StringLength;
+	int gpio_num;
+	
+	pcParameter1 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 1, &xParameter1StringLength );
+	pcParameter1[ xParameter1StringLength ] = 0x00;
+
+    if (strncmp(pcParameter1, "0x", 2) == 0 || strncmp(pcParameter1, "0X", 2) == 0)
+    {
+      gpio_num = strtol(&pcParameter1[2], NULL, 16);
+    }
+    else
+    {
+      gpio_num = strtol(pcParameter1, NULL, 10);
+    }
+
+
+if(1 ==	target_io_read(gpio_num) )
+{
+    snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "GPIO %d is HIGH\r\n",gpio_num );
+
+}
+else
+{
+    snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "GPIO %d is LOW\r\n",gpio_num);
+
+}
+
+
+    return pdFALSE;
+}
 
 
 static portBASE_TYPEprvTargetStatusGet( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
@@ -151,7 +240,7 @@ else
 
 
 
-    return pdTRUE;
+    return pdFALSE;
 }
 
 
@@ -195,6 +284,36 @@ static const xCommandLineInput xTargetStatusGet =
 	1
 };
 
+static const xCommandLineInput xTargetGpioSet =
+{
+	( const char * const ) KEYWORD_GPIO_SET,
+	( const char * const ) "Set taget GPIO, EX: set-gpio num \r\n",
+	prvGpioSetCommand,
+	1
+};
+
+static const xCommandLineInput xTargetGpioClear =
+{
+	( const char * const ) KEYWORD_GPIO_CLEAR,
+	( const char * const ) "Clear taget GPIO, EX: clear-gpio num \r\n",
+	prvGpioClearCommand,
+	1
+};
+
+static const xCommandLineInput xTargetGpioGet =
+{
+	( const char * const ) KEYWORD_GPIO_GET,
+	( const char * const ) "Get taget GPIO, EX: get-gpio num \r\n",
+	prvGpioGetCommand,
+	1
+};
+
+
+
+
+
+//target_io_write(PIN_GPIO,1);
+
 void cliTargetSystemInit(void)
 {
     FreeRTOS_CLIRegisterCommand( &xTaskRebootTargetCommand );
@@ -205,5 +324,11 @@ void cliTargetSystemInit(void)
 
 	
     FreeRTOS_CLIRegisterCommand( &xTargetStatusGet );
+
+
+    FreeRTOS_CLIRegisterCommand( &xTargetGpioSet );
+		
+    FreeRTOS_CLIRegisterCommand( &xTargetGpioClear );
+    FreeRTOS_CLIRegisterCommand( &xTargetGpioGet );
 	
 }

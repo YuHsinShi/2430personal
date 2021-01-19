@@ -521,38 +521,29 @@ void target_io_write(unsigned int pin,int sethigh)
 
 
 
-//DATASET_REG_ADDR[group], 0x1 << (pin & 0x1F)
 unsigned int value;
 unsigned int addr;// DATASET_REG_ADDR[group]
 unsigned int mask;
+	addr = ithGpioGet_GpioPinDirAddress(pin);
+	mask = pin & 0x1F;
+	write_slave_register_by_mask(addr,mask,1);
 
 
-//ithGpioSetOut(pin); //ithSetRegBitA(PINDIR_REG_ADDR[group], pin & 0x1F);
+	if(sethigh)
+		addr = ithGpioGet_GpioDataSetAddress(pin);
+	else
+		addr = ithGpioGet_GpioDataClearAddress(pin);
 
-addr = ithGpioGet_GpioPinDirAddress(pin);
-mask = pin & 0x1F;
-write_slave_register_by_mask(addr,mask,1);
-
-
-if(sethigh)
-	addr = ithGpioGet_GpioDataSetAddress(pin);
-else
-	addr = ithGpioGet_GpioDataClearAddress(pin);
-
-mask = 0x1 << (pin & 0x1F);
-write_slave_register_by_mask(addr,mask,1);
-
-//ithGpioSetMode(pin, ITH_GPIO_MODE0);
+	mask = 0x1 << (pin & 0x1F);
+	write_slave_register_by_mask(addr,mask,1);
 
 
-//ithGpioClear(pin);
-//ithGpioSet(pin);
 
 
 
 }
 
-void target_io_read(unsigned int pin)
+int target_io_read(unsigned int pin)
 {
 
 	uint8_t indata[16]={0};
@@ -563,9 +554,9 @@ void target_io_read(unsigned int pin)
 
 	value = read_slave_register(group,indata);//packet3
 	if( value & (0x1 << (pin & 0x1F)) ){	
-		printf("tartget GPIO %d is HIGH \n",pin );}
+		printf("tartget GPIO %d is HIGH \n",pin ); return 1;}
 	else{
-		printf("tartget GPIO %d is LOW \n",pin );}
+		printf("tartget GPIO %d is LOW \n",pin ); return 0;}
 	
 
 }
@@ -1139,7 +1130,7 @@ void burn_led_congtrol()
 
 	static pthread_t burn_task;
 
-	printf("burn_led_congtrol\n");
+	ithPrintf("burn_led_congtrol\n");
 	pthread_create(&burn_task, NULL, burn_led_congtrol_process, NULL);
 
 }
