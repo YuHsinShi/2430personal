@@ -420,8 +420,6 @@ int set_bypass_mode_960()
 
 
 
-
-
 //ret -1: upgrade fail
 //ret 1: upgrade OK
 

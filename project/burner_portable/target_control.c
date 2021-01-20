@@ -539,6 +539,11 @@ glamomem -t glamomem.dat -R 0x00000001 -a 0xd8300000
 //second: check target is in coopreative mode
 //load init script
 //load ram
+void glamomcu_boot()
+{
+	HOST_WriteRegister(0xd8300000, 0x00000001);
+
+}
 
 void target_script_load()
 {
@@ -548,7 +553,17 @@ void target_script_load()
 	glamomcu_load_init_script("E:/IT9860_360Mhz_DDR2_360Mhz.txt");
 	usleep(1000);
 	glamomcu_load_ram("E:/burner_portable.bin");
-	HOST_WriteRegister(0xd8300000, 0x00000001);
+	glamomcu_boot();
+}
+
+void target_do_booting(char* script_path,char* binpath)
+{
+	
+	HOST_WriteRegister(0xd8000004, 0x00000004);
+	glamomcu_load_init_script(script_path);
+	usleep(1000);
+	glamomcu_load_ram(binpath);
+	glamomcu_boot();
 
 }
 

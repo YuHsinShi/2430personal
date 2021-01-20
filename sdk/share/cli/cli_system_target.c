@@ -18,8 +18,12 @@
 
 
 #define KEYWORD_RAM_SCRIPT	    "ram-script"
-#define KEYWORD_BOOT_BIN	    "boot-bin"
-#define KEYWORD_TARGET_TEST	    "target-test"
+#define KEYWORD_BIN_LOAD	    "bin-load"
+#define KEYWORD_BIN_BOOT	    "bin-boot"
+
+#define KEYWORD_TARGET_TEST	    	"target-status"
+#define KEYWORD_TARGET_GETMODE	    "target-getmode"
+#define KEYWORD_TARGET_GETID	    "target-chipid"
 
 #define KEYWORD_GPIO_SET	    "gpio-set"
 #define KEYWORD_GPIO_CLEAR	    "gpio-clear"
@@ -119,7 +123,7 @@ static portBASE_TYPE prvGpioSetCommand( char *pcWriteBuffer, size_t xWriteBuffer
       gpio_num = strtol(pcParameter1, NULL, 10);
     }
 
-ithPrintf("TAGET GPIO %d output High \n",gpio_num);
+	ithPrintf("TAGET GPIO %d output High \n",gpio_num);
 
 	target_io_write(gpio_num,1);
     snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "OK\r\n");
@@ -188,7 +192,7 @@ else
 }
 
 
-static portBASE_TYPEprvTargetStatusGet( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+static portBASE_TYPE prvTargetStatusGet( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 char tmp_str[128]={0}; 
 int ret;
@@ -200,21 +204,21 @@ if(ret>0)
 
 	if(0b11==ret)//11
 	{
-		snprintf( tmp_str, 128, "%s COOPERATIVE MODE",tmp_str);
+		snprintf( tmp_str, 128, "%s in COOPERATIVE MODE",tmp_str);
 	}
 	else if(0b10==ret)//10
 	{
-		snprintf( tmp_str, 128, "%s NAND BOOT MODE",tmp_str);
+		snprintf( tmp_str, 128, "%s in NAND BOOT MODE",tmp_str);
 	}
 	else if(0b01==ret)//
 	{
 	
-	 snprintf( tmp_str, 128, "%s NOR BOOT MODE",tmp_str);
+	 snprintf( tmp_str, 128, "%s in NOR BOOT MODE",tmp_str);
 	}
 	else if (0b00==ret)
 	{
 	
-		snprintf( tmp_str, 128, "%s SD BOOT MODE",tmp_str);
+		snprintf( tmp_str, 128, "%s in SD BOOT MODE",tmp_str);
 	}
 	else
 	{
@@ -225,9 +229,6 @@ if(ret>0)
 
 
 	snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", tmp_str );
-
-
-
 
 
 	
@@ -244,11 +245,173 @@ else
 }
 
 
+static char* downloadBuffer;
+static int downloadSize;
+
+portBASE_TYPE  cli_download_process( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	static portBASE_TYPE xReady = pdFALSE;
+	char *pcParameter1;
+	portBASE_TYPE xParameter1StringLength;
+	int result;
+	
+	  if( xReady == pdFALSE )
+	  {
+		pcParameter1 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 1, &xParameter1StringLength );
+		
+		pcParameter1[ xParameter1StringLength ] = 0x00;
+		
+		if (xParameter1StringLength == 0)
+		{
+		  snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "ERROR: Invalid parameters" );
+		  goto error;
+		}
+		
+		if (strncmp(pcParameter1, "0x", 2) == 0 || strncmp(pcParameter1, "0X", 2) == 0)
+		{
+		  downloadSize = strtol(&pcParameter1[2], NULL, 16);
+		}
+		else
+		{
+		  downloadSize = strtol(pcParameter1, NULL, 10);
+		}
+		LOG_DBG "%s: size=%d\n", pcParameter1, downloadSize LOG_END	  
+		
+		downloadBuffer = malloc(downloadSize);
+		if (downloadBuffer == NULL)
+		{
+		  snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "ERROR: Out of memory" );
+		  goto error;		 
+		}
+	
+		snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "OK" );
+		xReady = pdTRUE;
+		return pdTRUE;
+	  }
+	  else
+	  {
+		uint32_t readsize, remainsize, bufpos;
+	
+		remainsize = downloadSize;
+		bufpos = 0;
+	
+		do
+		{
+			if (ioctl(ITP_DEVICE_USBDACM, ITP_IOCTL_IS_CONNECTED, NULL) == 0)
+			{
+			  snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "ERROR" );
+			  goto error;
+			}
+			  
+			readsize = read(ITP_DEVICE_USBDACM, &downloadBuffer[bufpos], remainsize);
+	
+			LOG_DBG "readsize=%u remainsize=%u\n", readsize, remainsize LOG_END
+	
+			remainsize -= readsize;
+			bufpos += readsize;
+	
+			putchar('.');
+			fflush(stdout);
+			
+		} while (remainsize > 0);
+		putchar('\n');
+	
+		snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "OK" );
+		
+		xReady = pdFALSE;
+		return pdFALSE;  
+	  }
+	  
+	error:
+	  LOG_ERR "%s\n", pcWriteBuffer LOG_END
+			
+	  if (downloadBuffer)
+	  {
+		free(downloadBuffer);
+		downloadBuffer = NULL;
+	  }
+	  downloadSize = 0;
+		
+	  xReady = pdFALSE;
+	  return pdFALSE;  
+
+}
 
 
+#define script_path "E:/ram.txt"
+#define bin_path "E:/boot.bin"
+
+static portBASE_TYPE  prvRamScriptDownload( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	portBASE_TYPE ret;
+
+	ret=cli_download_process(pcWriteBuffer,xWriteBufferLen, pcCommandString );
+	if(pdFALSE==ret)
+	{
+		//write file to SD card
+		FILE* fp;
+		fp=fopen(script_path,"wb");
+		if(NULL != fp && downloadSize!=0)
+		{
+			fwrite(downloadBuffer,downloadSize,1,fp);
+			fclose(fp);
+			if (downloadBuffer)
+			{
+			  free(downloadBuffer);
+			  downloadBuffer = NULL;
+			}
+			downloadSize = 0;
+
+		}
+
+	}
+
+	return ret;
+}
+
+static portBASE_TYPE  prvBinDownload( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	portBASE_TYPE ret;
+
+	ret=cli_download_process(pcWriteBuffer,xWriteBufferLen, pcCommandString );
+	if(pdFALSE==ret)
+	{
+		//write file to SD card
+		FILE* fp;
+		fp=fopen(bin_path,"wb");
+		if(NULL != fp && downloadSize!=0)
+		{
+			fwrite(downloadBuffer,downloadSize,1,fp);
+			fclose(fp);
+
+		}
+
+		if (downloadBuffer)
+		{
+		  free(downloadBuffer);
+		  downloadBuffer = NULL;
+		}
+		downloadSize = 0;
+
+	}
+
+	return ret;
+}
+
+static portBASE_TYPE  prvBinBoot( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	portBASE_TYPE ret;
+
+//("E:/IT9860_360Mhz_DDR2_360Mhz.txt");
+//("E:/burner_portable.bin");
 
 
+target_do_booting(script_path,bin_path);
+//change log to 
+	return ret;
+}
 
+//=====================================================================================================================
 
 static const xCommandLineInput xTaskRebootTargetCommand =
 {
@@ -279,8 +442,8 @@ static const xCommandLineInput xWriteRegisterCommand =
 static const xCommandLineInput xTargetStatusGet =
 {
 	( const char * const ) KEYWORD_TARGET_TEST,
-	( const char * const ) "Test if Target is connected \r\n",
-	portBASE_TYPEprvTargetStatusGet,
+	( const char * const ) "Check target status \r\n",
+	prvTargetStatusGet,
 	1
 };
 
@@ -309,7 +472,31 @@ static const xCommandLineInput xTargetGpioGet =
 };
 
 
+static const xCommandLineInput xTargeRamScriptDownload =
+{
+	( const char * const ) KEYWORD_RAM_SCRIPT,
+	( const char * const ) "script upload  \r\n",
+	prvRamScriptDownload,
+	1
+};
 
+
+
+static const xCommandLineInput xTargeBinDownload =
+{
+	( const char * const ) KEYWORD_BIN_LOAD,
+	( const char * const ) "bin upload \r\n",
+	prvBinDownload,
+	1
+};
+
+static const xCommandLineInput xTargeBinBoot =
+{
+	( const char * const ) KEYWORD_BIN_BOOT,
+	( const char * const ) "bin boot \r\n",
+	prvBinBoot,
+	0
+};
 
 
 //target_io_write(PIN_GPIO,1);
@@ -317,18 +504,26 @@ static const xCommandLineInput xTargetGpioGet =
 void cliTargetSystemInit(void)
 {
     FreeRTOS_CLIRegisterCommand( &xTaskRebootTargetCommand );
-	
-    FreeRTOS_CLIRegisterCommand( &xReadRegisterCommand );
 
+
+//REGISTER ADDRESS	
+    FreeRTOS_CLIRegisterCommand( &xReadRegisterCommand );
     FreeRTOS_CLIRegisterCommand( &xWriteRegisterCommand );
 
 	
     FreeRTOS_CLIRegisterCommand( &xTargetStatusGet );
 
 
-    FreeRTOS_CLIRegisterCommand( &xTargetGpioSet );
-		
+//GPIO modued
+    FreeRTOS_CLIRegisterCommand( &xTargetGpioSet );		
     FreeRTOS_CLIRegisterCommand( &xTargetGpioClear );
     FreeRTOS_CLIRegisterCommand( &xTargetGpioGet );
+	
+//script module
+    FreeRTOS_CLIRegisterCommand( &xTargeRamScriptDownload );
+    FreeRTOS_CLIRegisterCommand( &xTargeBinDownload );
+	
+    FreeRTOS_CLIRegisterCommand( &xTargeBinBoot );
+
 	
 }
