@@ -1166,7 +1166,143 @@ int test_my_code()
 	}
 
 return ret;
+
+
 }
+#if 0 //use ring buffer
+
+typedef struct {
+    uint8_t *source;
+    uint32_t br;
+    uint32_t bw;
+    uint32_t btoRead;
+    uint32_t length;
+}ringbuffer_t;
+
+void create_ringBuffer(ringbuffer_t *ringBuf, uint8_t *buf, uint32_t buf_len)
+{
+	ringBuf->br         = 0;
+	ringBuf->bw         = 0;
+	ringBuf->btoRead    = 0;
+	ringBuf->source     = buf;
+	ringBuf->length     = buf_len;
+	printf("create ringBuffer->length = %d\n", ringBuf->length);
+}
+
+void clear_ringBuffer(ringbuffer_t *ringBuf)
+{
+	ringBuf->br         = 0;
+	ringBuf->bw         = 0;
+	ringBuf->btoRead    = 0;
+	
+	//no need do this casue r_ptr and w_prt has change
+//	memset((uint8_t *)ringBuf->source, 0, ringBuf->length); 
+}
+
+uint32_t write_ringBuffer(uint8_t *buffer, uint32_t size, ringbuffer_t *ringBuf)
+{
+	uint32_t len            = 0;
+	uint32_t ringBuf_bw     = ringBuf->bw;
+	uint32_t ringBuf_len    = ringBuf->length;
+	uint8_t *ringBuf_source = ringBuf->source;
+	
+	if( (ringBuf_bw + size) <= ringBuf_len  )
+	{
+		memcpy(ringBuf_source + ringBuf_bw, buffer, size);
+	}
+	else
+	{
+		len = ringBuf_len - ringBuf_bw;
+		memcpy(ringBuf_source + ringBuf_bw, buffer, len);
+		memcpy(ringBuf_source, buffer + len, size - len);
+	}
+
+	ringBuf->bw = (ringBuf->bw + size) % ringBuf_len;
+	ringBuf->btoRead += size;
+
+	return size;
+}
+
+uint32_t read_ringBuffer(uint8_t *buffer, uint32_t size, ringbuffer_t *ringBuf)
+{
+	uint32_t len            = 0;
+	uint32_t ringBuf_br     = ringBuf->br;
+	uint32_t ringBuf_len    = ringBuf->length;
+    uint8_t *ringBuf_source = ringBuf->source;
+
+	if( (ringBuf_br + size ) <= ringBuf_len )
+	{
+		memcpy(buffer, ringBuf_source + ringBuf_br, size);
+	}
+	else
+	{
+		len = ringBuf_len - ringBuf_br;
+		memcpy(buffer, ringBuf_source + ringBuf_br, len);
+		memcpy(buffer + len, ringBuf_source, size - len);
+	}
+
+	ringBuf->br = (ringBuf->br + size) % ringBuf_len;
+	ringBuf->btoRead -= size;
+
+	return size;
+}
+
+
+
+
+uint32_t get_ringBuffer_btoRead(ringbuffer_t *ringBuf)
+{
+	return ringBuf->btoRead;
+}
+
+uint32_t get_ringBuffer_length(ringbuffer_t *ringBuf)
+{
+	return ringBuf->length;
+}
+
+
+
+ringbuffer_t ringBuf; 
+void int_ringbuffer()
+{
+#define RING_BUFFER_SIZE  1024*1024
+uint8_t* buf;
+
+	buf=(uint8_t*) malloc(RING_BUFFER_SIZE);
+	create_ringBuffer(&ringBuf, buf, RING_BUFFER_SIZE);
+}
+
+
+uint32_t write_to_myringBuffer(uint8_t *buffer, uint32_t size)
+{
+	return write_ringBuffer(&ringBuf, buffer, size);
+
+}
+
+uint32_t read_to_myringBuffer(uint8_t *buffer, uint32_t size)
+{
+	 return read_ringBuffer(buffer, size, &ringBuf)
+
+}
+
+
+int burn_process_start_from_ringbuffer()
+{
+
+	static pthread_t burn_task;
+
+	printf("burn_process_start_from_ringbuffer\n");
+
+
+	
+	pthread_create(&burn_task, NULL, burn_process, NULL);
+
+return burn_task;
+}
+
+
+
+#endif
 
 
 #endif

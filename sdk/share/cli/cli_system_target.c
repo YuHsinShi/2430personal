@@ -199,8 +199,15 @@ int ret;
 ret =target_auto_detect();
 if(ret>0)
 {
+	ret=get_ite_chip_id();
+	if(1==ret)
+	 	snprintf( tmp_str, 128, "TARGET 9860 found ");
+	else if(1==ret) 
+		snprintf( tmp_str, 128, "TARGET 970 found ");
+	else		
+		snprintf( tmp_str, 128, "TARGET unkown? " );
+	
 	ret=get_ite_bootcfg();
-	snprintf( tmp_str, 128, "TARGET %x found ",ret );
 
 	if(0b11==ret)//11
 	{
@@ -444,7 +451,7 @@ static const xCommandLineInput xTargetStatusGet =
 	( const char * const ) KEYWORD_TARGET_TEST,
 	( const char * const ) "Check target status \r\n",
 	prvTargetStatusGet,
-	1
+	0
 };
 
 static const xCommandLineInput xTargetGpioSet =
