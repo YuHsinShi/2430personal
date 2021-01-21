@@ -24,6 +24,7 @@ static uint32_t position, filesize, blocksize, gapsize, alignsize, bufsize, pos,
 static char* buf = NULL;
 char *pcParameter1, *pcParameter2, *pcParameter3;
 portBASE_TYPE xParameter1StringLength, xParameter2StringLength, xParameter3StringLength;
+  printf("WRITE BLOCK START\n");
 
   if( xReady == pdFALSE )
   {
@@ -177,10 +178,10 @@ portBASE_TYPE xParameter1StringLength, xParameter2StringLength, xParameter3Strin
     close(fd);
     fd = -1;
     
+	printf("WRITE BLOCK finished\n");
     xReady = pdFALSE;
     return pdFALSE;  
   }
-  
 error:
   LOG_ERR "%s\n", pcWriteBuffer LOG_END
         
