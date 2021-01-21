@@ -213,13 +213,15 @@ void Screenshot(void* lcdSurf)
     // get file path
     if (overwrite)
     {
-        sprintf(filePath, CFG_TEMP_DRIVE ":/screenshot%04d.ppm", screenshotCount++);
-    }
+ //       sprintf(filePath, CFG_TEMP_DRIVE ":/screenshot%04d.ppm", screenshotCount++);
+          sprintf(filePath, CFG_TEMP_DRIVE ":/screenshot%04d.jpg", screenshotCount++);
+
+	}
     else
     {
         do
         {
-            sprintf(filePath, CFG_TEMP_DRIVE ":/screenshot%04d.ppm", screenshotCount++);
+            sprintf(filePath, CFG_TEMP_DRIVE ":/screenshot%04d.jpg", screenshotCount++);
         } while (screenshotCount < 10000 && access(filePath, R_OK) == 0);
     }
 
@@ -244,13 +246,13 @@ void Screenshot(void* lcdSurf)
             // get file path
             if (overwrite)
             {
-                sprintf(filePath, "%sscreenshot%04d.ppm", driveStatus->name, screenshotCount++);
+                sprintf(filePath, "%sscreenshot%04d.jpg", driveStatus->name, screenshotCount++);
             }
             else
             {
                 do
                 {
-                    sprintf(filePath, "%sscreenshot%04d.ppm", driveStatus->name, screenshotCount++);
+                    sprintf(filePath, "%sscreenshot%04d.jpg", driveStatus->name, screenshotCount++);
                 } while (screenshotCount < 10000 && access(filePath, R_OK) == 0);
             }
 
