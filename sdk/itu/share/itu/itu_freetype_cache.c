@@ -17,7 +17,7 @@
 wchar_t* convertArabic(wchar_t* normal);
 wchar_t* convertHebrew(wchar_t* normal);
 
-#define MAX_SBIT_CACHE 128
+#define MAX_SBIT_CACHE 256
 #define MAX_DEFER_DESTROY_COUNT 512
 
 /* this simple record is used to model a given `installed' face */

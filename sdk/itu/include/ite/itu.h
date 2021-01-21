@@ -39,7 +39,7 @@ extern "C"
 #define ITU_WIDGET_CHILD_MAX        1000    ///< Maximum count of children.
 #define ITU_EFFECT_STEP_COUNT       10      ///< Default effect steps.
 #define ITU_FREETYPE_MAX_FONTS      16      ///< Maximum count of loaded fonts.
-#define ITU_FREETYPE_MAX_SBIT_CACHE 128     ///< The font size to use graph bitmap cache (< 128 use sbit, or use graph cache)
+#define ITU_FREETYPE_MAX_SBIT_CACHE 256    ///< The font size to use graph bitmap cache (< 128 use sbit, or use graph cache)
 #define ITU_VARIABLE_SIZE           8       ///< Maximum size of variable count.
 
 #ifndef _WIN32

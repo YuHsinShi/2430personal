@@ -1991,6 +1991,8 @@ typedef enum
     ITP_DCPS_UCL_MODE    = (0),     ///< UCL decompress mode
     ITP_DCPS_BRFLZ_MODE  = (1),     ///< BRFLZ decompress mode
     ITP_CPS_BRFLZ_MODE   = (2),     ///< BRFLZ compress mode
+    ITP_DCPS_SPEEDY_MODE  = (1),     ///< SPEEDY decompress mode
+    ITP_CPS_SPEEDY_MODE   = (2),     ///< SPEEDY compress mode    
 } ITPDcpsModeEnum;
 
 typedef enum
@@ -1999,6 +2001,13 @@ typedef enum
     ITP_DCPS_BRFLZ_2BYTE = (1),     ///< BRFLZ compress pixel mode: 2-bytes pixel
     ITP_DCPS_BRFLZ_4BYTE = (2),     ///< BRFLZ compress pixel mode: 4-bytes pixel
 } ITPBrflzPixelModeEnum;
+
+typedef enum
+{
+    ITP_DCPS_SPEEDY_1BYTE = (0),     ///< SPEEDY compress pixel mode: 1-byte pixel
+    ITP_DCPS_SPEEDY_2BYTE = (1),     ///< SPEEDY compress pixel mode: 2-bytes pixel
+    ITP_DCPS_SPEEDY_4BYTE = (2),     ///< SPEEDY compress pixel mode: 4-bytes pixel
+} ITPSpeedyPixelModeEnum;
 
 /** @} */ // end of itp_dcps
 
