@@ -74,7 +74,7 @@ bool ituLayerUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg3
             int x = arg2 - widget->rect.x;
             int y = arg3 - widget->rect.y;
 
-            if (!ituWidgetIsVisible(widget))
+            if (!widget->visible)
                 arg1 |= ITU_LAYER_IS_HIDED;
 
             if (ituWidgetIsInside(widget, x, y))
@@ -242,7 +242,7 @@ static void LayerGoto(int arg)
 
     for (node = &ituScene->root->tree; node; node = node->sibling)
     {
-        if (ituWidgetIsVisible(node))
+        if (((ITUWidget*)node)->visible)
         {
             ITULayer* l = (ITULayer*)node;
 
@@ -279,7 +279,7 @@ void ituLayerGoto(ITULayer* layer)
     {
         ITUWidget* widget = (ITUWidget*) node;
 
-        if (ituWidgetIsVisible(widget))
+        if (widget->visible)
         {
             ITULayer* l = (ITULayer*)widget;
             if (ituExecActions((ITUWidget*)l, l->actions, ITU_EVENT_LEAVE, (int)layer->widget.name))

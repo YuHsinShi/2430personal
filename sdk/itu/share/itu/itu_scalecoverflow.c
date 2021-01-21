@@ -666,6 +666,8 @@ bool ituScaleCoverFlowUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2,
 		if ((widget->flags & ITU_DRAGGABLE) && (ituWidgetIsEnabled(widget)) && (ituWidgetIsInside(widget, x, y)))
 		{
 			int i, count = CoverFlowGetVisibleChildCount(coverflow);
+			coverflow->coverFlowFlags &= ~ITU_COVERFLOW_SLIDING;
+			coverflow->frame = 0;
 
 			for (i = 0; i < count; i++)
 			{

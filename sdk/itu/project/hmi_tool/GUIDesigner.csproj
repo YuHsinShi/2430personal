@@ -179,7 +179,9 @@
     <Compile Include="IconListBoxWidget.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="IconWidget.cs" />
+    <Compile Include="IconWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ImageCoverFlowWidget.cs">
       <SubType>Component</SubType>
     </Compile>

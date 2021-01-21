@@ -53,7 +53,11 @@ bool ituMeterUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg3
 					orgX = widget->rect.width / 2;
 					orgY = widget->rect.height / 2;
 
-					vx2 = x - orgX;
+					//if (x >= orgX)
+						vx2 = x - orgX;
+					//else
+					//	vx2 = orgX - x;
+
 					vy2 = y - orgY;
 
 					if (vx2 * vx2 + vy2 * vy2 >= meter->minRadius * meter->minRadius)
@@ -65,10 +69,16 @@ bool ituMeterUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg3
 						det = vx1 * vy2 - vy1 * vx2;
 						angle = atan2f(det, dot) * ITU_METER_ARC_DIV; //(float)(180.0f / M_PI);
 
+						//printf("(%d, %d) (%d, %d) angle=%f\n", vx1, vy1, vx2, vy2, angle);
+
 						if ((angle < meter->startAngle && meter->startAngle < meter->endAngle) || angle < 0)
 							angle += 360.0f;
 
-						//printf("(%d, %d) (%d, %d) angle=%f\n", vx1, vy1, vx2, vy2, angle);
+						//fix for outside angle but maybe inside start-end range.
+						if ((angle < meter->startAngle) && ((angle + 360.0f) >= meter->startAngle) && ((angle + 360.0f) <= meter->endAngle))
+							angle += 360.0f;
+						else if ((angle > meter->endAngle) && ((angle - 360.0f) <= meter->endAngle) && ((angle - 360.0f) >= meter->startAngle))
+							angle -= 360.0f;
 
 						if (meter->startAngle < meter->endAngle)
 						{

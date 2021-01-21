@@ -1,7 +1,6 @@
 #include <sys/endian.h>
 #include <sys/ioctl.h>
 #include <assert.h>
-#include <malloc.h>
 #include <unistd.h>
 #include "ucl/ucl.h"
 #include "ite/itp.h"
@@ -11,7 +10,7 @@
 #include "itu_private.h"
 
 #if CFG_CHIP_FAMILY != 970
-#include "myLZ_comp.h"
+#include "speedy_comp.h"
 #endif
 
 ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
@@ -34,8 +33,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         if (surf->format == ITU_ARGB8888)
         {
             int ret, jpegSize, alphaSize, alphaCompressSize;
-            uint8_t *jpegData, *alphaData;
-            uint8_t* buf;
+            uint8_t *jpegData, *alphaData, *buf;
+            uint32_t vmem;
 
             memcpy(&jpegSize, (uint8_t*)surf->addr, 4);
             jpegData = (uint8_t*)surf->addr + 4;
@@ -45,21 +44,22 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
             alphaCompressSize = be32_to_cpu(alphaCompressSize);
             alphaData = (uint8_t*)jpegData + jpegSize;
 
-            buf = malloc(alphaSize);
-            if (!buf)
+            vmem = itpVmemAlloc(alphaSize);
+            if (!vmem)
             {
                 LOG_ERR "out of memory: %d\n", alphaSize LOG_END
                 return NULL;
             }
+            buf = ithMapVram(vmem, alphaSize, ITH_VRAM_WRITE);
 
         #if defined(CFG_DCPS_ENABLE) && !defined(CFG_ITU_UCL_ENABLE)
             // hardware decompress
             ioctl(ITP_DEVICE_DECOMPRESS, ITP_IOCTL_INIT, NULL);
 
         #if CFG_CHIP_FAMILY != 970
-            if (surf->flags & ITU_BRIEFLZ)
+            if (surf->flags & ITU_SPEEDY)
             {
-              	uint8_t dcpsMode = ITP_DCPS_BRFLZ_MODE;      //ITP_CPS_BRFLZ_MODE=2
+              	uint8_t dcpsMode = ITP_DCPS_SPEEDY_MODE;      //ITP_DCPS_SPEEDY_MODE=2
                 ioctl(ITP_DEVICE_DECOMPRESS, ITP_IOCTL_SET_MODE, &dcpsMode);
             }
         #endif // CFG_CHIP_FAMILY != 970
@@ -68,7 +68,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
             if (ret != alphaCompressSize)
             {
                 LOG_ERR "decompress write error: %d != %d\n", ret, alphaCompressSize LOG_END
-                free(buf);
+                ithUnmapVram(buf, alphaSize);
+                itpVmemFree(vmem);
                 return NULL;
             }
 
@@ -76,7 +77,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
             if (ret != alphaSize)
             {
                 LOG_ERR "decompress read error: %d != %d\n", ret, alphaSize LOG_END
-                free(buf);
+                ithUnmapVram(buf, alphaSize);
+                itpVmemFree(vmem);
                 return NULL;
             }
             ioctl(ITP_DEVICE_DECOMPRESS, ITP_IOCTL_EXIT, NULL);
@@ -84,14 +86,15 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         #else
             // software decompress
         #if CFG_CHIP_FAMILY != 970
-            if (surf->flags & ITU_BRIEFLZ)
+            if (surf->flags & ITU_SPEEDY)
             {
                 myLZParaType para = { 2, 11, 4096, 6 };
                 ret = myLZ_depack(alphaData + 8 + 14, buf, alphaSize, 4096, &para);
                 if (ret != alphaSize)
                 {
-                    LOG_ERR "internal error - decompression brieflz failed\n" LOG_END
-                    free(buf);
+                    LOG_ERR "internal error - decompression speedy failed\n" LOG_END
+                    ithUnmapVram(buf, alphaSize);
+                    itpVmemFree(vmem);
                     return NULL;
                 }
             }
@@ -101,7 +104,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
                 if (ucl_init() != UCL_E_OK)
                 {
                     LOG_ERR "internal error - ucl_init() failed !!!\n" LOG_END
-                    free(buf);
+                    ithUnmapVram(buf, alphaSize);
+                    itpVmemFree(vmem);
                     return NULL;
                 }
 
@@ -109,14 +113,17 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
                 if (ucl_nrv2e_decompress_8((const ucl_bytep)alphaData + 8, alphaCompressSize, buf, &ret, NULL) != UCL_E_OK || ret != alphaSize)
                 {
                     LOG_ERR "internal error - decompression failed\n" LOG_END
-                    free(buf);
+                    ithUnmapVram(buf, alphaSize);
+                    itpVmemFree(vmem);
                     return NULL;
                 }
             }
         #endif     // defined(CFG_DCPS_ENABLE) && !defined(CFG_ITU_UCL_ENABLE)
 
+            ithFlushDCacheRange(buf, alphaSize);
             retSurf = ituJpegAlphaLoad(surf->width, surf->height, buf, jpegData, jpegSize);
-            free(buf);
+            ithUnmapVram(buf, alphaSize);
+            itpVmemFree(vmem);
         }
         else
         {
@@ -125,7 +132,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
     }
     else
     {
-        int ret, compressedSize, bufSize;
+        int ret, bufSize;
+        uint32_t compressedSize, vmem;
         uint8_t* buf;
 
         if (surf->format == ITU_RGB565A8)
@@ -133,18 +141,19 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         else
             bufSize = surf->pitch * surf->height;
 
-        buf = malloc(bufSize);
-        if (!buf)
+        vmem = itpVmemAlloc(bufSize);
+        if (!vmem)
         {
             LOG_WARN "out of memory: %d, try to reset font cache...\n", surf->pitch * surf->height LOG_END
             ituFtResetCache();
-            buf = malloc(bufSize);
-            if (!buf)
+            vmem = itpVmemAlloc(bufSize);
+            if (!vmem)
             {
                 LOG_ERR "out of memory: %d\n", surf->pitch * surf->height LOG_END
                 return NULL;
             }
         }
+        buf = ithMapVram(vmem, bufSize, ITH_VRAM_WRITE);
 
         compressedSize = surf->size;
         LOG_DBG "decompress surface size %d to %d\n", compressedSize, bufSize LOG_END
@@ -154,9 +163,9 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         ioctl(ITP_DEVICE_DECOMPRESS, ITP_IOCTL_INIT, NULL);
 
     #if CFG_CHIP_FAMILY != 970
-        if (surf->flags & ITU_BRIEFLZ)
+        if (surf->flags & ITU_SPEEDY)
         {
-          	uint8_t dcpsMode = ITP_DCPS_BRFLZ_MODE;      //ITP_CPS_BRFLZ_MODE=2
+          	uint8_t dcpsMode = ITP_DCPS_SPEEDY_MODE;      //ITP_DCPS_SPEEDY_MODE=2
             ioctl(ITP_DEVICE_DECOMPRESS, ITP_IOCTL_SET_MODE, &dcpsMode);
         }
     #endif // CFG_CHIP_FAMILY != 970
@@ -167,7 +176,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         if (ret != compressedSize)
         {
             LOG_ERR "decompress write error: %d != %d\n", ret, compressedSize LOG_END
-            free(buf);
+            ithUnmapVram(buf, bufSize);
+            itpVmemFree(vmem);
             return NULL;
         }
 
@@ -175,7 +185,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         if (ret != bufSize)
         {
             LOG_ERR "decompress read error: %d != %d\n", ret, bufSize LOG_END
-            free(buf);
+            ithUnmapVram(buf, bufSize);
+            itpVmemFree(vmem);
             return NULL;
         }
         ioctl(ITP_DEVICE_DECOMPRESS, ITP_IOCTL_EXIT, NULL);
@@ -184,20 +195,21 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
 #else
         // software decompress
     #if CFG_CHIP_FAMILY != 970
-        if (surf->flags & ITU_BRIEFLZ)
+        if (surf->flags & ITU_SPEEDY)
         {
             if (compressedSize == bufSize)
             {
-                memcpy(buf, (const void*)surf->addr, bufSize);
+                memcpy((void*)buf, (const void*)surf->addr, bufSize);
             }
             else
             {
                 myLZParaType para = { 2, 11, 4096, 6 };
-                ret = myLZ_depack((const void*)(surf->addr + 14), buf, bufSize, 4096, &para);
+                ret = myLZ_depack((const void*)(surf->addr + 14), (void*)buf, bufSize, 4096, &para);
                 if (ret != bufSize)
                 {
-                    LOG_ERR "internal error - decompression brieflz failed\n" LOG_END
-                    free(buf);
+                    LOG_ERR "internal error - decompression speedy failed\n" LOG_END
+                    ithUnmapVram(buf, bufSize);
+                    itpVmemFree(vmem);
                     return NULL;
                 }
             }
@@ -208,7 +220,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
             if (ucl_init() != UCL_E_OK)
             {
                 LOG_ERR "internal error - ucl_init() failed !!!\n" LOG_END
-                free(buf);
+                ithUnmapVram(buf, bufSize);
+                itpVmemFree(vmem);
                 return NULL;
             }
             else
@@ -241,7 +254,8 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
                     if (ucl_nrv2e_decompress_8((const ucl_bytep)&ptr[i], srcSize, dstBuf, &ret, NULL) != UCL_E_OK || ret != dstSize)
                     {
                         LOG_ERR "internal error - decompression failed\n" LOG_END
-                        free(buf);
+                        ithUnmapVram(buf, bufSize);
+                        itpVmemFree(vmem);
                         return NULL;
                     }
 
@@ -253,8 +267,11 @@ ITUSurface *ituSurfaceDecompress(ITUSurface *surf)
         }
 #endif     // defined(CFG_DCPS_ENABLE) && !defined(CFG_ITU_UCL_ENABLE)
 
-        flags = surf->flags & ~(ITU_COMPRESSED | ITU_STATIC | ITU_BRIEFLZ);
-        retSurf = ituCreateSurface(surf->width, surf->height, surf->pitch, surf->format, buf, flags);
+        ithFlushDCacheRange(buf, bufSize);
+        ithUnmapVram(buf, bufSize);
+
+        flags = surf->flags & ~(ITU_COMPRESSED | ITU_STATIC | ITU_SPEEDY);
+        retSurf = ituCreateSurface(surf->width, surf->height, surf->pitch, surf->format, (uint8_t*)vmem, flags);
     }
 
     if (retSurf && (surf->flags & ITU_STATIC) && (surf->lockSize == 0))

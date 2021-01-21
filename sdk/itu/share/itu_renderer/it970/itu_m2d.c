@@ -468,9 +468,9 @@ static void M2dUnlockSurface(ITUSurface* surf)
 #ifdef CFG_CPU_WB
     gfxwaitEngineIdle();
     ithUnmapVram(surf->lockAddr, surf->lockSize);
+#endif
     ithFlushDCacheRange((void*)(surf->lockAddr), surf->lockSize);
     ithFlushMemBuffer();
-#endif
 #endif
 }
 

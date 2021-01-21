@@ -92,7 +92,7 @@ static void cycle_arrange(ITUWidget* widget, bool shiftway)
 	int count = itcTreeGetChildCount(wheel);
 
 	if (childlfirst == NULL)
-		return false;
+		return;
 
 	if ((widget->rect.height % childlfirst->rect.height) > (childlfirst->rect.height / 2))
 		fitc++;
@@ -256,7 +256,7 @@ void refix_wheel_layout(ITUWheel* wheel)
 		int fitmod;
 
 		if (child == NULL)
-			return false;
+			return;
 
 		if ((widget->rect.height % child->rect.height) > (child->rect.height / 2))
 			fitc++;
@@ -317,12 +317,12 @@ void set_wheel_font_size(ITUWheel* wheel, ITUText* text, int size)
 
 void wheel_font_size_cal(ITUWheel* wheel)
 {
-	ITUText* textp = NULL;
-	ITUText* textf = NULL;
-	ITUText* textn = NULL;
+	ITUText* textp;
+	ITUText* textf;
+	ITUText* textn;
 	ITUWidget* widget = (ITUWidget*)wheel;
 	int count = itcTreeGetChildCount(wheel);
-	int sizep = 0, sizef = 0, sizen = 0;
+	int sizep, sizef, sizen;
 	int size_dev = wheel->focusFontHeight - wheel->fontHeight;
 
 	textf = (ITUText*)itcTreeGetChildAt(wheel, wheel->focusIndex);
@@ -1463,6 +1463,10 @@ bool ituWheelUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg3
 
 					if ((wheel->inc == 0) && (wheel->fix_count == 0))
 					{
+						//fix wrong interval when drag outside
+						if (!ituWidgetIsInside(widget, x, y))
+							interval = 0;
+
 						if (absoffset > child->rect.height / wheel->mouseup_change_factor)
 						{
 							div_value = child->rect.height / wheel->totalframe;
@@ -1481,6 +1485,9 @@ bool ituWheelUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg3
 								wheel->focusIndex -= interval;
 								//printf("===[wheel][2][frame %d][offset %d][inc %d][interval %d][focusIndex %d]===\n", wheel->frame, offset, wheel->inc, interval, wheel->focusIndex);
 							}
+
+							if (!ituWidgetIsInside(widget, x, y))
+								offset = absoffset = wheel->inc = 0;
 						}
 						else
 						{
@@ -3465,10 +3472,10 @@ bool ituWheelCheckIdle(ITUWheel* wheel)
 
 int ituWheelItemCount(ITUWheel* wheel)
 {
-	int count;
+	int count = 0;
     ITU_ASSERT_THREAD();
     
-    count = get_max_focusindex(wheel) + 1;
+    count = get_max_focusindex((ITUWidget*)wheel) + 1;
 	return count;
 }
 
@@ -3503,8 +3510,8 @@ bool ituWheelSetItemTree(ITUWheel* wheel, char** stringarr, int itemcount)
 
 		while (tick < 0)
 		{
-			ITUText* text = (ITUText*)itcTreeGetChildAt(wheel, 0);
-			ITUText* cloneobj = NULL;
+			ITUWidget* text = (ITUWidget*)itcTreeGetChildAt(wheel, 0);
+			ITUWidget* cloneobj = NULL;
 			bool cloned = ituTextClone(text, &cloneobj);
 
 			if (cloned)

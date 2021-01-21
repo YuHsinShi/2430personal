@@ -76,7 +76,7 @@ endif()
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/sdk/share/audio_mgr
-    ${PROJECT_SOURCE_DIR}/sdk/share/brieflz
+    ${PROJECT_SOURCE_DIR}/sdk/share/speedy
     ${PROJECT_SOURCE_DIR}/sdk/share/ffmpeg
     ${PROJECT_SOURCE_DIR}/sdk/itu/share/itu
 )

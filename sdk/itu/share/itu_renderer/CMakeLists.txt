@@ -90,6 +90,12 @@ else()
     )
 endif()
 
+if (DEFINED CFG_ITV_VP_HIGH_QUALITY)
+    add_library(itu_renderer STATIC
+        ${dirname}/itu_timer_ff.c
+    )
+endif()
+
 if (DEFINED CFG_STNLCD_ENABLE)
     add_library(itu_renderer STATIC
         itu_stnlcd.c

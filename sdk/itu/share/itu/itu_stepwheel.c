@@ -1739,7 +1739,7 @@ bool ituStepWheelUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
 							{
 								wheel->inc = child->rect.height;
 								wheel->focusIndex -= interval;
-								if (stepwheel_fix_wrongindex(wheel) || (interval == 0))
+								if (stepwheel_fix_wrongindex(wheel) || (!ituWidgetIsInside(widget, x, y)))
 								{
 									offset = absoffset = wheel->inc = 0;
 								}
@@ -1750,7 +1750,7 @@ bool ituStepWheelUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
 							{
 								wheel->inc = -child->rect.height;
 								wheel->focusIndex -= interval;
-								if (stepwheel_fix_wrongindex(wheel) || (interval == 0))
+								if (stepwheel_fix_wrongindex(wheel) || (!ituWidgetIsInside(widget, x, y)))
 								{
 									offset = absoffset = wheel->inc = 0;
 								}
@@ -2490,6 +2490,20 @@ bool ituStepWheelUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
 					{
 						ITUWidget* child = (ITUWidget*)itcTreeGetChildAt(wheel, i);
 						int fy = 0 - ((wheel->focusIndex - good_center + 1) * child->rect.height);
+						int neighbor_value = stepwheel_neighbor_level(wheel, i);
+						text = (ITUText*)child;
+
+						if (neighbor_value == 1)
+							stepwheel_set_wheel_font_size(wheel, text, wheel->stepFontHeight1);
+						else if ((neighbor_value == 2) && (wheel->stepFontHeight2 != 0) && (wheel->stepFontHeight2 != wheel->fontHeight))
+							stepwheel_set_wheel_font_size(wheel, text, wheel->stepFontHeight2);
+						else if ((neighbor_value == 3) && (wheel->stepFontHeight3 != 0) && (wheel->stepFontHeight3 != wheel->fontHeight))
+							stepwheel_set_wheel_font_size(wheel, text, wheel->stepFontHeight3);
+						else
+							stepwheel_set_wheel_font_size(wheel, text, wheel->fontHeight);
+
+						//printf("[%d] %d nv %d\n", wheel->focusIndex, i, neighbor_value);
+
 						fy += i * child->rect.height;
 
 						ituWidgetSetY(child, fy);

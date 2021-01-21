@@ -158,15 +158,20 @@
   ![](itu_pic/SceneEffect.jpg)
 
 ## Release Notes {#itu_guidesigner_release_note}
-- Version 1.1.7467, 2020/6/11
+- Version 1.1.7648, 2020/12/9
+  1. Add item background image to ComboTable widget.
+  2. Fixed the widget tree get wrong order when using Hided property.
+- Version 1.1.7628, 2020/11/19
+  1. Add ComboTable widget.
+- Version 1.1.7530, 2020/8/13
   1. Remove all internal customdata usage.
   2. Add ItemAlign mode switch for StopAnywhere.
   3. Add Scale 50% option on Emulator menu.
   4. Show widget absolute position on status bar.
 - Version 1.1.7430, 2020/05/05
   1. Add TableGrid widget.
-  2. Add BriefLZ Compression option.
-  3. Add BriefLZ Surface Compression option.
+  2. Add Speedy Compression option.
+  3. Add Speedy Surface Compression option.
 - Version 1.1.7276, 2019/12/03
   1. Add LineOnly property to Curve widget.
   2. Add TableBar widget.

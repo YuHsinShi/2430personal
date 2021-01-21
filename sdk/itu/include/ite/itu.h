@@ -39,11 +39,11 @@ extern "C"
 #define ITU_WIDGET_CHILD_MAX        1000    ///< Maximum count of children.
 #define ITU_EFFECT_STEP_COUNT       10      ///< Default effect steps.
 #define ITU_FREETYPE_MAX_FONTS      16      ///< Maximum count of loaded fonts.
-#define ITU_FREETYPE_MAX_SBIT_CACHE 256    ///< The font size to use graph bitmap cache (< 128 use sbit, or use graph cache)
+#define ITU_FREETYPE_MAX_SBIT_CACHE 256     ///< The font size to use graph bitmap cache (< 128 use sbit, or use graph cache)
 #define ITU_VARIABLE_SIZE           8       ///< Maximum size of variable count.
 
 #ifndef _WIN32
-#if (((CFG_CHIP_FAMILY == 970)) && defined(CFG_ITU_FT_CACHE_ENABLE))
+#if (((CFG_CHIP_FAMILY == 970) || (CFG_CHIP_FAMILY == 9860)) && defined(CFG_ITU_FT_CACHE_ENABLE))
 #define ITU_ENABLE_DEFER_DESTROY
 #endif
 #endif
@@ -216,7 +216,7 @@ typedef enum
 #define ITU_COMPRESSED  0x4     ///< This surface is compressed.
 #define ITU_JPEG        0x8     ///< This surface is JPEG image.
 #define ITU_DITHER      0x10    ///< This surface need to be dithered.
-#define ITU_BRIEFLZ     0x20    ///< This surface is compressed by BriefLZ algorithm.
+#define ITU_SPEEDY      0x20    ///< This surface is compressed by Speedy algorithm.
 
 /**
  * Surface definition.
@@ -1521,6 +1521,7 @@ typedef enum
 	ITU_HWHEEL,                 ///< HWheel
     ITU_TABLEBAR,               ///< Table bar
     ITU_TABLEGRID,              ///< Table grid
+    ITU_COMBOTABLE,             ///< Combo Table
     ITU_CUSTOM = 100            ///< Custom widget
 } ITUWidgetType;
 
@@ -1714,6 +1715,14 @@ void ituWidgetSetNameImpl(ITUWidget* widget, const char* name);
  * @param visible true for visible, false for invisible.
  */
 void ituWidgetSetVisibleImpl(ITUWidget* widget, bool visible);
+
+/**
+* Is the specified widget visible or not. This is the implementation of base widget.
+*
+* @param widget Pointer referring to the widget.
+* @return true if the widget visible, false if not.
+*/
+bool ituWidgetIsVisibleImpl(ITUWidget* widget);
 
 /**
  * Sets focused or unfocused of the widget. This is the implementation of base widget.
@@ -2036,7 +2045,7 @@ void ituWidgetMoveDownImpl(ITUWidget* widget);
  * @param widget Pointer referring to the widget.
  * @return true for visible, false for invisible.
  */
-#define ituWidgetIsVisible(widget)                          (((ITUWidget*)(widget))->visible)
+#define ituWidgetIsVisible(widget)                          ituWidgetIsVisibleImpl((ITUWidget*)(widget))
 
 /**
  * Sets focused or unfocused of the widget.
@@ -3192,6 +3201,12 @@ void ituButtonSetTextLayoutImpl(ITUButton* btn, ITULayout layout);
 */
 #define ituButtonSetTextLayout(btn, layout)  ituButtonSetTextLayoutImpl((ITUButton*)(btn), (layout))
 
+/**
+* Sets the button to receive mouseup action after slide action.
+*
+* @param btn The button to set.
+*/
+void ituButtonSetSlideMouseUP(ITUButton* btn);
 
 /** @} */ // end of itu_widget_button
 
@@ -4940,6 +4955,8 @@ typedef struct ITUAnimationTag
     int orgAngle;                           ///< Keep the orginal angle value of widget
     int orgTransformX;                      ///< Keep the orginal transform x value of widget
     int orgTransformY;                      ///< Keep the orginal transform y value of widget
+	int orgFontWidth;                       ///< Keep the orginal width value of the text widget.
+	int orgFontHeight;                      ///< Keep the orginal height value of the text widget.
     ITURectangle keyRect;                   ///< Keep the keyframe rectangle of widget
     ITUColor keyColor;                      ///< Keep the keyframe color of widget    
     int keyAlpha;                           ///< Keep the keyframe alpha value of widget
@@ -7782,9 +7799,9 @@ typedef struct ITUDrawPenTag
 	int usb_ready_to_rw;
 	unsigned int usb_lock;
 	unsigned long usb_thread;
+	int* rawdata;                           ///< The raw data of pen.
 	ITUColor lastcolor;
 	ITUColor pencolor;                      ///< The pen color.
-	int* rawdata;                           ///< The raw data of pen.
 	ITUAction actions[ITU_ACTIONS_SIZE];    ///< Actions for events to trigger
 
 	/**
@@ -8924,13 +8941,245 @@ void ituTableGridSelect(ITUTableGrid* grid, int row, int col);
 
 /** @} */ // end of itu_widget_tablegrid
 
+/** @defgroup itu_widget_combotable ComboTable
+*  @{
+*/
+
+#define ITU_COMBOTABLE_MIT  200  //check time(msec) for click item
+#define ITU_COMBOTABLE_SLIDING  0x1  ///< This combotable is under sliding.
+
+typedef enum
+{
+	ITU_CBT_ERR_NOCHILD = 1, ///< without initial child
+	ITU_CBT_ERR_CHILDNOTCOT = 2, ///< first child not container
+} ITUComboTableErrNO;
+
+/**
+* ComboTable widget definition.
+*/
+typedef struct ITUComboTableTag
+{
+	ITUWidget widget;               ///< Base widget definition
+	unsigned int comboTableFlags;   ///< The flags to indicate the status of the combotable.
+	ITUSurface* staticSurf;         ///< The static surface for the background of the combotable.
+	ITUSurface* surf;               ///< The work surface for the background of the combotable.
+	ITUSurface* itemStaticSurf;     ///< The static surface for the item of the combotable.
+	ITUSurface* itemSurf;           ///< The work surface for the item of the combotable.
+	int gap;                        ///< The gap between item.
+	int frame;                      ///< The frame when doing sliding animation.
+	int totalframe;                 ///< The totalframe for doing sliding animation.
+	int bounce;                     ///< The bouncing mode of combotable.(0:disable, 1: Horizontal, 2: Vertical)
+	int hv_mode;                    ///< h or v mode.(internal usage)
+	int inc;                        ///< Log for dragging info.(internal usage)
+	int initX;                      ///< The X position when start dragging.
+	int initY;                      ///< The Y position when start dragging.
+	int touchX;                     ///< X-coordinate of touch point.
+	int touchY;                     ///< Y-coordinate of touch point.
+	int itemalignmode;              ///< The item aligm mode.(1:align 0:disable)
+	uint32_t clock;                 ///< time clock log.
+	uint32_t lastclock;             ///< last time clock log.
+	ITUWidget* tmpObj;              ///< exchange object.(internal usage)
+	ITUWidget* itemArr[ITU_WIDGET_CHILD_MAX];      ///< The main item array for each combotable.(internal usage)
+	int itemcount;                  ///< available item count.(internal usage)
+	int pagemaxitem;                ///< The max item count for each page.(default 20)
+	int currPage;                   ///< The current page.(internal usage)//lastselectIndex
+	int lastselectIndex;            ///< The index of the item that last selected.
+	int selectIndex;                ///< The index of the item that current selected.
+	int sliding;                    ///< The combotable could be sliding or not.(internal usage)
+	int dragPIPE[100];              ///< The drag pipe system usage.
+
+	ITUAction actions[ITU_ACTIONS_SIZE];    ///< Actions for events to trigger
+
+	/**
+	* Called when the combotable is changed and stoped.
+	*
+	* @param cbt The ComboTable.
+	*/
+	void(*OnChanged)(struct ITUComboTableTag* cbt);
+
+	/**
+	* Called when combotable working then stopped.
+	*
+	* @param cbt The stopped ComboTable widget.
+	*/
+	void(*OnStop)(struct ITUComboTableTag* cbt);
+
+} ITUComboTable;
+
+/**
+* Initializes the ComboTable widget.
+*
+* @param cbt The ComboTable widget to initialize.
+*/
+void ituComboTableInit(ITUComboTable* cbt);
+
+/**
+* Loads the ComboTable widget. This is called by scene manager.
+*
+* @param cbt The ComboTable widget to load.
+* @param base The address in the scene file buffer.
+*/
+void ituComboTableLoad(ITUComboTable* cbt, uint32_t base);
+
+/**
+* Updates the ComboTable widget by specified event.
+*
+* @param widget The ComboTable widget to update.
+* @param ev The event to notify.
+* @param arg1 The event related argument #1.
+* @param arg2 The event related argument #2.
+* @param arg3 The event related argument #3.
+* @return true if the ComboTable widget is modified and need to be redraw, false if no need to be redraw.
+*/
+bool ituComboTableUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg3);
+
+/**
+* Draws the ComboTable widget to the specified surface.
+*
+* @param widget The ComboTable widget to draw.
+* @param dest The surface to draw to.
+* @param x The x coordinate of destination surface, in pixels.
+* @param y The y coordinate of destination surface, in pixels.
+* @param alpha the alpha value to do the constant alphablending to the surface.
+*/
+void ituComboTableDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8_t alpha);
+
+/**
+* Do the specified action. This is triggered by other widget's event.
+*
+* @param widget The ComboTable widget to do the action.
+* @param action The action to do.
+* @param param The parameter of action.
+*/
+void ituComboTableOnAction(ITUWidget* widget, ITUActionType action, char* param);
+
+/**
+* Called when the value is changed.
+*
+* @param cbt The ComboTable.
+* @param value The new value.
+*/
+#define ituComboTableOnChanged(saw)   ((ITUComboTable*)(cbt))->OnChanged((ITUComboTable*)(cbt))
+
+/**
+* Sets OnChanged callback function of ComboTable.
+*
+* @param cbt Pointer referring to the ComboTable.
+* @param onChanged The callback function to set.
+*/
+#define ituComboTableSetChanged(cbt, onChanged)  (((ITUComboTable*)(cbt))->OnChanged = (onChanged))
+
+/**
+* This is called when the ComboTable stop playing.
+*
+* @param cbt The ComboTable widget.
+*/
+#define ituComboTableOnStop(cbt) ((ITUComboTable*)(cbt))->OnStop((ITUComboTable*)(cbt))
+
+/**
+* Sets OnStop callback function of ComboTable.
+*
+* @param cbt Pointer referring to the ComboTable.
+* @param onStop The callback function to set.
+*/
+#define ituComboTableSetOnStop(cbt, onStop)    (((ITUComboTable*)(cbt))->OnStop = (onStop))
+
+/**
+* Loads background static data to the ComboTable widget.
+*
+* @param cbt The ComboTable widget to load.
+*/
+void ituComboTableLoadStaticData(ITUComboTable* cbt);
+
+/**
+* Add item to the list of the ComboTable widget.
+* @param cbtWidget The ComboTable widget to add item.
+* @param widget The item to the tree callback.
+*/
+void ituComboTableAddItem(ITUWidget* cbtWidget, ITUWidget* widget);
+
+/**
+* Delete item from the list of the ComboTable widget.
+*
+* @param cbt The ComboTable widget to delete item.
+* @param item_index The index of item what you want to delete.
+*/
+void ituComboTableDelItem(ITUComboTable* cbt, int item_index);
+
+/**
+* move the content items for current page.
+*
+* @param cbt The ComboTable widget.
+* @param distX The X move distance.
+* @param distY The Y move distance.
+*/
+void ituComboTableMoveXY(ITUComboTable* cbt, int distX, int distY);
+
+/**
+* Get the maximum page index of the ComboTable widget.
+*
+* @param cbt The ComboTable widget to get.
+* @return value is the max page index (return -1 when itemcount is 0).
+*/
+int ituComboTableGetMaxPageIndex(ITUComboTable* cbt);
+
+/**
+* Goto the special page of ComboTable widget.
+*
+* @param cbt The ComboTable widget.
+* @param page The target page index.
+*/
+void ituComboTableGotoPage(ITUComboTable* cbt, int page);
+
+
+/**
+* Search the specify child of the specify item for the ComboTable widget.
+*
+* @param cbt The target ComboTable widget.
+* @param item_index The index of item what you specify.
+* @param type The ITUWidgetType to search in this item.
+* @param child_index The index of child with type what you special in this item.
+* @return value is the widget what you search. (return NULL when found nothing or something wrong).
+*/
+ITUWidget* ituComboTableGetItemChild(ITUComboTable* cbt, int item_index, ITUWidgetType type, int child_index);
+
+/**
+* Get the item index of this child widget.
+*
+* @param cbt The ComboTable widget.
+* @param widget The child widget to find.
+* @param currPage find current page or not.(true: current page, false: all page)
+* @return value is the item index.(return -1 when found nothing.)
+*/
+int ituComboTableGetItemIndexOfWidget(ITUComboTable* cbt, ITUWidget* widget, bool currPage);
+
+/**
+* Get the current page number of this ComboTable widget.
+*
+* @param cbt The ComboTable widget.
+* @return value is the current page number.(return -1 when error)
+*/
+int ituComboTableGetCurrentPageNumber(ITUComboTable* cbt);
+
+/**
+* Get the selected item index of this ComboTable widget.
+*
+* @param cbt The ComboTable widget.
+* @param current find current selected or not.(true: current selected, false: last selected)
+* @return value is the selected item index.(return -1 when no item selected)
+*/
+int ituComboTableGetSelectedIndex(ITUComboTable* cbt, bool current);
+
+
+/** @} */ // end of itu_widget_combotable
+
 /** @} */ // end of itu_widget
 
 /** @defgroup itu_scene Scene
  *  @{
  */
 
-#define ITU_SCENE_BRIEFLZ  0x1    ///< This scene is compressed by BriefLZ algorithm.
+#define ITU_SCENE_SPEEDY  0x1    ///< This scene is compressed by Speedy algorithm.
 
 /**
  * Action callback function definition.

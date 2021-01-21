@@ -107,6 +107,7 @@ bool ituAnimationUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
                                         animation->child->transformX = animation->orgTransformX;
                                         animation->child->transformY = animation->orgTransformY;
                                     }
+
                                     ituAnimationGoto(animation, 0);
                                     animation->playCount = 0;
                                     ituAnimationOnStop(animation);
@@ -149,6 +150,7 @@ bool ituAnimationUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
                                         animation->child->transformX = animation->orgTransformX;
                                         animation->child->transformY = animation->orgTransformY;
                                     }
+
                                     ituAnimationGoto(animation, 0);
                                     animation->playCount = 0;
                                     ituAnimationOnStop(animation);
@@ -241,9 +243,17 @@ bool ituAnimationUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
 							}
                             else
                             {
-                                animation->child->rect.width = animation->keyRect.width + (target->rect.width - animation->keyRect.width) * frame / animation->totalframe;
-                                animation->child->rect.height = animation->keyRect.height + (target->rect.height - animation->keyRect.height) * frame / animation->totalframe;
-                                //printf("n=%s c=%d/%d t=%d/%d k=%d/%d f=%d/%d\n", target->name, animation->child->rect.width, animation->child->rect.height, target->rect.width, target->rect.height, animation->keyRect.width, animation->keyRect.height, frame, animation->totalframe);
+                                int targetW = animation->keyRect.width + (target->rect.width - animation->keyRect.width) * frame / animation->totalframe;
+                                int targetH = animation->keyRect.height + (target->rect.height - animation->keyRect.height) * frame / animation->totalframe;
+								animation->child->rect.width = targetW;
+								animation->child->rect.height = targetH;
+								//printf("n=%s c=%d/%d t=%d/%d k=%d/%d f=%d/%d\n", target->name, animation->child->rect.width, animation->child->rect.height, target->rect.width, target->rect.height, animation->keyRect.width, animation->keyRect.height, frame, animation->totalframe);
+								if (animation->child->type == ITU_TEXT)
+								{
+									ITUText* tc = (ITUText*)animation->child;
+									ituTextSetFontWidth(tc, animation->orgFontWidth * targetW / animation->orgRect.width);
+									ituTextSetFontHeight(tc, animation->orgFontHeight * targetH / animation->orgRect.height);
+								}
                             }
                         }
                         if (animation->animationFlags & ITU_ANIM_COLOR)
@@ -299,6 +309,13 @@ bool ituAnimationUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int 
                 animation->keyTransformY = animation->child->transformY;
                 animation->frame = 0;
                 result = widget->dirty = true;
+
+				if (animation->child->type == ITU_TEXT)
+				{
+					ITUText* tc = (ITUText*)animation->child;
+					animation->orgFontWidth = tc->fontWidth;
+					animation->orgFontHeight = tc->fontHeight;
+				}
             }
         }
     }
@@ -609,6 +626,7 @@ void ituAnimationPlay(ITUAnimation* animation, int keyframe)
                 animation->child->transformX = animation->orgTransformX;
                 animation->child->transformY = animation->orgTransformY;
             }
+
             ituAnimationOnStop(animation);
             ituExecActions((ITUWidget*)animation, animation->actions, ITU_EVENT_STOPPED, 0);
         }
@@ -712,6 +730,12 @@ void ituAnimationGoto(ITUAnimation* animation, int keyframe)
             animation->child->angle = animation->orgAngle;
             animation->child->transformX = animation->orgTransformX;
             animation->child->transformY = animation->orgTransformY;
+			if (animation->child->type == ITU_TEXT)
+			{
+				ITUText* tc = (ITUText*)animation->child;
+				ituTextSetFontWidth(tc, animation->orgFontWidth);
+				ituTextSetFontHeight(tc, animation->orgFontHeight);
+			}
         }
 
         memcpy(&animation->orgRect, &target->rect, sizeof (ITURectangle));
@@ -876,6 +900,7 @@ void ituAnimationReset(ITUAnimation* animation)
             animation->child->transformX = animation->orgTransformX;
             animation->child->transformY = animation->orgTransformY;
         }
+
         animation->child = NULL;
     }
     animation->keyframe = 0;
@@ -945,6 +970,7 @@ void ituAnimationReversePlay(ITUAnimation* animation, int keyframe)
                 animation->child->transformX = animation->orgTransformX;
                 animation->child->transformY = animation->orgTransformY;
             }
+
             ituAnimationOnStop(animation);
             ituExecActions((ITUWidget*)animation, animation->actions, ITU_EVENT_STOPPED, 0);
         }

@@ -140,6 +140,13 @@ void ituScreenshot(ITUSurface *surf, char *filepath)
         surf->width     = h;
         surf->height    = w;
     }
+    else
+    {
+    #ifdef CFG_ENABLE_ROTATE
+        surf->width  = h;
+        surf->height = w;
+    #endif // CFG_ENABLE_ROTATE
+    }
 
     if (stricmp(&filepath[pos], "jpg") == 0)
     {

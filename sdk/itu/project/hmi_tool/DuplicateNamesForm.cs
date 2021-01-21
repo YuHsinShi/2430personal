@@ -23,7 +23,7 @@ namespace GUIDesigner
 
         public void AppendLine(string text)
         {
-            this.resultTextBox.AppendText(text + "\n");
+            this.resultTextBox.AppendText(text + Environment.NewLine);
         }
     }
 }

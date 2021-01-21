@@ -305,17 +305,6 @@ set_isp_colorTrans(
             break;
         }
         break;
-
-    case DATA_COLOR_ARGB8888:
-    case DATA_COLOR_ARGB4444:
-        ispInput.addrY        = (uint32_t)dest;
-        ispInput.format       = MMP_ISP_IN_RGB565;
-        ispInput.pitchY       = (uint16_t)M2dPitch;
-        ispInput.width        = width;
-        ispInput.height       = height;
-        ispInput.isAdobe_CMYK = 0;
-        break;
-
     case DATA_COLOR_NV12:
     case DATA_COLOR_NV21:
         ispInput.addrY   = (uint32_t)srcAddr_rgby;
@@ -326,6 +315,8 @@ set_isp_colorTrans(
         break;
 
     case DATA_COLOR_RGB565:
+	case DATA_COLOR_ARGB8888:
+    case DATA_COLOR_ARGB4444:
         return;
     }
 
@@ -334,7 +325,15 @@ set_isp_colorTrans(
     width  = destRect->w;     //dispWidth;
     height = destRect->h;     //dispHeight;
 
-    result = mmpIspInitialize(&gIspDev, MMP_ISP_CORE_0);
+    #if (CFG_CHIP_FAMILY == 970)
+        #ifdef CFG_LCD_PQ_TUNING
+            result = mmpIspInitialize(&gIspDev, MMP_ISP_CORE_1);
+        #else
+            result = mmpIspInitialize(&gIspDev, MMP_ISP_CORE_0);
+        #endif
+    #else
+        result = mmpIspInitialize(&gIspDev, MMP_ISP_CORE_0);
+    #endif
 
     if (result)
         printf("mmpIspInitialize() error (0x%x) !!\n", result);
@@ -363,64 +362,10 @@ set_isp_colorTrans(
     mmpIspSetOutputWindow(gIspDev, &outInfo);
     mmpIspSetVideoWindow(gIspDev, 0, 0, outInfo.width, outInfo.height);
 
-    if ((colorType == DATA_COLOR_ARGB8888) || (colorType == DATA_COLOR_ARGB4444))
-    {
-        int IFrm0Mode = 0;
-        if (colorType == DATA_COLOR_ARGB8888)
-            IFrm0Mode = 2;
-        else if (colorType == DATA_COLOR_ARGB4444)
-            IFrm0Mode = 1;
-
-        mmpIspEnable(gIspDev, MMP_ISP_FRAME_FUNCTION_0);
-        FrameFuncInfo FF0 = {0};
-        FF0.vramAddr      = srcAddr_rgby;
-        FF0.startX        = 0;
-        FF0.startY        = 0;
-        FF0.width         = srcRect->w;
-        FF0.height        = srcRect->h;
-        FF0.colorKeyR     = 100;
-        FF0.colorKeyG     = 100;
-        FF0.colorKeyB     = 100;
-        FF0.EnAlphaBlend  = 1;
-        FF0.constantAlpha = 0;
-        if (IFrm0Mode == 0)
-        {
-            FF0.format = MMP_PIXEL_FORMAT_RGB565;
-            FF0.pitch  = srcRect->w;
-        }
-        else if (IFrm0Mode == 1)
-        {
-            FF0.format = MMP_PIXEL_FORMAT_ARGB4444;
-            FF0.pitch  = srcRect->w * 2;
-        }
-        else if (IFrm0Mode == 2)
-        {
-            FF0.format = MMP_PIXEL_FORMAT_ARGB8888;
-            FF0.pitch  = srcRect->w * 4;
-        }
-
-        result = mmpIspSetFrameFunction(
-            gIspDev,
-            MMP_ISP_FRAME_FUNCTION_0,
-            FF0.vramAddr,
-            FF0.startX,
-            FF0.startY,
-            FF0.width,
-            FF0.height,
-            FF0.pitch,
-            FF0.colorKeyR,
-            FF0.colorKeyG,
-            FF0.colorKeyB,
-            FF0.EnAlphaBlend,
-            FF0.constantAlpha,
-            FF0.format,
-            FF0.uiBufferIndex);
-        if (result)
-            printf("mmpIspSetFrameFunction() error (0x%x) !!\n", result);
-    }
-
-    #ifdef CFG_LCD_PQ_TUNING
-        pthread_mutex_lock(&ISP_CORE_0_MUTEX);
+    #if (CFG_CHIP_FAMILY != 970)
+        #ifdef CFG_LCD_PQ_TUNING
+            pthread_mutex_lock(&ISP_CORE_0_MUTEX);
+        #endif
     #endif
 
     result = mmpIspPlayImageProcess(gIspDev, &ispInput);
@@ -431,8 +376,10 @@ set_isp_colorTrans(
     if (result)
         printf("mmpIspWaitEngineIdle() error (0x%x) !!\n", result);
 
-    #ifdef CFG_LCD_PQ_TUNING
-        pthread_mutex_unlock(&ISP_CORE_0_MUTEX);
+    #if (CFG_CHIP_FAMILY != 970)
+        #ifdef CFG_LCD_PQ_TUNING
+            pthread_mutex_unlock(&ISP_CORE_0_MUTEX);
+        #endif
     #endif
 
 	mmpIspTerminate(&gIspDev);
@@ -552,7 +499,7 @@ int *ituJpegLoadEx(int width, int height, uint8_t *data, int size)
 
     surf = VideoSurf[new_index];
     dest = (uint8_t *)ituLockSurface(surf, 0, 55, width, height);
-    ituColorFill(surf, 0, 55, width, height, &black);
+    //ituColorFill(surf, 0, 55, width, height, &black);
 
     if ((imgWidth * imgHeight >= MAX_JPEG_DECODE_SIZE) || imgWidth >= 4096 || imgHeight >= 4096)
     {
@@ -903,7 +850,7 @@ ITUSurface *ituJpegLoad(int width, int height, uint8_t *data, int size, unsigned
         return NULL;
     }
     dest = (uint16_t *)ituLockSurface(surf, 0, 0, width, height);
-    ituColorFill(surf, 0, 0, width, height, &black);
+    //ituColorFill(surf, 0, 0, width, height, &black);
 
     if ((imgWidth * imgHeight >= MAX_JPEG_DECODE_SIZE) || imgWidth >= 4096 || imgHeight >= 4096)
     {
@@ -924,10 +871,7 @@ ITUSurface *ituJpegLoad(int width, int height, uint8_t *data, int size, unsigned
         else
             initParam.dispMode = JPG_DISP_CENTER;
 
-        if (surf->width == imgWidth && surf->height == imgHeight)
-            initParam.outColorSpace = JPG_COLOR_SPACE_RGB565;
-        else
-            initParam.outColorSpace = JPG_COLOR_SPACE_YUV420;
+		initParam.outColorSpace = JPG_COLOR_SPACE_YUV420;
 
         initParam.width                    = width;
         initParam.height                   = height;
@@ -1126,18 +1070,15 @@ ITUSurface *ituJpegAlphaLoad(int width, int height, uint8_t *alpha, uint8_t *dat
     JPG_USER_INFO   jpgUserInfo = {0};
     JPG_ERR         result = JPG_ERR_OK;
     ITUColor        black = { 0, 0, 0, 0 };
-    uint8_t         *pY = 0;
     JPG_RECT        destRect = {0};
     CLIP_WND_INFO   clipInfo = {0};
     BASE_RECT       srcRect = {0};
     DATA_COLOR_TYPE colorType = 0;
     uint32_t        real_width = 0, real_height = 0, real_height_ForTile = 0;
     uint32_t        imgWidth = 0, imgHeight = 0;
-    uint32_t        SmallPicWidth = 800, SmallPicHeight = 480;
     uint8_t         *pStart = 0, *pCur = 0, *pEnd = 0;
     uint32_t        CurCount = 0, MarkerType = 0, GetMarkerLength = 0;
-    uint8_t         *WriteBuf     = NULL;
-    uint8_t         *mappedSysRam = NULL;
+
 
     //malloc_stats();
     if (data[0] != 0xFF || data[1] != 0xD8)
@@ -1203,6 +1144,16 @@ ITUSurface *ituJpegAlphaLoad(int width, int height, uint8_t *alpha, uint8_t *dat
         width  = (int)imgWidth;
         height = (int)imgHeight;
     }
+
+	if(width % 16)
+	{
+		width = (width/16 + 1) * 16;
+	}
+
+	if(height % 16)
+	{
+		height = (height/16 + 1) * 16;
+	}
 
     surf = ituCreateSurface(width, height, 0, ITU_ARGB8888, NULL, 0);
     if (!surf)
@@ -1274,34 +1225,15 @@ ITUSurface *ituJpegAlphaLoad(int width, int height, uint8_t *alpha, uint8_t *dat
     outStreamInfo.streamIOType = JPG_STREAM_IO_WRITE;
     outStreamInfo.streamType   = JPG_STREAM_MEM;
 
-    pY                         = malloc(real_width * real_height * 4); //forARGB8888 format.
-    //memset(pY, 0x0, real_width * real_height * 4);
-
-    // Y
     switch (initParam.outColorSpace)
     {
-    case JPG_COLOR_SPACE_ARGB4444:
-        outStreamInfo.jstream.mem[0].pAddr  = (uint8_t *)pY;        // get output buf;
-        outStreamInfo.jstream.mem[0].pitch  = jpgUserInfo.comp1Pitch * 2;
-        outStreamInfo.jstream.mem[0].length = real_width * real_height * 2;
-        break;
-
     case JPG_COLOR_SPACE_ARGB8888:
-        outStreamInfo.jstream.mem[0].pAddr  = (uint8_t *)pY;
-        outStreamInfo.jstream.mem[0].pitch  = jpgUserInfo.comp1Pitch * 4;
-        outStreamInfo.jstream.mem[0].length = real_width * real_height * 4;
+			outStreamInfo.jstream.mem[0].pAddr  = (uint8_t *)dest;            // get output buf;
+	        outStreamInfo.jstream.mem[0].pitch  = surf->pitch;
+	        outStreamInfo.jstream.mem[0].length = outStreamInfo.jstream.mem[0].pitch * surf->height; //outStreamInfo.jstream.mem[0].pitch * jpgUserInfo.jpgRect.h;
+	        outStreamInfo.validCompCnt          = 1;
         break;
     }
-
-    // U
-    outStreamInfo.jstream.mem[1].pAddr  = (uint8_t *)(outStreamInfo.jstream.mem[0].pAddr + outStreamInfo.jstream.mem[0].length);
-    outStreamInfo.jstream.mem[1].pitch  = jpgUserInfo.comp23Pitch;
-    outStreamInfo.jstream.mem[1].length = outStreamInfo.jstream.mem[1].pitch * real_height;
-    // V
-    outStreamInfo.jstream.mem[2].pAddr  = (uint8_t *)(outStreamInfo.jstream.mem[1].pAddr + outStreamInfo.jstream.mem[1].length);
-    outStreamInfo.jstream.mem[2].pitch  = jpgUserInfo.comp23Pitch;
-    outStreamInfo.jstream.mem[2].length = outStreamInfo.jstream.mem[2].pitch * real_height;
-    outStreamInfo.validCompCnt          = 3;
 
     result                              = iteJpg_SetStreamInfo(pHJpeg, 0, &outStreamInfo, 0);
     if (result != JPG_ERR_OK)
@@ -1317,27 +1249,11 @@ ITUSurface *ituJpegAlphaLoad(int width, int height, uint8_t *alpha, uint8_t *dat
         goto end;
     }
 
-    WriteBuf     = (uint8_t *)itpVmemAlloc((real_width * real_height * 3 ));
-    mappedSysRam = ithMapVram((uint32_t)WriteBuf, (real_width * real_height * 3), ITH_VRAM_WRITE);
-	if (pY)
-	{
-		memcpy(mappedSysRam, pY, (real_width * real_height * 3));
-		free(pY);
-	}
-    ithUnmapVram((void *)mappedSysRam, (real_width * real_height * 3 ));
-    ithFlushDCacheRange((void *)mappedSysRam, (real_width * real_height * 3 ));
-    ithFlushMemBuffer();
-
     result = iteJpg_Process(pHJpeg, &entropyBufInfo, 0, 0);
     if (result != JPG_ERR_OK)
     {
         printf(" jpeg err ! %s [%d]\r\n", __FILE__, __LINE__);
         goto end;
-    }
-
-    if (WriteBuf)
-    {
-        itpVmemFree((uint32_t)WriteBuf);
     }
 
     iteJpg_GetStatus(pHJpeg, &jpgUserInfo, 0);
@@ -1381,12 +1297,11 @@ ITUSurface *ituJpegAlphaLoad(int width, int height, uint8_t *alpha, uint8_t *dat
             dest);
     }
 
-    //if (pY) free(pY);
     ituUnlockSurface(surf);
     return surf;
 
 end:
-    if (pY) free(pY);
+
     iteJpg_DestroyHandle(&pHJpeg, 0);
     ituUnlockSurface(surf);
     ituDestroySurface(surf);

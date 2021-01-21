@@ -144,7 +144,7 @@ config BUILD_REDBLACK
 config BUILD_UCL
     def_bool y if (BUILD_ITU && ITU_UCL_ENABLE)
 
-config BUILD_BRIEFLZ
+config BUILD_SPEEDY
     def_bool y if (BUILD_ITU && ITU_UCL_ENABLE)
 
 config BUILD_ZLIB

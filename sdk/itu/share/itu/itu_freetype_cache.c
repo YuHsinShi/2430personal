@@ -3,7 +3,7 @@
 #include FT_CACHE_H
 #include FT_CACHE_MANAGER_H
 #include FT_BITMAP_H
-#include FT_INTERNAL_OBJECTS_H
+#include <freetype/internal/ftobjs.h>
 #include FT_OUTLINE_H
 
 #include <assert.h>
@@ -598,6 +598,8 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
 
     if ((ft.style & ITU_FT_STYLE_BOLD) && ft.bold_size > 0)
     {
+		int calBoldSize = ft.bold_size;
+		calBoldSize = (calBoldSize >= 64) ? (64) : (calBoldSize);
         for (i = 0; i < len; i++)
         {
             int     charcode;
@@ -644,12 +646,12 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
 				//FT_Outline_Embolden(&face->glyph->outline, ft.bold_size * (((face->glyph->outline.flags >= 8) && (face->glyph->outline.flags < 64)) ? (face->glyph->outline.flags * 16) : (64)));
 				//FT_Outline_Embolden(&face->glyph->outline, 1 * 64);
 				if (ft.bold_size >= 1)
-					FT_Outline_Embolden(&face->glyph->outline, ft.bold_size * 64);
+					FT_Outline_Embolden(&face->glyph->outline, calBoldSize);
 				else
 					FT_Outline_Embolden(&face->glyph->outline, 0);
 			}
             else if (face->glyph->format == FT_GLYPH_FORMAT_BITMAP)
-                FT_Bitmap_Embolden(ft.library, &face->glyph->bitmap, ft.bold_size * 64, ft.bold_size * 64);
+				FT_Bitmap_Embolden(ft.library, &face->glyph->bitmap, calBoldSize, calBoldSize);
 
             glyf = face->glyph;
             error = FT_Get_Glyph(glyf, &glyph);
@@ -659,10 +661,8 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
 			FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, NULL, true);
             bitmapGlyph = (FT_BitmapGlyph)glyph;
 
-#ifdef CFG_CPU_WB
             ithFlushDCacheRange(bitmapGlyph->bitmap.buffer, bitmapGlyph->bitmap.rows * bitmapGlyph->bitmap.pitch);
             ithFlushMemBuffer();
-#endif
 
             switch (bitmapGlyph->bitmap.pixel_mode)
             {
@@ -809,10 +809,9 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
                         source.buffer = sbit->buffer;
                         source.pixel_mode = sbit->format;
                         Bitmap_Convert_GRAY4(ft.library, &source, &ft.bitmap);
-#ifdef CFG_CPU_WB
+
                         ithFlushDCacheRange(ft.bitmap.buffer, ft.bitmap.rows * ft.bitmap.pitch);
                         ithFlushMemBuffer();
-#endif
 
 						yy = y + tfont->face->size->metrics.y_ppem - sbit->top;
                         if (yy < 0)
@@ -934,10 +933,9 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
                         	int yy;
 
                             Bitmap_Convert_GRAY4(ft.library, source, &ft.bitmap);
-#ifdef CFG_CPU_WB
+
                             ithFlushDCacheRange(ft.bitmap.buffer, ft.bitmap.rows * ft.bitmap.pitch);
                             ithFlushMemBuffer();
-#endif
 
 	                        yy = y + tfont->face->size->metrics.y_ppem - sbit->top;
                             if (yy < 0)
@@ -957,10 +955,8 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
                             ITUGlyphFormat format;
                         	int yy;
 
-#ifdef CFG_CPU_WB
                             ithFlushDCacheRange(source->buffer, source->rows * source->pitch);
                             ithFlushMemBuffer();
-#endif
 
                             switch (sbit->format)
                             {
@@ -977,7 +973,7 @@ int ituFtDrawText(ITUSurface* surf, int x, int y, const char* text)
                                 format = ITU_GLYPH_8BPP;
                                 break;
                             }
-                            yy = y + tfont->face->size->metrics.y_ppem - source->rows;
+                            yy = y + tfont->face->size->metrics.y_ppem - sbit->top;
                             if (yy < 0)
                             {
                                 ITURectangle prevClip;
@@ -1387,10 +1383,9 @@ int ituFtDrawChar(ITUSurface* surf, int x, int y, const char* text)
 
             FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, NULL, true);
             bitmapGlyph = (FT_BitmapGlyph)glyph;
-#ifdef CFG_CPU_WB
+
             ithFlushDCacheRange(bitmapGlyph->bitmap.buffer, bitmapGlyph->bitmap.rows * bitmapGlyph->bitmap.pitch);
             ithFlushMemBuffer();
-#endif
 
             switch (bitmapGlyph->bitmap.pixel_mode)
             {
@@ -1646,7 +1641,7 @@ int ituFtDrawChar(ITUSurface* surf, int x, int y, const char* text)
                                 format = ITU_GLYPH_8BPP;
                                 break;
                             }
-	                        yy = y + tfont->face->size->metrics.y_ppem - source->rows;
+	                        yy = y + tfont->face->size->metrics.y_ppem - sbit->top;
                             if (yy < 0)
                             {
                                 ITURectangle prevClip;

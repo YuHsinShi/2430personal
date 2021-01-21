@@ -334,7 +334,7 @@ void ituTextBoxDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8_t a
     ITUText* text = &textbox->text;
     char* orgstr = text->string;
     char* buf = NULL;
-    const int borderSize = 1;
+    int borderSize = text->boldSize;
     unsigned int style = ITU_FT_STYLE_DEFAULT;
     assert(textbox);
     assert(dest);
@@ -466,18 +466,19 @@ void ituTextBoxDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8_t a
 
                                         while (*pch3 != '\0')
                                         {
-                                            int size2 = ituFtGetCharWidth(pch3, &w);
+                                            int w2;
+                                            int size2 = ituFtGetCharWidth(pch3, &w2);
                                             if (size2 == 0)
                                                 break;
 
                                             if (textbox->textboxFlags & ITU_TEXTBOX_WORDWRAP)
                                             {
-                                                if (xx + w >= rect->width)
+                                                if (xx + w2 >= rect->width)
                                                 {
                                                     break;
                                                 }
                                             }
-                                            xx += w + text->letterSpacing;
+                                            xx += w2 + text->letterSpacing;
                                             pch3 += size2;
                                         }
 
@@ -607,18 +608,19 @@ void ituTextBoxDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8_t a
 
                                         while (*pch3 != '\0')
                                         {
-                                            int size2 = ituFtGetCharWidth(pch3, &w);
+                                            int w2;
+                                            int size2 = ituFtGetCharWidth(pch3, &w2);
                                             if (size2 == 0)
                                                 break;
 
                                             if (textbox->textboxFlags & ITU_TEXTBOX_WORDWRAP)
                                             {
-                                                if (xx + w >= rect->width)
+                                                if (xx + w2 >= rect->width)
                                                 {
                                                     break;
                                                 }
                                             }
-                                            xx += w + text->letterSpacing;
+                                            xx += w2 + text->letterSpacing;
                                             pch3 += size2;
                                         }
 
@@ -1123,18 +1125,19 @@ void ituTextBoxDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8_t a
 
                                     while (*pch3 != '\0')
                                     {
-                                        int size2 = ituFtGetCharWidth(pch3, &w);
+                                        int w2;
+                                        int size2 = ituFtGetCharWidth(pch3, &w2);
                                         if (size2 == 0)
                                             break;
 
                                         if (textbox->textboxFlags & ITU_TEXTBOX_WORDWRAP)
                                         {
-                                            if (xx + w >= rect->width)
+                                            if (xx + w2 >= rect->width)
                                             {
                                                 break;
                                             }
                                         }
-                                        xx += w + text->letterSpacing;
+                                        xx += w2 + text->letterSpacing;
                                         pch3 += size2;
                                     }
 
@@ -1265,18 +1268,19 @@ void ituTextBoxDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8_t a
 
                                     while (*pch3 != '\0')
                                     {
-                                        int size2 = ituFtGetCharWidth(pch3, &w);
+                                        int w2;
+                                        int size2 = ituFtGetCharWidth(pch3, &w2);
                                         if (size2 == 0)
                                             break;
 
                                         if (textbox->textboxFlags & ITU_TEXTBOX_WORDWRAP)
                                         {
-                                            if (xx + w >= rect->width)
+                                            if (xx + w2 >= rect->width)
                                             {
                                                 break;
                                             }
                                         }
-                                        xx += w + text->letterSpacing;
+                                        xx += w2 + text->letterSpacing;
                                         pch3 += size2;
                                     }
 

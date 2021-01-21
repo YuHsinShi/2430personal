@@ -266,7 +266,7 @@ bool ituButtonUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg
 
 			if (thisLayer && btn->pressed)
 			{
-				if (!ituWidgetIsVisible(thisLayer))
+				if (!thisLayer->widget.visible)
 					ituButtonSetPressed(btn, false);
 			}
 
@@ -283,13 +283,6 @@ bool ituButtonUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg
 
 				if (widget->type == ITU_BUTTON)
 				{
-					/*if (ituScene->focused && (ituScene->focused == widget) && btn->fsg1)
-					{
-						ituWidgetSetActive(ituScene->focused, false);
-						ituWidgetUpdate(ituScene->focused, ITU_EVENT_LAYOUT, ITU_ACTION_FOCUS, 0, 0);
-						ituScene->focused = NULL;
-					}
-					else*/
 					ituFocusWidget(btn);
 				}
 
@@ -312,7 +305,7 @@ bool ituButtonUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int arg
             {
                 result |= ituExecActions(widget, btn->actions, ev, arg1);
             }
-            if (btn->pressed && (ev != ITU_EVENT_MOUSELONGPRESS))
+            if (btn->pressed && (ev != ITU_EVENT_MOUSELONGPRESS) && (btn->fsg1 == 0))
             {
                 ituButtonSetPressed(btn, false);
                 result |= widget->dirty;
@@ -962,5 +955,11 @@ void ituButtonSetTextLayoutImpl(ITUButton* btn, ITULayout layout)
 //	assert(btn);
 //	ITU_ASSERT_THREAD();
 //
-//	btn->fsg1 = (ckstat) ? (1) : (0);
 //}
+
+void ituButtonSetSlideMouseUP(ITUButton* btn)
+{
+	assert(btn);
+	ITU_ASSERT_THREAD();
+	btn->fsg1 = 1;
+}

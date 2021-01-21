@@ -116,6 +116,10 @@ namespace GUIDesigner
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        new public bool Enabled { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         new public Padding Margin { get; set; }
 
         [Browsable(false)]

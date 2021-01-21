@@ -74,7 +74,7 @@ bool ituBackgroundButtonUpdate(ITUWidget* widget, ITUEvent ev, int arg1, int arg
 			bgbtn->currentY = y;
 		}
 
-        if (ituWidgetIsEnabled(widget) && ituWidgetIsVisible(widget) && !(arg1 & ITU_LAYER_IS_HIDED))
+        if (ituWidgetIsEnabled(widget) && widget->visible && !(arg1 & ITU_LAYER_IS_HIDED))
         {
             if (ituWidgetIsInside(widget, x, y))
             {

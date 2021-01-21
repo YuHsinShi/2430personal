@@ -120,7 +120,7 @@ bool ituWidgetUpdateImpl(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int
             {
                 ITUWidget *child = children[childCount];
 
-                if (ituWidgetIsVisible(child))
+                if (child->visible)
                 {
                     result |= ituWidgetUpdate(child, ev, arg1, arg2, arg3);
                     if (result)
@@ -147,7 +147,7 @@ bool ituWidgetUpdateImpl(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int
                 {
                     ITUWidget *child = children[childCount];
 
-                    if (ituWidgetIsVisible(child))
+                    if (child->visible)
                     {
                         result |= ituWidgetUpdate(child, ev, arg1, x, y);
                         if (result)
@@ -180,7 +180,7 @@ bool ituWidgetUpdateImpl(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int
             while (--childCount >= 0)
             {
                 ITUWidget *child = children[childCount];
-                if (ituWidgetIsVisible(child))
+                if (child->visible)
                 {
                     result |= ituWidgetUpdate(child, ev, arg1, x, y);
                 }
@@ -204,7 +204,7 @@ bool ituWidgetUpdateImpl(ITUWidget* widget, ITUEvent ev, int arg1, int arg2, int
             {
                 ITUWidget *child = children[childCount];
 
-                if (ituWidgetIsVisible(child))
+                if (child->visible)
                 {
                     result |= ituWidgetUpdate(child, ev, arg1, x, y);
                     if (result)
@@ -1114,6 +1114,29 @@ void ituWidgetSetVisibleImpl(ITUWidget* widget, bool visible)
         }
     }
     widget->dirty = true;
+}
+
+bool ituWidgetIsVisibleImpl(ITUWidget* widget)
+{
+    assert(widget);
+    ITU_ASSERT_THREAD();
+
+    if (!widget->visible)
+    {
+        return false;
+    }
+    else
+    {
+        ITUWidget *parent = (ITUWidget *)widget->tree.parent;
+        while (parent)
+        {
+            if (!parent->visible)
+                return false;
+
+            parent = (ITUWidget *)parent->tree.parent;
+        }
+    }
+    return true;
 }
 
 void ituWidgetSetActiveImpl(ITUWidget* widget, bool active)

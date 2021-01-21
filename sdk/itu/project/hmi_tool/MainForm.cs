@@ -146,6 +146,19 @@ namespace GUIDesigner
             mpg = new System.Threading.Mutex(false, "GuidesignerIsUnique", out checkSingle);
             //mpg.WaitOne();
 
+            //modify the description panel of PropertyGrid
+            foreach (Control control in this.designerPropertyGrid.Controls)
+            {
+                if (control.GetType().Name == "DocComment")
+                {
+                    System.Reflection.FieldInfo fieldInfo = control.GetType().BaseType.GetField("userSized",
+                      System.Reflection.BindingFlags.Instance |
+                      System.Reflection.BindingFlags.NonPublic);
+                    fieldInfo.SetValue(control, true);
+                    control.Height = control.Height + 80;
+                }
+            }
+
             if (itu_mode == 1)
             {
                 this.xmlPath = "";
@@ -508,8 +521,8 @@ namespace GUIDesigner
             ITU.jpegCompression = jpegCompressionToolStripMenuItem.Checked;
             ITU.jpegAlphaCompression = jpegAlphaCompressionToolStripMenuItem.Checked;
             ITU.bigEndian = bigEndianToolStripMenuItem.Checked;
-            ITU.briefLZCompression = briefLZCompressionToolStripMenuItem.Checked;
-            ITU.briefLZSurfaceCompression = briefLZSurfaceCompressionToolStripMenuItem.Checked;
+            ITU.speedyCompression = speedyCompressionToolStripMenuItem.Checked;
+            ITU.speedySurfaceCompression = speedySurfaceCompressionToolStripMenuItem.Checked;
             ITU.SaveItu(this.ituPath, compressionToolStripMenuItem.Checked, itu_mode);
 
             if (itu_mode == 0)
@@ -1538,7 +1551,7 @@ namespace GUIDesigner
             XmlElement xe;
             XmlNode rootnode;
             XmlNodeList rootlist;
-            XmlNode[] zom_list = new XmlNode[100];
+            XmlNode[] zom_list = new XmlNode[10000];
 
             ITU.Reset();
 
@@ -1664,8 +1677,8 @@ namespace GUIDesigner
             ITU.jpegCompression = jpegCompressionToolStripMenuItem.Checked;
             ITU.jpegAlphaCompression = jpegAlphaCompressionToolStripMenuItem.Checked;
             ITU.bigEndian = bigEndianToolStripMenuItem.Checked;
-            ITU.briefLZCompression = briefLZCompressionToolStripMenuItem.Checked;
-            ITU.briefLZSurfaceCompression = briefLZSurfaceCompressionToolStripMenuItem.Checked;
+            ITU.speedyCompression = speedyCompressionToolStripMenuItem.Checked;
+            ITU.speedySurfaceCompression = speedySurfaceCompressionToolStripMenuItem.Checked;
             ITU.SaveItu(this.ituPath, compressionToolStripMenuItem.Checked, itu_mode);
         }
 
@@ -1792,8 +1805,8 @@ namespace GUIDesigner
                 ITU.jpegCompression = jpegCompressionToolStripMenuItem.Checked;
                 ITU.jpegAlphaCompression = jpegAlphaCompressionToolStripMenuItem.Checked;
                 ITU.bigEndian = bigEndianToolStripMenuItem.Checked;
-                ITU.briefLZCompression = briefLZCompressionToolStripMenuItem.Checked;
-                ITU.briefLZSurfaceCompression = briefLZSurfaceCompressionToolStripMenuItem.Checked;
+                ITU.speedyCompression = speedyCompressionToolStripMenuItem.Checked;
+                ITU.speedySurfaceCompression = speedySurfaceCompressionToolStripMenuItem.Checked;
                 ITU.SaveItu(this.ituPath, compressionToolStripMenuItem.Checked, itu_mode);
             }
 
@@ -1803,11 +1816,6 @@ namespace GUIDesigner
             startInfo.FileName = emulatorPath;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.Arguments = "" + ITU.screenWidth + " " + ITU.screenHeight + " " + this.fontPath + " " + this.ituPath + " " + (scale50ToolStripMenuItem.Checked ? "50" : "100");
-
-            if (testDataToolStripMenuItem.Checked)
-            {
-                startInfo.Arguments += " -testdata";
-            }
 
             try
             {
@@ -2024,7 +2032,7 @@ namespace GUIDesigner
                                 bw1.Height = 480;
                                 bw1.BackColor = Color.Black;
                                 this.layerTabControl.SelectedTab = tab;
-                                NameCreationService.names.Add("Background1");
+                                //NameCreationService.names.Add("Background1");
                                 hs.ComponentContainer.Add(bw1, "Background1");
                                 layer.Controls.Add(bw1);
 
@@ -2104,9 +2112,9 @@ namespace GUIDesigner
                                 pbw1.BackgroundImage = (Image)bp;
 
                                 this.layerTabControl.SelectedTab = tab;
-                                NameCreationService.names.Add("mainBackgroundButton");
+                                //NameCreationService.names.Add("mainBackgroundButton");
                                 hs.ComponentContainer.Add(bbw1, "mainBackgroundButton");
-                                NameCreationService.names.Add("PopupButton");
+                                //NameCreationService.names.Add("PopupButton");
                                 hs.ComponentContainer.Add(pbw1, "PopupButton");
                                 bbw1.Controls.Add(pbw1);
                                 layer.Controls.Add(bbw1);
@@ -2902,8 +2910,8 @@ namespace GUIDesigner
                     ITU.jpegCompression = jpegCompressionToolStripMenuItem.Checked;
                     ITU.jpegAlphaCompression = jpegAlphaCompressionToolStripMenuItem.Checked;
                     ITU.bigEndian = bigEndianToolStripMenuItem.Checked;
-                    ITU.briefLZCompression = briefLZCompressionToolStripMenuItem.Checked;
-                    ITU.briefLZSurfaceCompression = briefLZSurfaceCompressionToolStripMenuItem.Checked;
+                    ITU.speedyCompression = speedyCompressionToolStripMenuItem.Checked;
+                    ITU.speedySurfaceCompression = speedySurfaceCompressionToolStripMenuItem.Checked;
                     ITU.SaveItu(this.ituPath, compressionToolStripMenuItem.Checked, itu_mode);
                 }
             }
@@ -3570,6 +3578,23 @@ namespace GUIDesigner
         private void hideWidgettoolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideToolStripMenuItem_Click(sender, e);
+        }
+
+        private void designerPropertyGrid_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
+        {
+            if (designerPropertyGrid.SelectedGridItem != null)
+            {
+                GridItem obj = designerPropertyGrid.SelectedGridItem;
+                if (obj.Value is Image)
+                {
+
+                    showtmnPictureBox.Image = (Image)obj.Value;
+                }
+                else
+                {
+                    showtmnPictureBox.Image = null;
+                }
+            }
         }
     }
 }

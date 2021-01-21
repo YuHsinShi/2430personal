@@ -429,16 +429,27 @@ namespace GUIDesigner
             {
                 return true; // display drop
             }
-            public override bool
-            GetStandardValuesExclusive(ITypeDescriptorContext context)
-            {
-                return true; // drop-down vs combo
-            }
+            //public override bool
+            //GetStandardValuesExclusive(ITypeDescriptorContext context)
+            //{
+            //    return true; // drop-down vs combo
+            //}
             public override StandardValuesCollection
             GetStandardValues(ITypeDescriptorContext context)
             {
                 // note you can also look at context etc to build list
                 return new StandardValuesCollection(NameCreationService.names.ToArray());
+            }
+
+            //Bless modified: to support type input value directly
+            //remove GetStandardValuesExclusive
+            //add CanConvertFrom
+            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType)
+            {
+                if (sourceType == typeof(string))
+                    return true;
+                else
+                    return base.CanConvertFrom(context, sourceType);
             }
         }
 

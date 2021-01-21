@@ -135,16 +135,36 @@ void ituProgressBarDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8
             {
                 int clipx = destx;
                 int clipy = desty;
+				//default clip rect->height
+				int cliph = rect->height;
+				int realW = width; //use realW to check real width when x-drag-outside-case
 
                 if (dest->flags & ITU_CLIPPING)
                 {
-                    if (clipx < dest->clipping.x)
-                        clipx = dest->clipping.x;
+					//this should be useless now
+                    //if (clipx < dest->clipping.x)
+                    //    clipx = dest->clipping.x;
 
                     if (clipy < dest->clipping.y)
                         clipy = dest->clipping.y;
+
+					//check current clip bottom bound is(or not) over the dest clipping bottom bound
+					//current clip bottom bound = clipy + rect->height
+					if ((clipy + rect->height) > dest->clipping.y + dest->clipping.height)
+						cliph = dest->clipping.height;
+					else
+						cliph = rect->height;
+
+					//fix realW when x-drag-outside-case outside
+					if ((clipx + rect->width) > dest->clipping.x + dest->clipping.width)
+						realW = (dest->clipping.x + dest->clipping.width) - (clipx + rect->width - width);
+
+					//width value should >= 0
+					if (realW < 0)
+						realW = 0;
                 }
-                ituSurfaceSetClipping(dest, clipx, clipy, width, rect->height);
+                //ituSurfaceSetClipping(dest, clipx, clipy, width, rect->height);
+				ituSurfaceSetClipping(dest, clipx, clipy, realW, cliph);
 
                 if (bar->barSurf)
                 {
@@ -197,16 +217,36 @@ void ituProgressBarDraw(ITUWidget* widget, ITUSurface* dest, int x, int y, uint8
             {
                 int clipx = destx;
                 int clipy = desty;
+				//default clip rect->width
+				int clipw = rect->width;
+				int realH = height; //use realH to check real height when y-drag-outside-case
 
                 if (dest->flags & ITU_CLIPPING)
                 {
                     if (clipx < dest->clipping.x)
                         clipx = dest->clipping.x;
 
-                    if (clipy < dest->clipping.y)
-                        clipy = dest->clipping.y;
+					//this should be useless now
+                    //if (clipy < dest->clipping.y)
+                    //    clipy = dest->clipping.y;
+
+					//check current clip right bound is(or not) over the dest clipping right bound
+					//current clip right bound = clipx + rect->width
+					if ((clipx + rect->width) > dest->clipping.x + dest->clipping.width)
+						clipw = dest->clipping.width;
+					else
+						clipw = rect->width;
+
+					//fix realH when y-drag-outside-case outside
+					if ((clipy + rect->height) > dest->clipping.y + dest->clipping.height)
+						realH = (dest->clipping.y + dest->clipping.height) - (clipy + rect->height - height);
+
+					//height value should >= 0
+					if (realH < 0)
+						realH = 0;
                 }
-                ituSurfaceSetClipping(dest, clipx, clipy + rect->height - height, rect->width, height);
+                //ituSurfaceSetClipping(dest, clipx, clipy + rect->height - height, rect->width, height);
+				ituSurfaceSetClipping(dest, clipx, clipy + rect->height - height, clipw, realH);
 
                 if (bar->barSurf)
                 {

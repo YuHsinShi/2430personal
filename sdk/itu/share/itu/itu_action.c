@@ -327,7 +327,7 @@ void ituExecDelayQueue(ITUActionExecution delayQueue[ITU_ACTION_QUEUE_SIZE])
         if (delayExec->delay <= 0)
             continue;
 
-        if (--delayExec->delay == 0 && ituWidgetIsVisible(delayExec->widget))
+        if (--delayExec->delay == 0 && delayExec->widget->visible)
         {
             ITUAction* action = delayExec->action;
 

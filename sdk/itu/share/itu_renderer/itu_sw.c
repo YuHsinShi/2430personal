@@ -63,16 +63,13 @@ static ITUSurface *SWCreateSurface(int w, int h, int pitch, ITUPixelFormat forma
     surf->flags  = flags;
     ituSetColor(&surf->fgColor, 255, 255, 255, 255);
 
-#ifndef _WIN32
     if (flags & ITU_STATIC)
     {
-        surf->addr = (uint32_t) bitmap;
-    }
-    else
-#endif // !_WIN32
-    {
+#ifdef _WIN32
         uint8_t      *ptr;
         unsigned int size;
+
+        assert(bitmap);
 
         if (format == ITU_RGB565A8)
             size = surf->pitch * h + w * h;
@@ -86,15 +83,42 @@ static ITUSurface *SWCreateSurface(int w, int h, int pitch, ITUPixelFormat forma
             return NULL;
         }
 
+        ptr = ithMapVram(surf->addr, size, ITH_VRAM_WRITE);
+        memcpy(ptr, bitmap, size);
+        ithUnmapVram(ptr, size);
+#else
+        surf->addr = (uint32_t) bitmap;
+#endif // _WIN32
+    }
+    else
+    {
         if (bitmap)
         {
-            ptr = ithMapVram(surf->addr, size, ITH_VRAM_WRITE);
-            memcpy(ptr, bitmap, size);
-#ifndef SPEED_UP
-            ithUnmapVram(ptr, size);
-#endif
-            if (!(flags & ITU_STATIC))
-                free((uint8_t*)bitmap);
+            surf->addr = (uint32_t)bitmap;
+        }
+        else
+        {
+            uint8_t      *ptr;
+            unsigned int size;
+
+            if (format == ITU_RGB565A8)
+                size = surf->pitch * h + w * h;
+            else
+                size = surf->pitch * h;
+
+            surf->addr = itpVmemAlloc(size);
+            if (!surf->addr)
+            {
+                LOG_ERR "Out of VRAM: %d\n", size LOG_END
+                    return NULL;
+            }
+
+            if (bitmap)
+            {
+                ptr = ithMapVram(surf->addr, size, ITH_VRAM_WRITE);
+                memcpy(ptr, bitmap, size);
+                ithUnmapVram(ptr, size);
+            }
         }
     }
 
@@ -105,10 +129,16 @@ static void SWDestroySurface(ITUSurface *surf)
 {
     if (surf)
     {
-#ifndef _WIN32
-        if (!(surf->flags & ITU_STATIC))
-#endif
-        itpVmemFree(surf->addr);
+        if (surf->flags & ITU_STATIC)
+        {
+        #ifdef _WIN32
+            itpVmemFree(surf->addr);
+        #endif
+        }
+        else
+        {
+            itpVmemFree(surf->addr);
+        }
         free(surf);
     }
 }
@@ -138,19 +168,17 @@ static uint8_t *SWLockSurface(ITUSurface *surf, int x, int y, int w, int h)
     {
         vram_addr = surf->addr + surf->pitch * y + x * 2;
     }
-#ifndef SPEED_UP
-    surf->lockAddr = ithMapVram(vram_addr, surf->lockSize, ITH_VRAM_READ | ITH_VRAM_WRITE);
+#ifdef SPEED_UP
+    surf->lockAddr = ithMapVram(vram_addr, surf->lockSize, ITH_VRAM_WRITE);
 #else
-    surf->lockAddr = ithMapVram(vram_addr, surf->lockSize, /*ITH_VRAM_READ |*/ ITH_VRAM_WRITE);
+    surf->lockAddr = ithMapVram(vram_addr, surf->lockSize, ITH_VRAM_READ | ITH_VRAM_WRITE);
 #endif
     return surf->lockAddr;
 }
 
 static void SWUnlockSurface(ITUSurface *surf)
 {
-#ifndef SPEED_UP
     ithUnmapVram(surf->lockAddr, surf->lockSize);
-#endif
 }
 
 static void SWSetRotation(ITURotation rot)
