@@ -167,6 +167,8 @@ int burnport_write_data(uint32_t ctrlLen, uint8_t* pCtrlBuf, uint32_t dataLen, u
 }
 
 
+
+
 void write_slave_register(uint32_t addr, uint32_t data)
 {
 	printf("write_slave_register addr 0x%x value=0x%x\n",addr,data);
@@ -196,49 +198,6 @@ void write_slave_register(uint32_t addr, uint32_t data)
 }
 
 
-uint32_t dummy_fake()
-{
-	uint8_t cmd[9] = { 0x0 };
-	uint8_t indata[9] = { 0x0 };
-
-
-
-	cmd[0] = 0x0E;
-	cmd[1] = 0x04;
-	cmd[2] = 0x00;
-	cmd[3] = 0x00;
-	cmd[4] = 0xd8;
-	cmd[5] = 0x04;
-	cmd[6] = 0x00;
-	cmd[7] = 0x00;
-	cmd[8] = 0x00;
-
-
-	mmpSpiPioWrite(SPI_BURNNIGN_PORT, cmd, 9, NULL, 0, 0);
-
-	
-
-return 0;
-}
-
-uint32_t dummy_fake2()
-{
-	uint8_t cmd[9] = { 0x0 };
-	uint8_t indata[9] = { 0x0 };
-
-
-
-	cmd[0] = 0x0F;
-	cmd[1] = 0xFF;
-
-
-
-	mmpSpiPioRead(SPI_BURNNIGN_PORT, cmd, 1, indata, 1, 1);
-
-	
-
-return 0;
-}
 
 uint32_t read_slave_register(uint32_t addr, uint8_t* indata)
 {
@@ -318,6 +277,33 @@ void write_slave_register_by_mask(uint32_t addr, uint32_t mask, uint8_t isSet)
 
 
 }
+//===============API for porting iTE986x platform===========================================
+
+void ithWriteRegA_target(uint32_t addr, uint32_t data)
+{
+	//ithWriteRegA(uint32_t addr, uint32_t data)
+	write_slave_register(addr,data);
+
+}
+uint32_t ithReadRegA_target(uint32_t addr)
+{
+	uint8_t data[16] = { 0x0 };
+	return read_slave_register(addr,data);
+}
+
+static void ithWriteRegMaskA_target(uint32_t addr, uint32_t data, uint32_t mask)
+{
+    ithWriteRegA_target(addr, (ithReadRegA_target(addr) & ~mask) | (data & mask));
+}
+
+void ithSetRegBitA_target(uint32_t addr, unsigned int bit)
+{
+    ithWriteRegMaskA_target(addr, 0x1 << bit, 0x1 << bit);
+}
+
+
+//===============================================================================
+
 
 int get_ite_chip_id()
 {
@@ -1100,7 +1086,7 @@ int get_key_pressed()
 
 }
 
-int get_mode()
+int get_usb_mode()
 {
 
 	#define KEY_GPIO 23

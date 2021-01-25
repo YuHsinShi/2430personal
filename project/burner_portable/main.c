@@ -5,21 +5,21 @@
 
 #define USB_MODE_MSC 0
 #define USB_MODE_ACM 1
-static int mode=USB_MODE_MSC;
+static int usbmode=USB_MODE_MSC;
 
 
-void set_mode_acm()
+void set_usbmode_acm()
 {
 	printf("###SET ACM MODE ###\n");
 
-	mode = USB_MODE_ACM;
+	usbmode = USB_MODE_ACM;
 }
 
 int is_in_acm_mode()
 {
 
 
-	if(USB_MODE_ACM == mode)
+	if(USB_MODE_ACM == usbmode)
 		return 1;
 	else	
 		return 0;
@@ -135,6 +135,24 @@ void InitUartIntr(ITHUartPort port)
     ithExitCritical();
 }
 
+//only in ACM mode
+static int log_mode_flag=0;
+void log_mode_set_on_off(int is_on)
+{
+ithPrintf("log on/off = %d \n",is_on);
+	log_mode_flag=is_on;
+}
+
+int log_mode_is_on()
+{
+if(1 == log_mode_flag)
+	return 1;
+else	
+	return 0;
+
+
+}
+
 void* target_log_capture(void* arg)
 {
 usleep(100*1000);
@@ -169,17 +187,41 @@ usleep(100*1000);
 		len = read(TEST_PORT, getstr , 128);
 		if(len>0)
 		{
+		
 		  getstr[len]=0;	  
-		  log_add_print("<\n%s",  getstr);
-		  while(len)
-		  {
-		 	 len = read(TEST_PORT, getstr , 128);
-			 		  getstr[len]=0;
-			  log_add_print("%s",  getstr);
-		  }
-		  
-		log_add_print(">\n");
-		}
+
+				if (ioctl(ITP_DEVICE_USBDACM, ITP_IOCTL_IS_CONNECTED, NULL) == 0)
+				{
+					log_add_print("<\n%s",  getstr);
+					while(len)
+					{
+						len = read(TEST_PORT, getstr , 128);
+							   getstr[len]=0;
+						log_add_print("%s",	getstr);
+					}
+					log_add_print(">\n");
+				}
+				else
+				{
+					ithPrintf("in writing \n");
+					write(ITP_DEVICE_USBDACM, getstr,len); //direct output to buffer as logs
+					while(len)
+					{
+						 len = read(TEST_PORT, getstr , 128);
+						 
+						ithPrintf("R\n");
+						if(1== log_mode_is_on() )
+							ithPrintf("W\n");{
+							write(ITP_DEVICE_USBDACM, getstr,len); //direct output to buffer as logs
+						}	
+					}
+
+				}
+
+				
+				
+
+			}
 	}
 }
 
@@ -194,6 +236,27 @@ int target_log_start()
 
 return target_log;
 }
+
+
+
+void testing()
+{
+	printf("\ntesting path\n");
+
+#define script_path "A:/ram.txt"
+
+	FILE* fp;
+	fp=fopen(script_path,"wb");
+	if(NULL == fp)
+	{
+	printf("\n open fail path\n");
+	
+	}
+		fclose(fp);
+
+
+}
+
 
 int SDL_main(int argc, char *argv[])
 {
@@ -211,15 +274,16 @@ else
 }
 
 
-usleep(5000*1000);
+//usleep(5000*1000);
 
 target_auto_detect();
 usleep(1000);
 
 burn_led_congtrol();
+//testing();
 
 //usleep(1000);
-//target_log_start();
+target_log_start();
 //usleep(1000);
 //target_script_load();
 

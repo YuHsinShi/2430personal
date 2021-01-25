@@ -43,6 +43,7 @@ portBASE_TYPE xParameter1StringLength, xParameter2StringLength;
 
     if (strlen(pcParameter1) > 3)
     {
+    	ithPrintf("prvTaskWriteFileCommand:pcParameter1,file path=%s\n",pcParameter1);
       f = fopen(pcParameter1, "wb");
     }
     else

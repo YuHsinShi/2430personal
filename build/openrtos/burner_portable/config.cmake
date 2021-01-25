@@ -1,14 +1,14 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Wed Jan 20 15:12:28 2021
+# Mon Jan 25 10:07:16 2021
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
 set(CFG_RAM_SIZE "0x4000000")
 set(CFG_RAM_INIT_SCRIPT "IT9860_360Mhz_DDR2_360Mhz.scr")
 set(CFG_TILING_WIDTH_128 0)
-# CFG_WATCHDOG_ENABLE is not set
+set(CFG_WATCHDOG_ENABLE y)
 set(CFG_DCPS_ENABLE y)
 set(CFG_NOR_ENABLE y)
 set(CFG_NOR_USE_AXISPI y)
@@ -132,6 +132,10 @@ set(CFG_CHIP_PKG_IT9866 y)
 # CFG_CHIP_PKG_IT9868 is not set
 # CFG_CHIP_PKG_888_66 is not set
 set(CFG_MMAP_SIZE "0")
+set(CFG_WATCHDOG_TIMEOUT 10)
+set(CFG_WATCHDOG_REFRESH_INTERVAL 1)
+# CFG_WATCHDOG_INTR is not set
+# CFG_WATCHDOG_IDLETASK is not set
 # CFG_EXT_WATCHDOG_ENABLE is not set
 
 #

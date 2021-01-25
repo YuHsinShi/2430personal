@@ -21,9 +21,15 @@
 #define KEYWORD_BIN_LOAD	    "bin-load"
 #define KEYWORD_BIN_BOOT	    "bin-boot"
 
+#define KEYWORD_LOGMODE_ON_OFF	    "log-mode"
+
 #define KEYWORD_TARGET_TEST	    	"target-status"
 #define KEYWORD_TARGET_GETMODE	    "target-getmode"
 #define KEYWORD_TARGET_GETID	    "target-chipid"
+#define KEYWORD_TARGET_BURNROM	    "target-burnrom"
+
+#define KEYWORD_TARGET_REBOOT	    "target-reboot"
+
 
 #define KEYWORD_GPIO_SET	    "gpio-set"
 #define KEYWORD_GPIO_CLEAR	    "gpio-clear"
@@ -33,37 +39,21 @@
 static portBASE_TYPE prvTaskRebootTargetCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 
-  int i;
-	( void ) pcCommandString;
-	configASSERT( pcWriteBuffer );
+/*
+ithPrintf("Reboot...\n");
+ithWatchDogEnable();  ==  //ithSetRegBitA(ITH_WD_BASE + ITH_WD_CR_REG, ITH_WD_EN);
+ithWatchDogSetReload(0);  //ithWriteRegA(ITH_WD_BASE + ITH_WD_LOAD_REG, 0);
+ithWatchDogRestart(); //  //ithWriteRegA(ITH_WD_BASE + ITH_WD_RESTART_REG, ITH_WD_AUTORELOAD);
 
-	( void ) xWriteBufferLen;
-
-uint8_t indata[16]={0};
-uint32_t group ;
-uint32_t value ;
-
-#define PIN_GPIO 		20
-
-group = ithGpioGet_GpioInputAddress(PIN_GPIO);//
-value=read_slave_register(group,indata);//packet3
+*/
+ithPrintf("prvTaskRebootTargetCommand...\n");
+ithSetRegBitA_target(ITH_WD_BASE + ITH_WD_CR_REG, ITH_WD_EN);
+ithWriteRegA_target(ITH_WD_BASE + ITH_WD_LOAD_REG, 0);
+ithWriteRegA_target(ITH_WD_BASE + ITH_WD_RESTART_REG, ITH_WD_AUTORELOAD);	
+snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "OK\r\n");
 
 
-for(int i=0;i<9;i++){
-printf("0x%x ",indata[i]);}
-printf("\n");
-
-
-
-
-
-if(	value & (0x1 << (PIN_GPIO & 0x1F)) ){ 	
-	printf("tartget GPIO %d is HIGH \n",PIN_GPIO );}
-else{
-	printf("tartget GPIO %d is LOW \n",PIN_GPIO );}
-
-
-	return pdFALSE;
+return pdFALSE;
 }
 
 
@@ -254,7 +244,7 @@ else
 
 static char* downloadBuffer;
 static int downloadSize;
-
+//ret = true if still have some data
 portBASE_TYPE  cli_download_process( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 	static portBASE_TYPE xReady = pdFALSE;
@@ -345,8 +335,8 @@ portBASE_TYPE  cli_download_process( char *pcWriteBuffer, size_t xWriteBufferLen
 }
 
 
-#define script_path "E:/ram.txt"
-#define bin_path "E:/boot.bin"
+#define script_path "A:/ram.txt"
+#define bin_path "A:/boot.bin"
 
 static portBASE_TYPE  prvRamScriptDownload( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
@@ -355,15 +345,25 @@ static portBASE_TYPE  prvRamScriptDownload( char *pcWriteBuffer, size_t xWriteBu
 	ret=cli_download_process(pcWriteBuffer,xWriteBufferLen, pcCommandString );
 	if(pdFALSE==ret)
 	{
+	
+		printf("\n prvRamScriptDownload path %s,%d\n",script_path,downloadSize);
 		//write file to SD card
 		FILE* fp;
 		fp=fopen(script_path,"wb");
+		if(NULL == fp)
+		{
+		printf("\n open fail path\n");
+
+		}
+		
 		if(NULL != fp && downloadSize!=0)
 		{
-			fwrite(downloadBuffer,downloadSize,1,fp);
+			fwrite(downloadBuffer,1,downloadSize,fp);
 			fclose(fp);
 			if (downloadBuffer)
 			{
+			
+			  printf("\nfree ubffer\n");
 			  free(downloadBuffer);
 			  downloadBuffer = NULL;
 			}
@@ -383,12 +383,21 @@ static portBASE_TYPE  prvBinDownload( char *pcWriteBuffer, size_t xWriteBufferLe
 	ret=cli_download_process(pcWriteBuffer,xWriteBufferLen, pcCommandString );
 	if(pdFALSE==ret)
 	{
+	 printf("\n prvBinDownload path=%s\n",bin_path);
 		//write file to SD card
 		FILE* fp;
 		fp=fopen(bin_path,"wb");
-		if(NULL != fp && downloadSize!=0)
+		if(NULL != fp){
+
+		printf("\n open file fail \n");
+
+		}	
+		 
+
+		if(downloadSize!=0)
 		{
-			fwrite(downloadBuffer,downloadSize,1,fp);
+		
+			fwrite(downloadBuffer,1,downloadSize,fp);
 			fclose(fp);
 
 		}
@@ -407,7 +416,7 @@ static portBASE_TYPE  prvBinDownload( char *pcWriteBuffer, size_t xWriteBufferLe
 
 static portBASE_TYPE  prvBinBoot( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
-	portBASE_TYPE ret;
+//	portBASE_TYPE ret;
 
 //("E:/IT9860_360Mhz_DDR2_360Mhz.txt");
 //("E:/burner_portable.bin");
@@ -415,15 +424,52 @@ static portBASE_TYPE  prvBinBoot( char *pcWriteBuffer, size_t xWriteBufferLen, c
 
 target_do_booting(script_path,bin_path);
 //change log to 
-	return ret;
+//snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "" );
+
+	return pdFALSE;
+}
+
+
+
+static portBASE_TYPE  prvLogModeOnOff( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	portBASE_TYPE ret;
+	char *pcParameter1;
+	portBASE_TYPE xParameter1StringLength;
+	
+	pcParameter1 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 1, &xParameter1StringLength );
+	
+	if(pcParameter1[0] == 'y')
+	{
+		log_mode_set_on_off(1);
+	}
+	else
+	{
+		log_mode_set_on_off(0);
+
+	}
+	snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "OK" );
+
+	return pdFALSE;
+}
+
+
+static portBASE_TYPE  prvBurnRom( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	portBASE_TYPE ret;
+	
+	snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "%s\r\n", "OK" );
+	burn_process_start();
+
+	return pdFALSE;
 }
 
 //=====================================================================================================================
 
 static const xCommandLineInput xTaskRebootTargetCommand =
 {
-	( const char * const ) "reset",
-	( const char * const ) "reset: Reboot target device\r\n",
+	( const char * const ) KEYWORD_TARGET_REBOOT,
+	( const char * const ) "target-reboot: Reboot target device\r\n",
 	prvTaskRebootTargetCommand,
 	0
 };
@@ -506,6 +552,26 @@ static const xCommandLineInput xTargeBinBoot =
 };
 
 
+
+
+static const xCommandLineInput xTargeBurnRom =
+{
+	( const char * const ) KEYWORD_TARGET_BURNROM,
+	( const char * const ) "burn rom \r\n",
+	prvBurnRom,
+	0
+};
+
+
+
+static const xCommandLineInput xTargeLogModeOnOff =
+{
+	( const char * const ) KEYWORD_LOGMODE_ON_OFF,
+	( const char * const ) "log mode on = 1 or off =0 \r\n",
+	prvLogModeOnOff,
+	1
+};
+
 //target_io_write(PIN_GPIO,1);
 
 void cliTargetSystemInit(void)
@@ -529,8 +595,11 @@ void cliTargetSystemInit(void)
 //script module
     FreeRTOS_CLIRegisterCommand( &xTargeRamScriptDownload );
     FreeRTOS_CLIRegisterCommand( &xTargeBinDownload );
-	
     FreeRTOS_CLIRegisterCommand( &xTargeBinBoot );
+//
+    FreeRTOS_CLIRegisterCommand( &xTargeBurnRom );
+	
+    FreeRTOS_CLIRegisterCommand( &xTargeLogModeOnOff );
 
 	
 }

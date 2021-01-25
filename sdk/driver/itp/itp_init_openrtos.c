@@ -163,9 +163,9 @@ void itpInit(void)
     int               swuart_baudrate;
 #if defined(CFG_USBD_ACM)   
 
-	if(get_mode())
+	if(get_usb_mode())
 	{
-		set_mode_acm();
+		set_usbmode_acm();
 	}
 #endif
     // init lcd
