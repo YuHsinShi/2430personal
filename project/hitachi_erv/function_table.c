@@ -5,6 +5,12 @@ extern bool LogoOnEnter(ITUWidget* widget, char* param);
 extern bool MainOnEnter(ITUWidget* widget, char* param);
 extern bool MainOnTimer(ITUWidget* widget, char* param);
 extern bool MainCoverFlowOnChanged(ITUWidget* widget, char* param);
+extern bool MainCModeButtonOnMouseUp(ITUWidget* widget, char* param);
+extern bool MainCAirForceButtonOnMouseUp(ITUWidget* widget, char* param);
+extern bool MainAttachButtonOnMouseUp(ITUWidget* widget, char* param);
+extern bool MainAirForceHideButtonOnMouseUp(ITUWidget* widget, char* param);
+extern bool MainCModeSelectHideButtonOnSlideDown(ITUWidget* widget, char* param);
+extern bool MainAttachHideButtonOnSlideDown(ITUWidget* widget, char* param);
 extern bool MainCModeRadBoxOnMouseUp(ITUWidget* widget, char* param);
 extern bool MainCAttachRadBoxOnMouseUp(ITUWidget* widget, char* param);
 extern bool MainAirForceTrackBarOnChanged(ITUWidget* widget, char* param);
@@ -12,7 +18,7 @@ extern bool MainTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool MainTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param);
 extern bool MainTopAutoChkBoxOnPress(ITUWidget* widget, char* param);
 extern bool MainCModeShowButtonOnPress(ITUWidget* widget, char* param);
-extern bool MainLQualityRadioBoxOnPress(ITUWidget* widget, char* param);
+extern bool MainLQualityRadioBoxOnMouseUp(ITUWidget* widget, char* param);
 extern bool MainLDWChangeBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainLQualityInPMBtnOnPress(ITUWidget* widget, char* param);
 extern bool MainLQualityTVOCBtnOnPress(ITUWidget* widget, char* param);
@@ -204,6 +210,12 @@ ITUActionFunction actionFunctions[] =
 	"MainOnEnter", MainOnEnter,
 	"MainOnTimer", MainOnTimer,
 	"MainCoverFlowOnChanged", MainCoverFlowOnChanged,
+	"MainCModeButtonOnMouseUp", MainCModeButtonOnMouseUp,
+	"MainCAirForceButtonOnMouseUp", MainCAirForceButtonOnMouseUp,
+	"MainAttachButtonOnMouseUp", MainAttachButtonOnMouseUp,
+	"MainAirForceHideButtonOnMouseUp", MainAirForceHideButtonOnMouseUp,
+	"MainCModeSelectHideButtonOnSlideDown", MainCModeSelectHideButtonOnSlideDown,
+	"MainAttachHideButtonOnSlideDown", MainAttachHideButtonOnSlideDown,
 	"MainCModeRadBoxOnMouseUp", MainCModeRadBoxOnMouseUp,
 	"MainCAttachRadBoxOnMouseUp", MainCAttachRadBoxOnMouseUp,
 	"MainAirForceTrackBarOnChanged", MainAirForceTrackBarOnChanged,
@@ -211,7 +223,7 @@ ITUActionFunction actionFunctions[] =
 	"MainTopScreenLightTrackBarOnChanged", MainTopScreenLightTrackBarOnChanged,
 	"MainTopAutoChkBoxOnPress", MainTopAutoChkBoxOnPress,
 	"MainCModeShowButtonOnPress", MainCModeShowButtonOnPress,
-	"MainLQualityRadioBoxOnPress", MainLQualityRadioBoxOnPress,
+	"MainLQualityRadioBoxOnMouseUp", MainLQualityRadioBoxOnMouseUp,
 	"MainLDWChangeBtnOnPress", MainLDWChangeBtnOnPress,
 	"MainLQualityInPMBtnOnPress", MainLQualityInPMBtnOnPress,
 	"MainLQualityTVOCBtnOnPress", MainLQualityTVOCBtnOnPress,

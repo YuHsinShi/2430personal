@@ -15,9 +15,16 @@
     #include "ncp18_sensor.h"
 #endif
 
+//ITUBlur* mainBlur = 0;
+ITUBackground* mainTopBackground = 0;
 ITUSprite* mainBackgroundSprite = 0;
+ITUSprite* mainAirForceBackgroundSprite = 0;
+ITUSprite* mainTopBackgroundSprite = 0;
+ITUSprite* mainPowerOffBackgroundSprite = 0;
+ITUSprite* mainModeShowBackgroundSprite = 0;
 ITUCoverFlow* mainCoverFlow = 0;
 ITUCheckBox* mainLStatusCheckBox[STATUS_NUM] = { 0 };
+ITUText* mainLStatusTextSprite[STATUS_NUM] = { 0 };
 //ITUIcon* mainLStatusDisableIcon[8] = { 0 };
 ITUContainer* mainCHumidityContainer = 0;
 ITUText* mainCHumidityText = 0;
@@ -40,13 +47,16 @@ ITUText* mainHumidityIndoorText = 0;
 ITUIcon* mainCStatusIcon[STATUS_NUM] = { 0 };
 ITUContainer* mainCStatusContainer = 0;
 ITUButton* mainCModeButton = 0;
+ITUIcon* mainCModeButtonIcon = 0;
 ITUButton* mainCAirForceButton = 0;
+ITUIcon* mainCAirForceButtonIcon = 0;
 ITUButton* mainCAirFlowButton = 0;
+ITUIcon* mainCAirFlowButtonIcon = 0;
 ITUIcon* mainCModeIcon[MOREMODE_NUM] = { 0 };
-ITUIcon* mainCAirForceIconSet[AIRFORCE_NUM] = { 0 };
-ITUIcon* mainCAirFlowIcon[2] = { 0 };
+ITUIcon* mainCAirForceIconSet[5] = { 0 };
+ITUIcon* mainCAirFlowIcon[5] = { 0 };
 ITUBackgroundButton* mainCFilterBackgroundButton = 0;
-ITUBackgroundButton* mainCEmergencyBackgroundButton = 0;
+//ITUBackgroundButton* mainCEmergencyBackgroundButton = 0;
 ITUBackgroundButton* mainCWarningBackgroundButton = 0;
 ITUIcon* mainModeShowIcon[MODESHOW_NUM] = { 0 };
 ITUSprite* mainModeShowIconSprite = 0;
@@ -61,6 +71,8 @@ ITUButton* mainCModeShowButton = 0;
 ITUSprite* mainModeTextSprite = 0;
 ITUSprite* mainAirForceTextSprite = 0;
 ITUSprite* mainAirFlowTextSprite = 0;
+ITUIcon* mainCPowerOffButtonIcon = 0;
+ITUIcon* mainCPowerOffIcon[5] = { 0 };
 
 
 ITUTrackBar*	mainTopIndLightTrackBar = 0;
@@ -68,21 +80,25 @@ ITUProgressBar*	mainTopIndLightProgressBar = 0;
 ITUTrackBar*	mainTopScreenLightTrackBar = 0;
 ITUProgressBar*	mainTopScreenLightProgressBar = 0;
 ITUCheckBox*	mainTopAutoCheckBox = 0;
-
-ITUTrackBar* mainAirForceTrackBar = 0;
-ITUText* mainAirForceValueText = 0;
-ITUProgressBar* mainAirForceProgressBar = 0;
-ITUCheckBox* mainAirForceAutoCheckBox = 0;
-ITUSprite* mainAirForceSprite = 0;
-ITUSprite* mainAirForceLineSprite = 0;
 ITUIcon* mainTopBarBtnIcon[2] = { 0 };
-ITUIcon* mainAirForceTrackBarIcon = 0;
+
 ITUIcon* mainBarIcon[2] = { 0 };
+
+ITUTrackBar* mainAirForceTrackBar[5] = { 0 };
+//ITUText* mainAirForceValueText = 0;
+ITUProgressBar* mainAirForceProgressBar[5] = { 0 };
+//ITUCheckBox* mainAirForceAutoCheckBox = 0;
+//ITUSprite* mainAirForceSprite = 0;
+//ITUSprite* mainAirForceLineSprite = 0;
+//ITUIcon* mainAirForceTrackBarIcon[5] = { 0 };
 ITUBackground* mainAirForceTipShowBackground = 0;
-ITUText* mainAirForceTipShowText = 0;
+//ITUText* mainAirForceTipShowText = 0;
+ITUSprite* mainAirForceValueSprite = 0;
+ITUSprite* mainAirForceBarSprite = 0;
+
 static ITUVideo* VideoBackGround;
 
-extern const int BgIndex[16] = {0,3,1,2,2,1,1,1,2,2,1,3,3,3,3,3};
+extern const int BgIndex[16] = {0,1,3,2,2,3,3,3,2,2,3,4,1,1,1,1};
 
 
 static ITUSprite* mainSprite;
@@ -93,7 +109,7 @@ static int sprite_index = 1;
 
 static int status_show[STATUS_NUM] = { 0 };
 //static int status_disable_show[STATUS_NUM] = { 0 ,1,0,0,1,0,0,0};
-extern int mode_show[MODESHOW_NUM] = { 1, 0, 0, 0, 0, 0, 0, 0 };
+extern int mode_show[MODESHOW_NUM] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 extern bool temp_big_show[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 };
 extern bool humidity_container_show[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 };
 static int statusNum = 0;
@@ -137,6 +153,9 @@ extern int curHumidityValueIndex = 62;
 static int preHumidityValueIndex = 0;
 bool is_current_humidity_hide = false;
 
+bool readyToSlideDown = false;
+bool readyToSlideUp = false;
+
 extern const int temperatureValueSet[21] = {
 	20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 
 	25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30};
@@ -166,19 +185,22 @@ void LoadVideoBackGround()
 			VideoBackGround = ituSceneFindWidget(&theScene, "VideoBackGround");
 			assert(VideoBackGround);
 	}
-	ituVideoStop(VideoBackGround);
 
-	printf("path=%s modeIndex=%d\n",VideoBackGround->filePath,modeIndex);
-		switch(modeIndex)
+#ifdef CFG_VIDEO_ENABLE
+	ituVideoStop(VideoBackGround);
+#endif // CFG_VIDEO_ENABLE
+
+	
+
+	printf("path=%s modeIndex=%d\n",VideoBackGround->filePath,BgIndex[modeIndex]);
+	switch (BgIndex[modeIndex])
 		{
 			case 0:
 			snprintf(VideoBackGround->filePath,32,"%s","B:/media/cooler.mkv");
-
 			break;
 
 			case 1:
 			snprintf(VideoBackGround->filePath,32,"%s","B:/media/dehumid.mkv");
-
 			break;
 
 			case 2:
@@ -201,10 +223,9 @@ void LoadVideoBackGround()
 			break;
 		}
 	printf("path change=%s \n",VideoBackGround->filePath);
-
+#ifdef CFG_VIDEO_ENABLE
 	ituVideoPlay(VideoBackGround,1);
-	VideoBackGround->repeat=1;
-
+#endif // CFG_VIDEO_ENABLE
 
 
 }
@@ -230,6 +251,18 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 		mainBackgroundSprite = ituSceneFindWidget(&theScene, "mainBackgroundSprite");
 		assert(mainBackgroundSprite);
+
+		mainAirForceBackgroundSprite = ituSceneFindWidget(&theScene, "mainAirForceBackgroundSprite");
+		assert(mainAirForceBackgroundSprite);
+
+		mainTopBackgroundSprite = ituSceneFindWidget(&theScene, "mainTopBackgroundSprite");
+		assert(mainTopBackgroundSprite);
+
+		mainPowerOffBackgroundSprite = ituSceneFindWidget(&theScene, "mainPowerOffBackgroundSprite");
+		assert(mainPowerOffBackgroundSprite);
+
+		mainModeShowBackgroundSprite = ituSceneFindWidget(&theScene, "mainModeShowBackgroundSprite");
+		assert(mainModeShowBackgroundSprite);
 
 		mainCHumidityContainer = ituSceneFindWidget(&theScene, "mainCHumidityContainer");
 		assert(mainCHumidityContainer);
@@ -291,8 +324,8 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainCFilterBackgroundButton = ituSceneFindWidget(&theScene, "mainCFilterBackgroundButton");
 		assert(mainCFilterBackgroundButton);
 
-		mainCEmergencyBackgroundButton = ituSceneFindWidget(&theScene, "mainCEmergencyBackgroundButton");
-		assert(mainCEmergencyBackgroundButton);
+		//mainCEmergencyBackgroundButton = ituSceneFindWidget(&theScene, "mainCEmergencyBackgroundButton");
+		//assert(mainCEmergencyBackgroundButton);
 
 		mainCWarningBackgroundButton = ituSceneFindWidget(&theScene, "mainCWarningBackgroundButton");
 		assert(mainCWarningBackgroundButton);
@@ -312,32 +345,35 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainTopAutoCheckBox = ituSceneFindWidget(&theScene, "mainTopAutoCheckBox");
 		assert(mainTopAutoCheckBox);
 
-		mainAirForceTrackBar = ituSceneFindWidget(&theScene, "mainAirForceTrackBar");
-		assert(mainAirForceTrackBar);
+		//mainAirForceTrackBar = ituSceneFindWidget(&theScene, "mainAirForceTrackBar");
+		//assert(mainAirForceTrackBar);
 
-		mainAirForceValueText = ituSceneFindWidget(&theScene, "mainAirForceValueText");
-		assert(mainAirForceValueText);
+		mainAirForceValueSprite = ituSceneFindWidget(&theScene, "mainAirForceValueSprite");
+		assert(mainAirForceValueSprite);
 
-		mainAirForceProgressBar = ituSceneFindWidget(&theScene, "mainAirForceProgressBar");
-		assert(mainAirForceProgressBar);
+		//mainAirForceProgressBar = ituSceneFindWidget(&theScene, "mainAirForceProgressBar");
+		//assert(mainAirForceProgressBar);
 
-		mainAirForceAutoCheckBox = ituSceneFindWidget(&theScene, "mainAirForceAutoCheckBox");
-		assert(mainAirForceAutoCheckBox);
+		//mainAirForceAutoCheckBox = ituSceneFindWidget(&theScene, "mainAirForceAutoCheckBox");
+		//assert(mainAirForceAutoCheckBox);
 
-		mainAirForceSprite = ituSceneFindWidget(&theScene, "mainAirForceSprite");
-		assert(mainAirForceSprite);
+		//mainAirForceSprite = ituSceneFindWidget(&theScene, "mainAirForceSprite");
+		//assert(mainAirForceSprite);
 
-		mainAirForceLineSprite = ituSceneFindWidget(&theScene, "mainAirForceLineSprite");
-		assert(mainAirForceLineSprite);
+		//mainAirForceLineSprite = ituSceneFindWidget(&theScene, "mainAirForceLineSprite");
+		//assert(mainAirForceLineSprite);
 
-		mainAirForceTrackBarIcon = ituSceneFindWidget(&theScene, "mainAirForceTrackBarIcon");
-		assert(mainAirForceTrackBarIcon);
+		//mainAirForceTrackBarIcon = ituSceneFindWidget(&theScene, "mainAirForceTrackBarIcon");
+		//assert(mainAirForceTrackBarIcon);
+
+		mainAirForceBarSprite = ituSceneFindWidget(&theScene, "mainAirForceBarSprite");
+		assert(mainAirForceBarSprite);
 
 		mainAirForceTipShowBackground = ituSceneFindWidget(&theScene, "mainAirForceTipShowBackground");
 		assert(mainAirForceTipShowBackground);
 
-		mainAirForceTipShowText = ituSceneFindWidget(&theScene, "mainAirForceTipShowText");
-		assert(mainAirForceTipShowText);
+		//mainAirForceTipShowText = ituSceneFindWidget(&theScene, "mainAirForceTipShowText");
+		//assert(mainAirForceTipShowText);
 
 		mainSprite = ituSceneFindWidget(&theScene, "mainSprite");
 		assert(mainSprite);
@@ -353,6 +389,18 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 		mainCAirFlowButton = ituSceneFindWidget(&theScene, "mainCAirFlowButton");
 		assert(mainCAirFlowButton);
+
+		mainCModeButtonIcon = ituSceneFindWidget(&theScene, "mainCModeButtonIcon");
+		assert(mainCModeButtonIcon);
+
+		mainCAirForceButtonIcon = ituSceneFindWidget(&theScene, "mainCAirForceButtonIcon");
+		assert(mainCAirForceButtonIcon);
+
+		mainCAirFlowButtonIcon = ituSceneFindWidget(&theScene, "mainCAirFlowButtonIcon");
+		assert(mainCAirFlowButtonIcon);
+
+		mainCPowerOffButtonIcon = ituSceneFindWidget(&theScene, "mainCPowerOffButtonIcon");
+		assert(mainCPowerOffButtonIcon);
 
 		//mainTopTimingCheckBox = ituSceneFindWidget(&theScene, "mainTopTimingCheckBox");
 		//assert(mainTopTimingCheckBox);
@@ -378,6 +426,11 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 		mainAirFlowTextSprite = ituSceneFindWidget(&theScene, "mainAirFlowTextSprite");
 		assert(mainAirFlowTextSprite);
 
+		//mainBlur = ituSceneFindWidget(&theScene, "mainBlur");
+		//assert(mainBlur);
+
+		mainTopBackground = ituSceneFindWidget(&theScene, "mainTopBackground");
+		assert(mainTopBackground);
 
 
 		for (i = 0; i < STATUS_NUM; i++)
@@ -385,6 +438,10 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			sprintf(tmp, "mainLStatusCheckBox%d", i);
 			mainLStatusCheckBox[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(mainLStatusCheckBox[i]);
+
+			sprintf(tmp, "mainLStatusTextSprite%d", i);
+			mainLStatusTextSprite[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainLStatusTextSprite[i]);
 
 			sprintf(tmp, "mainCStatusIcon%d", i);
 			mainCStatusIcon[i] = ituSceneFindWidget(&theScene, tmp);
@@ -396,14 +453,6 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 		}
 
-
-
-		for (i = 0; i < AIRFORCE_NUM; i++)
-		{
-			sprintf(tmp, "mainCAirForceIcon%d", i);
-			mainCAirForceIconSet[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(mainCAirForceIconSet[i]);
-		}
 
 
 		for (i = 0; i < (MOREMODE_NUM ); i++)
@@ -446,9 +495,30 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			mainBarIcon[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(mainBarIcon[i]);
 
+			
+		}
+
+		for (i = 0; i < 5; i++)
+		{
+			sprintf(tmp, "mainAirForceTrackBar%d", i);
+			mainAirForceTrackBar[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainAirForceTrackBar[i]);
+
+			sprintf(tmp, "mainAirForceProgressBar%d", i);
+			mainAirForceProgressBar[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainAirForceProgressBar[i]);
+
+			sprintf(tmp, "mainCAirForceIcon%d", i);
+			mainCAirForceIconSet[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainCAirForceIconSet[i]);
+
 			sprintf(tmp, "mainCAirFlowIcon%d", i);
 			mainCAirFlowIcon[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(mainCAirFlowIcon[i]);
+
+			sprintf(tmp, "mainCPowerOffIcon%d", i);
+			mainCPowerOffIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(mainCPowerOffIcon[i]);
 		}
 
 
@@ -461,7 +531,7 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 
 	ituWidgetSetVisible(mainCHumidityContainer, humidity_container_show[modeIndex]);
 	ituWidgetSetVisible(mainCWarningBackgroundButton, warning_btn_show);
-	ituWidgetSetVisible(mainCEmergencyBackgroundButton, emergency_btn_show);
+	//ituWidgetSetVisible(mainCEmergencyBackgroundButton, emergency_btn_show);
 	ituWidgetSetVisible(mainCFilterBackgroundButton, filter_btn_show);
 
 	//statusPosX = 0;
@@ -500,11 +570,20 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	//statusContainerLength = statusNum * 60;
 	//ituWidgetSetDimension(mainCStatusContainer, statusContainerLength, 54);
 
-	ituCheckBoxSetChecked(mainLStatusCheckBox[5], inductionSetting_checked);
+	ituCheckBoxSetChecked(mainLStatusCheckBox[11], inductionSetting_checked);
 	if (inductionSetting_checked)
-		status_show[5] = 1;
+	{
+		status_show[11] = 1;
+		ituSpriteGoto(mainLStatusTextSprite[11], 1);
+		//mainLStatusText[11]->textFlags |= ITU_TEXT_BOLD;
+		//mainLStatusText[11]->boldSize = 36;
+	}
 	else
-		status_show[5] = 0;
+	{
+		status_show[11] = 0;
+		ituSpriteGoto(mainLStatusTextSprite[11], 0);
+		//mainLStatusText[11]->textFlags &= ~ITU_TEXT_BOLD;
+	}
 
 
 	//ituCheckBoxSetChecked(mainTopTimingCheckBox, timingSet);
@@ -528,10 +607,10 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 			}
 			
 			modeshowNum++;
-			if (i != 7)
+			if (i != MODESHOW_NUM-1)
 			modeshowPosX = modeshowPosX + 46;
 			else
-				modeshowPosX = modeshowPosX + 88;
+				modeshowPosX = modeshowPosX + 76;
 		}
 		else
 		{
@@ -559,19 +638,28 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
 
 	ituSpriteGoto(mainModeTextSprite, modeIndex);
-	ituIconLinkSurface(&mainCModeButton->bg.icon, mainCModeIcon[modeIndex]);
+	ituIconLinkSurface(mainCModeButtonIcon, mainCModeIcon[modeIndex]);
+	ituIconLinkSurface(mainCAirForceButtonIcon, mainCAirForceIconSet[BgIndex[modeIndex]]);
+	ituIconLinkSurface(mainCAirFlowButtonIcon, mainCAirFlowIcon[BgIndex[modeIndex]]);
+	ituIconLinkSurface(mainCPowerOffButtonIcon, mainCPowerOffIcon[BgIndex[modeIndex]]);
+	//ituSpriteGoto(mainBackgroundSprite, BgIndex[modeIndex]);
 	ituSpriteGoto(mainBackgroundSprite, BgIndex[modeIndex]);
+	ituSpriteGoto(mainAirForceBackgroundSprite, BgIndex[modeIndex]);
+	ituSpriteGoto(mainTopBackgroundSprite, BgIndex[modeIndex]);
+	ituSpriteGoto(mainPowerOffBackgroundSprite, BgIndex[modeIndex]);
+	ituSpriteGoto(mainModeShowBackgroundSprite, BgIndex[modeIndex]);
 
-
+	ituSpriteGoto(mainAirForceBarSprite, BgIndex[modeIndex]);
 	ituWidgetSetVisible(mainAirForceTipShowBackground, false);
-	ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
+	ituWidgetGetGlobalPosition(mainAirForceTrackBar[BgIndex[modeIndex]]->tip, &x, &y);
 	ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-	sprintf(tmp, "%d", mainAirForceTrackBar->value);
-	ituTextSetString(mainAirForceTipShowText, tmp);
+	//sprintf(tmp, "%d", mainAirForceTrackBar->value);
+	//ituTextSetString(mainAirForceTipShowText, tmp);
+	ituSpriteGoto(mainAirForceValueSprite, mainAirForceTrackBar[BgIndex[modeIndex]]->value);
 	ituWidgetSetVisible(mainAirForceTipShowBackground, true);
 
 	ituSpriteGoto(mainAirFlowTextSprite, !airFlow3D);
-	ituIconLinkSurface(&mainCAirFlowButton->bg.icon, mainCAirFlowIcon[!airFlow3D]);
+	//ituIconLinkSurface(&mainCAirFlowButton->bg.icon, mainCAirFlowIcon[!airFlow3D]);
 	ituProgressBarSetValue(mainTopScreenLightProgressBar, screenLight);
 	ituTrackBarSetValue(mainTopScreenLightTrackBar, screenLight);
 	ituProgressBarSetValue(mainTopIndLightProgressBar, indLight);
@@ -720,6 +808,8 @@ bool MainOnEnter(ITUWidget* widget, char* param)
 	ituSpriteGoto(mainModeShowIconSprite, wifi_status);
 	ituSpriteGoto(mainModeShowSubIconSprite, wifi_status);
 	ituSpriteGoto(mainModeShowTextSprite, wifi_status);
+
+	//ituWidgetSetVisible(mainBlur, true);
 	return true;
 }
 bool MainOnTimer(ITUWidget* widget, char* param)
@@ -843,6 +933,26 @@ bool MainOnTimer(ITUWidget* widget, char* param)
 			ret = true;
 		}
 	}
+
+	//if (readyToSlideDown)
+	//{
+	//	ituWidgetSetY(mainBlur, ituWidgetGetY(mainTopBackground));
+	//	printf("maintopbackground %d\n", ituWidgetGetY(mainTopBackground));
+	//	if (ituWidgetGetY(mainTopBackground) == 0)
+	//		readyToSlideDown = false;
+
+	//	ret = true;
+	//}
+	//if (readyToSlideUp)
+	//{
+	//	ituWidgetSetY(mainBlur, ituWidgetGetY(mainTopBackground));
+	//	printf("maintopbackground %d\n", ituWidgetGetY(mainTopBackground));
+	//	if (ituWidgetGetY(mainTopBackground) == -720)
+	//	{
+	//		readyToSlideUp = false;
+	//	}
+	//	ret = true;
+	//}
 
 
 	return ret;
@@ -980,9 +1090,19 @@ bool MainLStatusChkBoxOnMouseUp(ITUWidget* widget, char* param)
 	int status_index = atoi(param);
 
 	if (ituCheckBoxIsChecked(mainLStatusCheckBox[status_index]))
+	{
 		status_show[status_index] = 1;
+		ituSpriteGoto(mainLStatusTextSprite[status_index], 1);
+		//mainLStatusText[status_index]->textFlags |= ITU_TEXT_BOLD;
+		//mainLStatusText[status_index]->boldSize = 20;
+	}
 	else
+	{
 		status_show[status_index] = 0;
+		ituSpriteGoto(mainLStatusTextSprite[status_index], 0);
+		//mainLStatusText[status_index]->textFlags &= ~ITU_TEXT_BOLD;
+	}
+		
 
 	return true;
 }
@@ -1042,69 +1162,70 @@ bool MainTopAutoChkBoxOnPress(ITUWidget* widget, char* param)
 bool MainAirForceTrackBarOnChanged(ITUWidget* widget, char* param)
 {
 	int x, y;
-	char tmp[32];
-	airForceIndex = mainAirForceTrackBar->value - 1;
-	ituSpriteGoto(mainAirForceSprite, airForceIndex);
+	//char tmp[32];
+	airForceIndex = mainAirForceTrackBar[BgIndex[modeIndex]]->value;// -1;
+	//ituSpriteGoto(mainAirForceSprite, airForceIndex);
 	ituSpriteGoto(mainAirForceTextSprite, airForceIndex);
 	//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
-	ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
+	//ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
 	
 
 	ituWidgetSetVisible(mainAirForceTipShowBackground, false);
-	ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
+	ituWidgetGetGlobalPosition(mainAirForceTrackBar[BgIndex[modeIndex]]->tip, &x, &y);
 	ituWidgetSetPosition(mainAirForceTipShowBackground, x , y );
-	sprintf(tmp, "%d", mainAirForceTrackBar->value);
-	ituTextSetString(mainAirForceTipShowText, tmp);
+	//sprintf(tmp, "%d", mainAirForceTrackBar->value);
+	//ituTextSetString(mainAirForceTipShowText, tmp);
+	ituSpriteGoto(mainAirForceValueSprite, mainAirForceTrackBar[BgIndex[modeIndex]]->value);
 	ituWidgetSetVisible(mainAirForceTipShowBackground, true);
 
 	return true;
 }
 
-bool MainAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param)
-{
-	int x, y;
-	char tmp[32];
-
-	if (ituCheckBoxIsChecked(mainAirForceAutoCheckBox))
-	{
-
-		ituTrackBarSetValue(mainAirForceTrackBar, 3);
-		ituProgressBarSetValue(mainAirForceProgressBar, 3);
-		ituSpriteGoto(mainAirForceSprite, 6);
-		ituSpriteGoto(mainAirForceTextSprite, 6);
-		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[6]);
-		ituSpriteGoto(mainAirForceLineSprite, 2);
-		ituWidgetDisable(mainAirForceTrackBar);
-		ituWidgetSetVisible(mainAirForceProgressBar, false);
-		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[1]);
-
-
-		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-		ituTextSetString(mainAirForceTipShowText, "A");
-
-	}
-	else
-	{
-
-		ituTrackBarSetValue(mainAirForceTrackBar, airForceIndex + 1);
-		ituProgressBarSetValue(mainAirForceProgressBar, airForceIndex + 1);
-		ituSpriteGoto(mainAirForceSprite, airForceIndex);
-		ituSpriteGoto(mainAirForceTextSprite, airForceIndex);
-		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
-		ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
-		ituWidgetEnable(mainAirForceTrackBar);
-		ituWidgetSetVisible(mainAirForceProgressBar, true);
-		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[0]);
-
-		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
-		sprintf(tmp, "%d", mainAirForceTrackBar->value);
-		ituTextSetString(mainAirForceTipShowText, tmp);
-	}
-	
-	return true;
-}
+//bool MainAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param)
+//{
+//	int x, y;
+//	char tmp[32];
+//
+//	if (ituCheckBoxIsChecked(mainAirForceAutoCheckBox))
+//	{
+//
+//		ituTrackBarSetValue(mainAirForceTrackBar, 3);
+//		ituProgressBarSetValue(mainAirForceProgressBar, 3);
+//		ituSpriteGoto(mainAirForceSprite, 6);
+//		ituSpriteGoto(mainAirForceTextSprite, 6);
+//		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[6]);
+//		ituSpriteGoto(mainAirForceLineSprite, 2);
+//		ituWidgetDisable(mainAirForceTrackBar);
+//		ituWidgetSetVisible(mainAirForceProgressBar, false);
+//		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[1]);
+//
+//
+//		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
+//		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
+//		ituTextSetString(mainAirForceTipShowText, "A");
+//
+//	}
+//	else
+//	{
+//
+//		ituTrackBarSetValue(mainAirForceTrackBar, airForceIndex + 1);
+//		ituProgressBarSetValue(mainAirForceProgressBar, airForceIndex + 1);
+//		ituSpriteGoto(mainAirForceSprite, airForceIndex);
+//		ituSpriteGoto(mainAirForceTextSprite, airForceIndex);
+//		//ituIconLinkSurface(&mainCAirForceButton->bg.icon, mainCAirForceIconSet[airForceIndex]);
+//		ituSpriteGoto(mainAirForceLineSprite, airForceIndex);
+//		ituWidgetEnable(mainAirForceTrackBar);
+//		ituWidgetSetVisible(mainAirForceProgressBar, true);
+//		ituIconLinkSurface(mainAirForceTrackBarIcon, mainBarIcon[0]);
+//
+//		ituWidgetGetGlobalPosition(mainAirForceTrackBar->tip, &x, &y);
+//		ituWidgetSetPosition(mainAirForceTipShowBackground, x, y);
+//		sprintf(tmp, "%d", mainAirForceTrackBar->value);
+//		ituTextSetString(mainAirForceTipShowText, tmp);
+//	}
+//	
+//	return true;
+//}
 
 //bool MainRAICheckBoxOnPress(ITUWidget* widget, char* param)
 //{
@@ -1154,14 +1275,26 @@ bool MainCModeShowButtonOnPress(ITUWidget* widget, char* param)
 		}
 		else
 		{
-			ituWidgetSetPosition(mainModeShowLineIcon[i], 0, 501);
+			ituWidgetSetPosition(mainModeShowLineIcon[i], 0, 80 + (MODESHOW_NUM - 1) * 60);
 			if (i == 0)
-				ituWidgetSetPosition(mainModeShowTextSprite, 0, 500);
+				ituWidgetSetPosition(mainModeShowTextSprite, 0, 80 + (MODESHOW_NUM - 1) * 60);
 			else				
-				ituWidgetSetPosition(mainModeShowText[i], 0, 500);
+				ituWidgetSetPosition(mainModeShowText[i], 0, 80 + (MODESHOW_NUM - 1) * 60);
 			
 		}
 	}
 
 	return true;
-}
+}//bool MainOnSlideDown(ITUWidget* widget, char* param)
+//{
+//	ituWidgetUpdate(mainBlur, ITU_EVENT_LAYOUT, 0, 0, 0);
+//	readyToSlideDown = true;
+//	
+//	return true;
+//}
+//
+//bool MainOnSlideUp(ITUWidget* widget, char* param)
+//{
+//	readyToSlideUp = true;
+//	return true;
+//}

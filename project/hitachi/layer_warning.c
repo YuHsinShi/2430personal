@@ -7,12 +7,20 @@
 #include "ite/itp.h"
 #include "sys/ioctl.h"
 
+ITUSprite* warningBackgroundSprite = 0;
 
 
-//bool WarningOnEnter(ITUWidget* widget, char* param)
-//{
-//	return true;
-//}
+bool WarningOnEnter(ITUWidget* widget, char* param)
+{
+	if (!warningBackgroundSprite)
+	{
+		warningBackgroundSprite = ituSceneFindWidget(&theScene, "warningBackgroundSprite");
+		assert(warningBackgroundSprite);
+	}
+
+	ituSpriteGoto(warningBackgroundSprite, BgIndex[modeIndex]);
+	return true;
+}
 
 bool WarningResetBtnOnPress(ITUWidget* widget, char* param)
 {

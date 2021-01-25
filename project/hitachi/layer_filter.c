@@ -7,12 +7,18 @@
 #include "ite/itp.h"
 #include "sys/ioctl.h"
 
+ITUSprite* filterBackgroundSprite = 0;
 
-
-//bool FilterOnEnter(ITUWidget* widget, char* param)
-//{
-//	return true;
-//}
+bool FilterOnEnter(ITUWidget* widget, char* param)
+{
+	if (!filterBackgroundSprite)
+	{
+		filterBackgroundSprite = ituSceneFindWidget(&theScene, "filterBackgroundSprite");
+		assert(filterBackgroundSprite);
+	}
+	ituSpriteGoto(filterBackgroundSprite, BgIndex[modeIndex]);
+	return true;
+}
 
 bool FilterOkBtnOnPress(ITUWidget* widget, char* param)
 {

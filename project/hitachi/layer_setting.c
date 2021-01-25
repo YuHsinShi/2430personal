@@ -7,11 +7,13 @@
 #include "ite/itp.h"
 #include "sys/ioctl.h"
 #include "wifiMgr.h"
+#include "math.h"
 
 #define STOPANYWHERE_H 496
 
 
 ITUStopAnywhere* settingStopAnywhere = 0;
+ITUContainer* settingAllContainer = 0;
 ITUCheckBox* settingWarningLightCheckBox = 0;
 
 ITUText* settingWiFiSsidNameText = 0;
@@ -32,6 +34,14 @@ ITUWheel* settingTimeDayWheel = 0;
 ITUWheel* settingTimeHrWheel = 0;
 ITUWheel* settingTimeMinWheel = 0;
 ITUText* settingTimeText = 0;
+ITUCheckBox* settingTimeAutoCheckBox = 0;
+ITUContainer* settingTimeManualContainer = 0;
+ITUContainer* settingTimeSyncContainer = 0;
+ITUText* settingTimeSyncYearText = 0;
+ITUText* settingTimeSyncMonthText = 0;
+ITUText* settingTimeSyncDayText = 0;
+ITUText* settingTimeSyncHourText = 0;
+ITUText* settingTimeSyncMinText = 0;
 
 ITUCheckBox* settingLightAutoCheckBox = 0;
 
@@ -47,9 +57,47 @@ ITUIcon* settingLightTopBarBtnIcon[2] = { 0 };
 
 ITUSprite* settingScreenLockTimeSprite = 0;
 ITURadioBox* settingScreenLockRadioBox[3] = { 0 };
+
+ITUBackground* settingExamineBackground = 0;
+ITUBackground* settingExaminePasswordBackground = 0;
+ITUSprite* settingExaminePasswordCorrectSprite = 0;
+ITUIcon* settingExaminePasswordIcon[4] = { 0 };
+ITUIcon* settingExaminePasswordEmptyIcon = 0;
+ITUIcon* settingExaminePasswordEnterIcon = 0;
+ITUIcon* settingExaminePasswordUncorrectIcon = 0;
+
 ITUCheckBox* settingKeySoundCheckBox = 0;
+
+ITUProgressBar* settingResotingProgressBar = 0;
+ITUBackground* settingRestoringBackground = 0;
+ITUBackgroundButton* settingBackBackgroundButton = 0;
+ITULayer* mainLayer = 0;
+
+ITUIcon* settingOnlineUpdateIcon = 0;
+ITUText* settingOnlineUpdateVerText = 0;
+ITUText* settingOnlineUpdateDownloadVerText = 0;
+ITUBackground* settingOnlineUpdateBackground = 0;
+ITUBackground* settingOnlineUpdateNewestBackground = 0;
+ITUBackground* settingOnlineUpdateDownloadDoneBackground = 0;
+ITUBackground* settingOnlineUpdateDownloadBackground = 0;
+ITUBackground* settingOnlineUpdatingBackground = 0;
+ITUBackground* settingOnlineUpdateDoneBackground = 0;
+
+extern bool memoryTimeAutoCheckbox = false;
 extern bool keySound = true;
 
+static int passwordCnt = 0;
+static int password = 0;
+static int restoreMode = 0;
+static bool restoring = false;
+static int restoreProgress = 0;
+uint32_t lastTick;
+
+
+static bool startUpdate = false;
+static bool startDownload = false;
+static int updateProgress = 0;
+static int downloadProgress = 0;
 //wifi
 static bool settingWiFiReturnLayer = false;
 static WIFI_MGR_SCANAP_LIST pList[64];
@@ -92,7 +140,90 @@ static int getMaxSsidCount()
 		return gnApCount;
 	}
 }
+bool restoringProgress(void)
+{
 
+
+	if (restoreProgress < 100)
+	{
+		restoreProgress++;
+		ituProgressBarSetValue(settingResotingProgressBar, restoreProgress);
+	}
+	else
+	{
+		restoring = false;
+		restoreProgress = 0;
+
+		switch (restoreMode)
+		{
+		case 1:
+			//restore all setting, clear customer's content
+			// Restore System Default
+			break;
+		case 2:
+			//restore all setting but keep customer's content
+			break;
+		}
+		restoreMode = 0;
+		ituWidgetSetVisible(settingRestoringBackground, false);
+		ituWidgetEnable(settingBackBackgroundButton);
+		ituWidgetEnable(settingStopAnywhere);
+
+	}
+
+
+
+	return true;
+}
+
+bool updatingProgress(void)
+{
+
+
+	if (updateProgress < 100)
+	{
+		updateProgress++;
+	}
+	else
+	{
+		startUpdate = false;
+		updateProgress = 0;
+		theConfig.onlineUpdateMode = 0;
+		ituWidgetSetVisible(settingOnlineUpdatingBackground, false);
+		ituWidgetSetVisible(settingOnlineUpdateDoneBackground, true);
+
+		ConfigSave();
+
+	}
+
+
+
+	return true;
+}
+bool downloadingProgress(void)
+{
+
+
+	if (downloadProgress < 100)
+	{
+		downloadProgress++;
+	}
+	else
+	{
+		startDownload = false;
+		downloadProgress = 0;
+		theConfig.onlineUpdateMode = 2;
+		ituWidgetSetVisible(settingOnlineUpdateDownloadBackground, false);
+		ituWidgetSetVisible(settingOnlineUpdateDownloadDoneBackground, true);
+
+		ConfigSave();
+
+	}
+
+
+
+	return true;
+}
 bool SettingOnEnter(ITUWidget* widget, char* param)
 {
 	struct timeval tv;
@@ -170,6 +301,9 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		settingStopAnywhere = ituSceneFindWidget(&theScene, "settingStopAnywhere");
 		assert(settingStopAnywhere);
 
+		settingAllContainer = ituSceneFindWidget(&theScene, "settingAllContainer");
+		assert(settingAllContainer);
+
 		settingTimeYearWheel = ituSceneFindWidget(&theScene, "settingTimeYearWheel");
 		assert(settingTimeYearWheel);
 
@@ -188,6 +322,30 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		settingTimeText = ituSceneFindWidget(&theScene, "settingTimeText");
 		assert(settingTimeText);
 
+		settingTimeAutoCheckBox = ituSceneFindWidget(&theScene, "settingTimeAutoCheckBox");
+		assert(settingTimeAutoCheckBox);
+
+		settingTimeManualContainer = ituSceneFindWidget(&theScene, "settingTimeManualContainer");
+		assert(settingTimeManualContainer);
+
+		settingTimeSyncContainer = ituSceneFindWidget(&theScene, "settingTimeSyncContainer");
+		assert(settingTimeSyncContainer);
+
+		settingTimeSyncYearText = ituSceneFindWidget(&theScene, "settingTimeSyncYearText");
+		assert(settingTimeSyncYearText);
+
+		settingTimeSyncMonthText = ituSceneFindWidget(&theScene, "settingTimeSyncMonthText");
+		assert(settingTimeSyncMonthText);
+
+		settingTimeSyncDayText = ituSceneFindWidget(&theScene, "settingTimeSyncDayText");
+		assert(settingTimeSyncDayText);
+
+		settingTimeSyncHourText = ituSceneFindWidget(&theScene, "settingTimeSyncHourText");
+		assert(settingTimeSyncHourText);
+
+		settingTimeSyncMinText = ituSceneFindWidget(&theScene, "settingTimeSyncMinText");
+		assert(settingTimeSyncMinText);
+		
 		settingLightAutoCheckBox = ituSceneFindWidget(&theScene, "settingLightAutoCheckBox");
 		assert(settingLightAutoCheckBox);
 
@@ -239,6 +397,33 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		settingWarningLightCheckBox = ituSceneFindWidget(&theScene, "settingWarningLightCheckBox");
 		assert(settingWarningLightCheckBox);
 		
+		settingExamineBackground = ituSceneFindWidget(&theScene, "settingExamineBackground");
+		assert(settingExamineBackground);
+
+		settingExaminePasswordBackground = ituSceneFindWidget(&theScene, "settingExaminePasswordBackground");
+		assert(settingExaminePasswordBackground);
+
+		settingExaminePasswordCorrectSprite = ituSceneFindWidget(&theScene, "settingExaminePasswordCorrectSprite");
+		assert(settingExaminePasswordCorrectSprite);
+
+		settingExaminePasswordEmptyIcon = ituSceneFindWidget(&theScene, "settingExaminePasswordEmptyIcon");
+		assert(settingExaminePasswordEmptyIcon);
+
+		settingExaminePasswordEnterIcon = ituSceneFindWidget(&theScene, "settingExaminePasswordEnterIcon");
+		assert(settingExaminePasswordEnterIcon);
+
+		settingExaminePasswordUncorrectIcon = ituSceneFindWidget(&theScene, "settingExaminePasswordUncorrectIcon");
+		assert(settingExaminePasswordUncorrectIcon);
+
+		settingResotingProgressBar = ituSceneFindWidget(&theScene, "settingResotingProgressBar");
+		assert(settingResotingProgressBar);
+
+		settingRestoringBackground = ituSceneFindWidget(&theScene, "settingRestoringBackground");
+		assert(settingRestoringBackground);
+
+		settingBackBackgroundButton = ituSceneFindWidget(&theScene, "settingBackBackgroundButton");
+		assert(settingBackBackgroundButton);
+		
 		settingKeySoundCheckBox = ituSceneFindWidget(&theScene, "settingKeySoundCheckBox");
 		assert(settingKeySoundCheckBox);
 
@@ -254,6 +439,34 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		settingLightEnableIcon = ituSceneFindWidget(&theScene, "settingLightEnableIcon");
 		assert(settingLightEnableIcon);
 		
+		settingOnlineUpdateIcon = ituSceneFindWidget(&theScene, "settingOnlineUpdateIcon");
+		assert(settingOnlineUpdateIcon);
+
+		settingOnlineUpdateVerText = ituSceneFindWidget(&theScene, "settingOnlineUpdateVerText");
+		assert(settingOnlineUpdateVerText);
+
+		settingOnlineUpdateDownloadVerText = ituSceneFindWidget(&theScene, "settingOnlineUpdateDownloadVerText");
+		assert(settingOnlineUpdateDownloadVerText);
+
+		settingOnlineUpdateBackground = ituSceneFindWidget(&theScene, "settingOnlineUpdateBackground");
+		assert(settingOnlineUpdateBackground);
+
+		settingOnlineUpdateNewestBackground = ituSceneFindWidget(&theScene, "settingOnlineUpdateNewestBackground");
+		assert(settingOnlineUpdateNewestBackground);
+
+		settingOnlineUpdateDownloadDoneBackground = ituSceneFindWidget(&theScene, "settingOnlineUpdateDownloadDoneBackground");
+		assert(settingOnlineUpdateDownloadDoneBackground);
+
+		settingOnlineUpdateDownloadBackground = ituSceneFindWidget(&theScene, "settingOnlineUpdateDownloadBackground");
+		assert(settingOnlineUpdateDownloadBackground);
+
+		settingOnlineUpdateDoneBackground = ituSceneFindWidget(&theScene, "settingOnlineUpdateDoneBackground");
+		assert(settingOnlineUpdateDoneBackground);
+
+		settingOnlineUpdatingBackground = ituSceneFindWidget(&theScene, "settingOnlineUpdatingBackground");
+		assert(settingOnlineUpdatingBackground);
+		
+
 		for (i = 0; i < 2; i++)
 		{
 			sprintf(tmp, "settingLightTopBarBtnIcon%d", i);
@@ -266,14 +479,40 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 			sprintf(tmp, "settingScreenLockRadioBox%d", i);
 			settingScreenLockRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(settingScreenLockRadioBox[i]);
+
+		}
+
+		for (i = 0; i < 4; i++)
+		{
+			sprintf(tmp, "settingExaminePasswordIcon%d", i);
+			settingExaminePasswordIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(settingExaminePasswordIcon[i]);
+
 		}
 	}
 
+	ituWidgetSetY(settingAllContainer, 0);
+
+
+	if (memoryTimeAutoCheckbox)
+	//if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+	{
+		ituCheckBoxSetChecked(settingTimeAutoCheckBox, true);
+		sprintf(tmp, "%s-%s-%s %s:%s", ituTextGetString(settingTimeSyncYearText),
+			ituTextGetString(settingTimeSyncMonthText),
+			ituTextGetString(settingTimeSyncDayText),
+			ituTextGetString(settingTimeSyncHourText),
+			ituTextGetString(settingTimeSyncMinText));
+		ituTextSetString(settingTimeText, tmp);
+	}
+	else
+	{
+		ituCheckBoxSetChecked(settingTimeAutoCheckBox, false);
 	gettimeofday(&tv, NULL);
 	tm = localtime(&tv.tv_sec);
-
 	sprintf(tmp, "%04d-%02d-%02d %02d:%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 	ituTextSetString(settingTimeText, tmp);
+	}
 
 	for (i = 0; i < 3; i++)
 	{
@@ -298,6 +537,12 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 	ituCheckBoxSetChecked(settingKeySoundCheckBox, keySound);
 	ituCheckBoxSetChecked(settingWarningLightCheckBox, indicatorLightEnable);
 	ituCheckBoxSetChecked(settingLightAutoCheckBox, lightAuto);
+
+	if (theConfig.onlineUpdateMode == 0)
+		ituWidgetSetVisible(settingOnlineUpdateIcon, false);
+	else
+		ituWidgetSetVisible(settingOnlineUpdateIcon, true);
+	
 //wifi
 	/* Auto reconnection after system reboot, check IP/MAC first time */
 	if (theConfig.wifi_on_off == WIFIMGR_SWITCH_ON) {
@@ -359,6 +604,7 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		//ituListBoxReload((ITUListBox*)settingWiFiSsidNameScrollListBox);
 		//ituListBoxReload((ITUListBox*)settingWiFiSsidStatusScrollListBox);
 		//ituListBoxReload((ITUListBox*)settingWiFiSsidSignalScrollListBox);
+
 	}
 	else //if (ituRadioBoxIsChecked(settingCloseWiFiRadioBox))
 	{
@@ -437,12 +683,65 @@ bool SettingOnEnter(ITUWidget* widget, char* param)
 		//wifiNum = 0;
 	}
 //
-
+	lastTick = SDL_GetTicks();
 	return true;
+}
+
+bool SettingOnTimer(ITUWidget* widget, char* param)
+{
+	bool ret = false;
+	uint32_t diff, tick = SDL_GetTicks();
+	static uint32_t pre_diff = 0;
+
+	if (tick >= lastTick)
+		diff = tick - lastTick;
+	else
+		diff = 0xFFFFFFFF - lastTick + tick;
+
+	if (restoring)
+	{
+		if ((diff - pre_diff) > 50) //5s*1000ms/100=50
+		{
+			ret = ret | restoringProgress();
+			pre_diff = diff;
+		}
+	}
+
+	if (startUpdate)
+	{
+		if ((diff - pre_diff) > 50) //5s*1000ms/100=50
+		{
+			ret = ret | updatingProgress();
+			pre_diff = diff;
+		}
+	}
+
+	if (startDownload)
+	{
+		if ((diff - pre_diff) > 50) //5s*1000ms/100=50
+		{
+			ret = ret | downloadingProgress();
+			pre_diff = diff;
+		}
+	}
+
+
+	return ret;
 }
 bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param)
 {
-
+	if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+	{
+		//memoryTimeAutoCheckbox = true;
+		ituWidgetSetVisible(settingTimeManualContainer, false);
+		ituWidgetSetVisible(settingTimeSyncContainer, true);
+		//sync internet time
+	}
+	else
+	{
+		//memoryTimeAutoCheckbox = false;
+		ituWidgetSetVisible(settingTimeManualContainer, true);
+		ituWidgetSetVisible(settingTimeSyncContainer, false);
 
 	struct timeval tv;
 	struct tm *tm;
@@ -455,6 +754,9 @@ bool SettingTimeBtnOnMouseUp(ITUWidget* widget, char* param)
 	ituWheelGoto(settingTimeDayWheel, tm->tm_mday-1);//1-31
 	ituWheelGoto(settingTimeHrWheel, tm->tm_hour);
 	ituWheelGoto(settingTimeMinWheel, tm->tm_min);
+	}
+
+	
 
 	settingStopAnywhere->widget.flags &= ~ITU_DRAGGABLE;
 
@@ -497,6 +799,19 @@ bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param)
 
 	if (save)
 	{
+		if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+		{
+			memoryTimeAutoCheckbox = true;
+			sprintf(tmp, "%s-%s-%s %s:%s", ituTextGetString(settingTimeSyncYearText),
+				ituTextGetString(settingTimeSyncMonthText),
+				ituTextGetString(settingTimeSyncDayText),
+				ituTextGetString(settingTimeSyncHourText),
+				ituTextGetString(settingTimeSyncMinText));
+			ituTextSetString(settingTimeText, tmp);
+		}
+		else
+		{
+			memoryTimeAutoCheckbox = false;
 		struct timeval tv;
 		struct tm *tm, mytime;
 
@@ -552,11 +867,43 @@ bool SettingTimeSaveBtnOnPress(ITUWidget* widget, char* param)
 		settimeofday(&tv, NULL);
 	}
 
+	}
+	else
+	{
+		ituCheckBoxSetChecked(settingTimeAutoCheckBox, memoryTimeAutoCheckbox);
+	}
+
 	settingStopAnywhere->widget.flags |= ITU_DRAGGABLE;
 
     return true;
 }
+bool SettingTimeAutoChkBoxOnPress(ITUWidget* widget, char* param)
+{
+	if (ituCheckBoxIsChecked(settingTimeAutoCheckBox))
+	{
+		ituWidgetSetVisible(settingTimeManualContainer, false);
+		ituWidgetSetVisible(settingTimeSyncContainer, true);
+		//sync internet time
+	}
+	else
+	{
+		ituWidgetSetVisible(settingTimeManualContainer, true);
+		ituWidgetSetVisible(settingTimeSyncContainer, false);
 
+		struct timeval tv;
+		struct tm *tm;
+
+		gettimeofday(&tv, NULL);
+		tm = localtime(&tv.tv_sec);
+
+		ituWheelGoto(settingTimeYearWheel, tm->tm_year - 120);//2020-1900
+		ituWheelGoto(settingTimeMonthWheel, tm->tm_mon);//0-11
+		ituWheelGoto(settingTimeDayWheel, tm->tm_mday - 1);//1-31
+		ituWheelGoto(settingTimeHrWheel, tm->tm_hour);
+		ituWheelGoto(settingTimeMinWheel, tm->tm_min);
+	}
+	return true;
+}
 bool SettingLightBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	ituProgressBarSetValue(settingScreenLightProgressBar, screenLight);
@@ -852,7 +1199,95 @@ bool SettingWiFiOpenCheckBoxOnPress(ITUWidget* widget, char* param)
 	ConfigSave();
 	return true;
 }
+bool SettingRestoreAllSettingBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	//restore all setting, clear customer's content
+	// Restore System Default
+	restoreMode = 1;
+	//SceneQuit(QUIT_RESET_FACTORY);
 
+	return true;
+}
+
+bool SettingRestoreSettingBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	//restore setting but keep customer's content
+	restoreMode = 2;
+	return true;
+}
+
+bool SettingRestoreEnterBtnOnPress(ITUWidget* widget, char* param)
+{
+	restoring = true;
+	return true;
+}
+bool SettingExaminePasswordBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	int input = atoi(param);
+	int i;
+
+	if (input == 10)
+	{
+		ituSpriteGoto(settingExaminePasswordCorrectSprite, 0);
+		if (passwordCnt != 0)
+		{
+
+			password = password - password % ((int)pow(10, 5 - passwordCnt));
+			passwordCnt--;
+			ituIconLinkSurface(settingExaminePasswordIcon[passwordCnt], settingExaminePasswordEmptyIcon);
+			
+		}
+
+	}
+	else
+	{
+		if (passwordCnt < 4)
+		{
+			for (i = 0; i < passwordCnt; i++)
+			{
+				ituIconLinkSurface(settingExaminePasswordIcon[i], settingExaminePasswordEnterIcon);
+			}
+
+			ituIconLinkSurface(settingExaminePasswordIcon[passwordCnt], settingExaminePasswordEnterIcon);
+			password = input*pow(10, 3 - passwordCnt) + password;
+			passwordCnt++;
+
+
+		}
+
+		if (passwordCnt == 4)
+		{
+			if (password == theConfig.examine_pw)
+			{
+				ituWidgetSetVisible(settingExamineBackground, true);
+				ituWidgetSetVisible(settingExaminePasswordBackground, false);
+			}
+			else
+			{
+				for (i = 0; i < 4; i++)
+				{
+					ituIconLinkSurface(settingExaminePasswordIcon[i], settingExaminePasswordUncorrectIcon);
+				}
+				ituSpriteGoto(settingExaminePasswordCorrectSprite, 1);
+			}
+		}
+
+		
+	}
+	return true;
+}
+
+bool SettingExamineButtonOnMouseUp(ITUWidget* widget, char* param)
+{
+	passwordCnt = 0;
+	password = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		ituIconLinkSurface(settingExaminePasswordIcon[i], settingExaminePasswordEmptyIcon);
+	}
+	ituSpriteGoto(settingExaminePasswordCorrectSprite, 0);
+	return true;
+}
 
 bool SettingKeySoundCheckBoxOnPress(ITUWidget* widget, char* param)
 {
@@ -864,6 +1299,47 @@ bool SettingKeySoundCheckBoxOnPress(ITUWidget* widget, char* param)
 	{
 		keySound = false;
 	}
+	return true;
+}
+bool SettingOnlineUpdateBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	switch (theConfig.onlineUpdateMode)
+	{
+	case 0:
+		ituWidgetSetVisible(settingOnlineUpdateNewestBackground, true);
+		break;
+	case 1:
+		ituWidgetSetVisible(settingOnlineUpdateBackground, true);
+		break;
+	case 2:
+		ituWidgetSetVisible(settingOnlineUpdateDownloadDoneBackground, true);
+		break;
+		
+	}
+	
+
+	return true;
+}
+bool SettingOnlineUpdateDownloadBtnOnPress(ITUWidget* widget, char* param)
+{
+	startDownload = true;
+	return true;
+}
+bool SettingOnlineUpdatingBtnOnPress(ITUWidget* widget, char* param)
+{
+	startUpdate = true;
+	return true;
+}
+bool SettingBackBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(0);
+
+	ituLayerGoto(layer);
+
+	startDownload = false;
+	startUpdate = false;
 	return true;
 }
 void showWiFiItem(void)

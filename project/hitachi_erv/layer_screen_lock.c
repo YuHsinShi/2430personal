@@ -210,7 +210,7 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 
 	dist = curPosX - orgPosX;
 
-	if (abs(dist)>35)
+	if (abs(dist)>72)
 	{
 		StopScreenLock();
 		ret = true;

@@ -18,7 +18,6 @@
 ITULayer* mainLayer ;
 ITUCoverFlow* mainCoverFlow ;
 ITUCoverFlow* screenLockCoverFlow = 0;
-ITUSprite* screenLockBackgroundSprite = 0;
 ITUButton* screenLockButton = 0;
 ITUContainer* screenLockHumidityBigContainer = 0;
 ITUText* screenLockHumidityValueText = 0;
@@ -30,8 +29,12 @@ ITUSprite* screenLockModeShowIconSprite = 0;
 ITUContainer* screenLockHumidityContainer = 0;
 ITUText* screenLockHumidityText = 0;
 ITUContainer* screenLockContainer[3] = { 0 };
+ITUVideo* screenLockVideoBackGround = 0;
 
+static ITUContainer* screenLockTimingTextContainer = 0;
+static ITUText* screenLockTimingText = 0;
 
+static ITULayer* powerOffLayer = 0;
 
 int orgPosX = 0;
 int curPosX = 0;
@@ -45,6 +48,12 @@ void StopScreenLock(void);
 static int preHumidityValueIndex = 0;
 static int preTempValueIndex = 0;
 
+static int TimeSec = 0;
+double lastTime;
+extern int powerOffTimeIndex = -1;
+extern int powerOffTmHr = 0;
+extern int powerOffTmMin = 0;
+
 static uint32_t gtTick = 0, gtLastTick = 0, gtRefreshTime = 3000;
 static bool gtTickFirst = true;
 
@@ -52,6 +61,59 @@ static bool gtTickFirst = true;
 static float current_tmp_float = 0;
 #endif
 
+void screenLockGotoPowerOff(void);
+
+void LoadScreenLockVideoBackGround()
+{
+	if (!screenLockVideoBackGround)
+	{
+		screenLockVideoBackGround = ituSceneFindWidget(&theScene, "screenLockVideoBackGround");
+		assert(screenLockVideoBackGround);
+	}
+
+#ifdef CFG_VIDEO_ENABLE
+	ituVideoStop(screenLockVideoBackGround);
+#endif // CFG_VIDEO_ENABLE
+
+
+
+	printf("[s]path=%s modeIndex=%d\n", screenLockVideoBackGround->filePath, BgIndex[modeIndex]);
+	switch (BgIndex[modeIndex])
+	{
+	case 0:
+		snprintf(screenLockVideoBackGround->filePath, 32, "%s", "B:/media/cooler.mkv");
+		break;
+
+	case 1:
+		snprintf(screenLockVideoBackGround->filePath, 32, "%s", "B:/media/dehumid.mkv");
+		break;
+
+	case 2:
+		snprintf(screenLockVideoBackGround->filePath, 32, "%s", "B:/media/fans.mkv");
+		break;
+
+	case 3:
+		snprintf(screenLockVideoBackGround->filePath, 32, "%s", "B:/media/heater.mkv");
+		break;
+
+	case 4:
+		snprintf(screenLockVideoBackGround->filePath, 32, "%s", "B:/media/humidify.mkv");
+		break;
+
+	default:
+
+		printf(" [s]mode error ?(%d)", modeIndex);
+		snprintf(screenLockVideoBackGround->filePath, 32, "%s", "B:/media/cooler.mkv");
+
+		break;
+	}
+	printf("path change=%s \n", screenLockVideoBackGround->filePath);
+#ifdef CFG_VIDEO_ENABLE
+	ituVideoPlay(screenLockVideoBackGround, 1);
+#endif // CFG_VIDEO_ENABLE
+
+
+}
 bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 {
 	int i;
@@ -61,9 +123,6 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 	{
 		screenLockCoverFlow = ituSceneFindWidget(&theScene, "screenLockCoverFlow");
 		assert(screenLockCoverFlow);
-
-		screenLockBackgroundSprite = ituSceneFindWidget(&theScene, "screenLockBackgroundSprite");
-		assert(screenLockBackgroundSprite);
 
 		screenLockButton = ituSceneFindWidget(&theScene, "screenLockButton");
 		assert(screenLockButton);
@@ -92,6 +151,11 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 		screenLockModeShowIconSprite = ituSceneFindWidget(&theScene, "screenLockModeShowIconSprite");
 		assert(screenLockModeShowIconSprite);
 
+		screenLockTimingTextContainer = ituSceneFindWidget(&theScene, "screenLockTimingTextContainer");
+		assert(screenLockTimingTextContainer);
+
+		screenLockTimingText = ituSceneFindWidget(&theScene, "screenLockTimingText");
+		assert(screenLockTimingText);
 
 		for (i = 0; i < MODESHOW_NUM; i++)
 		{
@@ -112,6 +176,14 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 
 
 	}
+
+	LoadScreenLockVideoBackGround();
+
+	if (powerOffTimeIndex > -1)
+		ituWidgetSetVisible(screenLockTimingTextContainer, true);
+	else
+		ituWidgetSetVisible(screenLockTimingTextContainer, false);
+
 
 	if (gtTickFirst)
 	{
@@ -193,7 +265,7 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 		ituTextSetString(screenLockHumidityValueText, tmp);
 	}
 
-	ituSpriteGoto(screenLockBackgroundSprite, BgIndex[modeIndex]);
+
 
 	orgPosX = ituWidgetGetX(screenLockContainer[1]);
 
@@ -221,10 +293,10 @@ bool ScreenLockOnEnter(ITUWidget* widget, char* param)
 			}
 
 			modeshowNum++;
-			if (i != 7)
+			if (i != MODESHOW_NUM-1)
 			modeshowPosX = modeshowPosX + 46;
 			else
-				modeshowPosX = modeshowPosX + 88;
+				modeshowPosX = modeshowPosX + 76;
 		}
 		else
 		{
@@ -250,6 +322,13 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 	bool ret = false;
 	int dist = 0;
 	char tmp[32];
+
+	struct timeval tv;
+	struct tm *tm;
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	int curSec = 59 - tm->tm_sec;
 
 	curPosX = ituWidgetGetX(screenLockContainer[1]);
 
@@ -335,6 +414,54 @@ bool ScreenLockOnTimer(ITUWidget* widget, char* param)
 		preHumidityValueIndex = curHumidityValueIndex;
 		ret = true;
 	}
+	if (powerOffTimeIndex != -1)
+	{
+		if (powerOffTmHr == tm->tm_hour && powerOffTmMin == tm->tm_min)
+		{
+			screenLockGotoPowerOff();
+		}
+
+
+		if (curSec != TimeSec)
+		{
+			TimeSec = curSec;
+
+			if (powerOffTmMin >= tm->tm_min)
+			{
+				lastTime = (double)(powerOffTmMin - tm->tm_min) / 60;
+
+				if (powerOffTmHr >= tm->tm_hour)
+				{
+					lastTime = lastTime + (powerOffTmHr - tm->tm_hour);
+				}
+				else
+				{
+					lastTime = lastTime + (powerOffTmHr + 24 - tm->tm_hour);
+				}
+			}
+			else
+			{
+				lastTime = (double)(powerOffTmMin + 60 - tm->tm_min) / 60;
+
+				if ((powerOffTmHr - 1) >= tm->tm_hour)
+				{
+					lastTime = lastTime + (powerOffTmHr - 1 - tm->tm_hour);
+				}
+				else
+				{
+					lastTime = lastTime + (powerOffTmHr + 23 - tm->tm_hour);
+				}
+
+			}
+
+
+			sprintf(tmp, "%2.1f", lastTime);
+			ituTextSetString(screenLockTimingText, tmp);
+
+			ret = true;
+		}
+
+	}
 	
 	return ret;
 }
@@ -349,6 +476,22 @@ void StopScreenLock(void)
 	}
 	ituLayerGoto(mainLayer);
 	ituCoverFlowGoto(mainCoverFlow, 1);
+	//ITULayer* layer = (ITULayer*)ituGetVarTarget(2);
+	//ituLayerGoto(layer);
 
 }
 
+void screenLockGotoPowerOff(void)
+{
+	if (!powerOffLayer)
+	{
+		powerOffLayer = ituSceneFindWidget(&theScene, "powerOffLayer");
+		assert(powerOffLayer);
+	}
+	powerOffTimeIndex = -1;
+	powerOffTmHr = 0;
+	powerOffTmMin = 0;
+
+	ituLayerGoto(powerOffLayer);
+
+}

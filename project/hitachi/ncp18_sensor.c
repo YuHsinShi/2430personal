@@ -108,7 +108,7 @@ float NCP18_Detect(void)
         }
     }
 
-    if (result_s = mmpSARConvert(0, writeBuffer_len, &calibrationOutput))
+    if (result_s = mmpSARConvert(1, writeBuffer_len, &calibrationOutput))
     {
         printf("mmpSARConvert() error (0x%x) !!\n", result_s);
         while(1) sleep(1);

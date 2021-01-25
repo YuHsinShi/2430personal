@@ -17,32 +17,24 @@
 
 ITULayer* mainLayer;
 ITUCoverFlow* mainCoverFlow;
-ITUCoverFlow* powerOffPwrOnCoverFlow = 0;
-ITUContainer* powerOffPwrOnContainer[3] = { 0 };
-ITUButton* powerOffPwrOnButton = 0;
+//ITUCoverFlow* powerOffPwrOnCoverFlow = 0;
+//ITUContainer* powerOffPwrOnContainer[3] = { 0 };
+//ITUButton* powerOffPwrOnButton = 0;
 ITUText* powerOffHumidityText = 0;
 ITUContainer* powerOffTempBigContainer = 0;
 ITUText* powerOffTempValueText = 0;
 ITUText* powerOffTempPointText = 0;
-ITUWheel* powerOffTimingHrWheel = 0;
-ITUWheel* powerOffTimingMinWheel = 0;
 ITUText* powerOffTimingText = 0;
 ITUSprite* powerOffTimingSprite = 0;
-ITUSprite* powerOffModeTextSprite = 0;
-ITUWheel* powerOffTempWheel = 0;
-ITUText* powerOffTempText = 0;
-ITUTrackBar* powerOffAirForceTrackBar = 0;
-ITUProgressBar* powerOffAirForceProgressBar = 0;
-ITUSprite* powerOffAirForceTextSprite = 0;
-ITUSprite* powerOffAirForceSprite = 0;
-ITUSprite* powerOffAirForceLineSprite = 0;
-ITUCheckBox* powerOffAirForceAutoCheckBox = 0;
-ITUTrackBar* powerOffPreHumidityTrackBar = 0;
-ITUText* powerOffPreHumidityText = 0;
-ITUIcon* powerOffAirForceTrackBarIcon = 0;
-ITUIcon* powerOffBarIcon[2] = { 0 };
-ITUBackground* powerOffAirForceTipShowBackground = 0;
-ITUText* powerOffAirForceTipShowText = 0;
+ITUTrackBar* powerOffTopIndLightTrackBar = 0;
+ITUProgressBar* powerOffTopIndLightProgressBar = 0;
+ITUTrackBar* powerOffTopScreenLightTrackBar = 0;
+ITUProgressBar* powerOffTopScreenLightProgressBar = 0;
+ITUIcon* powerOffTopBarBtnIcon[2] = { 0 };
+ITUCheckBox* powerOffTopAutoCheckBox = 0;
+ITUBackground* powerOffDisinfectStartBackground = 0;
+ITUBackground* powerOffBackground = 0;
+ITUBackground* powerOffCleanStartBackground = 0;
 
 int orgContainerPosX = 0;
 int curContainerPosX = 0;
@@ -50,9 +42,16 @@ int curContainerPosX = 0;
 static int TimeHr = 0;
 static int TimeMin = 0;
 static int TimeSec = 0;
+extern int powerOnTimeIndex = -1;
+double lastTime;
+extern int powerOnTmHr = 0;
+extern int powerOnTmMin = 0;
 
-static int airForceIndex = 0;
-static int preHumidityIndex = 50;
+static bool startDisinfect = false;
+static int disinfectProgressCnt = 0;
+
+static bool startClean = false;
+static int cleanProgressCnt = 0;
 
 void StopPowerOff(void);
 
@@ -65,18 +64,61 @@ static bool gtTickFirst = true;
 #if defined(CFG_SHT20_ENABLE) || defined(CFG_NCP18_ENABLE)
 static float current_tmp_float = 0;
 #endif
+bool disinfectProgress(void)
+{
 
+
+	if (disinfectProgressCnt < 100)
+	{
+		disinfectProgressCnt++;
+		printf("disinfectProgressCnt = %d\n", disinfectProgressCnt);
+	}
+	else
+	{
+		startDisinfect = false;
+		disinfectProgressCnt = 0;
+		ituWidgetSetVisible(powerOffDisinfectStartBackground, false);
+		ituWidgetEnable(powerOffBackground);
+	}
+
+
+
+	return true;
+}
+
+bool cleanProgress(void)
+{
+
+
+	if (cleanProgressCnt < 100)
+	{
+		cleanProgressCnt++;
+		printf("cleanProgressCnt = %d\n", cleanProgressCnt);
+	}
+	else
+	{
+		startClean = false;
+		cleanProgressCnt = 0;
+		ituWidgetSetVisible(powerOffCleanStartBackground, false);
+		ituWidgetEnable(powerOffBackground);
+	}
+
+
+
+	return true;
+}
 bool PowerOffOnEnter(ITUWidget* widget, char* param)
 {
-	int i,x,y;
+	int i;
+	//int x, y;
 	char tmp[32];
-	if (!powerOffPwrOnCoverFlow)
+	if (!powerOffTempBigContainer)
 	{
-		powerOffPwrOnCoverFlow = ituSceneFindWidget(&theScene, "powerOffPwrOnCoverFlow");
-		assert(powerOffPwrOnCoverFlow);
+		//powerOffPwrOnCoverFlow = ituSceneFindWidget(&theScene, "powerOffPwrOnCoverFlow");
+		//assert(powerOffPwrOnCoverFlow);
 
-		powerOffPwrOnButton = ituSceneFindWidget(&theScene, "powerOffPwrOnButton");
-		assert(powerOffPwrOnButton);
+		//powerOffPwrOnButton = ituSceneFindWidget(&theScene, "powerOffPwrOnButton");
+		//assert(powerOffPwrOnButton);
 
 		powerOffHumidityText = ituSceneFindWidget(&theScene, "powerOffHumidityText");
 		assert(powerOffHumidityText);
@@ -90,86 +132,62 @@ bool PowerOffOnEnter(ITUWidget* widget, char* param)
 		powerOffTempPointText = ituSceneFindWidget(&theScene, "powerOffTempPointText");
 		assert(powerOffTempPointText);
 
-		powerOffTimingHrWheel = ituSceneFindWidget(&theScene, "powerOffTimingHrWheel");
-		assert(powerOffTimingHrWheel);
-
-		powerOffTimingMinWheel = ituSceneFindWidget(&theScene, "powerOffTimingMinWheel");
-		assert(powerOffTimingMinWheel);
-
 		powerOffTimingText = ituSceneFindWidget(&theScene, "powerOffTimingText");
 		assert(powerOffTimingText);
 
 		powerOffTimingSprite = ituSceneFindWidget(&theScene, "powerOffTimingSprite");
 		assert(powerOffTimingSprite);
 
-		powerOffModeTextSprite = ituSceneFindWidget(&theScene, "powerOffModeTextSprite");
-		assert(powerOffModeTextSprite);
+		powerOffTopIndLightTrackBar = ituSceneFindWidget(&theScene, "powerOffTopIndLightTrackBar");
+		assert(powerOffTopIndLightTrackBar);
 
-		powerOffTempWheel = ituSceneFindWidget(&theScene, "powerOffTempWheel");
-		assert(powerOffTempWheel);
+		powerOffTopIndLightProgressBar = ituSceneFindWidget(&theScene, "powerOffTopIndLightProgressBar");
+		assert(powerOffTopIndLightProgressBar);
 
-		powerOffTempText = ituSceneFindWidget(&theScene, "powerOffTempText");
-		assert(powerOffTempText);
+		powerOffTopScreenLightTrackBar = ituSceneFindWidget(&theScene, "powerOffTopScreenLightTrackBar");
+		assert(powerOffTopScreenLightTrackBar);
 
-		powerOffAirForceTrackBar = ituSceneFindWidget(&theScene, "powerOffAirForceTrackBar");
-		assert(powerOffAirForceTrackBar);
+		powerOffTopScreenLightProgressBar = ituSceneFindWidget(&theScene, "powerOffTopScreenLightProgressBar");
+		assert(powerOffTopScreenLightProgressBar);
 
-		powerOffAirForceProgressBar = ituSceneFindWidget(&theScene, "powerOffAirForceProgressBar");
-		assert(powerOffAirForceProgressBar);
+		powerOffTopAutoCheckBox = ituSceneFindWidget(&theScene, "powerOffTopAutoCheckBox");
+		assert(powerOffTopAutoCheckBox);
 
-		powerOffAirForceTextSprite = ituSceneFindWidget(&theScene, "powerOffAirForceTextSprite");
-		assert(powerOffAirForceTextSprite);
+		powerOffDisinfectStartBackground = ituSceneFindWidget(&theScene, "powerOffDisinfectStartBackground");
+		assert(powerOffDisinfectStartBackground);
 
-		powerOffAirForceSprite = ituSceneFindWidget(&theScene, "powerOffAirForceSprite");
-		assert(powerOffAirForceSprite);
+		powerOffBackground = ituSceneFindWidget(&theScene, "powerOffBackground");
+		assert(powerOffBackground);
 
-		powerOffAirForceLineSprite = ituSceneFindWidget(&theScene, "powerOffAirForceLineSprite");
-		assert(powerOffAirForceLineSprite);
+		powerOffCleanStartBackground = ituSceneFindWidget(&theScene, "powerOffCleanStartBackground");
+		assert(powerOffCleanStartBackground);
 
-		powerOffAirForceAutoCheckBox = ituSceneFindWidget(&theScene, "powerOffAirForceAutoCheckBox");
-		assert(powerOffAirForceAutoCheckBox);
 
-		powerOffAirForceTipShowBackground = ituSceneFindWidget(&theScene, "powerOffAirForceTipShowBackground");
-		assert(powerOffAirForceTipShowBackground);
-
-		powerOffAirForceTipShowText = ituSceneFindWidget(&theScene, "powerOffAirForceTipShowText");
-		assert(powerOffAirForceTipShowText);
-
-		powerOffPreHumidityTrackBar = ituSceneFindWidget(&theScene, "powerOffPreHumidityTrackBar");
-		assert(powerOffPreHumidityTrackBar);
-
-		powerOffPreHumidityText = ituSceneFindWidget(&theScene, "powerOffPreHumidityText");
-		assert(powerOffPreHumidityText);
-
-		powerOffAirForceTrackBarIcon = ituSceneFindWidget(&theScene, "powerOffAirForceTrackBarIcon");
-		assert(powerOffAirForceTrackBarIcon);
-
-		for (i = 0; i < 3; i++)
-		{
-			sprintf(tmp, "powerOffPwrOnContainer%d", i);
-			powerOffPwrOnContainer[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(powerOffPwrOnContainer[i]);
-		}
+		//for (i = 0; i < 3; i++)
+		//{
+		//	sprintf(tmp, "powerOffPwrOnContainer%d", i);
+		//	powerOffPwrOnContainer[i] = ituSceneFindWidget(&theScene, tmp);
+		//	assert(powerOffPwrOnContainer[i]);
+		//}
 
 		for (i = 0; i < 2; i++)
 		{
-			sprintf(tmp, "powerOffBarIcon%d", i);
-			powerOffBarIcon[i] = ituSceneFindWidget(&theScene, tmp);
-			assert(powerOffBarIcon[i]);
+			sprintf(tmp, "powerOffTopBarBtnIcon%d", i);
+			powerOffTopBarBtnIcon[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(powerOffTopBarBtnIcon[i]);
+
 		}
+
 	}
 
-	orgContainerPosX = ituWidgetGetX(powerOffPwrOnContainer[1]);
-	ituCoverFlowGoto(powerOffPwrOnCoverFlow, 1);
-	ituSpriteGoto(powerOffTimingSprite, 0);
-	ituSpriteGoto(powerOffModeTextSprite, 0);
+	//orgContainerPosX = ituWidgetGetX(powerOffPwrOnContainer[1]);
+	//ituCoverFlowGoto(powerOffPwrOnCoverFlow, 1);
+	//ituSpriteGoto(powerOffTimingSprite, 0);
+	//ituSpriteGoto(powerOffModeTextSprite, 0);
 
-	ituWidgetSetVisible(powerOffAirForceTipShowBackground, false);
-	ituWidgetGetGlobalPosition(powerOffAirForceTrackBar->tip, &x, &y);
-	ituWidgetSetPosition(powerOffAirForceTipShowBackground, x, y);
-	sprintf(tmp, "%d", powerOffAirForceTrackBar->value);
-	ituTextSetString(powerOffAirForceTipShowText, tmp);
-	ituWidgetSetVisible(powerOffAirForceTipShowBackground, true);
+	powerOffTimeIndex = -1;
+	powerOffTmHr = 0;
+	powerOffTmMin = 0;
 
 	if (gtTickFirst)
 	{
@@ -232,6 +250,60 @@ bool PowerOffOnEnter(ITUWidget* widget, char* param)
 	else
 		ituWidgetSetVisible(powerOffTempPointText, false);
 
+	if (powerOnTimeIndex > -1)
+	{
+		ituSpriteGoto(powerOffTimingSprite, 1);
+
+	}
+	else
+		ituSpriteGoto(powerOffTimingSprite, 0);
+
+	
+	ituProgressBarSetValue(powerOffTopScreenLightProgressBar, screenLight);
+	ituTrackBarSetValue(powerOffTopScreenLightTrackBar, screenLight);
+	ituProgressBarSetValue(powerOffTopIndLightProgressBar, indLight);
+	ituTrackBarSetValue(powerOffTopIndLightTrackBar, indLight);
+
+	if (!indicatorLightEnable)
+	{
+		ituIconLinkSurface(&powerOffTopIndLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[0]);
+
+		ituWidgetDisable(powerOffTopIndLightTrackBar);
+		ituWidgetSetVisible(powerOffTopIndLightProgressBar, false);
+	}
+
+	if (lightAuto)
+	{
+		ituCheckBoxSetChecked(powerOffTopAutoCheckBox, true);
+		ituIconLinkSurface(&powerOffTopScreenLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[0]);
+
+
+		ituWidgetDisable(powerOffTopScreenLightTrackBar);
+		ituWidgetSetVisible(powerOffTopScreenLightProgressBar, false);
+
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&powerOffTopIndLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[0]);
+			ituWidgetDisable(powerOffTopIndLightTrackBar);
+			ituWidgetSetVisible(powerOffTopIndLightProgressBar, false);
+		}
+	}
+	else
+	{
+		ituCheckBoxSetChecked(powerOffTopAutoCheckBox, false);
+		ituIconLinkSurface(&powerOffTopScreenLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[1]);
+		ituWidgetEnable(powerOffTopScreenLightTrackBar);
+		ituWidgetSetVisible(powerOffTopScreenLightProgressBar, true);
+
+		if (indicatorLightEnable)
+		{
+			ituIconLinkSurface(&powerOffTopIndLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[1]);
+			ituWidgetEnable(powerOffTopIndLightTrackBar);
+			ituWidgetSetVisible(powerOffTopIndLightProgressBar, true);
+		}
+	}
+
 	
 
     return true;
@@ -242,6 +314,8 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 	bool ret = false;
 	int dist = 0;
 	char tmp[32];
+	static int disinfectCnt = 0;
+	static int cleanCnt = 0;
 
 	struct timeval tv;
 	struct tm *tm;
@@ -250,16 +324,16 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 
 	int curSec = 59 - tm->tm_sec;
 
-	curContainerPosX = ituWidgetGetX(powerOffPwrOnContainer[1]);
+	//curContainerPosX = ituWidgetGetX(powerOffPwrOnContainer[1]);
 
 
-	dist = curContainerPosX - orgContainerPosX;
+	//dist = curContainerPosX - orgContainerPosX;
 
-	if (abs(dist) > 80)
-	{
-		StopPowerOff();
-		ret = true;
-	}
+	//if (abs(dist) > 80)
+	//{
+	//	StopPowerOff();
+	//	ret = true;
+	//}
 
 	if (gtTickFirst)
 	{
@@ -273,6 +347,26 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 
 	if (gtTick - gtLastTick >= gtRefreshTime)
 	{
+		if (startDisinfect)
+		{
+			disinfectCnt++;
+			if (disinfectCnt > 5)
+			{
+				disinfectCnt = 0;
+				ret = ret | disinfectProgress();
+			}
+		}	
+
+		if (startClean)
+		{
+			cleanCnt++;
+			if (cleanCnt > 5)
+			{
+				cleanCnt = 0;
+				ret = ret | cleanProgress();
+			}
+		}
+	
 #ifdef CFG_SHT20_ENABLE
 		current_tmp_float = SHT20_Detect();
 		if (current_tmp_float > 0)
@@ -325,9 +419,11 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 	}
 
 	if (powerOffTimingSprite->frame == 1)
+	//if (powerOnTimeIndex != -1)
 	{
-		if (TimeHr == 0 && TimeMin == 0 && TimeSec == 0)
+		if (powerOnTmHr == tm->tm_hour && powerOnTmMin == tm->tm_min)
 		{
+			ituSpriteGoto(powerOffTimingSprite, 0);
 			StopPowerOff();
 
 		}
@@ -336,52 +432,36 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 		{
 			TimeSec = curSec;
 
-			TimeHr = powerOffTimingHrWheel->focusIndex;
-			TimeMin = powerOffTimingMinWheel->focusIndex;
-
-			if (TimeMin == 0)
+			if (powerOnTmMin >= tm->tm_min)
 			{
-				TimeMin = 59;
-				TimeHr--;
-			}
-			else
-			{
-				TimeMin--;
-			}
+				lastTime = (double)(powerOnTmMin - tm->tm_min) / 60;
 
-			
-
-			if (TimeMin >= tm->tm_min)
-			{
-				TimeMin = TimeMin - tm->tm_min;
-
-				if (TimeHr >= tm->tm_hour)
+				if (powerOnTmHr >= tm->tm_hour)
 				{
-					TimeHr = TimeHr - tm->tm_hour;
+					lastTime = lastTime + (powerOnTmHr - tm->tm_hour);
 				}
 				else
 				{
-					TimeHr = TimeHr + 24 - tm->tm_hour;
+					lastTime = lastTime + (powerOnTmHr + 24 - tm->tm_hour);
 				}
 			}
 			else
 			{
-				TimeMin = TimeMin + 60 - tm->tm_min;
-				TimeHr--;
+				lastTime = (double)(powerOnTmMin + 60 - tm->tm_min) / 60;
 
-				if (TimeHr >= tm->tm_hour)
+				if ((powerOnTmHr - 1) >= tm->tm_hour)
 				{
-					TimeHr = TimeHr - tm->tm_hour;
+					lastTime = lastTime + (powerOnTmHr - 1 - tm->tm_hour);
 				}
 				else
 				{
-					TimeHr = TimeHr + 24 - tm->tm_hour;
+					lastTime = lastTime + (powerOnTmHr + 23 - tm->tm_hour);
 				}
 
 			}
 
 
-			sprintf(tmp, "%02d:%02d:%02d", TimeHr, TimeMin, TimeSec);
+			sprintf(tmp, "%2.1f", lastTime);
 			ituTextSetString(powerOffTimingText, tmp);
 
 			ret = true;
@@ -391,160 +471,96 @@ bool PowerOffOnTimer(ITUWidget* widget, char* param)
 
 
 
+
+
 	return ret;
 }
 
-bool PowerOffTimingSaveBtnOnPress(ITUWidget* widget, char* param)
+bool PowerOffTopIndLightTrackBarOnChanged(ITUWidget* widget, char* param)
 {
-	char tmp[32];
-	struct timeval tv;
-	struct tm *tm;
+	indLight = powerOffTopIndLightTrackBar->value;
+	return true;
+}
 
-	gettimeofday(&tv, NULL);
-	tm = localtime(&tv.tv_sec);
+bool PowerOffTopScreenLightTrackBarOnChanged(ITUWidget* widget, char* param)
+{
+	screenLight = powerOffTopScreenLightTrackBar->value;
+	printf("powerOffTopScreenLightTrackBar %d \n", powerOffTopScreenLightTrackBar->value);
+	ScreenSetBrightness(powerOffTopScreenLightTrackBar->value);
 
-	TimeHr = powerOffTimingHrWheel->focusIndex;
-	TimeMin = powerOffTimingMinWheel->focusIndex;
+	return true;
+}
 	
-	if (TimeMin == 0)
+bool PowerOffTopAutoChkBoxOnPress(ITUWidget* widget, char* param)
 	{
-		TimeMin = 59;
-		TimeHr--;
-	}
-	else
+	if (ituCheckBoxIsChecked(powerOffTopAutoCheckBox))
 	{
-		TimeMin--;
-	}
+		lightAuto = true;
+		ituIconLinkSurface(&powerOffTopScreenLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[0]);
 
-	TimeSec = 59 - tm->tm_sec;
 
-	if (TimeMin >= tm->tm_min)
-	{
-		TimeMin = TimeMin - tm->tm_min;
+		ituWidgetDisable(powerOffTopScreenLightTrackBar);
+		ituWidgetSetVisible(powerOffTopScreenLightProgressBar, false);
 
-		if (TimeHr >= tm->tm_hour)
+
+		if (indicatorLightEnable)
 		{
-			TimeHr = TimeHr - tm->tm_hour;
-		}
-		else
-		{
-			TimeHr = TimeHr+ 24 - tm->tm_hour;
+			ituIconLinkSurface(&powerOffTopIndLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[0]);
+			ituWidgetDisable(powerOffTopIndLightTrackBar);
+			ituWidgetSetVisible(powerOffTopIndLightProgressBar, false);
 		}
 	}
 	else
 	{
-		TimeMin = TimeMin + 60 - tm->tm_min;
-		TimeHr--;
+		lightAuto = false;
+		ituIconLinkSurface(&powerOffTopScreenLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[1]);
+		ituWidgetEnable(powerOffTopScreenLightTrackBar);
+		ituWidgetSetVisible(powerOffTopScreenLightProgressBar, true);
 
-		if (TimeHr >= tm->tm_hour)
+		if (indicatorLightEnable)
 		{
-			TimeHr = TimeHr - tm->tm_hour;
+			ituIconLinkSurface(&powerOffTopIndLightTrackBar->tracker->bg.icon, powerOffTopBarBtnIcon[1]);
+			ituWidgetEnable(powerOffTopIndLightTrackBar);
+			ituWidgetSetVisible(powerOffTopIndLightProgressBar, true);
 		}
-		else
-		{
-			TimeHr = TimeHr + 24 - tm->tm_hour;
-		}
-
 	}
-
-	
-
-	sprintf(tmp, "%02d:%02d:%02d", TimeHr, TimeMin, TimeSec);
-	ituTextSetString(powerOffTimingText, tmp);
-	ituSpriteGoto(powerOffTimingSprite, 1);
-
     return true;
 }
-bool PowerOffModeRadioBoxOnPress(ITUWidget* widget, char* param)
+bool PowerOffPowerOnBtnOnPress(ITUWidget* widget, char* param)
 {
-	int index = atoi(param);
-
-	ituSpriteGoto(powerOffModeTextSprite, index);
+	StopPowerOff();
 
 	return true;
 }
 
-bool PowerOffTempSaveBtnOnPress(ITUWidget* widget, char* param)
+bool PowerOffDisinfectEnterBtnOnPress(ITUWidget* widget, char* param)
 {
-	char tmp[32];
-
-	sprintf(tmp, "%02.1f", (powerOffTempWheel->focusIndex * 0.5) + 18);
-	ituTextSetString(powerOffTempText, tmp);
-
+	startDisinfect = true;
+	disinfectProgressCnt = 0;
 	return true;
 }
-bool PowerOffAirForceTrackBarOnChanged(ITUWidget* widget, char* param)
+
+bool PowerOffDisinfectStopEnterBtnOnPress(ITUWidget* widget, char* param)
 {
-	int x, y;
-	char tmp[32];
-
-	airForceIndex = powerOffAirForceTrackBar->value - 1;
-	ituSpriteGoto(powerOffAirForceSprite, airForceIndex);
-	ituSpriteGoto(powerOffAirForceLineSprite, airForceIndex);
-	ituSpriteGoto(powerOffAirForceTextSprite, airForceIndex);
-
-	ituWidgetSetVisible(powerOffAirForceTipShowBackground, false);
-	ituWidgetGetGlobalPosition(powerOffAirForceTrackBar->tip, &x, &y);
-	ituWidgetSetPosition(powerOffAirForceTipShowBackground, x, y);
-	sprintf(tmp, "%d", powerOffAirForceTrackBar->value);
-	ituTextSetString(powerOffAirForceTipShowText, tmp);
-	ituWidgetSetVisible(powerOffAirForceTipShowBackground, true);
-
+	startDisinfect = false;
 
 	return true;
 }
 
-bool PowerOffAirForceAutoChkBoxOnPress(ITUWidget* widget, char* param)
+bool PowerOffCleanEnterBtnOnPress(ITUWidget* widget, char* param)
 {
-	int x, y;
-	char tmp[32];
-	if (ituCheckBoxIsChecked(powerOffAirForceAutoCheckBox))
+	startClean = true;
+	cleanProgressCnt = 0;
+	return true;
+}
+
+bool PowerOffCleanStopEnterBtnOnPress(ITUWidget* widget, char* param)
 	{
-
-		ituTrackBarSetValue(powerOffAirForceTrackBar, 3);
-		ituProgressBarSetValue(powerOffAirForceProgressBar, 3);
-		ituSpriteGoto(powerOffAirForceSprite, 6);
-		ituSpriteGoto(powerOffAirForceLineSprite, 2);
-		ituSpriteGoto(powerOffAirForceTextSprite, 6);
-		ituWidgetDisable(powerOffAirForceTrackBar);
-		ituWidgetSetVisible(powerOffAirForceProgressBar, false);
-		ituIconLinkSurface(powerOffAirForceTrackBarIcon, powerOffBarIcon[1]);
-
-		ituWidgetGetGlobalPosition(powerOffAirForceTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(powerOffAirForceTipShowBackground, x, y);
-		ituTextSetString(powerOffAirForceTipShowText, "A");
-	}
-	else
-	{
-
-		ituTrackBarSetValue(powerOffAirForceTrackBar, airForceIndex + 1);
-		ituProgressBarSetValue(powerOffAirForceProgressBar, airForceIndex + 1);
-		ituSpriteGoto(powerOffAirForceSprite, airForceIndex);
-		ituSpriteGoto(powerOffAirForceLineSprite, airForceIndex);
-		ituSpriteGoto(powerOffAirForceTextSprite, airForceIndex);
-		ituWidgetEnable(powerOffAirForceTrackBar);
-		ituWidgetSetVisible(powerOffAirForceProgressBar, true);
-		ituIconLinkSurface(powerOffAirForceTrackBarIcon, powerOffBarIcon[0]);
-
-		ituWidgetGetGlobalPosition(powerOffAirForceTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(powerOffAirForceTipShowBackground, x, y);
-		sprintf(tmp, "%d", powerOffAirForceTrackBar->value);
-		ituTextSetString(powerOffAirForceTipShowText, tmp);
-	}
+	startClean = false;
 
 	return true;
 }
-bool PowerOffPreHumidityTrackBarOnChanged(ITUWidget* widget, char* param)
-{
-	char tmp[32];
-	preHumidityIndex = powerOffPreHumidityTrackBar->value;
 
-	sprintf(tmp, "%3d", preHumidityIndex);
-	ituTextSetString(powerOffPreHumidityText, tmp);
-
-
-	return true;
-}
 void StopPowerOff(void)
 {
 	if (!mainLayer)
@@ -554,6 +570,19 @@ void StopPowerOff(void)
 		mainCoverFlow = ituSceneFindWidget(&theScene, "mainCoverFlow");
 		assert(mainCoverFlow);
 	}
+	powerOnTimeIndex = -1;
+	powerOnTmHr = 0;
+	powerOnTmMin = 0;
+
+	startDisinfect = false;
+	disinfectProgressCnt = 0;
+	ituWidgetSetVisible(powerOffDisinfectStartBackground, false);
+	ituWidgetEnable(powerOffBackground);
+
+	startClean = false;
+	cleanProgressCnt = 0;
+	ituWidgetSetVisible(powerOffCleanStartBackground, false);
+
 
 
 	Hlink_send_state(HLINK_POWER_ON);

@@ -181,11 +181,11 @@ static int PM25Out = 32;
 static int DWSpriteIndex = 0;
 static int QualitySpriteIndex = 0;
 static int InPMDayValue[8] = { 25, 45, 36, 75, 50, 30, 42, 43 };
-static int TVOCDayValue[8] = { 10, 0, 20, 10, 30, 20, 0, 10 };
+static int TVOCDayValue[8] = { 1, 0, 2, 1, 3, 2, 0, 1};
 static int CO2DayValue[8] = { 700, 690, 1150, 1863, 2500, 1120, 1000, 750 };
 static int OutPMDayValue[8] = { 25, 45, 75, 220, 240, 100, 85, 95 };
 static int InPMWeekValue[7] = { 25, 45, 75, 50, 30, 45, 50 };
-static int TVOCWeekValue[7] = { 10, 0, 20, 10, 30, 20, 10 };
+static int TVOCWeekValue[7] = { 1, 0, 2, 1, 3, 2, 1 };
 static int CO2WeekValue[7] = { 700, 658, 900, 1000, 850, 725, 750 };
 static int OutPMWeekValue[7] = { 25, 45, 75, 220, 85, 300, 368 };
 static int InPMDayColor[8] = { 0 };
@@ -1109,7 +1109,36 @@ bool MainCoverFlowOnChanged(ITUWidget* widget, char* param)
 	}
 	return true;
 }
-
+bool MainCModeButtonOnMouseUp(ITUWidget* widget, char* param)
+{
+	mainCoverFlow->slideMaxCount = 0;
+	return true;
+}
+bool MainCAirForceButtonOnMouseUp(ITUWidget* widget, char* param)
+{
+	mainCoverFlow->slideMaxCount = 0;
+	return true;
+}
+bool MainAttachButtonOnMouseUp(ITUWidget* widget, char* param)
+{
+	mainCoverFlow->slideMaxCount = 0;
+	return true;
+}
+bool MainAirForceHideButtonOnMouseUp(ITUWidget* widget, char* param)
+{
+	mainCoverFlow->slideMaxCount = 1;
+	return true;
+}
+bool MainCModeSelectHideButtonOnSlideDown(ITUWidget* widget, char* param)
+{
+	mainCoverFlow->slideMaxCount = 1;
+	return true;
+}
+bool MainAttachHideButtonOnSlideDown(ITUWidget* widget, char* param)
+{
+	mainCoverFlow->slideMaxCount = 1;
+	return true;
+}
 bool MainCModeRadBoxOnMouseUp(ITUWidget* widget, char* param)
 {
 	modeIndex = atoi(param);
@@ -1117,6 +1146,7 @@ bool MainCModeRadBoxOnMouseUp(ITUWidget* widget, char* param)
 	ituIconLinkSurface(mainCModeButtonIcon, mainCModeIconSet[modeIndex]);
 
 
+	mainCoverFlow->slideMaxCount = 1;
 	return true;
 }
 
@@ -1214,7 +1244,7 @@ bool MainCModeShowButtonOnPress(ITUWidget* widget, char* param)
 }
 
 
-bool MainLQualityRadioBoxOnPress(ITUWidget* widget, char* param)
+bool MainLQualityRadioBoxOnMouseUp(ITUWidget* widget, char* param)
 {
 	ituWidgetSetVisible(mainLQualityInPMNumSprite, false);
 	ituWidgetSetVisible(mainLQualityTVOCNumSprite, false);
@@ -1395,7 +1425,7 @@ bool MainLQualityTVOCBtnOnPress(ITUWidget* widget, char* param)
 	
 	
 
-	sprintf(tmp, "%d", TVOCDayValue[index] / 10);
+	sprintf(tmp, "%d", TVOCDayValue[index]);
 	ituTextSetString(mainLQualityTVOCNumText[TVOCDayColor[index]], tmp);
 	ituSpriteGoto(mainLQualityTVOCNumSprite, TVOCDayColor[index]);
 
@@ -1469,7 +1499,7 @@ bool MainLQualityTVOCWBtnOnPress(ITUWidget* widget, char* param)
 
 
 
-	sprintf(tmp, "%d", TVOCWeekValue[index] / 10);
+	sprintf(tmp, "%d", TVOCWeekValue[index]);
 	ituTextSetString(mainLQualityTVOCWNumText[TVOCWeekColor[index]], tmp);
 	ituSpriteGoto(mainLQualityTVOCWNumSprite, TVOCWeekColor[index]);
 
@@ -1592,6 +1622,8 @@ bool MainCAttachRadBoxOnMouseUp(ITUWidget* widget, char* param)
 {
 	int attachIndex = atoi(param);
 
+	mainCoverFlow->slideMaxCount = 1;
+
 	return true;
 }
 
@@ -1646,19 +1678,19 @@ bool DayQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3,
 				case 0:
 					pQtyValue[i] = 237;
 					break;
-				case 10:
+				case 1:
 					pQtyValue[i] = 165;
 					break;
-				case 20:
+				case 2:
 					pQtyValue[i] = 85;
 					break;
-				case 30:
+				case 3:
 					pQtyValue[i] = 10;
 					break;
 				default:
-					if (pQtyValue[i] > 20)
+					if (pQtyValue[i] > 2)
 						pQtyValue[i] = 48;
-					else if (pQtyValue[i] > 10)
+					else if (pQtyValue[i] > 1)
 						pQtyValue[i] = 125;
 					else
 						pQtyValue[i] = 201;
@@ -1987,19 +2019,19 @@ bool WeekQualitySet(ITUWidget* widget, int index, int i0, int i1, int i2, int i3
 				case 0:
 					pQtyValue[i] = 237;
 					break;
-				case 10:
+				case 1:
 					pQtyValue[i] = 165;
 					break;
-				case 20:
+				case 2:
 					pQtyValue[i] = 85;
 					break;
-				case 30:
+				case 3:
 					pQtyValue[i] = 10;
 					break;
 				default:
-					if (pQtyValue[i] > 20)
+					if (pQtyValue[i] > 2)
 						pQtyValue[i] = 48;
-					else if (pQtyValue[i] > 10)
+					else if (pQtyValue[i] > 1)
 						pQtyValue[i] = 125;
 					else
 						pQtyValue[i] = 201;

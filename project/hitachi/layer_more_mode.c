@@ -11,7 +11,7 @@
 
 ITUText* moreModeText[MOREMODE_NUM] = { 0 };
 ITURadioBox* moreModeRadioBox[MOREMODE_NUM] = { 0 };
-
+ITUSprite* moreModeBackgroundSprite = 0;
 
 bool MoreModeOnEnter(ITUWidget* widget, char* param)
 {
@@ -20,6 +20,9 @@ bool MoreModeOnEnter(ITUWidget* widget, char* param)
 
 	if (!moreModeText[0])
 	{
+		moreModeBackgroundSprite = ituSceneFindWidget(&theScene, "moreModeBackgroundSprite");
+		assert(moreModeBackgroundSprite);
+
 		for (i = 0; i < MOREMODE_NUM; i++)
 		{
 			sprintf(tmp, "moreModeText%d", i);
@@ -31,6 +34,8 @@ bool MoreModeOnEnter(ITUWidget* widget, char* param)
 			assert(moreModeRadioBox[i]);
 		}
 	}
+
+	ituSpriteGoto(moreModeBackgroundSprite, BgIndex[modeIndex]);
 
 	//if (modeIndex < 4)
 	//{
@@ -48,9 +53,4 @@ bool MoreModeRadioBoxOnMouseUp(ITUWidget* widget, char* param)
 
     return true;
 }
-
-
-
-
-
 

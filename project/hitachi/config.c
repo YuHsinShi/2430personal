@@ -57,6 +57,7 @@ void ConfigInit(void)
 	theConfig.def_brightness = iniparser_getint(cfgIni, "default:brightness", 8);
 	theConfig.def_screensaver_time = iniparser_getint(cfgIni, "default:screensaver_time", 15);
 	theConfig.def_screensaver_type = iniparser_getint(cfgIni, "default:screensaver_type", 1);
+	theConfig.onlineUpdateMode = iniparser_getint(cfgIni, "default:onlineUpdateMode", 0);//0-newest 1-need download FW 2-new FW downloaded
 
 	// SSID
 	snprintf(theConfig.ssid, 64, iniparser_getstring(cfgIni, "wifi:ssid", ""));
@@ -73,6 +74,11 @@ void ConfigInit(void)
 	snprintf(theConfig.ap_ssid, 64, iniparser_getstring(cfgIni, "wifi:ap_ssid", ""));
 	// AP mode Password
 	snprintf(theConfig.ap_password, 256, iniparser_getstring(cfgIni, "wifi:ap_password", ""));
+
+	//examaine password
+	theConfig.examine_pw = iniparser_getint(cfgIni, "examine:examine_pw", 0000);
+
+	 
 
     cfgSavingCount = 0;
 }
@@ -136,6 +142,9 @@ static void ConfigSavePublic(void)
 	sprintf(buf, "%d", theConfig.def_screensaver_type);
 	iniparser_set(cfgIni, "default:screensaver_type", buf);
 
+	sprintf(buf, "%d", theConfig.onlineUpdateMode);
+	iniparser_set(cfgIni, "default:onlineUpdateMode", buf);
+
 	// Wifi SSID
 	iniparser_set(cfgIni, "wifi:ssid", theConfig.ssid);
 	// Password
@@ -148,6 +157,10 @@ static void ConfigSavePublic(void)
 	// wifi switch on/off
 	sprintf(buf, "%d", theConfig.wifi_on_off);
 	iniparser_set(cfgIni, "wifi:wifi_on_off", buf);
+
+	//examine
+	sprintf(buf, "%d", theConfig.examine_pw);
+	iniparser_set(cfgIni, "examine:examine_pw", buf);
 
 
     // save to file

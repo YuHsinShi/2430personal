@@ -20,7 +20,7 @@ extern "C" {
 #define STATUS_NUM 12
 #define MOREMODE_NUM 16
 #define AIRFORCE_NUM 7
-#define MODESHOW_NUM 8
+#define MODESHOW_NUM 10
 #define EXAM_REC_MAX_ITEM 99
 
 bool temp_big_show[16];
@@ -37,7 +37,17 @@ int modeIndex;
 bool airFlow3D;
 const int temperatureValueSet[21];
 bool timingSet;
+bool powerOffTimingSet;
+int powerOnTimeIndex;
+int powerOnTmHr;
+int powerOnTmMin;
+
+int powerOffTimeIndex;
+int powerOffTmHr;
+int powerOffTmMin;
+
 const int BgIndex[16];
+
 
 int statusPos[12][2];
 int mode_show[MODESHOW_NUM];
@@ -53,10 +63,15 @@ bool keySound;
 bool wifi_connected;
 int	 wifi_status;//check wifi status 0-connect 1- warning 2-disconnect
 
+bool memoryTimeAutoCheckbox;
 bool indicatorLightEnable;
 bool lightAuto;
 int screenLight;
 int indLight;
+
+int systemNo[16];
+int addr[16];
+
 /**
 * Initializes screen module.
 */
@@ -326,6 +341,10 @@ typedef struct
 	int def_brightness;
 	int def_screensaver_time;
 	int def_screensaver_type;
+	int onlineUpdateMode;
+
+	//examine
+	int examine_pw;
 
 } Config;
 

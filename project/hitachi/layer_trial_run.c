@@ -18,15 +18,24 @@ ITUWheel* trialRunTrialFreqWheel = 0;
 ITUText* trialRunTrialFreqText = 0;
 ITUSprite* trialRunModelSelectValueTitleSprite = 0;
 ITUText* trialRunModelSelectValueTitleText = 0;
+ITURadioBox* trialRunModelSelectRadioBox[16] = { 0 };
 ITURadioBox* trialRunModelSelectItemRadioBox[7][2] = { 0 };
 ITUSprite* trialRunInputOutputValueTitleSprite = 0;
 ITUText* trialRunInputOutputValueTitleText = 0;
+ITURadioBox* trialRunInputOutputRadioBox[16] = { 0 };
 ITURadioBox* trialRunInputOutputItemRadioBox[5][2] = { 0 };
 ITURadioBox* trialRunAddrUpdateRadioBox[16] = { 0 };
 ITUText* trialRunAddrUpdateSText = 0;
 ITUText* trialRunAddrUpdateAText = 0;
 ITURadioBox* trialRunAddrUpdateSRadioBox = 0;
 ITURadioBox* trialRunAddrUpdateARadioBox = 0;
+ITUSprite* trialRunAddrInitTitleSprite = 0;
+ITUText* trialRunAddrInitTitleText = 0;
+ITURadioBox* trialRunAddrInitRadioBox[16] = { 0 };
+ITUSprite* trialRunModelSelInitTitleSprite = 0;
+ITUText* trialRunModelSelInitTitleText = 0;
+ITURadioBox* trialRunModelSelInitRadioBox[16] = { 0 };
+ITURadioBox* trialRunAddrCheckRadioBox[16] = { 0 };
 
 static int trialAirForce = 0;
 static int trialTime = 43;
@@ -43,14 +52,16 @@ static int IOIndex = 0;
 static int IOItemIndex = 0;
 static int IOItemValue[17][5] = { { 0, 1, 0, 0, 2}, { 2, 1, 0, 0, 1 } };
 
-static int systemNo[16] = { 0 };
-static int addr[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+extern int systemNo[16] = { 0 };
+extern int addr[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 static int tmpAddr[16] = { 0 };
 static int tmpSystem[16] = { 0 };
 static int tmpAddrText = 1;
 static int tmpSystemText = 0;
 static bool addrChange = true;
 static int addrupdateItem = 0;
+static int addrInitIndex = 0;
+static int modelSelInitIndex = 0;
 bool TrialRunOnEnter(ITUWidget* widget, char* param)
 {
 	int i,j;
@@ -99,6 +110,17 @@ bool TrialRunOnEnter(ITUWidget* widget, char* param)
 		trialRunAddrUpdateARadioBox = ituSceneFindWidget(&theScene, "trialRunAddrUpdateARadioBox");
 		assert(trialRunInputOutputValueTitleText);
 
+		trialRunAddrInitTitleSprite = ituSceneFindWidget(&theScene, "trialRunAddrInitTitleSprite");
+		assert(trialRunAddrInitTitleSprite);
+
+		trialRunAddrInitTitleText = ituSceneFindWidget(&theScene, "trialRunAddrInitTitleText");
+		assert(trialRunAddrInitTitleText);
+
+		trialRunModelSelInitTitleSprite = ituSceneFindWidget(&theScene, "trialRunModelSelInitTitleSprite");
+		assert(trialRunModelSelInitTitleSprite);
+
+		trialRunModelSelInitTitleText = ituSceneFindWidget(&theScene, "trialRunModelSelInitTitleText");
+		assert(trialRunModelSelInitTitleText);
 
 		for (i = 0; i < 3; i++)
 		{
@@ -133,6 +155,29 @@ bool TrialRunOnEnter(ITUWidget* widget, char* param)
 			sprintf(tmp, "trialRunAddrUpdateRadioBox%d", i);
 			trialRunAddrUpdateRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(trialRunAddrUpdateRadioBox[i]);
+
+			sprintf(tmp, "trialRunModelSelectRadioBox%d", i);
+			trialRunModelSelectRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunModelSelectRadioBox[i]);
+
+			sprintf(tmp, "trialRunInputOutputRadioBox%d", i);
+			trialRunInputOutputRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunInputOutputRadioBox[i]);
+
+			sprintf(tmp, "trialRunAddrInitRadioBox%d", i);
+			trialRunAddrInitRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunAddrInitRadioBox[i]);	
+
+			sprintf(tmp, "trialRunModelSelInitRadioBox%d", i);
+			trialRunModelSelInitRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunModelSelInitRadioBox[i]);
+			
+			sprintf(tmp, "trialRunAddrCheckRadioBox%d", i);
+			trialRunAddrCheckRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(trialRunAddrCheckRadioBox[i]);
+
+
+			
 
 		}
 
@@ -266,7 +311,7 @@ bool TrialRunModelSelectEnterBtnOnPress(ITUWidget* widget, char* param)
 	}
 	else
 	{
-		sprintf(tmp, "00-%02d", modelselIndex + 1);
+		sprintf(tmp, "%s", ituTextGetString(&trialRunModelSelectRadioBox[modelselIndex]->checkbox.btn.text));
 		ituTextSetString(trialRunModelSelectValueTitleText, tmp);
 		ituSpriteGoto(trialRunModelSelectValueTitleSprite, 0);
 		
@@ -330,7 +375,7 @@ bool TrialRunInputOutputEnterBtnOnPress(ITUWidget* widget, char* param)
 	}
 	else
 	{
-		sprintf(tmp, "00-%02d", IOIndex + 1);
+		sprintf(tmp, "%s", ituTextGetString(&trialRunInputOutputRadioBox[IOIndex]->checkbox.btn.text));
 		ituTextSetString(trialRunInputOutputValueTitleText, tmp);
 		ituSpriteGoto(trialRunInputOutputValueTitleSprite, 0);
 
@@ -382,12 +427,20 @@ bool TrialRunAddrUpdateSaveBtnOnPress(ITUWidget* widget, char* param)
 {
 	int i;
 	bool save = atoi(param);
+	char tmp[32];
 	if (save)
 	{
 		for (i = 0; i < 16; i++)
 		{
 			addr[i] = tmpAddr[i];
 			systemNo[i] = tmpSystem[i];
+			sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+			ituTextSetString(&trialRunModelSelectRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunInputOutputRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunAddrInitRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunModelSelInitRadioBox[i]->checkbox.btn.text, tmp);
+			ituTextSetString(&trialRunAddrCheckRadioBox[i]->checkbox.btn.text, tmp);
+
 		}
 	}
 	else
@@ -513,5 +566,68 @@ bool TrialRunAddrUpdateBtnOnMouseUp(ITUWidget* widget, char* param)
 		ituTextSetString(&trialRunAddrUpdateRadioBox[i]->checkbox.btn.text, tmp);
 	}
 
+	return true;
+}
+
+bool TrialRunAddrInitRadioBoxOnPress(ITUWidget* widget, char* param)
+{
+
+	addrInitIndex = atoi(param);
+
+	return true;
+}
+bool TrialRunAddrInitEnterBtnOnPress(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	if (addrInitIndex == 16)
+	{
+		ituSpriteGoto(trialRunAddrInitTitleSprite, 1);
+	}
+	else
+	{
+		sprintf(tmp, "%s", ituTextGetString(&trialRunAddrInitRadioBox[addrInitIndex]->checkbox.btn.text));
+		ituTextSetString(trialRunAddrInitTitleText, tmp);
+		ituSpriteGoto(trialRunAddrInitTitleSprite, 0);
+
+	}
+	return true;
+}
+
+bool TrialRunModelSelInitRadioBoxOnPress(ITUWidget* widget, char* param)
+{
+
+	modelSelInitIndex = atoi(param);
+
+	return true;
+}
+bool TrialRunModelSelInitEnterBtnOnPress(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	if (modelSelInitIndex == 16)
+	{
+		ituSpriteGoto(trialRunModelSelInitTitleSprite, 1);
+	}
+	else
+	{
+
+		sprintf(tmp, "%s", ituTextGetString(&trialRunModelSelInitRadioBox[modelSelInitIndex]->checkbox.btn.text));
+		ituTextSetString(trialRunModelSelInitTitleText, tmp);
+		ituSpriteGoto(trialRunModelSelInitTitleSprite, 0);
+
+	}
+	return true;
+}
+
+bool TrialRunBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(1);
+
+	ituLayerGoto(layer);
 	return true;
 }

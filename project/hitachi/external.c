@@ -32,6 +32,12 @@ static volatile bool extQuit;
 
 void Hlink_init()
 {
+    int altCpuEngineType = ALT_CPU_HOMEBUS;
+
+    //Load Engine on ALT CPU
+    ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_ALT_CPU_SWITCH_ENG, &altCpuEngineType);
+    ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_INIT, NULL);
+	
 	homebus_init();
 
 }

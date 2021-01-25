@@ -48,8 +48,10 @@ ITUSprite*	airFlowVSprite = 0;
 ITURadioBox* airFlowRadioBox[2] = { 0 };
 ITUBackground* airFlowRadioBoxBackground[2] = { 0 };
 ITUIcon* airFlowRadioBoxBgIcon[2] = { 0 };
+ITUSprite* airFlowBackgroundSprite = 0;
 static int hAirFlow = 1;
 static int vAirFlow = 1;
+
 
 bool AirFlowOnEnter(ITUWidget* widget, char* param)
 {
@@ -96,6 +98,9 @@ bool AirFlowOnEnter(ITUWidget* widget, char* param)
 		airFlowVTipShowText = ituSceneFindWidget(&theScene, "airFlowVTipShowText");
 		assert(airFlowVTipShowText);
 
+		airFlowBackgroundSprite = ituSceneFindWidget(&theScene, "airFlowBackgroundSprite");
+		assert(airFlowBackgroundSprite);
+
 		for (i = 0; i < 2; i++)
 		{
 			sprintf(tmp, "airFlowButtonIcon%d", i);
@@ -122,8 +127,9 @@ bool AirFlowOnEnter(ITUWidget* widget, char* param)
 	ituWidgetSetPosition(airFlowHTipShowBackground, x-28, y-505);
 
 	ituWidgetGetGlobalPosition(airFlowVTrackBar->tip, &x, &y);
-	ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 227);
+	ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 198);
 
+	ituSpriteGoto(airFlowBackgroundSprite, BgIndex[modeIndex]);
 	
     return true;
 }
@@ -156,7 +162,7 @@ bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param)
 		ituWidgetGetGlobalPosition(airFlowHTrackBar->tip, &x, &y);
 		ituWidgetSetPosition(airFlowHTipShowBackground, x - 28, y - 505);
 		ituWidgetGetGlobalPosition(airFlowVTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 227);
+		ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 198);
 
 	}
 	else
@@ -186,7 +192,7 @@ bool AirFlowAutoChkBoxOnPress(ITUWidget* widget, char* param)
 		ituWidgetGetGlobalPosition(airFlowHTrackBar->tip, &x, &y);
 		ituWidgetSetPosition(airFlowHTipShowBackground, x - 28, y - 505);
 		ituWidgetGetGlobalPosition(airFlowVTrackBar->tip, &x, &y);
-		ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 227);
+		ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 198);
 		
 		
 
@@ -217,7 +223,7 @@ bool AirFlowVTrackBarOnChanged(ITUWidget* widget, char* param)
 
 	ituWidgetSetVisible(airFlowVTipShowBackground, false);
 	ituWidgetGetGlobalPosition(airFlowVTrackBar->tip, &x, &y);
-	ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 227);
+	ituWidgetSetPosition(airFlowVTipShowBackground, x - 628, y - 198);
 	sprintf(tmp, "%d", airFlowVTrackBar->value);
 	ituTextSetString(airFlowVTipShowText, tmp);
 	ituWidgetSetVisible(airFlowVTipShowBackground, true);

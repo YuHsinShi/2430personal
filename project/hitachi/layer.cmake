@@ -9,7 +9,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     layer_emergency.c
     layer_warning.c
 	layer_set_humidity.c
-	layer_common_tool.c
 	layer_screen_lock.c
 	layer_timing.c
 	layer_setting.c
@@ -19,4 +18,8 @@ add_executable(${CMAKE_PROJECT_NAME}
 	layer_air_flow.c
 	layer_ai.c
 	layer_setting_wifi_password.c
+	layer_consult.c
+	layer_download.c
+	layer_logo.c
+	layer_bind.c
     )

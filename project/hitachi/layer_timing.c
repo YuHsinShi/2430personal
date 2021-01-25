@@ -43,11 +43,19 @@ typedef struct
 WEEKSet weekSet[MAX_WEEK_COUNT];
 RESTSet restSet[MAX_REST_COUNT];
 
+ITUStopAnywhere* timingSingleStopAnywhere = 0;
 ITUText* timingSingleTimeText0 = 0;
 ITUCheckBox* timingSingleCheckBox0 = 0;
 ITUWheel* timingSingleSettingHrWheel = 0;
 ITUSprite* timingSingleTimeSprite = 0;
 ITUSprite* timingSingleSettingSprite = 0;
+
+ITUStopAnywhere* timingPowerOffSingleStopAnywhere = 0;
+ITUText* timingPowerOffSingleTimeText0 = 0;
+ITUCheckBox* timingPowerOffSingleCheckBox0 = 0;
+ITUWheel* timingPowerOffSingleSettingHrWheel = 0;
+ITUSprite* timingPowerOffSingleTimeSprite = 0;
+ITUSprite* timingPowerOffSingleSettingSprite = 0;
 
 ITUStopAnywhere* timingWeekStopAnywhere = 0;
 ITUContainer* timingWeekAllContainer = 0;
@@ -69,7 +77,7 @@ ITUStopAnywhere* timingRestStopAnywhere = 0;
 ITUContainer* timingRestAllContainer = 0;
 ITUContainer* timingRestAddContainer = 0;
 ITUBackground* timingRestSetttingBackground = 0;
-ITUWheel* timingRestSettingYearWheel = 0;
+//ITUWheel* timingRestSettingYearWheel = 0;
 ITUWheel* timingRestSettingMonthWheel = 0;
 ITUWheel* timingRestSettingDayWheel = 0;
 
@@ -77,6 +85,7 @@ ITUContainer* timingTmpWeekContainer = 0;
 ITUContainer* timingTmpRestContainer = 0;
 
 static int SingleTimeHrIndex = 10;
+static int powerOffSingleTimeHrIndex = 10;
 
 static int weekItemIndex = 0;
 static int weekTotalItem = 2;
@@ -101,15 +110,22 @@ static int restDayIndex[MAX_REST_COUNT] = { 8, 1, 2, 3 };
 int restAllContainerHeight;
 static bool addingRest = false;
 
+static bool sliding = false;
+static bool slidingLeft = false;
+static ITUBackground* slidingBackground = 0;
+static uint32_t lastTick = 0;
 bool TimingOnEnter(ITUWidget* widget, char* param)
 {
 	int i, j, dayItemCnt,W;
 	char tmp[64];
 
-	ITCTree* node;
+	//ITCTree* node;
 
 	if (!timingSingleTimeText0)
 	{
+		timingSingleStopAnywhere = ituSceneFindWidget(&theScene, "timingSingleStopAnywhere");
+		assert(timingSingleStopAnywhere);
+
 		timingSingleTimeText0 = ituSceneFindWidget(&theScene,"timingSingleTimeText0");
 		assert(timingSingleTimeText0);
 
@@ -124,6 +140,24 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 
 		timingSingleSettingSprite = ituSceneFindWidget(&theScene, "timingSingleSettingSprite");
 		assert(timingSingleSettingSprite);
+
+		timingPowerOffSingleStopAnywhere = ituSceneFindWidget(&theScene, "timingPowerOffSingleStopAnywhere");
+		assert(timingPowerOffSingleStopAnywhere);
+
+		timingPowerOffSingleTimeText0 = ituSceneFindWidget(&theScene, "timingPowerOffSingleTimeText0");
+		assert(timingPowerOffSingleTimeText0);
+
+		timingPowerOffSingleCheckBox0 = ituSceneFindWidget(&theScene, "timingPowerOffSingleCheckBox0");
+		assert(timingPowerOffSingleCheckBox0);
+
+		timingPowerOffSingleSettingHrWheel = ituSceneFindWidget(&theScene, "timingPowerOffSingleSettingHrWheel");
+		assert(timingPowerOffSingleSettingHrWheel);
+
+		timingPowerOffSingleTimeSprite = ituSceneFindWidget(&theScene, "timingPowerOffSingleTimeSprite");
+		assert(timingPowerOffSingleTimeSprite);
+
+		timingPowerOffSingleSettingSprite = ituSceneFindWidget(&theScene, "timingPowerOffSingleSettingSprite");
+		assert(timingPowerOffSingleSettingSprite);
 
 		timingWeekStopAnywhere = ituSceneFindWidget(&theScene, "timingWeekStopAnywhere");
 		assert(timingWeekStopAnywhere);
@@ -243,8 +277,8 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 		timingRestSetttingBackground = ituSceneFindWidget(&theScene, "timingRestSetttingBackground");
 		assert(timingRestSetttingBackground);
 
-		timingRestSettingYearWheel = ituSceneFindWidget(&theScene, "timingRestSettingYearWheel");
-		assert(timingRestSettingYearWheel);
+		//timingRestSettingYearWheel = ituSceneFindWidget(&theScene, "timingRestSettingYearWheel");
+		//assert(timingRestSettingYearWheel);
 
 		timingRestSettingMonthWheel = ituSceneFindWidget(&theScene, "timingRestSettingMonthWheel");
 		assert(timingRestSettingMonthWheel);
@@ -297,6 +331,10 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 		
 	}
 
+	if (atoi(ituGetVarParam(0)) == 0)
+	{
+		ituWidgetSetVisible(timingSingleStopAnywhere, true);
+		ituWidgetSetVisible(timingPowerOffSingleStopAnywhere, false);
 	if (SingleTimeHrIndex == 0)
 	{
 		ituSpriteGoto(timingSingleTimeSprite, 0);
@@ -307,6 +345,32 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 		sprintf(tmp, "%2.1f", (SingleTimeHrIndex + 1)*0.5);
 		ituTextSetString(timingSingleTimeText0, tmp);
 	}
+		
+		if (powerOffTimeIndex == -1)
+			ituCheckBoxSetChecked(timingSingleCheckBox0, false);
+		else
+			ituCheckBoxSetChecked(timingSingleCheckBox0, true);
+	}
+	else
+	{
+		ituWidgetSetVisible(timingSingleStopAnywhere, false);
+		ituWidgetSetVisible(timingPowerOffSingleStopAnywhere, true);
+		if (powerOffSingleTimeHrIndex == 0)
+		{
+			ituSpriteGoto(timingPowerOffSingleTimeSprite, 0);
+		}
+		else
+		{
+			ituSpriteGoto(timingPowerOffSingleTimeSprite, 1);
+			sprintf(tmp, "%2.1f", (powerOffSingleTimeHrIndex + 1)*0.5);
+			ituTextSetString(timingPowerOffSingleTimeText0, tmp);
+		}
+		if (powerOnTimeIndex == -1)
+			ituCheckBoxSetChecked(timingPowerOffSingleCheckBox0, false);
+		else
+			ituCheckBoxSetChecked(timingPowerOffSingleCheckBox0, true);
+	}
+	
 	
 
 	for (i = 0; i < weekTotalItem; i++)
@@ -368,21 +432,21 @@ bool TimingOnEnter(ITUWidget* widget, char* param)
 			W = (restDayIndex[i] + 2 * restMonthIndex[i] + 3 * (restMonthIndex[i] + 1) / 5 + restYearIndex[i] + restYearIndex[i] / 4 - restYearIndex[i] / 100 + restYearIndex[i] / 400) % 7;
 		}
 
-		if (W == 5 || W == 6)
-		{
-			ituCheckBoxSetChecked(restSet[i].selectCheckbox, true);
-	}
-		else
-		{
-			ituCheckBoxSetChecked(restSet[i].selectCheckbox, false);
-		}
+		//if (W == 5 || W == 6)
+		//{
+		//	ituCheckBoxSetChecked(restSet[i].selectCheckbox, true);
+		//}
+		//else
+		//{
+		//	ituCheckBoxSetChecked(restSet[i].selectCheckbox, false);
+		//}
 		
 	}
 
 	
 
 	
-	
+	lastTick = SDL_GetTicks();
 	return true;
 }
 
@@ -405,6 +469,91 @@ bool TimingOnLeave(ITUWidget* widget, char* param)
 
 	return true;
 }
+
+bool TimingOnTimer(ITUWidget* widget, char* param)
+{
+	int i;
+	bool ret = false;
+
+	uint32_t diff, tick = SDL_GetTicks();
+	static uint32_t pre_diff = 0;
+
+	if (tick >= lastTick)
+		diff = tick - lastTick;
+	else
+		diff = 0xFFFFFFFF - lastTick + tick;
+
+	if (diff - pre_diff > 50)
+	{
+		pre_diff = diff;
+		if (sliding)
+		{
+			if (slidingLeft)
+			{
+				ituWidgetSetX(slidingBackground, ituWidgetGetX(slidingBackground) - 31);
+				if (ituWidgetGetX(slidingBackground) == -124)
+					sliding = false;
+			}
+			else
+			{
+				ituWidgetSetX(slidingBackground, ituWidgetGetX(slidingBackground) + 31);
+				if (ituWidgetGetX(slidingBackground) == 0)
+					sliding = false;
+			}
+			
+			ret = true;
+			
+		}
+		
+
+	}
+	
+
+	return ret;
+}
+bool TimingRadioBoxOnPress(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	if (atoi(ituGetVarParam(0)) == 0)
+	{
+		ituWidgetSetVisible(timingSingleStopAnywhere, true);
+		ituWidgetSetVisible(timingPowerOffSingleStopAnywhere, false);
+		if (SingleTimeHrIndex == 0)
+		{
+			ituSpriteGoto(timingSingleTimeSprite, 0);
+		}
+		else
+		{
+			ituSpriteGoto(timingSingleTimeSprite, 1);
+			sprintf(tmp, "%2.1f", (SingleTimeHrIndex + 1)*0.5);
+			ituTextSetString(timingSingleTimeText0, tmp);
+		}
+		if (powerOffTimeIndex == -1)
+			ituCheckBoxSetChecked(timingSingleCheckBox0, false);
+		else
+			ituCheckBoxSetChecked(timingSingleCheckBox0, true);
+	}
+	else
+	{
+		ituWidgetSetVisible(timingSingleStopAnywhere, false);
+		ituWidgetSetVisible(timingPowerOffSingleStopAnywhere, true);
+		if (powerOffSingleTimeHrIndex == 0)
+		{
+			ituSpriteGoto(timingPowerOffSingleTimeSprite, 0);
+		}
+		else
+		{
+			ituSpriteGoto(timingPowerOffSingleTimeSprite, 1);
+			sprintf(tmp, "%2.1f", (powerOffSingleTimeHrIndex + 1)*0.5);
+			ituTextSetString(timingPowerOffSingleTimeText0, tmp);
+		}
+		if (powerOnTimeIndex == -1)
+			ituCheckBoxSetChecked(timingPowerOffSingleCheckBox0, false);
+		else
+			ituCheckBoxSetChecked(timingPowerOffSingleCheckBox0, true);
+	}
+	return true;
+}
 bool TimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 {
 
@@ -423,7 +572,7 @@ bool TimingSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 		ituTextSetString(timingSingleTimeText0, tmp);
 	}
 
-	ituCheckBoxSetChecked(timingSingleCheckBox0, true);
+	ituCheckBoxSetChecked(timingSingleCheckBox0, false);
 
 	return true;
 }
@@ -462,10 +611,165 @@ bool TimingSingleSettingHrWheelOnChanged(ITUWidget* widget, char* param)
 
 bool TimingSingleChkBoxOnPress(ITUWidget* widget, char* param)
 {
+	struct timeval tv;
+	struct tm *tm;
+
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	if (ituCheckBoxIsChecked(timingSingleCheckBox0))
+	{
+		powerOffTimeIndex = SingleTimeHrIndex;
+
+
+
+		if (powerOffTimeIndex > 0)
+			powerOffTmHr = powerOffTimeIndex / 2;
+		else
+			powerOffTmHr = 0;
+
+		if (powerOffTimeIndex % 2 == 0)
+			powerOffTmMin = 30;
+		else
+		{
+			powerOffTmMin = 0;
+			powerOffTmHr++;
+		}
+
+
+		powerOffTmHr = tm->tm_hour + powerOffTmHr;
+		powerOffTmMin = tm->tm_min + powerOffTmMin;
+
+		if (powerOffTmMin > 60)
+		{
+			powerOffTmMin = powerOffTmMin - 60;
+			powerOffTmHr++;
+		}
+		if (powerOffTmHr > 24)
+		{
+			powerOffTmHr = powerOffTmHr - 24;
+		}
+
+	}
+	else
+	{
+		powerOffTimeIndex = -1;
+		powerOffTmHr = 0;
+		powerOffTmMin = 0;
+	}
+	return true;
+}
+bool TimingPowerOffSingleSettingSaveBtnOnPress(ITUWidget* widget, char* param)
+{
+
+	char tmp[32];
+
+	powerOffSingleTimeHrIndex = timingPowerOffSingleSettingHrWheel->focusIndex;
+
+	if (powerOffSingleTimeHrIndex == 0)
+	{
+		ituSpriteGoto(timingPowerOffSingleTimeSprite, 0);
+	}
+	else
+	{
+		ituSpriteGoto(timingPowerOffSingleTimeSprite, 1);
+		sprintf(tmp, "%2.1f", (powerOffSingleTimeHrIndex + 1)*0.5);
+		ituTextSetString(timingPowerOffSingleTimeText0, tmp);
+	}
+
+	ituCheckBoxSetChecked(timingPowerOffSingleCheckBox0, false);
+
 
 	return true;
 }
-bool TimingWeekSettingBtnOnPress(ITUWidget* widget, char* param)
+
+bool TimingPowerOffSingleSettingBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+
+	ituWheelGoto(timingPowerOffSingleSettingHrWheel, powerOffSingleTimeHrIndex);
+	if (powerOffSingleTimeHrIndex == 0)
+	{
+		ituSpriteGoto(timingPowerOffSingleSettingSprite, 0);
+	}
+	else
+	{
+		ituSpriteGoto(timingPowerOffSingleSettingSprite, 1);
+	}
+
+	return true;
+}
+
+bool TimingPowerOffSingleSettingHrWheelOnChanged(ITUWidget* widget, char* param)
+{
+	powerOffSingleTimeHrIndex = timingPowerOffSingleSettingHrWheel->focusIndex;
+
+	if (powerOffSingleTimeHrIndex == 0)
+	{
+		ituSpriteGoto(timingPowerOffSingleSettingSprite, 0);
+	}
+	else
+	{
+		ituSpriteGoto(timingPowerOffSingleSettingSprite, 1);
+	}
+
+	return true;
+}
+
+bool TimingPowerOffSingleChkBoxOnPress(ITUWidget* widget, char* param)
+{
+	//	char tmp[32];
+	struct timeval tv;
+	struct tm *tm;
+
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	if (ituCheckBoxIsChecked(timingPowerOffSingleCheckBox0))
+	{
+		powerOnTimeIndex = powerOffSingleTimeHrIndex;
+
+
+
+		if (powerOnTimeIndex > 0)
+			powerOnTmHr = powerOnTimeIndex / 2;
+		else
+			powerOnTmHr = 0;
+
+		if (powerOnTimeIndex % 2 == 0)
+			powerOnTmMin = 30;
+		else
+		{
+			powerOnTmMin = 0;
+			powerOnTmHr++;
+		}
+
+
+		powerOnTmHr = tm->tm_hour + powerOnTmHr;
+		powerOnTmMin = tm->tm_min + powerOnTmMin;
+
+		if (powerOnTmMin > 60)
+		{
+			powerOnTmMin = powerOnTmMin - 60;
+			powerOnTmHr++;
+		}
+		if (powerOnTmHr > 24)
+		{
+			powerOnTmHr = powerOnTmHr - 24;
+		}
+
+	}
+	else
+	{
+		powerOnTimeIndex = -1;
+		powerOnTmHr = 0;
+		powerOnTmMin = 0;
+	}
+
+	return true;
+}
+bool TimingWeekSettingBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	int i;
 	char tmp[32];
@@ -720,7 +1024,7 @@ bool TimingWeekSettingTempBtnOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool TimingWeekAddBtnOnPress(ITUWidget* widget, char* param)
+bool TimingWeekAddBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	bool ret = false;
 	int i;
@@ -784,13 +1088,15 @@ bool TimingWeekAddBtnOnPress(ITUWidget* widget, char* param)
 		
 		sprintf(id, "%d", weekTotalItem);
 		strcpy(settingBtn->actions[1].param, id);
+		strcpy(settingBtn->actions[5].param, id);
+		strcpy(settingBtn->actions[6].param, id);
 		strcpy(checkbox->btn.actions[0].param, id);
 		strcpy(deleteButton->actions[0].param, id);
 		strcpy(slideButton->actions[0].param, id);
 		strcpy(slideButton->actions[1].param, id); 
 
 		ituWidgetSetVisible(timingWeekSettingBackground, true);
-		TimingWeekSettingBtnOnPress(NULL, settingBtn->actions[1].param);
+		TimingWeekSettingBtnOnMouseUp(NULL, settingBtn->actions[1].param);
 
 		ret = true;
 
@@ -806,8 +1112,10 @@ bool TimingWeekChkBoxOnPress(ITUWidget* widget, char* param)
 bool TimingWeekSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(weekSet[slideIndex].background, -124);
+	sliding = true;
+	slidingLeft = true;
+	slidingBackground = (ITUBackground*)weekSet[slideIndex].background;
+//	ituWidgetSetX(weekSet[slideIndex].background, -124);
 
 	return true;
 }
@@ -816,8 +1124,10 @@ bool TimingWeekSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 bool TimingWeekSlideBtnOnSlideRight(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(weekSet[slideIndex].background, 0);
+	sliding = true;
+	slidingLeft = false;
+	slidingBackground = (ITUBackground*)weekSet[slideIndex].background;
+	//ituWidgetSetX(weekSet[slideIndex].background, 0);
 
 	return true;
 }
@@ -836,6 +1146,8 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 		
 		sprintf(tmp, "%d", i);
 		strcpy(weekSet[i + 1].setButton->actions[1].param, tmp);
+		strcpy(weekSet[i + 1].setButton->actions[5].param, tmp);
+		strcpy(weekSet[i + 1].setButton->actions[6].param, tmp);
 		strcpy(weekSet[i + 1].selectCheckbox->btn.actions[0].param, tmp);
 		strcpy(weekSet[i + 1].deleteButton->actions[0].param, tmp);
 		strcpy(weekSet[i + 1].slideButton->actions[0].param, tmp);
@@ -845,7 +1157,7 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 		WeekTimeHrIndex[i] = WeekTimeHrIndex[i + 1];
 		WeekTimeMinIndex[i] = WeekTimeMinIndex[i + 1];
 
-		for (j = 0; j < 7; j++)
+		for (j = 0; j < 8; j++)
 		{
 			WeekDay[i][j] = WeekDay[i + 1][j];
 		}
@@ -858,7 +1170,7 @@ bool TimingWeekDeleteBtnOnPress(ITUWidget* widget, char* param)
 	PowerOn[weekTotalItem-1] = false;
 	WeekTimeHrIndex[weekTotalItem-1] = 0;
 	WeekTimeMinIndex[weekTotalItem-1] = 0;
-	for (j = 0; j < 7; j++)
+	for (j = 0; j < 8; j++)
 	{
 		WeekDay[weekTotalItem-1][j] = 0;
 	}
@@ -886,10 +1198,29 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 {
 	char tmp[32];
 	bool save = atoi(param);
+	struct timeval tv;
+	struct tm *tm;
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
 
 	if (save)
 	{
-		if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+		if (timingRestSettingMonthWheel->focusIndex < tm->tm_mon)
+			restYearIndex[restTotalItem] = tm->tm_year + 1900 + 1;
+		else
+		{
+			if (timingRestSettingDayWheel->focusIndex < (tm->tm_mday - 1))
+				restYearIndex[restTotalItem] = tm->tm_year + 1900 + 1;
+			else
+				restYearIndex[restTotalItem] = tm->tm_year + 1900;
+		}
+			//restYearIndex[restTotalItem] = tm->tm_year + 1900;
+
+		
+
+		//if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+		if ((restYearIndex[restTotalItem] % 4) == 0)
 		{
 			if (timingRestSettingMonthWheel->focusIndex == 1)
 			{
@@ -915,7 +1246,7 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 		}
 
 
-		restYearIndex[restTotalItem] = timingRestSettingYearWheel->focusIndex + 2020;
+		//restYearIndex[restTotalItem] = timingRestSettingYearWheel->focusIndex + 2020;
 		sprintf(tmp, "%04d", restYearIndex[restTotalItem]);
 		ituTextSetString(restSet[restTotalItem].yearText, tmp);
 
@@ -955,10 +1286,10 @@ bool TimingRestSettingSaveBtnOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
-bool TimingRestAddBtnOnPress(ITUWidget* widget, char* param)
+bool TimingRestAddBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	bool ret = false;
-	int i;
+	//int i;
 	struct timeval tv;
 	struct tm *tm;
 
@@ -1021,7 +1352,7 @@ bool TimingRestAddBtnOnPress(ITUWidget* widget, char* param)
 		gettimeofday(&tv, NULL);
 		tm = localtime(&tv.tv_sec);
 
-		ituWheelGoto(timingRestSettingYearWheel, tm->tm_year - 120);//2020-1900
+		//ituWheelGoto(timingRestSettingYearWheel, tm->tm_year - 120);//2020-1900
 		ituWheelGoto(timingRestSettingMonthWheel, tm->tm_mon);//0-11
 		ituWheelGoto(timingRestSettingDayWheel, tm->tm_mday - 1);//1-31
 
@@ -1042,7 +1373,27 @@ bool TimingRestChkBoxOnPress(ITUWidget* widget, char* param)
 
 bool TimingRestSettingWheelOnChanged(ITUWidget* widget, char* param)
 {
-	if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+	struct timeval tv;
+	struct tm *tm;
+
+	gettimeofday(&tv, NULL);
+	tm = localtime(&tv.tv_sec);
+
+	if (timingRestSettingMonthWheel->focusIndex < tm->tm_mon)
+		restYearIndex[restTotalItem] = tm->tm_year +1900 + 1;
+	else
+	{
+		if (timingRestSettingDayWheel->focusIndex < (tm->tm_mday - 1))
+			restYearIndex[restTotalItem] = tm->tm_year + 1900 + 1;
+		else
+			restYearIndex[restTotalItem] = tm->tm_year + 1900;
+	}
+		//restYearIndex[restTotalItem] = tm->tm_year +1900;
+
+	
+
+	//if ((timingRestSettingYearWheel->focusIndex % 4) == 0)
+	if ((restYearIndex[restTotalItem] % 4) == 0)
 	{
 		if (timingRestSettingMonthWheel->focusIndex == 1)
 		{
@@ -1073,8 +1424,10 @@ bool TimingRestSettingWheelOnChanged(ITUWidget* widget, char* param)
 bool TimingRestSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(restSet[slideIndex].background, -124);
+	sliding = true;
+	slidingLeft = true;
+	slidingBackground = (ITUBackground*)restSet[slideIndex].background;
+	//ituWidgetSetX(restSet[slideIndex].background, -124);
 
 	return true;
 }
@@ -1083,8 +1436,10 @@ bool TimingRestSlideBtnOnSlideLeft(ITUWidget* widget, char* param)
 bool TimingRestSlideBtnOnSlideRight(ITUWidget* widget, char* param)
 {
 	int slideIndex = atoi(param);
-
-	ituWidgetSetX(restSet[slideIndex].background, 0);
+	sliding = true;
+	slidingLeft = false;
+	slidingBackground = (ITUBackground*)restSet[slideIndex].background;
+	//ituWidgetSetX(restSet[slideIndex].background, 0);
 
 	return true;
 }
@@ -1135,3 +1490,12 @@ bool TimingRestDeleteBtnOnPress(ITUWidget* widget, char* param)
 	return true;
 }
 
+bool TimingBackBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(0);
+
+	ituLayerGoto(layer);
+	return true;
+}

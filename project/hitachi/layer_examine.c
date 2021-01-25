@@ -20,7 +20,9 @@ ITUContainer* examineRecordAllContainer = 0;
 ITUContainer* examineRecordTmpContainer = 0;
 
 ITUText* examineShowModelText = 0;
+ITURadioBox* examineShowModelRadioBox[16] = { 0 };
 
+ITURadioBox* examineModelTestRadioBox[16] = { 0 };
 ITUSprite* examineModelTestResultSprite[3] = { 0 };
 ITUText* examineModelTestResultText[3] = { 0 };
 
@@ -98,6 +100,18 @@ bool ExamineOnEnter(ITUWidget* widget, char* param)
 			sprintf(tmp, "examineSubRadioBox%d", i);
 			examineSubRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
 			assert(examineSubRadioBox[i]);
+
+			sprintf(tmp, "examineShowModelRadioBox%d", i);
+			examineShowModelRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(examineShowModelRadioBox[i]);
+
+			sprintf(tmp, "examineModelTestRadioBox%d", i);
+			examineModelTestRadioBox[i] = ituSceneFindWidget(&theScene, tmp);
+			assert(examineModelTestRadioBox[i]);
+
+			
+
+			
 		}
 
 		for (i = 0; i < 2; i++)
@@ -164,7 +178,8 @@ bool ExamineSubEnterBtnOnPress(ITUWidget* widget, char* param)
 	int i;
 	char tmp[32];
 
-	sprintf(tmp, "%d: 00-%02d", examineIndex + 1, examineSubAddrIndex + 1);
+	sprintf(tmp, "%d: %s", examineIndex + 1, ituTextGetString(&examineSubRadioBox[examineSubAddrIndex]->checkbox.btn.text));
+	//sprintf(tmp, "%d: 00-%02d", examineIndex + 1, examineSubAddrIndex + 1);
 	ituTextSetString(examineValueTitleText, tmp);
 
 	for (i = 0; i < 7; i++)
@@ -194,6 +209,13 @@ bool ExamineSubRadioBoxOnPress(ITUWidget* widget, char* param)
 bool ExamineBtnOnMouseUp(ITUWidget* widget, char* param)
 {
 	char tmp[32];
+	int i;
+
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+		ituTextSetString(&examineSubRadioBox[i]->checkbox.btn.text, tmp);
+	}
 
 	examineIndex = atoi(param);
 	sprintf(tmp, "%d", examineIndex + 1);
@@ -284,13 +306,38 @@ void DeleteExamineRecordContainer(void)
 	examineRecordTotalItem = 0;
 	
 }
+bool ExamineShowBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+		ituTextSetString(&examineShowModelRadioBox[i]->checkbox.btn.text, tmp);
+	}
+	return true;
+}
+
+bool ExamineModelTestBtnOnMouseUp(ITUWidget* widget, char* param)
+{
+	char tmp[32];
+	int i;
+
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(tmp, "%02d-%02d", systemNo[i], addr[i]);
+		ituTextSetString(&examineModelTestRadioBox[i]->checkbox.btn.text, tmp);
+	}
+	return true;
+}
 
 bool ExamineShowModelRadioBoxOnPress(ITUWidget* widget, char* param)
 {
 	int index = atoi(param);
 	char tmp[32];
 
-	sprintf(tmp, "F.%02d", index + 1);
+	sprintf(tmp, "F.%02d", addr[index]);
 	ituTextSetString(examineShowModelText, tmp);
 
 	return true;
@@ -319,5 +366,14 @@ bool ExamineModelTestEnterBtnOnPress(ITUWidget* widget, char* param)
 		ituTextSetString(examineModelTestResultText[i], tmp);
 	}
 
+	return true;
+}
+bool ExamineBackgroundBtnOnPress(ITUWidget* widget, char* param)
+{
+	ITULayer* layer;
+
+	layer = (ITULayer*)ituGetVarTarget(1);
+
+	ituLayerGoto(layer);
 	return true;
 }
