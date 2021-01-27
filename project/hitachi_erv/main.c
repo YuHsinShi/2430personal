@@ -99,7 +99,7 @@ retry_backup:
 
 
 
-#if 1 //ndef WIN32
+#ifndef WIN32
 	peripheral_init();//beeper , led
 	
 	Hlink_init();//hlink , IR module
