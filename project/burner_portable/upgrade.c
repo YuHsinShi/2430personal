@@ -902,6 +902,38 @@ int UpgradeGetResult(void)
 {
     return upgradeResult;
 }
+
+
+
+ char* GetRamStoragePath()
+ {
+	 ITPDriveStatus* driveStatusTable;
+	 ITPDriveStatus* driveStatus = NULL;
+	 int i;
+	 unsigned char path[32];
+	 // try to find the package drive
+	 ioctl(ITP_DEVICE_DRIVE, ITP_IOCTL_GET_TABLE, &driveStatusTable);
+ 
+	 for (i = ITP_MAX_DRIVE - 1; i >= 0; i--)
+	 {
+		 driveStatus = &driveStatusTable[i];
+		 //if (driveStatus->avail && driveStatus->disk == ITP_DISK_RAM )
+		 if (driveStatus->avail && driveStatus->disk == ITP_DISK_SD0 )
+		 {
+ 
+			 printf("SD PATH=%s \n",driveStatus->name);
+			 
+				return driveStatus->name;
+		 }
+	 }
+	 printf("ERROR: CAN NOT FIND SD PATH\n");
+
+	 return NULL;
+ }
+
+
+
+
 #if 1
  //ret 1: in SD card
  //ret 2: in USB disc

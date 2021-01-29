@@ -1,7 +1,7 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Project Configuration
-# Mon Jan 25 10:07:16 2021
+# Thu Jan 28 13:56:23 2021
 #
 #
 set(CFG_DEF_CHIP_PKG_IT9860 y)
@@ -202,7 +202,8 @@ set(CFG_SD0_STATIC y)
 # CFG_SD0_CARD_1BIT is not set
 # CFG_SD1_ENABLE is not set
 set(CFG_MMC_ENABLE y)
-# CFG_RAMDISK_ENABLE is not set
+set(CFG_RAMDISK_ENABLE y)
+set(CFG_RAMDISK_SIZE "1048576")
 # CFG_UAS_ENABLE is not set
 
 #

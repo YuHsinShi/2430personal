@@ -239,10 +239,90 @@ return target_log;
 
 
 
+int fcpy(char* src,char* dst) 
+{
+	int c;
+	FILE *fpSrc, *fpDest; //定义两个指向文件的指针
+	fpSrc = fopen(src, "rb"); //以读取二进制的方式打开源文件
+	if(fpSrc==NULL){
+	printf( "Source file open failure."); //源文件不存在的时候提示错误
+	return 0;
+	}
+	fpDest = fopen(dst, "wb"); // //以写入二进制的方式打开目标文件
+	if(fpDest==NULL){
+	printf("Destination file open failure.");
+	return 0;
+	}
+
+
+/*
+	while((c=fgetc(fpSrc))!=EOF){ //从源文件中读取数据知道结尾
+	fputc(c, fpDest);
+	}
+*/
+	int src_size,dst_size;
+	char* tmp;
+
+	fseek(fpSrc,0L,SEEK_END);
+	src_size=ftell(fpSrc);
+	tmp=malloc(src_size);
+	fread(tmp,1,src_size,fpSrc);
+
+	fwrite(tmp,1,src_size,fpDest);
+
+	printf("fcpy:src_size =%d, dst_size=%d \n",src_size,dst_size);
+
+	free(tmp);
+	fclose(fpSrc); //关闭文件指针，释放内存
+	fclose(fpDest);
+	return 0;
+} 
+
+int fcmpare(char* src,char* dst) //argc表示命令参数个数e69da5e6ba903231313335323631343130323136353331333337386662， argv[]表示参数名称
+{
+	int c;
+	FILE *fpSrc, *fpDest; //定义两个指向文件的指针
+	int src_size,dst_size;
+	fpSrc = fopen(src, "rb"); //以读取二进制的方式打开源文件
+	if(fpSrc==NULL){
+	printf( "Source file open failure."); //源文件不存在的时候提示错误
+	return 0;
+	}
+	fpDest = fopen(dst, "wb"); // //以写入二进制的方式打开目标文件
+	if(fpDest==NULL){
+	printf("Destination file open failure.");
+	return 0;
+	}
+	
+	fseek(fpDest,0L,SEEK_END);
+	dst_size=ftell(fpDest);
+
+	fseek(fpSrc,0L,SEEK_END);
+	src_size=ftell(fpSrc);
+	printf("fcmpare:src_size =%d, dst_size=%d \n",src_size,dst_size);
+
+
+	fclose(fpSrc); //关闭文件指针，释放内存
+	fclose(fpDest);
+	return 0;
+} 
+
 void testing()
 {
-	printf("\ntesting path\n");
+	printf("\n testing path A to B\n");
 
+/*
+	fcpy("A:/ram.txt","B:/ram.txt");
+	fcpy("A:/boot.bin","B:/boot.bin");
+	fcmpare("A:/ram.txt","B:/ram.txt");
+	fcmpare("A:/boot.bin","B:/boot.bin");
+*/
+
+	fcpy("A:/ram.txt","A:/ram2.txt");
+	fcmpare("A:/ram.txt","A:/ram2.txt");
+
+
+	/*
 #define script_path "A:/ram.txt"
 
 	FILE* fp;
@@ -250,9 +330,14 @@ void testing()
 	if(NULL == fp)
 	{
 	printf("\n open fail path\n");
-	
+
 	}
-		fclose(fp);
+	fclose(fp);
+	*/
+
+	//target_do_booting("B:/ram.txt","B:/boot.bin");
+
+
 
 
 }
@@ -280,7 +365,7 @@ target_auto_detect();
 usleep(1000);
 
 burn_led_congtrol();
-//testing();
+testing();
 
 //usleep(1000);
 target_log_start();

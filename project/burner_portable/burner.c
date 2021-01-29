@@ -773,6 +773,7 @@ int burner_check_update()
 
 
 }
+
 static void* burnningTask(void* arg)
 {
 
@@ -965,6 +966,7 @@ void burn_process(void* arg)
 		return;
 	
 	}
+	return;
 
 }
 

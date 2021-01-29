@@ -83,6 +83,7 @@ else{
 
     return pdFALSE;
 }
+
 }
 
 static portBASE_TYPE prvWriteRegisterCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
@@ -335,19 +336,23 @@ portBASE_TYPE  cli_download_process( char *pcWriteBuffer, size_t xWriteBufferLen
 }
 
 
-#define script_path "A:/ram.txt"
-#define bin_path "A:/boot.bin"
+//#define script_path "B:/ram.txt"
+//#define bin_path "B:/boot.bin"
+static char script_path[32];
+static char bin_path[32];
 
 static portBASE_TYPE  prvRamScriptDownload( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 	portBASE_TYPE ret;
-
+	char path[32]={0};
 	ret=cli_download_process(pcWriteBuffer,xWriteBufferLen, pcCommandString );
 	if(pdFALSE==ret)
 	{
-	
-		printf("\n prvRamScriptDownload path %s,%d\n",script_path,downloadSize);
+
+//		printf("\n prvRamScriptDownload path %s,%d\n",script_path,downloadSize);
 		//write file to SD card
+		snprintf(script_path,32,"%sram.txt" ,GetRamStoragePath());
+
 		FILE* fp;
 		fp=fopen(script_path,"wb");
 		if(NULL == fp)
@@ -383,27 +388,23 @@ static portBASE_TYPE  prvBinDownload( char *pcWriteBuffer, size_t xWriteBufferLe
 	ret=cli_download_process(pcWriteBuffer,xWriteBufferLen, pcCommandString );
 	if(pdFALSE==ret)
 	{
+	
+	 snprintf(bin_path,32,"%sboot.bin" ,GetRamStoragePath());
 	 printf("\n prvBinDownload path=%s\n",bin_path);
 		//write file to SD card
 		FILE* fp;
 		fp=fopen(bin_path,"wb");
-		if(NULL != fp){
-
+		if(NULL == fp){
 		printf("\n open file fail \n");
-
 		}	
 		 
 
-		if(downloadSize!=0)
-		{
-		
+		if(downloadSize!=0)	{		
 			fwrite(downloadBuffer,1,downloadSize,fp);
 			fclose(fp);
-
 		}
 
-		if (downloadBuffer)
-		{
+		if (downloadBuffer)	{
 		  free(downloadBuffer);
 		  downloadBuffer = NULL;
 		}
@@ -597,8 +598,7 @@ void cliTargetSystemInit(void)
     FreeRTOS_CLIRegisterCommand( &xTargeBinDownload );
     FreeRTOS_CLIRegisterCommand( &xTargeBinBoot );
 //
-    FreeRTOS_CLIRegisterCommand( &xTargeBurnRom );
-	
+    FreeRTOS_CLIRegisterCommand( &xTargeBurnRom );	
     FreeRTOS_CLIRegisterCommand( &xTargeLogModeOnOff );
 
 	

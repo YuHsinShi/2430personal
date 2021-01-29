@@ -26,6 +26,7 @@
  *
  ***************************************************************************/
 
+#include "fat/api/api_fat.h"
 #include "ramdrv_f.h"
 
 #define RAMDRV_CNT 1
@@ -234,7 +235,7 @@ F_DRIVER *ram_initfunc(unsigned long driver_param)
 {
    t_RamDrv *p;
    unsigned int i;
-
+ithPrintf("ram_initfunc RAMDISK\n");
    if (driver_param==F_AUTO_ASSIGN)
    {
      p=RamDrv;
