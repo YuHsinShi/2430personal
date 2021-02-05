@@ -193,7 +193,7 @@ if(ret>0)
 	ret=get_ite_chip_id();
 	if(1==ret)
 	 	snprintf( tmp_str, 128, "TARGET 9860 found ");
-	else if(1==ret) 
+	else if(2==ret) 
 		snprintf( tmp_str, 128, "TARGET 970 found ");
 	else		
 		snprintf( tmp_str, 128, "TARGET unkown? " );
