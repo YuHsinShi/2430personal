@@ -3,6 +3,8 @@
 #include "uart_tx.h"
 
 
+#include <string.h>
+
 #define CONST_16 16
 #define nop() 
 
@@ -195,7 +197,7 @@ unsigned char tempset_min_warm_rx;
 unsigned char tempset_max_warm_rx;
 unsigned char tempset_min_cool_rx;
 unsigned char tempset_max_cool_rx;
-unsigned char pointcheck1_data[16];
+extern unsigned char pointcheck1_data[50];
 unsigned char pointcheck2_data[16];
 unsigned char wind_board_status_write;
 unsigned char wind_board_angle_write;

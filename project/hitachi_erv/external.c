@@ -27,6 +27,111 @@ static volatile bool extQuit;
 #include "alt_cpu/alt_cpu_device.h"
 #include "alt_cpu/homebus/homebus.h"
 
+
+#if 1 //wifi module
+#include "openrtos/FreeRTOS.h"
+
+static TickType_t start_tick_uart_wifi;
+unsigned char outbuff[256] ={0};
+unsigned char outlen =0;
+int need_to_send_frame =0;
+
+static void start_timeout_tick(void)
+{
+    /* Set first ticks value */
+    start_tick_uart_wifi = xTaskGetTickCount();
+}
+
+static unsigned int get_elapsed_timeout_msec()
+{
+    TickType_t tick = xTaskGetTickCount();
+    if (tick >= start_tick_uart_wifi)
+        return ((tick - start_tick_uart_wifi) / portTICK_PERIOD_MS);
+    else
+        return ((0xFFFFFFFF - start_tick_uart_wifi + tick) / portTICK_PERIOD_MS);
+
+}
+
+
+int uart_module_framesend(unsigned char* buf,unsigned char frame_len)
+{
+	//outlen=;
+if(0==need_to_send_frame)
+{	
+	memcpy(outbuff,buf,frame_len);
+	need_to_send_frame=1;
+	return 1;
+
+}else
+	return 0;
+	
+}
+
+
+void uart_wifi_module_check()
+{
+		ithPrintf("uart_wifi_module_check \n");
+int i;
+		unsigned char tmp[128] ={0};
+		unsigned char buff[256] ={0};
+
+		int len;
+		int pos=0;;
+		WifiModulePowerOn();
+		wifi_module_logic_ini();
+
+		while(1)
+		{
+			len = read(ITP_DEVICE_UART3, tmp, 128);
+			if(len>0)
+			{	
+				memcpy(buff+pos,tmp,len);
+				pos+=len;
+				start_timeout_tick();				
+
+				while(1) //recv uart until timeout
+				{
+					len = read(ITP_DEVICE_UART3, tmp, 128);
+					if(len>0)
+					{
+						memcpy(buff+pos,tmp,len);
+						pos+=len;
+						start_timeout_tick();			
+					}
+
+					if(get_elapsed_timeout_msec()>5 ) //frame end 
+					{
+						wifi_rx_frame_in(buff,len);
+						len=0;
+						pos=0;
+						
+						break;
+					}
+					
+					usleep(2000);
+				}	
+
+			}
+		
+			//check cmd queue if something need to be send
+			if(need_to_send_frame)
+			{
+				write(ITP_DEVICE_UART3, outbuff,outlen);
+				need_to_send_frame=0;
+
+			}
+			
+			usleep(50*1000);
+		}
+
+}
+
+
+
+#endif 
+
+
+
 void MCU_logic_control_IR()
 {
 	unsigned char buff[64]={0};
@@ -41,6 +146,28 @@ void MCU_logic_control_IR()
 
 }
 
+void MCU_logic_control_hlink()
+{
+	static int counter=10;
+
+	system_tx_check();
+	init_tx_deal();
+	
+	if(0==counter){  tx_deal(); counter=10; } // do until 100ms 
+
+	counter--;
+
+}
+
+MCU_logic_control_wifi()
+{
+
+	wifi_rx_data();
+	wifi_tx_data();
+
+
+}
+
 
 void MCU_logic_control()
 {
@@ -49,28 +176,23 @@ printf("homebus_logic_control \n");
 
 	int i;
 
-	int counter=10;
 
 	while(1)
 	{
 	
 	   // pthread_mutex_lock(&gThreadMutex);
+		//
 
-		system_tx_check();
-	
-		init_tx_deal();
-
-		if(0==counter){  tx_deal();	counter=10; } // do until 100ms 
 		//rx_deal();		
 		//if(have_ir)
-		
+		MCU_logic_control_hlink();
+	  	//MCU_logic_control_wifi();
 		MCU_logic_control_IR();//follow original IR module logic 
 
 
 		//pthread_mutex_unlock(&gThreadMutex);
 
 		usleep(10*1000);//10ms 
-		counter--;
 		
 	}
 }
@@ -80,6 +202,9 @@ void Hlink_init()
 {
 	homebus_init(); //h link engine
 	
+	pthread_t wifi_tid;
+	pthread_create(&wifi_tid, NULL, uart_wifi_module_check, NULL);
+
 	pthread_t readThread;
 	pthread_create(&readThread, NULL, MCU_logic_control, NULL);
 

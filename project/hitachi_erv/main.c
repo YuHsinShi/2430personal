@@ -103,7 +103,7 @@ retry_backup:
 	peripheral_init();//beeper , led
 	
 	Hlink_init();//hlink , IR module
-	wifi_module_ini();
+	//wifi_module_ini();
 #endif
     SceneInit();
     SceneLoad();

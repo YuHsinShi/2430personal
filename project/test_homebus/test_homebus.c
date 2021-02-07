@@ -107,72 +107,6 @@ void homebus_test()
 }
 
 
-
-
-
-
-
-
-void homebus_test_ABC()
-{
-	HOMEBUS_INIT_DATA tHomebusInitData = { 0 };
-    HOMEBUS_READ_DATA tHomebusReadData = { 0 };
-    HOMEBUS_WRITE_DATA tHomebusWriteData = { 0 };
-	uint8_t pWriteData[MAX_DATA_SIZE] = {0};
-	uint8_t pReadData[MAX_DATA_SIZE] = { 0 };
-	int len = 0, count = 0, ret = 0;
-
-    printf("Start Homebus\n");
-    
-    tHomebusInitData.cpuClock = ithGetRiscCpuClock();
-	tHomebusInitData.txdGpio = CFG_GPIO_HOMEBUS_TXD;
-    // tHomebusInitData.rxdGpio = CFG_GPIO_UART2_RX;//CFG_GPIO_HOMEBUS_RXD;
-    // tHomebusInitData.parity  = NONE;
-    tHomebusInitData.uid[0] = 0x01;
-    tHomebusInitData.uid[1] = 0x01;
-    
-	ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_INIT_PARAM, &tHomebusInitData);
-    printf("Homebus init OK\n");
-
-
-		uint8_t i;
-
-		for(i=0;i<0xff;i++)
-		{
-			pWriteData[i]=i;
-
-		}
-
-	
-
-    while(1)
-    {
-
-
-		homebus_senddata(pWriteData,255);	
-
-
-        tHomebusReadData.len = 255;
-        len = ioctl(ITP_DEVICE_ALT_CPU, ITP_IOCTL_HOMEBUS_READ_DATA, &tHomebusReadData);
-        // printf("read data &&&&& (%d)\n", len);
-        if(len > 0) {
-            printf("Homebus Recv(%d) :\n", len);
-            for(count = 0; count < len; count++) {
-                printf("0x%x ", pReadData[count]);
-            }
-            printf("\r\n");
-//			rx_data_lenth =(unsigned char) len;
-//			memcpy(rx_data,pReadData,len);
-			rx_data_update(pReadData,len);
-			rx_deal();
-        }
-        usleep(1000*500);
-        // usleep(1000*1);
-        // usleep(1000*1000*1);
-    }
-}
-
-
 //24 15 04 01 48 69 73 65 6E 73 65 2D 50 43 2D 50 31 48 45 51 32 FA 57 配网
 
 int WifiModuleRequestMatch()
@@ -292,6 +226,28 @@ while(1)
 	
 	usleep(3000*1000);
 }
+
+	while(1)
+	{
+
+		wifi_rx_data(); 
+		wifi_tx_data();
+
+		usleep(100*1000);
+
+	}
+
+
+
+
+
+
+
+
+
+
+/*
+
 	while (1)
 	{
 		switch(stage)
@@ -334,7 +290,7 @@ while(1)
 	
 		usleep(3000*1000);
 	}
-
+*/
 
 }
 
@@ -410,7 +366,7 @@ void* TestFunc(void* arg)
     itpInit();
 
 	pthread_t wifi_tid;
-	pthread_create(&wifi_tid, NULL, WifiModuleHandle, NULL);
+	pthread_create(&wifi_tid, NULL, uart_wifi_module_check, NULL);
 
 #ifdef CFG_DBG_TRACE
     vTraceStop();

@@ -83,11 +83,11 @@ unsigned char human_flag,human_used,human_set_enable;//人感标志,人感是否有效、人
 unsigned char human_sensor,human_sensor_used;//人感2标志,人感2有效
 
 unsigned char 	self_clean_flag,self_clean_used,self_clean_enable;//自清洁标志,自清洁是否有效、自清洁是否可以操作
-unsigned int 	  self_clean_flag_b;//各室内机自清洁标志
+unsigned char 	  self_clean_flag_b;//各室内机自清洁标志
 unsigned char 	high_temp_disinfect_flag,high_temp_disinfect_used,high_temp_disinfect_set_enable;//高温杀标志,高温杀是否有效、高温杀是否可以操作
-unsigned int 	  high_temp_disinfect_flag_b;//各室内机高温杀标志
+unsigned char 	  high_temp_disinfect_flag_b;//各室内机高温杀标志
 unsigned char 	power_wind_check_flag,power_wind_flag_used,power_wind_set_enable;//强力标志,强力是否有效、强力是否可以操作
-unsigned int 	  power_wind_check_flag_b;//各室内机强力标志
+unsigned char 	  power_wind_check_flag_b;//各室内机强力标志
 
 
 unsigned char d1_d3_check;
@@ -124,9 +124,9 @@ unsigned char option_all_set_new1[16];//各台室内机机能设定数据3G共同设定
 
 unsigned char line_protocol;//线控器1、2、3G支持标志
 unsigned char line_g25_flag;//线控器2.5G支持标志
-unsigned int  inroom_2g5_protocol;//各台室内机机2.5G支持标志
-unsigned int	inroom_2g_protocol;//各台室内机机2G支持标志
-unsigned int  inroom_3g_protocol;//各台室内机机3G支持标志
+unsigned char  inroom_2g5_protocol;//各台室内机机2.5G支持标志
+unsigned char	inroom_2g_protocol;//各台室内机机2G支持标志
+unsigned char  inroom_3g_protocol;//各台室内机机3G支持标志
 unsigned char	total_machine;//实际连接的室内机台数
 
 
