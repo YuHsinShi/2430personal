@@ -79,6 +79,7 @@ static int driver_registered;
 
 static int sdio_init(void)
 {
+
     int rc = 0;
     SD_CARD_INFO card_info = { 0 };
     if (!driver_registered) {
@@ -145,6 +146,28 @@ static int SdioIoctl(int file, unsigned long request, void* ptr, void* info)
     switch (request)
     {
     case ITP_IOCTL_INIT:
+		/*
+		#define GPIO_WIFI_EN  46
+		//#define GPIO_SD2  46
+
+		//ithGpioSetOut(GPIO_SD2);
+		//ithGpioSetMode(GPIO_SD2, ITH_GPIO_MODE0);
+		//ithGpioClear(GPIO_SD2);
+
+
+
+		ithGpioSetOut(GPIO_WIFI_EN);
+		ithGpioSetMode(GPIO_WIFI_EN, ITH_GPIO_MODE0);
+		ithGpioClear(GPIO_WIFI_EN);
+		usleep(50*1000);		
+		ithGpioSet(GPIO_WIFI_EN);		
+		usleep(50*1000);	
+*/
+
+
+
+
+		
         rc = sdio_init();
         if (rc)
             return -1;

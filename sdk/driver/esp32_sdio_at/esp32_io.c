@@ -114,6 +114,7 @@ static struct sdio_driver esp32_driver = {
 
 int esp32_sdio_at_register(void)
 {
+printf("\n esp32_sdio_at_register \n");
     return sdio_register_driver(&esp32_driver);
 }
 
