@@ -296,3 +296,10 @@ int ExternalSend(ExternalEvent* ev)
 
    // return mq_send(extOutQueue, (char*)ev, sizeof(ExternalEvent), 0);
 }
+
+
+
+
+
+
+

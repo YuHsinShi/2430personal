@@ -834,10 +834,7 @@ int SceneRun(void)
             }
             result |= ituSceneUpdate(&theScene, ITU_EVENT_TIMER, 0, 0, 0);
             //printf("%d\n", result);
-			//#ifndef _WIN32
-            //if (result)
-			if (1)
-			//#endif
+            if (result)
             {
                 ituSceneDraw(&theScene, screenSurf);
                 ituFlip(screenSurf);

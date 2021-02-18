@@ -3831,4 +3831,34 @@ void homebus_api_power_off()
 	
 	homebus_api_trigger();
 }
+//=============================================================================
+void sync_logicAndUI()
+{
+	//system_status
+   //goto mainLayer or power off layer
+	//system_mode
+	//for erv 4 MODE
+
+	//modeIndex  0:智慧自動.1:循環淨化.2:節能新風.3:普通換氣
+	//modeIndex  0制冷1除濕2制熱3送風4自動5地暖6除濕地暖7制熱地暖8舒心睡眠9舒爽10供熱11加濕12乾爽除濕13強力除濕14自動除濕15全年除濕
+
+	//logic:temperature
+	//ui: int temperatureValueIndex//溫度設定0-20(0.5度一階)對應
+
+	//logic:humid
+	//ui:humidityValueIndex//濕度設定0-100
+
+	//logic: wind_enable
+	//UI: airForceIndex// 0- 自動;  1-6檔
+
+	/*
+	int temperatureInIndex//室內溫度
+	int humidityInIndex//室內濕度
+	int temperatureOutIndex//室外溫度
+	int humidityOutIndex//室外濕度
+	*/
+}
+
+
+
 
