@@ -47,9 +47,11 @@ ithWatchDogRestart(); //  //ithWriteRegA(ITH_WD_BASE + ITH_WD_RESTART_REG, ITH_W
 
 */
 ithPrintf("prvTaskRebootTargetCommand...\n");
-ithSetRegBitA_target(ITH_WD_BASE + ITH_WD_CR_REG, ITH_WD_EN);
-ithWriteRegA_target(ITH_WD_BASE + ITH_WD_LOAD_REG, 0);
-ithWriteRegA_target(ITH_WD_BASE + ITH_WD_RESTART_REG, ITH_WD_AUTORELOAD);	
+//ithSetRegBitA_target(ITH_WD_BASE + ITH_WD_CR_REG, ITH_WD_EN);
+//ithWriteRegA_target(ITH_WD_BASE + ITH_WD_LOAD_REG, 0);
+//ithWriteRegA_target(ITH_WD_BASE + ITH_WD_RESTART_REG, ITH_WD_AUTORELOAD);	
+target_reboot();
+
 snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "OK\r\n");
 
 

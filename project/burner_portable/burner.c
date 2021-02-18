@@ -545,6 +545,15 @@ int target_io_read(unsigned int pin)
 
 }
 
+
+int target_reboot()
+{
+	ithPrintf("target_reboot \n");
+	ithSetRegBitA_target(ITH_WD_BASE + ITH_WD_CR_REG, ITH_WD_EN);
+	ithWriteRegA_target(ITH_WD_BASE + ITH_WD_LOAD_REG, 0);
+	ithWriteRegA_target(ITH_WD_BASE + ITH_WD_RESTART_REG, ITH_WD_AUTORELOAD);	
+}
+
 void law_test()
 {
 uint8_t indata[16]={0};
