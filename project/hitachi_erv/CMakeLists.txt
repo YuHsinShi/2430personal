@@ -142,6 +142,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     backup.c
 	peipheral.c
 	wifi_module.c
+	mcu/uart_tx.c
+	mcu/uart_rx.c
+	mcu/uart_wifi.c
+	mcu/remote.c
     )
 
 if (DEFINED CFG_SHT20_ENABLE)
