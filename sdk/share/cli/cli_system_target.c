@@ -61,6 +61,55 @@ return pdFALSE;
 
 
 
+int c2i(char ch)
+{
+        // 如果是数字，则用数字的ASCII码减去48, 如果ch = '2' ,则 '2' - 48 = 2
+        if(isdigit(ch))
+                return ch - 48;
+        // 如果是字母，但不是A~F,a~f则返回
+        if( ch < 'A' || (ch > 'F' && ch < 'a') || ch > 'z' )
+                return -1;
+
+        // 如果是大写字母，则用数字的ASCII码减去55, 如果ch = 'A' ,则 'A' - 55 = 10
+        // 如果是小写字母，则用数字的ASCII码减去87, 如果ch = 'a' ,则 'a' - 87 = 10
+        if(isalpha(ch))
+                return isupper(ch) ? ch - 55 : ch - 87; 
+        return -1;
+}
+
+unsigned int hex2dec(char *hex)
+
+{
+        unsigned int len;
+        unsigned int num = 0;
+        unsigned int temp;
+        unsigned int bits;
+        unsigned int i;     
+
+        // 此例中 hex = "1de" 长度为3, hex是main函数传递的
+        len = strlen(hex);
+        for (i=0, temp=0; i<len; i++, temp=0)
+        {
+                // 第一次：i=0, *(hex + i) = *(hex + 0) = '1', 即temp = 1
+                // 第二次：i=1, *(hex + i) = *(hex + 1) = 'd', 即temp = 13
+                // 第三次：i=2, *(hex + i) = *(hex + 2) = 'd', 即temp = 14
+                temp = c2i( *(hex + i) );
+                // 总共3位，一个16进制位用 4 bit保存
+                // 第一次：'1'为最高位，所以temp左移 (len - i -1) * 4 = 2 * 4 = 8 位
+                // 第二次：'d'为次高位，所以temp左移 (len - i -1) * 4 = 1 * 4 = 4 位
+                // 第三次：'e'为最低位，所以temp左移 (len - i -1) * 4 = 0 * 4 = 0 位
+                bits = (len - i - 1) * 4;
+                temp = temp << bits;                // 此处也可以用 num += temp;进行累加
+                num = num | temp;
+
+        }
+
+        // 返回结果
+
+        return num;
+
+}
+
 
 static portBASE_TYPE prvReadRegisterCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
@@ -70,7 +119,7 @@ static portBASE_TYPE prvReadRegisterCommand( char *pcWriteBuffer, size_t xWriteB
 unsigned int address;
 unsigned int reg_value;
 
-address=atoi(&pcCommandString[strlen(KEYWORD_READ_REGISTER)+1+2]);
+address=hex2dec(&pcCommandString[strlen(KEYWORD_READ_REGISTER)+1+2]);
 if( (0==address) || ('0'!=pcCommandString[strlen(KEYWORD_READ_REGISTER)+1]) 
 	|| ('x'!=pcCommandString[strlen(KEYWORD_READ_REGISTER)+2]) ) {
 	snprintf(pcWriteBuffer,64, "Please use hex format, ex: 0x12345678 \n");
@@ -80,7 +129,7 @@ else{
 //printf("%s\n",&pcCommandString[strlen(KEYWORD_READ_REGISTER)+1]);
 
 	reg_value=read_slave_register_value(address);
-	snprintf(pcWriteBuffer,8, "%d",reg_value);
+	snprintf(pcWriteBuffer,10, "0x%x",reg_value);
 	printf("address=0x%x,%x,%s\n",address,reg_value,pcWriteBuffer);
 
     return pdFALSE;
@@ -90,8 +139,36 @@ else{
 
 static portBASE_TYPE prvWriteRegisterCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
+	unsigned int address;
+	unsigned int reg_value;
+	unsigned char tmp1[16]={0};
 
-    return pdTRUE;
+	char *pcParameter1, *pcParameter2;
+	portBASE_TYPE xParameter1StringLength, xParameter2StringLength;
+	pcParameter1 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 1, &xParameter1StringLength );
+	pcParameter2 = ( char * ) FreeRTOS_CLIGetParameter( pcCommandString, 2, &xParameter2StringLength );
+	//printf("prvWriteRegisterCommand,%s ,%s,%s\n",pcCommandString,pcParameter1,pcParameter2);
+	memcpy(tmp1,pcParameter1,xParameter1StringLength);
+
+
+	if( ('0'!=pcParameter1[0]) || ('x'!=pcParameter1[1]) || ('0'!=pcParameter2[0]) || ('x'!=pcParameter2[1]) ) 
+	{
+		snprintf(pcWriteBuffer,64, "Please use hex format, ex: 0x12345678 \n");
+	}
+	else
+	{
+		address=hex2dec(tmp1);
+		reg_value=hex2dec(pcParameter2);
+		
+	   printf("address=0x%x,%x,%s\n",address,reg_value,pcWriteBuffer);
+	   write_slave_register(address,reg_value);
+
+	}
+	
+
+    snprintf( ( char * ) pcWriteBuffer, xWriteBufferLen, "OK\r\n");
+
+    return pdFALSE;
 }
 
 
@@ -491,7 +568,7 @@ static const xCommandLineInput xWriteRegisterCommand =
 	( const char * const ) KEYWORD_WRITE_REGISTER,
 	( const char * const ) "write-register <hex address>  32 bit address, ex. write-register 0xd8000000 \r\n",
 	prvWriteRegisterCommand,
-	1
+	2
 };
 
 
